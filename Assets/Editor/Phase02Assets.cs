@@ -1,0 +1,445 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+
+namespace EchoesOfCravejada.EditorTools
+{
+    /// <summary>
+    /// Prepara os assets que a Phase 2 consome. A arte de latao nao existe em
+    /// nenhum pack: ela e desenhada pelo BrassArt e gravada aqui como PNG, em
+    /// Assets/Generated/Brass. Pode apagar a pasta — gerar a fase de novo
+    /// reconstroi tudo.
+    /// </summary>
+    public static class Phase02Assets
+    {
+        public const string BrassFolder = Phase01Assets.GeneratedRoot + "/Brass";
+
+        public const string TilesPath = BrassFolder + "/brass_tiles.png";
+        public const string PipesPath = BrassFolder + "/pipe_tiles.png";
+        public const string AcidPath = BrassFolder + "/acid_tiles.png";
+
+        public const string TilePrefix = "brass";
+        public const string PipePrefix = "pipe";
+        public const string AcidPrefix = "acid";
+
+        /// <summary>A animacao de agua do pack, que vira a superficie do acido.</summary>
+        public const string WaterPath =
+            "Assets/Cave Platformer Tileset/Enviroment sprite sheets/water_animated.png";
+
+        /// <summary>Fogueira, baus e espinhos animados. So a fogueira (linha 3) e usada, nas fornalhas.</summary>
+        public const string AnimatedObjectsPath =
+            "Assets/Cave Platformer Tileset/Enviroment sprite sheets/objects_misc_animated.png";
+
+        /// <summary>A parede de caverna azulada, pro trecho dos Silent Geodes.</summary>
+        public const string BlueBackgroundPath =
+            "Assets/Cave Platformer Tileset/Enviroment sprite sheets/bg_cave_blueish_16x16.png";
+
+        public const string AnimatedObjectsPrefix = "miscanim";
+        public const string BlueBackgroundPrefix = "bgblue";
+
+        private const int FireRow = 3;
+        private const int FireFrames = 6;
+
+        // Nomes das pecas avulsas. Cada uma vira um PNG com esse nome.
+        public const string ValveRusty = "valve_rusty";
+        public const string ValveClean = "valve_clean";
+        public const string GaugeBig = "gauge_big";
+        public const string GaugeSmall = "gauge_small";
+        public const string NeedleBig = "needle_big";
+        public const string NeedleSmall = "needle_small";
+        public const string Boiler = "boiler";
+        public const string BoilerGlow = "boiler_glow";
+        public const string Furnace = "furnace";
+        public const string Hatch = "hatch";
+        public const string Workbench = "workbench";
+        public const string ScrapPolished = "scrap_polished";
+        public const string SkylineFar = "skyline_far";
+        public const string SkylineNear = "skyline_near";
+
+        // As pecas das mecanicas do Scrap, que as duas fases usam.
+        public const string ChiselSlash = "chisel_slash";
+        public const string Shard = "opaque_shard";
+        public const string OldScrap = "old_scrap";
+        public const string LeverRusty = "lever_rusty";
+        public const string LeverClean = "lever_clean";
+        public const string GateBars = "gate_bars";
+        public const string RustyScrapper = "rusty_scrapper";
+        public const string ScrapChunk = "scrap_chunk";
+        public const string ShockWave = "shock_wave";
+        public const string DashModule = "dash_module";
+
+        // O que o District 2 tem de vivo, e as pecas das mecanicas dele.
+        public const string PipeLeech = "pipe_leech";
+        public const string ValveSentry = "valve_sentry";
+        public const string BrassWelder = "brass_welder";
+        public const string AcidBloater = "acid_bloater";
+        public const string SteamBolt = "steam_bolt";
+        public const string BoilerMaster = "boiler_master";
+        public const string Crisol = "crisol";
+        public const string AcidBody = "acid_body";
+        public const string AcidSurface = "acid_surface";
+        public const string SteamColumn = "steam_column";
+        public const string CrackedWall = "cracked_wall";
+
+        // O que se le pelo mapa.
+        public const string LoosePage = "loose_page";
+        public const string ScribbleText = "scribble_text";
+        public const string ScribbleMask = "scribble_mask";
+        public const string Plaque = "plaque";
+
+        public static string SkeletonName(int variant) => "skeleton_" + variant;
+
+        /// <summary>O nome de um quadro do Scrap: sucata ou polido, e o numero do quadro.</summary>
+        public static string HeroFrameName(bool polished, int frame)
+        {
+            return (polished ? "hero_polished_" : "hero_scrap_") + frame.ToString("00");
+        }
+
+        /// <summary>Os quadros do Scrap, na ordem do HeroArt (e do ScrapAnimator).</summary>
+        public static Sprite[] HeroFrames(bool polished)
+        {
+            var frames = new Sprite[HeroArt.FrameCount];
+            for (int i = 0; i < frames.Length; i++) frames[i] = LoadSprite(HeroFrameName(polished, i));
+            return frames;
+        }
+
+        /// <summary>O autômato rastejante: por enquanto, o escorpiao do pack.</summary>
+        public const string CrawlerSheetPath =
+            "Assets/Cave Platformer Tileset/Monster sprite sheets/scorpion-brown-sheet-x1.png";
+
+        public const string CrawlerPrefix = "crawler";
+
+        /// <summary>Linha da caminhada na folha do escorpiao, e quantos quadros ela tem.</summary>
+        private const int CrawlerWalkRow = 1;
+        private const int CrawlerWalkFrames = 4;
+
+        public static string NozzleName(int widthTiles) => "nozzle_" + widthTiles;
+
+        public static string SpritePath(string name) => $"{BrassFolder}/{name}.png";
+
+        public static Sprite LoadSprite(string name)
+        {
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(SpritePath(name));
+            if (sprite == null) Debug.LogWarning($"[Phase 2] Sprite '{name}' nao existe em {BrassFolder}.");
+            return sprite;
+        }
+
+        /// <summary>
+        /// Desenha e importa toda a arte de latao. Devolve falso se alguma
+        /// folha nao pode ser fatiada.
+        /// </summary>
+        public static bool EnsureArt(IEnumerable<int> nozzleWidths)
+        {
+            Phase01Assets.EnsureFolders();
+            if (!AssetDatabase.IsValidFolder(BrassFolder))
+            {
+                AssetDatabase.CreateFolder(Phase01Assets.GeneratedRoot, "Brass");
+            }
+
+            WriteCanvas(TilesPath, BrassArt.BuildTiles());
+            WriteCanvas(PipesPath, BrassArt.BuildPipes());
+
+            PixelCanvas water = ReadCanvas(WaterPath);
+            if (water == null)
+            {
+                Debug.LogError($"[Phase 2] Nao consegui ler {WaterPath} pra fazer o acido.");
+                return false;
+            }
+
+            WriteCanvas(AcidPath, BrassArt.BuildAcid(water));
+
+            var center = new Vector2(0.5f, 0.5f);
+            var corner = Vector2.zero;
+
+            // As pecas que giram (volante, mostrador) tem o pivo no centro; o
+            // ponteiro, na base; o resto, no canto de baixo, pra a posicao do
+            // objeto ser a celula onde ele apoia.
+            WriteSprite(ValveRusty, BrassArt.ValveWheel(false), center);
+            WriteSprite(ValveClean, BrassArt.ValveWheel(true), center);
+            WriteSprite(GaugeBig, BrassArt.GaugeFace(32), center);
+            WriteSprite(GaugeSmall, BrassArt.GaugeFace(16), center);
+            WriteSprite(NeedleBig, BrassArt.GaugeNeedle(12), new Vector2(0.5f, 0f));
+            WriteSprite(NeedleSmall, BrassArt.GaugeNeedle(6), new Vector2(0.5f, 0f));
+            WriteSprite(Boiler, BrassArt.Boiler(), corner);
+            WriteSprite(BoilerGlow, BrassArt.BoilerGlow(), corner);
+            WriteSprite(Furnace, BrassArt.FurnaceFrame(), corner);
+            WriteSprite(Hatch, BrassArt.Hatch(), corner);
+            WriteSprite(Workbench, BrassArt.Workbench(), corner);
+            WriteSprite(ScrapPolished, BrassArt.ScrapPolished(), new Vector2(0.5f, 0f));
+
+            foreach (int width in nozzleWidths.Distinct())
+            {
+                WriteSprite(NozzleName(width), BrassArt.Nozzle(width), corner);
+            }
+
+            var middle = new Vector2(0.5f, 0.5f);
+            var feet = new Vector2(0.5f, 0f);
+
+            WriteSprite(LoosePage, ScrapArt.LoosePage(), feet);
+            WriteSprite(ScribbleText, ScrapArt.Scribble(0), middle);
+            WriteSprite(ScribbleMask, ScrapArt.Scribble(1), middle);
+            WriteSprite(Plaque, ScrapArt.Plaque(), middle);
+
+            WriteSprite(PipeLeech, EnemyArt.PipeLeech(), middle);
+            WriteSprite(ValveSentry, EnemyArt.ValveSentry(), feet);
+            WriteSprite(BrassWelder, EnemyArt.BrassWelder(), feet);
+            WriteSprite(AcidBloater, EnemyArt.AcidBloater(), middle);
+            WriteSprite(SteamBolt, EnemyArt.SteamBolt(), middle);
+            WriteSprite(BoilerMaster, EnemyArt.BoilerMaster(), feet);
+            WriteSprite(Crisol, EnemyArt.Crisol(), feet);
+
+            // Os que repetem (modo Tiled) precisam de malha inteira.
+            WriteSprite(AcidBody, EnemyArt.AcidBody(), corner, true);
+            WriteSprite(AcidSurface, EnemyArt.AcidSurface(), corner, true);
+            WriteSprite(SteamColumn, EnemyArt.SteamColumn(), feet, true);
+            WriteSprite(CrackedWall, EnemyArt.CrackedWall(), corner, true);
+
+            WriteSprite(SkylineFar, BrassArt.Skyline(false), corner, true);
+            WriteSprite(SkylineNear, BrassArt.Skyline(true), corner, true);
+
+            return Phase01Assets.SliceGrid(TilesPath, TilePrefix)
+                && Phase01Assets.SliceGrid(PipesPath, PipePrefix)
+                && Phase01Assets.SliceGrid(AcidPath, AcidPrefix)
+                && Phase01Assets.SliceGrid(AnimatedObjectsPath, AnimatedObjectsPrefix)
+                && Phase01Assets.SliceGrid(BlueBackgroundPath, BlueBackgroundPrefix);
+        }
+
+        /// <summary>
+        /// A arte que o Scrap e as mecanicas dele precisam em qualquer fase: o
+        /// sprite polido, o risco do cinzel, o shard, a old scrap, a alavanca,
+        /// o portao, a bancada e o inimigo rastejante.
+        /// </summary>
+        public static bool EnsureMechanicsArt()
+        {
+            Phase01Assets.EnsureFolders();
+            if (!AssetDatabase.IsValidFolder(BrassFolder))
+            {
+                AssetDatabase.CreateFolder(Phase01Assets.GeneratedRoot, "Brass");
+            }
+
+            var feet = new Vector2(0.5f, 0f);
+
+            WriteSprite(ScrapPolished, BrassArt.ScrapPolished(), feet);
+            WriteSprite(ChiselSlash, ScrapArt.ChiselSlash(), new Vector2(0.5f, 0.5f));
+            WriteSprite(Shard, ScrapArt.Shard(), new Vector2(0.5f, 0.5f));
+            WriteSprite(OldScrap, ScrapArt.OldScrap(), feet);
+            WriteSprite(LeverRusty, ScrapArt.Lever(false), feet);
+            WriteSprite(LeverClean, ScrapArt.Lever(true), feet);
+            WriteSprite(GateBars, ScrapArt.GateBars(), Vector2.zero, true);
+            WriteSprite(Workbench, BrassArt.Workbench(), Vector2.zero);
+            WriteSprite(RustyScrapper, ScrapArt.RustyScrapper(), feet);
+            WriteSprite(ScrapChunk, ScrapArt.ScrapChunk(), new Vector2(0.5f, 0.5f));
+            WriteSprite(ShockWave, ScrapArt.ShockWave(), feet);
+            WriteSprite(DashModule, ScrapArt.DashModule(), new Vector2(0.5f, 0.5f));
+            PixelCanvas[] scrapFrames = HeroArt.Frames(HeroArt.Scrap());
+            PixelCanvas[] polishedFrames = HeroArt.Frames(HeroArt.Polished());
+
+            for (int i = 0; i < HeroArt.FrameCount; i++)
+            {
+                WriteSprite(HeroFrameName(false, i), scrapFrames[i], feet);
+                WriteSprite(HeroFrameName(true, i), polishedFrames[i], feet);
+            }
+
+            WriteSprite(SkeletonName(0), ScrapArt.Skeleton(0), feet);
+            WriteSprite(SkeletonName(1), ScrapArt.Skeleton(1), feet);
+            WriteSprite(NozzleName(4), BrassArt.Nozzle(4), Vector2.zero);
+
+            return Phase01Assets.SliceGrid(CrawlerSheetPath, CrawlerPrefix);
+        }
+
+        /// <summary>Os quadros da caminhada do inimigo rastejante, em ordem.</summary>
+        public static Sprite[] CrawlerWalkSprites()
+        {
+            Dictionary<string, Sprite> sprites = SpritesOf(CrawlerSheetPath);
+            var frames = new List<Sprite>();
+
+            for (int frame = 0; frame < CrawlerWalkFrames; frame++)
+            {
+                if (sprites.TryGetValue(Phase01Assets.GridTileName(CrawlerPrefix, frame, CrawlerWalkRow), out Sprite sprite))
+                {
+                    frames.Add(sprite);
+                }
+            }
+
+            return frames.ToArray();
+        }
+
+        /// <summary>
+        /// Os tiles da Phase 2: os da Phase 1 (caverna, sucata, miolo de rocha),
+        /// os de latao, cano e acido, e os animados.
+        /// </summary>
+        public static Dictionary<string, TileBase> BuildTiles()
+        {
+            Dictionary<string, TileBase> tiles = Phase01Assets.BuildTiles();
+
+            Phase01Assets.AddTilesFrom(TilesPath, tiles);
+            Phase01Assets.AddTilesFrom(PipesPath, tiles);
+            Phase01Assets.AddTilesFrom(AcidPath, tiles);
+            Phase01Assets.AddTilesFrom(BlueBackgroundPath, tiles);
+
+            Dictionary<string, Sprite> acid = SpritesOf(AcidPath);
+            for (int column = 0; column < BrassArt.AcidWaveColumns; column++)
+            {
+                var frames = new List<Sprite>();
+                for (int frame = 0; frame < BrassArt.AcidFrames; frame++)
+                {
+                    if (acid.TryGetValue(Phase01Assets.GridTileName(AcidPrefix, column, frame), out Sprite sprite))
+                    {
+                        frames.Add(sprite);
+                    }
+                }
+
+                // Todas as colunas na mesma velocidade, senao a onda se desfaz.
+                AddAnimatedTile(tiles, $"acid_surface_{column}", frames, 5f);
+            }
+
+            Dictionary<string, Sprite> animated = SpritesOf(AnimatedObjectsPath);
+            var fire = new List<Sprite>();
+            for (int frame = 0; frame < FireFrames; frame++)
+            {
+                if (animated.TryGetValue(Phase01Assets.GridTileName(AnimatedObjectsPrefix, frame, FireRow), out Sprite sprite))
+                {
+                    fire.Add(sprite);
+                }
+            }
+
+            AddAnimatedTile(tiles, Phase02Layout.FireTile, fire, 9f);
+
+            AssetDatabase.SaveAssets();
+            Debug.Log($"[Phase 2] {tiles.Count} Tile assets prontos em {Phase01Assets.TilesFolder}.");
+            return tiles;
+        }
+
+        private static Dictionary<string, Sprite> SpritesOf(string path)
+        {
+            var sprites = new Dictionary<string, Sprite>();
+
+            foreach (Sprite sprite in AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>())
+            {
+                sprites[sprite.name] = sprite;
+            }
+
+            return sprites;
+        }
+
+        private static void AddAnimatedTile(Dictionary<string, TileBase> tiles, string name,
+            List<Sprite> frames, float framesPerSecond)
+        {
+            if (frames.Count == 0)
+            {
+                Debug.LogWarning($"[Phase 2] Tile animado '{name}' ficou sem quadros.");
+                return;
+            }
+
+            string assetPath = $"{Phase01Assets.TilesFolder}/{name}.asset";
+            var tile = AssetDatabase.LoadAssetAtPath<AnimatedTile>(assetPath);
+
+            if (tile == null)
+            {
+                tile = ScriptableObject.CreateInstance<AnimatedTile>();
+                AssetDatabase.CreateAsset(tile, assetPath);
+            }
+
+            tile.m_AnimatedSprites = frames.ToArray();
+            tile.m_MinSpeed = framesPerSecond;
+            tile.m_MaxSpeed = framesPerSecond;
+            tile.m_TileColliderType = Tile.ColliderType.None;
+            EditorUtility.SetDirty(tile);
+
+            tiles[name] = tile;
+        }
+
+        // ------------------------------------------------------------------
+        // Leitura e escrita de imagem
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Le um PNG do projeto direto do arquivo. Assim nao depende de a
+        /// textura estar marcada como legivel no importador.
+        /// </summary>
+        private static PixelCanvas ReadCanvas(string path)
+        {
+            if (!System.IO.File.Exists(path)) return null;
+
+            var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (!texture.LoadImage(System.IO.File.ReadAllBytes(path)))
+            {
+                Object.DestroyImmediate(texture);
+                return null;
+            }
+
+            var canvas = new PixelCanvas(texture.width, texture.height);
+            Color32[] pixels = texture.GetPixels32();
+
+            // A Unity guarda de baixo pra cima; o PixelCanvas, de cima pra baixo.
+            for (int y = 0; y < texture.height; y++)
+            {
+                for (int x = 0; x < texture.width; x++)
+                {
+                    Color32 pixel = pixels[x + (texture.height - 1 - y) * texture.width];
+                    canvas.Set(x, y, new Rgba(pixel.r, pixel.g, pixel.b, pixel.a));
+                }
+            }
+
+            Object.DestroyImmediate(texture);
+            return canvas;
+        }
+
+        internal static void WriteCanvas(string path, PixelCanvas canvas)
+        {
+            var pixels = new Color32[canvas.Width * canvas.Height];
+
+            for (int y = 0; y < canvas.Height; y++)
+            {
+                for (int x = 0; x < canvas.Width; x++)
+                {
+                    Rgba pixel = canvas.Get(x, y);
+                    pixels[x + (canvas.Height - 1 - y) * canvas.Width] =
+                        new Color32(pixel.R, pixel.G, pixel.B, pixel.A);
+                }
+            }
+
+            var texture = new Texture2D(canvas.Width, canvas.Height, TextureFormat.RGBA32, false);
+            texture.SetPixels32(pixels);
+            texture.Apply();
+
+            System.IO.File.WriteAllBytes(path, texture.EncodeToPNG());
+            Object.DestroyImmediate(texture);
+
+            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+        }
+
+        internal static void WriteSprite(string name, PixelCanvas canvas, Vector2 pivot, bool tiled = false)
+        {
+            string path = SpritePath(name);
+            WriteCanvas(path, canvas);
+
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer == null) return;
+
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.spritePixelsPerUnit = Phase01Assets.PixelsPerUnit;
+            importer.filterMode = FilterMode.Point;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.mipmapEnabled = false;
+            importer.alphaIsTransparency = true;
+
+            // Pra repetir em modo Tiled o sprite precisa de malha inteira e
+            // textura que da a volta.
+            importer.wrapMode = tiled ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
+
+            var settings = new TextureImporterSettings();
+            importer.ReadTextureSettings(settings);
+            settings.spriteAlignment = (int)SpriteAlignment.Custom;
+            settings.spritePivot = pivot;
+            settings.spriteMeshType = tiled ? SpriteMeshType.FullRect : SpriteMeshType.Tight;
+            if (tiled) settings.spriteExtrude = 0;
+            importer.SetTextureSettings(settings);
+
+            importer.SaveAndReimport();
+        }
+    }
+}

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Phase01_ScrapYard.unity
+    guid: ecc1996173b2ecd40b6b422a81ea261d
+  - enabled: 1
+    path: Assets/Scenes/SampleScene.unity
+    guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Scenes/Phase02_BrassPipelines.unity
+    guid: aa42b4c16b34ae8469c420166d64fc46
+  - enabled: 1
+    path: Assets/Scenes/Phase03_SilentGeodes.unity
+    guid: 4f2d578167eb8fc40a415a9b9f77a015
+  - enabled: 1
+    path: Assets/Scenes/Phase04_AlchemicalAteliers.unity
+    guid: 3d8bdaa92b36f17499db0bb6719b44e6
+  m_configObjects:
+    com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

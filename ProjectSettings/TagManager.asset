@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags: []
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Ground
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Parallax
+    uniqueID: 1236046263
+    locked: 0
+  - name: Terrain
+    uniqueID: 241216277
+    locked: 0
+  - name: Actors
+    uniqueID: 1955889470
+    locked: 0
+  - name: Foreground
+    uniqueID: 1830438243
+    locked: 0
+  - name: Bg
+    uniqueID: 3743950793
+    locked: 0
+  - name: Bg2
+    uniqueID: 151468399
+    locked: 0
+  - name: Scene2
+    uniqueID: 1159833607
+    locked: 0
+  - name: Scene
+    uniqueID: 3569430031
+    locked: 0
+  - name: Floor
+    uniqueID: 3607137391
+    locked: 0
+  m_RenderingLayers:
+  - Default
+  m_MigratedRenderPipelines: []

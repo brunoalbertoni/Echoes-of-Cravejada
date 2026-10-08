@@ -1,0 +1,115 @@
+using UnityEngine;
+
+namespace EchoesOfCravejada
+{
+    /// <summary>
+    /// Camera que segue o Scrap com amortecimento e trava nas bordas do mapa,
+    /// pra nunca mostrar o vazio fora do tilemap.
+    ///
+    /// Nao confunda com o CameraFollow2D que veio junto com o pack 2D Dungeon
+    /// Tilemap: aquele e top-down e nao tem limites de mundo.
+    /// </summary>
+    [RequireComponent(typeof(Camera))]
+    public class ScrapCameraFollow : MonoBehaviour
+    {
+        [SerializeField] private Transform target;
+
+        [Tooltip("Deslocamento em relacao ao alvo. Um Y positivo mostra mais do que vem pela frente em cima.")]
+        [SerializeField] private Vector2 offset = new Vector2(0f, 1.5f);
+
+        [Tooltip("Quanto menor, mais colada a camera fica. Zero remove o amortecimento.")]
+        [SerializeField] private float smoothTime = 0.18f;
+
+        [Header("Limites do mundo")]
+        [SerializeField] private bool clampToBounds = true;
+
+        [Tooltip("Retangulo do mapa em unidades de mundo. O gerador preenche com o tamanho da Phase 1.")]
+        [SerializeField] private Rect worldBounds = new Rect(0f, 0f, 80f, 24f);
+
+        private Camera _camera;
+        private Vector3 _velocity;
+
+        private void Awake()
+        {
+            _camera = GetComponent<Camera>();
+        }
+
+        private void OnEnable()
+        {
+            if (_camera == null) _camera = GetComponent<Camera>();
+
+            // Comeca ja enquadrado, senao a camera faz um deslize feio no primeiro frame.
+            if (target != null) transform.position = Resolve(DesiredPosition());
+        }
+
+        private void LateUpdate()
+        {
+            if (target == null) return;
+
+            Vector3 desired = Vector3.SmoothDamp(
+                transform.position, DesiredPosition(), ref _velocity, smoothTime);
+
+            transform.position = Resolve(desired);
+        }
+
+        private Vector3 DesiredPosition()
+        {
+            return new Vector3(
+                target.position.x + offset.x,
+                target.position.y + offset.y,
+                transform.position.z);
+        }
+
+        /// <summary>Aplica os limites do mundo, mantendo o Z da camera.</summary>
+        private Vector3 Resolve(Vector3 position)
+        {
+            position.z = transform.position.z;
+            if (!clampToBounds || _camera == null) return position;
+
+            float halfHeight = _camera.orthographicSize;
+            float halfWidth = halfHeight * _camera.aspect;
+
+            // Se o mapa e menor que a tela naquele eixo, centraliza em vez de travar.
+            position.x = worldBounds.width < halfWidth * 2f
+                ? worldBounds.center.x
+                : Mathf.Clamp(position.x, worldBounds.xMin + halfWidth, worldBounds.xMax - halfWidth);
+
+            position.y = worldBounds.height < halfHeight * 2f
+                ? worldBounds.center.y
+                : Mathf.Clamp(position.y, worldBounds.yMin + halfHeight, worldBounds.yMax - halfHeight);
+
+            return position;
+        }
+
+        /// <summary>Usado pelo gerador da Phase 1 pra configurar tudo de uma vez.</summary>
+        public void Configure(Transform newTarget, Rect bounds)
+        {
+            target = newTarget;
+            worldBounds = bounds;
+            clampToBounds = true;
+        }
+
+        /// <summary>
+        /// Pula direto pro enquadramento do alvo, sem amortecer. Pra quando o
+        /// alvo e teleportado — ao chegar de outra cena, por exemplo.
+        /// </summary>
+        public void SnapToTarget()
+        {
+            if (target == null) return;
+            if (_camera == null) _camera = GetComponent<Camera>();
+
+            _velocity = Vector3.zero;
+            transform.position = Resolve(DesiredPosition());
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (!clampToBounds) return;
+
+            Gizmos.color = new Color(0.3f, 1f, 0.6f, 0.75f);
+            Gizmos.DrawWireCube(
+                new Vector3(worldBounds.center.x, worldBounds.center.y, 0f),
+                new Vector3(worldBounds.width, worldBounds.height, 0f));
+        }
+    }
+}
