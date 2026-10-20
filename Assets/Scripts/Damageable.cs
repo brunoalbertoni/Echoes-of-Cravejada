@@ -113,7 +113,9 @@ namespace EchoesOfCravejada
             {
                 _dead = true;
 
-                for (int i = 0; i < shards; i++)
+                // O Cinzel de colheita, da loja, arranca mais.
+                int dropped = Mathf.CeilToInt(shards * Shop.ShardDropScale);
+                for (int i = 0; i < dropped; i++)
                 {
                     ShardPickup.Spawn(transform.position, shardSprite, 1, i);
                 }

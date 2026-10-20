@@ -139,7 +139,7 @@ namespace EchoesOfCravejada.EditorTools
             BuildLighting();
             BuildAtmosphere(fogMaterial);
             BuildMarkers();
-            BuildTravel(fogMaterial);
+            BuildTravel();
 
             Transform scrap = Phase01Generator.BuildScrap(scrapSprite, polishedSprite, groundLayer, Phase02Layout.SpawnTile);
             Phase01Generator.BuildCamera(scrap, Phase02Layout.Width, Phase02Layout.Height, FurnaceHaze);
@@ -147,6 +147,9 @@ namespace EchoesOfCravejada.EditorTools
             // O mapa desta fase conta com o Steam Dash, entao aqui o Scrap ja
             // chega com ele — mesmo dando Play direto na cena.
             scrap.GetComponent<ScrapDash>().SetUnlockedFromStart(true);
+
+            // A ferrugem saiu na purificacao do District 1: aqui ele ja chega polido.
+            scrap.GetComponent<ScrapAppearance>().SetPolishedFromStart(true);
 
             // Por ultimo: a purificacao procura pelo nome as luzes, a nevoa e a camera.
             Phase02Mechanics.Build(groundLayer, fogMaterial, unlitMaterial);
@@ -614,7 +617,7 @@ namespace EchoesOfCravejada.EditorTools
             }
         }
 
-        private static void BuildTravel(Material sparkleMaterial)
+        private static void BuildTravel()
         {
             var root = new GameObject("Travel");
 
@@ -626,56 +629,6 @@ namespace EchoesOfCravejada.EditorTools
                     new RectInt(exit.Area.X, exit.Area.Y, exit.Area.Width, exit.Area.Height),
                     exit.Scene, exit.SpawnId);
             }
-
-            // O tablado do polimento.
-            Phase02Layout.Area station = Phase02Layout.PolishStation;
-
-            var stationObject = new GameObject("PolishStation");
-            stationObject.transform.SetParent(root.transform, false);
-            stationObject.transform.position = new Vector3(station.CenterX, station.CenterY, 0f);
-
-            var trigger = stationObject.AddComponent<BoxCollider2D>();
-            trigger.isTrigger = true;
-            trigger.size = new Vector2(station.Width - 1f, station.Height);
-
-            var sparkleObject = new GameObject("Sparkles");
-            sparkleObject.transform.SetParent(stationObject.transform, false);
-            sparkleObject.transform.position = new Vector3(station.CenterX, station.Y + 1f, 0f);
-
-            var particles = sparkleObject.AddComponent<ParticleSystem>();
-
-            ParticleSystem.MainModule main = particles.main;
-            main.loop = false;
-            main.playOnAwake = false;
-            main.duration = 1f;
-            main.startLifetime = new ParticleSystem.MinMaxCurve(0.6f, 1.3f);
-            main.startSpeed = new ParticleSystem.MinMaxCurve(1.5f, 4f);
-            main.startSize = new ParticleSystem.MinMaxCurve(0.12f, 0.3f);
-            main.startColor = new Color(1f, 0.95f, 0.75f, 1f);
-            main.gravityModifier = 0.15f;
-            main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.maxParticles = 80;
-
-            ParticleSystem.EmissionModule emission = particles.emission;
-            emission.rateOverTime = 0f;
-            emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 45) });
-
-            ParticleSystem.ShapeModule shape = particles.shape;
-            shape.shapeType = ParticleSystemShapeType.Circle;
-            shape.radius = 0.6f;
-
-            ParticleSystem.ColorOverLifetimeModule fade = particles.colorOverLifetime;
-            fade.enabled = true;
-            fade.color = new ParticleSystem.MinMaxGradient(SceneKit.FadeInOut(0.05f, 0.5f));
-
-            var renderer = sparkleObject.GetComponent<ParticleSystemRenderer>();
-            renderer.sortingLayerName = Phase01Assets.SortingForeground;
-            renderer.sortingOrder = 20;
-            if (sparkleMaterial != null) renderer.sharedMaterial = sparkleMaterial;
-
-            particles.Stop();
-
-            stationObject.AddComponent<PolishStation>().Configure(particles);
         }
     }
 }

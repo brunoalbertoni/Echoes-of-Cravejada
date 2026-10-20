@@ -3,7 +3,7 @@ using UnityEngine;
 namespace EchoesOfCravejada
 {
     /// <summary>
-    /// A Goldsmith Workbench: o save point. Encostar nela enche a vida e passa
+    /// A Bancada de Ourives: o save point. Encostar nela enche a vida e passa
     /// a ser onde o Scrap renasce quando morre.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]

@@ -210,12 +210,12 @@ namespace EchoesOfCravejada.EditorTools
         public static readonly string[] CrisolLines =
         {
             "...Scrap.",
-            "Nao mexa em nada. Esta bancada era minha. Aquele torno era meu. Aquela lupa, eu mesmo poli.",
-            "Eu cravei gemas pra metade dos retratos que voce viu no corredor. Depois me penduraram la tambem, e depois me riscaram.",
-            "Quando a praga comecou, os alquimistas vieram me pedir quartzo bruto. Bruto. Eu achei que era piada.",
-            "Nao era. Eles estavam construindo alguma coisa. Eu vi os desenhos. Eu sabia o que eles tinham achado.",
-            "E quando o Rei mandou jogar tudo fora, eu nao disse nada. Fiquei quieto, pra continuar pendurado na parede.",
-            "Nao adiantou. E voce esta aqui. ...Descanse, Scrap. A bancada ainda funciona.",
+            "Não mexa em nada. Esta bancada era minha. Aquele torno era meu. Aquela lupa, eu mesmo a poli.",
+            "Eu cravei gemas para metade dos retratos que você viu no corredor. Depois me penduraram lá também, e depois me riscaram.",
+            "Quando a praga começou, os alquimistas vieram pedir-me quartzo bruto. Bruto. Eu achei que era piada.",
+            "Não era. Eles estavam construindo alguma coisa. Eu vi os desenhos. Eu sabia o que eles tinham achado.",
+            "E, quando o Rei mandou jogar tudo fora, eu não disse nada. Fiquei quieto, para continuar pendurado na parede.",
+            "Não adiantou. E você está aqui. ...Descanse, Scrap. A bancada ainda funciona.",
         };
 
         /// <summary>O emissor do raio da Camara dos Espelhos: a celula e a direcao.</summary>
@@ -382,9 +382,9 @@ namespace EchoesOfCravejada.EditorTools
 
             Carve(4, 40, 30, 50);
 
-            Tell("sign", room, "Lore_Portal", "a placa do portao", 16, 40,
-                "O portao era de prata macica. Alguem o arrombou por dentro.",
-                "Na placa, em letra de ourives: \"ATELIES ALQUIMICOS DE SUA MAJESTADE. ENTRADA VEDADA A METAIS COMUNS.\"",
+            Tell("sign", room, "Lore_Portal", "a placa do portão", 16, 40,
+                "O portão era de prata maciça. Alguém o arrombou por dentro.",
+                "Na placa, em letra de ourives: \"ATELIÊS ALQUÍMICOS DE SUA MAJESTADE. ENTRADA VEDADA A METAIS COMUNS.\"",
                 "Embaixo, riscado a prego: \"e a quem mais?\"");
 
             Decor.Add(("window0", 20, 43));
@@ -426,7 +426,7 @@ namespace EchoesOfCravejada.EditorTools
 
             VaporLifts.Add(("Vapor_Hall", new Cells(70, 38, 73, 53)));
 
-            Rune(room, "Circle_Vapor", "mercurio em vapor", 78, 40,
+            Rune(room, "Circle_Vapor", "mercúrio em vapor", 78, 40,
                 new[] { "Mercury_Hall_3" }, new[] { "Vapor_Hall" });
 
             Mark(room, "Secret_Chassis", SecretChassisTile.X, SecretChassisTile.Y);
@@ -484,26 +484,26 @@ namespace EchoesOfCravejada.EditorTools
 
             Carve(111, 40, 140, 47);
 
-            Tell("diary", room, "Lore_Diary_1", "diario de laboratorio, folha 1", 113, 40,
-                "\"Dia 12. O mercurio retarda a corrosao! Uma placa de prata mergulhada resistiu tres dias a mais.\"",
-                "\"Sua Majestade foi informada. Ha esperanca. Vamos curar a cidade inteira.\"",
-                "A letra e caprichada, de quem esta feliz.");
+            Tell("diary", room, "Lore_Diary_1", "diário de laboratório, folha 1", 113, 40,
+                "\"Dia 12. O mercúrio retarda a corrosão! Uma placa de prata mergulhada resistiu três dias a mais.\"",
+                "\"Sua Majestade foi informada. Há esperança. Vamos curar a cidade inteira.\"",
+                "A letra é caprichada, de quem está feliz.");
 
-            Tell("portrait0", room, "Lore_Portrait_1", "retrato de um Noble", 118, 40,
-                "Um Noble de prata, de gola alta. O rosto foi riscado em X, com alguma coisa verde.",
-                "Na plaqueta: \"Mestre de Fundicao\".");
+            Tell("portrait0", room, "Lore_Portrait_1", "retrato de um Nobre", 118, 40,
+                "Um Nobre de prata, de gola alta. O rosto foi riscado em X com alguma coisa verde.",
+                "Na plaqueta: \"Mestre de Fundição\".");
 
-            Tell("portrait1", room, "Lore_Portrait_2", "retrato de uma Noble", 123, 40,
-                "Uma Noble de prata. Tambem riscada, com mais forca: o risco rasgou a tela.",
+            Tell("portrait1", room, "Lore_Portrait_2", "retrato de uma Nobre", 123, 40,
+                "Uma Nobre de prata. Também riscada, com mais força: o risco rasgou a tela.",
                 "Na plaqueta: \"Tesoureira da Coroa\".");
 
             Tell("portrait2", room, "Lore_Portrait_Crisol", "retrato de um jovem", 129, 40,
-                "Este ninguem riscou. Um jovem de prata lisa, sem um arranhao, de monoculo.",
-                "Na plaqueta: \"Crisol. Lapidario da Corte.\"",
-                "Alguem arrancou a plaqueta de baixo, a que dizia o titulo de nobreza.");
+                "Este ninguém riscou. Um jovem de prata lisa, sem um arranhão, de monóculo.",
+                "Na plaqueta: \"Crisol. Lapidário da Corte.\"",
+                "Alguém arrancou a plaqueta de baixo, a que dizia o título de nobreza.");
 
-            Tell("portrait0", room, "Lore_Portrait_3", "retrato de um Noble", 135, 40,
-                "Um Noble de jaleco e mascara de bico. Riscado, mas so de leve — quase com carinho.",
+            Tell("portrait0", room, "Lore_Portrait_3", "retrato de um Nobre", 135, 40,
+                "Um Nobre de jaleco e máscara de bico. Riscado, mas só de leve — quase com carinho.",
                 "Na plaqueta: \"Alquimista-Chefe\".");
 
             Enemy(FoeKind.Slime, "Slime_Gallery", 114, 138, 40);
@@ -563,22 +563,22 @@ namespace EchoesOfCravejada.EditorTools
             Drips.Add((169, 48, 8));
             Drips.Add((183, 48, 8));
 
-            Tell("diary", room, "Lore_Diary_2", "diario de laboratorio, folha 2", 168, 40,
-                "\"Dia 90. O mercurio so retarda. Precisamos testar em corpo inteiro, nao em placa.\"",
-                "\"Sua Majestade autorizou o uso de voluntarios de cobre. Sao abundantes e ninguem sente falta.\"",
-                "A palavra \"voluntarios\" foi escrita por cima de outra, raspada.");
+            Tell("diary", room, "Lore_Diary_2", "diário de laboratório, folha 2", 168, 40,
+                "\"Dia 90. O mercúrio só retarda. Precisamos testar em corpo inteiro, não em placa.\"",
+                "\"Sua Majestade autorizou o uso de voluntários de cobre. São abundantes, e ninguém sente falta deles.\"",
+                "A palavra \"voluntários\" foi escrita por cima de outra, raspada.");
 
-            Tell("diary", room, "Lore_Diary_3", "diario de laboratorio, folha 3", 195, 40,
-                "\"Dia 210. Tanque 4 nao acordou. Tanque 7 acordou errado. Costuramos o que sobrou do 7 no que sobrou do 9.\"",
-                "\"O Mestre diz que estamos quase la. Ele ja nao dorme. Ele ja nao e bem de prata.\"",
+            Tell("diary", room, "Lore_Diary_3", "diário de laboratório, folha 3", 195, 40,
+                "\"Dia 210. O tanque 4 não acordou. O tanque 7 acordou errado. Costuramos o que sobrou do 7 no que sobrou do 9.\"",
+                "\"O Mestre diz que estamos quase lá. Ele já não dorme. Ele já não é bem de prata.\"",
                 "A letra piorou muito.");
 
             Tell("assistant", room, "Npc_Assistant", "Assistente", 202, 40,
-                "N-nao abre! ...Ah. Voce nao e um deles. Voce e... de bronze? De pedra?",
-                "Eu era a aprendiz do Mestre. Do Alquimista. Fiquei aqui dentro desde que ele comecou a escorrer.",
-                "Ele nao era cruel. Voce precisa saber disso. Ele chorou no primeiro tanque. Queria curar todo mundo, ate nos, os de cobre.",
-                "Mas o Rei mandava e ele obedecia. Cada ordem um pouco pior que a outra. No fim ele obedecia antes de o Rei pedir.",
-                "A sala dos espelhos fica ali na frente. A luz queima. Nao pule na frente dela.");
+                "N-não abra! ...Ah. Você não é um deles. Você é... de bronze? De pedra?",
+                "Eu era a aprendiz do Mestre. Do Alquimista. Estou aqui dentro desde que ele começou a escorrer.",
+                "Ele não era cruel. Você precisa saber disso. Ele chorou no primeiro tanque. Queria curar todo mundo, até nós, os de cobre.",
+                "Mas o Rei mandava, e ele obedecia. Cada ordem, um pouco pior que a outra. No fim, ele obedecia antes de o Rei pedir.",
+                "A sala dos espelhos fica ali na frente. A luz queima. Não pule na frente dela.");
 
             Lamp(168f, 44f, 7f, true);
             Lamp(182f, 44f, 7f, true);
@@ -649,17 +649,19 @@ namespace EchoesOfCravejada.EditorTools
 
             Carve(241, 56, 254, 61);
 
-            Tell("diary", room, "Lore_Diary_5", "diario de laboratorio, ultima folha", 245, 56,
-                "\"Dia 300. Os prototipos brutos sao imunes. Quartzo nao lapidado, bronze sem polir: o Oxide nao pega neles.\"",
-                "\"Levei um ate o trono. Andando. Imune. A cura da cidade inteira, de pe na frente dele.\"",
-                "\"Sua Majestade recusou. Disse que a prata nao sera salva por sucata. Ordem de descarte assinada.\"");
+            Tell("diary", room, "Lore_Diary_5", "diário de laboratório, última folha", 245, 56,
+                "\"Dia 300. Os protótipos brutos são imunes. Quartzo não lapidado, bronze sem polimento: o Óxido não pega neles.\"",
+                "\"Levei um até o trono. Andando. Imune. A cura da cidade inteira, de pé na frente dele.\"",
+                "\"Sua Majestade recusou. Disse que a prata não será salva por sucata. Ordem de descarte assinada.\"");
 
-            Tell("sheet", room, "Lore_PrototypeSheet", "ficha de prototipo", 250, 56,
-                "Uma prancheta. Um desenho tecnico, feito com capricho: cabeca de quartzo bruto, dois olhos, uma mola.",
-                "E voce. E o seu corpo, cotado em milimetros.",
-                "\"PROTOTIPO BRUTO N. 7. IMUNE AO OXIDE. FUNCIONAL.\"",
+            // A etiqueta rasgada ao lado de onde o Scrap acorda, no District 1,
+            // e o pedaco que faltava desta ficha.
+            Tell("sheet", room, "Lore_PrototypeSheet", "ficha de protótipo", 250, 56,
+                "Uma prancheta. Um desenho técnico, feito com capricho: cabeça de quartzo bruto, dois olhos, uma mola.",
+                "É você. É o seu corpo, cotado em milímetros.",
+                "\"PROTÓTIPO BRUTO N.º 7. IMUNE AO ÓXIDO. FUNCIONAL.\"",
                 "E, por cima de tudo, carimbado em vermelho: \"REJEITADO — IMPERFEITO\".",
-                "Embaixo, a mao: \"Destino: Poco de Sucata.\"");
+                "Embaixo, à mão: \"Destino: Poço de Sucata.\"");
 
             Decor.Add(("shelf", 252, 56));
             Lamp(248f, 59f, 7f);
@@ -686,16 +688,16 @@ namespace EchoesOfCravejada.EditorTools
 
             Transmutable("Marble_Plug", BlockKind.Marble, 152, 56, 153, 61);
 
-            Rune(room, "Circle_Sand", "marmore em areia", 158, 56,
+            Rune(room, "Circle_Sand", "mármore em areia", 158, 56,
                 new[] { "Marble_Plug" }, new string[0]);
 
             Enemy(FoeKind.Slime, "Slime_Corridor_1", 185, 200, 56);
             Enemy(FoeKind.Slime, "Slime_Corridor_2", 160, 168, 56);
 
-            Tell("diary", room, "Lore_Diary_4", "diario de laboratorio, folha 4", 192, 56,
-                "\"Dia 255. O Mestre entrou no tanque grande. Sozinho. Disse que se o mercurio retarda, entao basta SER mercurio.\"",
-                "\"Ele saiu. Fala como antes, educado. Mas escorre. E quando ri, o riso continua depois que a boca fecha.\"",
-                "\"Os guardas de prata perfeita passaram a vigiar o corredor. Nao sei se guardam a gente ou ele.\"");
+            Tell("diary", room, "Lore_Diary_4", "diário de laboratório, folha 4", 192, 56,
+                "\"Dia 255. O Mestre entrou no tanque grande. Sozinho. Disse que, se o mercúrio retarda, então basta SER mercúrio.\"",
+                "\"Ele saiu. Fala como antes, educado. Mas escorre. E, quando ri, o riso continua depois que a boca se fecha.\"",
+                "\"Os guardas de prata perfeita passaram a vigiar o corredor. Não sei se guardam a nós ou a ele.\"");
 
             Mark(room, "Guard_Spawn", 200, 56, false);
 

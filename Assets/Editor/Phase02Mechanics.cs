@@ -29,6 +29,10 @@ namespace EchoesOfCravejada.EditorTools
         private static readonly Dictionary<string, GameObject> Walls = new Dictionary<string, GameObject>();
         private static readonly Dictionary<string, Valve> Valves = new Dictionary<string, Valve>();
 
+        // O que a purificacao acende (quem so aparece depois dela) e apaga (a nevoa densa).
+        private static readonly List<GameObject> AppearOnPurify = new List<GameObject>();
+        private static readonly List<GameObject> VanishOnPurify = new List<GameObject>();
+
         public static void Build(int groundLayer, Material steamMaterial, Material unlitMaterial)
         {
             _groundLayer = groundLayer;
@@ -40,6 +44,8 @@ namespace EchoesOfCravejada.EditorTools
             Gates.Clear();
             Walls.Clear();
             Valves.Clear();
+            AppearOnPurify.Clear();
+            VanishOnPurify.Clear();
 
             var root = new GameObject("Mechanics").transform;
 
@@ -57,6 +63,8 @@ namespace EchoesOfCravejada.EditorTools
             BuildWorkbenches(Child(root, "Workbenches"));
             BuildCrisol(root);
             BuildLore(Child(root, "Lore"));
+            BuildRewards(Child(root, "Rewards"));
+            BuildVeils(Child(root, "Veils"));
             BuildBoss(root);
             BuildRisingAcid(root);
             BuildPurification(root, enemies.gameObject);
@@ -363,7 +371,7 @@ namespace EchoesOfCravejada.EditorTools
                         Sprite(enemy, Phase02Assets.PipeLeech, Phase01Assets.SortingActors, -3).flipY = true;
                         trigger.size = new Vector2(0.8f, 0.7f);
 
-                        enemy.AddComponent<Damageable>().Configure(1, 2, shard);
+                        enemy.AddComponent<Damageable>().Configure(5, 2, shard);
                         enemy.AddComponent<PipeLeech>().Configure(spec.Y + 0.5f, spec.X0 + 0.5f, spec.X1 + 0.5f);
                         break;
 
@@ -373,7 +381,7 @@ namespace EchoesOfCravejada.EditorTools
                         trigger.size = new Vector2(0.8f, 1.4f);
                         trigger.offset = new Vector2(0f, 0.7f);
 
-                        enemy.AddComponent<Damageable>().Configure(3, 4, shard);
+                        enemy.AddComponent<Damageable>().Configure(6, 4, shard);
                         enemy.AddComponent<ValveSentry>().Configure(spec.Direction, spec.Range,
                             Phase02Assets.LoadSprite(Phase02Assets.SteamBolt));
                         break;
@@ -384,7 +392,7 @@ namespace EchoesOfCravejada.EditorTools
                         trigger.size = new Vector2(0.8f, 1.4f);
                         trigger.offset = new Vector2(0f, 0.7f);
 
-                        enemy.AddComponent<Damageable>().Configure(3, 5, shard);
+                        enemy.AddComponent<Damageable>().Configure(7, 5, shard);
                         enemy.AddComponent<BrassWelder>().Configure(spec.X0 + 0.5f, spec.X1 + 0.5f);
                         break;
 
@@ -394,7 +402,7 @@ namespace EchoesOfCravejada.EditorTools
                         Sprite(enemy, Phase02Assets.AcidBloater, Phase01Assets.SortingActors, -3);
                         trigger.size = new Vector2(1.2f, 1.3f);
 
-                        enemy.AddComponent<Damageable>().Configure(4, 6, shard);
+                        enemy.AddComponent<Damageable>().Configure(8, 6, shard);
                         enemy.AddComponent<AcidBloater>().Configure(spec.X0 + 0.75f, spec.X1 + 0.25f,
                             Phase02Assets.LoadSprite(Phase02Assets.AcidSurface));
                         break;
@@ -502,7 +510,11 @@ namespace EchoesOfCravejada.EditorTools
             area.size = new Vector2(3.2f, 2.6f);
             area.offset = new Vector2(0f, 1.3f);
 
-            crisolObject.AddComponent<Crisol>().Configure("Crisol", Phase02Layout.CrisolLines);
+            var crisol = crisolObject.AddComponent<Crisol>();
+            crisol.Configure("Crisol", Phase02Layout.CrisolLines);
+            crisol.ConfigureRepeat(Phase02Layout.CrisolRepeatLines);
+            crisol.ConfigurePurified(Phase02Layout.CrisolPurifiedLines);
+            crisol.ConfigureMemory(Phase02Layout.CrisolMemoryLines);
         }
 
         /// <summary>
@@ -557,14 +569,120 @@ namespace EchoesOfCravejada.EditorTools
                         break;
                 }
 
-                var npc = loreObject.AddComponent<Npc>();
+                // O componente diz o que ele faz alem de falar: pede coisas (o
+                // velho encanador), se leva embora (as paginas do livro de
+                // turnos) ou so se le.
+                Npc npc;
+                if (spec.Quest != null)
+                {
+                    var quest = loreObject.AddComponent<ItemQuestNpc>();
+                    quest.ConfigureQuest(spec.Quest.ItemPrefix, spec.Quest.ItemCount, spec.Quest.GemReward,
+                        "Gema lapidada recebida", spec.Quest.PurifiedGreeting,
+                        spec.Quest.Progress.Select(lines => new LineSet(lines)).ToArray(),
+                        spec.Quest.Complete, spec.Quest.Done);
+                    npc = quest;
+                }
+                else if (spec.CollectId != null)
+                {
+                    var page = loreObject.AddComponent<CollectibleReadable>();
+                    page.ConfigureCollectible(spec.CollectId, spec.CollectMessage,
+                        Phase02Layout.LogbookPrefix, Phase02Layout.LogbookCount);
+                    npc = page;
+                }
+                else
+                {
+                    npc = loreObject.AddComponent<Npc>();
+                }
 
                 if (spec.Kind == Phase02Layout.LoreKind.Tarnished) npc.Configure(spec.Title, spec.Lines);
                 else npc.ConfigureReadable(spec.Title, spec.Lines);
 
+                if (spec.PurifiedLines != null) npc.ConfigurePurified(spec.PurifiedLines);
+
                 // Uma luz fraca, pra dar pra achar no escuro.
                 Phase01Generator.CreatePointLight(loreObject.transform, "Glow",
                     (spec.X + 0.5f, spec.Y + 1.2f), new Color(0.95f, 0.90f, 0.75f), 0.5f, 3.5f);
+
+                // Quem so aparece depois da purificacao fica guardado pra ela acender.
+                if (spec.AfterPurification) AppearOnPurify.Add(loreObject);
+            }
+        }
+
+        /// <summary>
+        /// O que se acha nos esconderijos: gemas lapidadas, cofres de fragmentos
+        /// e reforcos de chassi. Cada um lembra que ja foi pego.
+        /// </summary>
+        private static void BuildRewards(Transform parent)
+        {
+            foreach (Phase02Layout.RewardSpec spec in Phase02Layout.Rewards)
+            {
+                var pickup = new GameObject(spec.Id);
+                pickup.transform.SetParent(parent, false);
+                pickup.transform.position = new Vector3(spec.X + 0.5f, spec.Y + 0.8f, 0f);
+
+                var trigger = pickup.AddComponent<CircleCollider2D>();
+                trigger.isTrigger = true;
+                trigger.radius = 0.7f;
+
+                Color glow;
+                switch (spec.Kind)
+                {
+                    case Phase02Layout.RewardKind.Gem:
+                        Sprite(pickup, Phase02Assets.CutGem, Phase01Assets.SortingActors, -1);
+                        pickup.AddComponent<RewardPickup>().Configure(RewardPickup.Kind.Gem, spec.Id);
+                        glow = new Color(0.55f, 0.85f, 1f);
+                        break;
+
+                    case Phase02Layout.RewardKind.ShardCache:
+                        Sprite(pickup, Phase02Assets.ShardCache, Phase01Assets.SortingActors, -1);
+                        pickup.AddComponent<RewardPickup>().Configure(RewardPickup.Kind.ShardCache, spec.Id, spec.Amount);
+                        glow = new Color(0.95f, 0.85f, 0.6f);
+                        break;
+
+                    default:
+                        // O mesmo reforco escondido dos outros distritos: o modulo, dourado.
+                        SpriteRenderer module = Sprite(pickup, Phase02Assets.DashModule, Phase01Assets.SortingActors, -1);
+                        module.color = new Color(1f, 0.85f, 0.45f);
+                        pickup.AddComponent<RewardPickup>().Configure(RewardPickup.Kind.Chassis, spec.Id);
+                        glow = new Color(1f, 0.85f, 0.55f);
+                        break;
+                }
+
+                Phase01Generator.CreatePointLight(pickup.transform, "Glow",
+                    (spec.X + 0.5f, spec.Y + 0.8f), glow, 0.5f, 3f);
+            }
+        }
+
+        /// <summary>
+        /// A nevoa densa de Oxide que tampa a Galeria Alta: uma parede, o verde
+        /// por cima (um banco de nevoa grosso, no meio da nevoa do distrito,
+        /// que a purificacao para) e uma luz. Some com a purificacao.
+        /// </summary>
+        private static void BuildVeils(Transform parent)
+        {
+            GameObject atmosphere = GameObject.Find("Atmosphere");
+
+            foreach ((string name, Phase02Layout.Area area) in Phase02Layout.Veils)
+            {
+                var veil = new GameObject(name) { layer = _groundLayer };
+                veil.transform.SetParent(parent, false);
+                veil.transform.position = new Vector3(area.X, area.Y, 0f);
+
+                var wall = veil.AddComponent<BoxCollider2D>();
+                wall.size = new Vector2(area.Width, area.Height);
+                wall.offset = new Vector2(area.Width * 0.5f, area.Height * 0.5f);
+
+                veil.AddComponent<OxideVeil>();
+
+                Phase01Generator.CreatePointLight(veil.transform, "Glow",
+                    (area.CenterX, area.CenterY), new Color(0.36f, 0.95f, 0.60f), 0.9f, 4.5f);
+
+                // O nome comeca com "Oxide_": e o que a purificacao procura pra parar.
+                var bank = new Phase01Layout.FogBank("Oxide_" + name, area.CenterX, area.CenterY,
+                    area.Width + 1.5f, area.Height, 0.5f, 7f, true);
+                Phase01Generator.CreateFogBank(atmosphere != null ? atmosphere.transform : parent, bank, _steam);
+
+                VanishOnPurify.Add(veil);
             }
         }
 
@@ -599,7 +717,8 @@ namespace EchoesOfCravejada.EditorTools
 
             Gates.TryGetValue(Phase02Layout.BossGate, out Gate exitGate);
 
-            bossObject.AddComponent<BoilerMaster>().Configure(
+            var master = bossObject.AddComponent<BoilerMaster>();
+            master.Configure(
                 range.X0 + 0.5f, range.X1 + 0.5f, tile.Y,
                 new Rect(wake.X, wake.Y, wake.Width, wake.Height),
                 Phase02Assets.LoadSprite(Phase02Assets.SteamBolt),
@@ -608,6 +727,13 @@ namespace EchoesOfCravejada.EditorTools
                 Phase02Assets.LoadSprite(Phase02Assets.Shard),
                 Phase02Assets.LoadSprite(Phase02Assets.DashModule),
                 arenaValves, exitGate);
+
+            // A nuvem em que ele explode ao cair.
+            master.ConfigureCloud(Phase01Generator.CreateOxideCloud(bossObject.transform, _steam));
+
+            // A grade da passagem pra sala pre-boss: fecha enquanto ele luta.
+            Phase02Layout.Area seal = Phase02Layout.ArenaSeal;
+            Phase01Generator.CreateArenaSeal(parent, _groundLayer, new RectInt(seal.X, seal.Y, seal.Width, seal.Height));
         }
 
         private static void BuildRisingAcid(Transform parent)
@@ -630,7 +756,8 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>
         /// A purificacao do District 2: chegar ao topo do poco de fuga depois do
         /// boss seca todo o acido, apaga o verde, acende os lampioes, some com
-        /// os corrompidos e abre os atalhos.
+        /// os corrompidos e com a nevoa da Galeria Alta, e traz a Solda pra fora.
+        /// (Nao abre atalho pro poco: a saida do distrito e so pela sala do boss.)
         /// </summary>
         private static void BuildPurification(Transform parent, GameObject enemies)
         {
@@ -679,10 +806,14 @@ namespace EchoesOfCravejada.EditorTools
             var purifierObject = new GameObject("AreaPurifier");
             purifierObject.transform.SetParent(parent, false);
 
+            // Some: os corrompidos e a nevoa densa da Galeria Alta. Aparece: quem
+            // so sai do esconderijo depois (a Solda).
+            var vanish = new List<GameObject>(VanishOnPurify) { enemies };
+
             var purifier = purifierObject.AddComponent<AreaPurifier>();
             purifier.Configure(global, corrupted.ToArray(), purified.ToArray(), fog, new Tilemap[0],
                 cameraObject != null ? cameraObject.GetComponent<Camera>() : null,
-                new GameObject[0], new[] { enemies }, shortcuts);
+                AppearOnPurify.ToArray(), vanish.ToArray(), shortcuts);
             purifier.ConfigurePools(Pools.Values.ToArray());
 
             Phase02Layout.Area area = Phase02Layout.PurifyArea;

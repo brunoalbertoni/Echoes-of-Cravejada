@@ -112,6 +112,10 @@ namespace EchoesOfCravejada
         {
             if (Time.time < _invulnerableUntil || _health <= 0) return;
 
+            // Durante uma cutscene ninguem apanha: o que ainda estava voando
+            // quando ela comecou (sucata, onda de choque) passa reto.
+            if (Cinematic.Active) return;
+
             _health -= amount;
             LastHitTime = Time.time;
             _invulnerableUntil = Time.time + invulnerabilityTime;
@@ -145,6 +149,15 @@ namespace EchoesOfCravejada
             _oldScrap = null;
 
             int shards = ScrapWallet.TakeAll();
+
+            // Com a Bolsa forrada, da loja, metade fica com ele.
+            if (Shop.KeepsHalfOnDeath)
+            {
+                int kept = shards / 2;
+                ScrapWallet.Add(kept);
+                shards -= kept;
+            }
+
             if (shards > 0) _oldScrap = OldScrap.Drop(deathPlace, shards, oldScrapSprite);
 
             Vector3 target = _hasCheckpoint ? _checkpoint : _startPosition;

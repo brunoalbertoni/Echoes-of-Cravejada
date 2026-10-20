@@ -105,15 +105,15 @@ namespace EchoesOfCravejada.EditorTools
             return frames;
         }
 
-        /// <summary>O autômato rastejante: por enquanto, o escorpiao do pack.</summary>
-        public const string CrawlerSheetPath =
-            "Assets/Cave Platformer Tileset/Monster sprite sheets/scorpion-brown-sheet-x1.png";
+        /// <summary>O autômato rastejante: um bicho de engrenagem tomado pelo Oxide, um sprite por quadro.</summary>
+        public static string CogCrawlerName(int frame) => "cog_crawler_" + frame;
 
-        public const string CrawlerPrefix = "crawler";
+        /// <summary>As ferramentas do mestre do Rebite: 0 buril, 1 lupa, 2 pinca.</summary>
+        public static string MasterToolName(int kind) => "master_tool_" + kind;
 
-        /// <summary>Linha da caminhada na folha do escorpiao, e quantos quadros ela tem.</summary>
-        private const int CrawlerWalkRow = 1;
-        private const int CrawlerWalkFrames = 4;
+        /// <summary>As recompensas escondidas: a gema lapidada e o cofre de fragmentos.</summary>
+        public const string CutGem = "cut_gem";
+        public const string ShardCache = "shard_cache";
 
         public static string NozzleName(int widthTiles) => "nozzle_" + widthTiles;
 
@@ -246,21 +246,42 @@ namespace EchoesOfCravejada.EditorTools
             WriteSprite(SkeletonName(1), ScrapArt.Skeleton(1), feet);
             WriteSprite(NozzleName(4), BrassArt.Nozzle(4), Vector2.zero);
 
-            return Phase01Assets.SliceGrid(CrawlerSheetPath, CrawlerPrefix);
+            // O que se le pelo mapa: o District 1 tambem tem.
+            var middle = new Vector2(0.5f, 0.5f);
+            WriteSprite(LoosePage, ScrapArt.LoosePage(), feet);
+            WriteSprite(ScribbleText, ScrapArt.Scribble(0), middle);
+            WriteSprite(Plaque, ScrapArt.Plaque(), middle);
+
+            // O rastejante: 24x16 com o pivo no centro, como era o tile do
+            // escorpiao que ele substitui — os pes continuam no chao.
+            for (int frame = 0; frame < ScrapArt.CogCrawlerFrames; frame++)
+            {
+                WriteSprite(CogCrawlerName(frame), ScrapArt.CogCrawler(frame), middle);
+            }
+
+            for (int kind = 0; kind < ScrapArt.MasterToolCount; kind++)
+            {
+                WriteSprite(MasterToolName(kind), ScrapArt.MasterTool(kind), middle);
+            }
+
+            WriteSprite(CutGem, ScrapArt.CutGem(), middle);
+            WriteSprite(ShardCache, ScrapArt.ShardCache(), middle);
+
+            // O bocal do vapor que leva da arena de volta a Antessala, de 3 tiles.
+            WriteSprite(NozzleName(3), BrassArt.Nozzle(3), Vector2.zero);
+
+            return true;
         }
 
         /// <summary>Os quadros da caminhada do inimigo rastejante, em ordem.</summary>
         public static Sprite[] CrawlerWalkSprites()
         {
-            Dictionary<string, Sprite> sprites = SpritesOf(CrawlerSheetPath);
             var frames = new List<Sprite>();
 
-            for (int frame = 0; frame < CrawlerWalkFrames; frame++)
+            for (int frame = 0; frame < ScrapArt.CogCrawlerFrames; frame++)
             {
-                if (sprites.TryGetValue(Phase01Assets.GridTileName(CrawlerPrefix, frame, CrawlerWalkRow), out Sprite sprite))
-                {
-                    frames.Add(sprite);
-                }
+                Sprite sprite = LoadSprite(CogCrawlerName(frame));
+                if (sprite != null) frames.Add(sprite);
             }
 
             return frames.ToArray();

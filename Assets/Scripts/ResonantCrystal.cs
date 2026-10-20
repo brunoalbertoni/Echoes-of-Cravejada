@@ -146,7 +146,7 @@ namespace EchoesOfCravejada
                 if (Time.frameCount % 20 == 0) NoiseSystem.Emit(transform.position, 4f, 0.3f);
             }
 
-            HoldAction.Show(this, "Segure E para raspar o veio de Oxide", _progress / scrapeTime);
+            HoldAction.Show(this, "Segure E para raspar o veio de Óxido", _progress / scrapeTime);
 
             if (_progress < scrapeTime) return;
 

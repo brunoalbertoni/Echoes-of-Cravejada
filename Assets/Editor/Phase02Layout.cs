@@ -542,26 +542,116 @@ namespace EchoesOfCravejada.EditorTools
             public int X;
             public int Y;
             public string[] Lines;
+
+            /// <summary>O que se le (ou ouve) depois da purificacao, se mudou. Nulo repete Lines.</summary>
+            public string[] PurifiedLines;
+
+            /// <summary>Se ler leva a coisa embora: o id dela no KeyItems e o aviso. Nulo: so se le.</summary>
+            public string CollectId;
+            public string CollectMessage;
+
+            /// <summary>So aparece depois da purificacao.</summary>
+            public bool AfterPurification;
+
+            /// <summary>Se ele pede coisas espalhadas pelo distrito e paga com gema.</summary>
+            public QuestSpec Quest;
+        }
+
+        /// <summary>Um pedido: o que ele quer (KeyItems com esse comeco de id), quanto paga e o que diz.</summary>
+        public sealed class QuestSpec
+        {
+            public string ItemPrefix;
+            public int ItemCount;
+            public int GemReward = 1;
+            public string PurifiedGreeting;
+
+            /// <summary>Depois do pedido, por quantas ele ja tem: 0, 1, 2...</summary>
+            public string[][] Progress;
+
+            public string[] Complete;
+            public string[] Done;
         }
 
         /// <summary>
         /// A historia do District 2, espalhada pelo mapa: o livro de turnos da
-        /// caldeira em quatro paginas soltas, as pichacoes dos operarios, a
-        /// placa do cano-mestre e o velho encanador escondido.
+        /// caldeira em quatro paginas soltas (que o velho encanador quer de
+        /// volta), as pichacoes dos operarios, a placa do cano-mestre, o velho
+        /// encanador escondido e o que se acha nos esconderijos: a carta, o
+        /// relatorio, a ficha do deposito, o diario do chefe de manutencao.
         /// </summary>
         public static readonly List<LoreSpec> Lore = new List<LoreSpec>();
+
+        /// <summary>As paginas do livro de turnos: o comeco do id delas e quantas sao.</summary>
+        public const string LogbookPrefix = "Logbook_";
+        public const int LogbookCount = 4;
+
+        public enum RewardKind
+        {
+            /// <summary>Uma gema lapidada.</summary>
+            Gem,
+
+            /// <summary>Um cofre de fragmentos: Amount de uma vez.</summary>
+            ShardCache,
+
+            /// <summary>Um reforco de chassi: +1 de vida.</summary>
+            Chassis,
+        }
+
+        /// <summary>Uma recompensa escondida, pra quem explora. X e Y sao a celula onde o Scrap para.</summary>
+        public sealed class RewardSpec
+        {
+            public RewardKind Kind;
+            public string Id;
+            public int X;
+            public int Y;
+            public int Amount;
+        }
+
+        /// <summary>O que se acha nos esconderijos: gemas, cofres de fragmentos e reforcos de chassi.</summary>
+        public static readonly List<RewardSpec> Rewards = new List<RewardSpec>();
+
+        /// <summary>
+        /// Nevoa densa de Oxide: fecha uma passagem ate a purificacao, como a
+        /// da Pista de Provas do District 1. No mapa e ar; quem fecha e o objeto.
+        /// </summary>
+        public static readonly List<(string Name, Area Area)> Veils = new List<(string, Area)>();
 
         /// <summary>Onde Crisol fica.</summary>
         public static (int X, int Y) CrisolTile => (112, 19);
 
         public static readonly string[] CrisolLines =
         {
-            "Hm. Mais um pedaco de sucata que desceu pelos canos errados.",
-            "Eu sou Crisol, o Lapidario. Ja cravei pedra em coroa. Hoje conserto lata pra quem nao sabe o que e brilho.",
-            "Esse aro de prata que voce carrega... o Coletor deixou cair, nao foi? Me de aqui. Voce nem sabe o que isso e.",
-            "E um engaste. Serve pra segurar uma gema no chassi. Tome: um rubi bruto. Vamos ver se essa sucata aguenta uma pedra de verdade.",
-            "Leve ate uma bancada e crave. O cinzel vai sair em brasa. Se voce derreter, eu fico com o rubi de volta.",
-            "E se quiser que eu reforce essa carcaca, traga shards. Eu nao trabalho de graca pra Scrap nenhum.",
+            "Hm. Mais um pedaço de sucata que desceu pelos canos errados.",
+            "Eu sou Crisol, o Lapidário. Já cravei pedra em coroa. Hoje conserto lata para quem não sabe o que é brilho.",
+            "Esse aro de prata que você carrega... o Coletor deixou cair, não foi? Dê-me isso aqui. Você nem sabe o que é isso.",
+            "É um engaste. Serve para segurar uma gema no chassi. Tome: um rubi bruto. Vamos ver se essa sucata aguenta uma pedra de verdade.",
+            "Leve-o até uma bancada e crave-o. O cinzel vai sair em brasa. Se você derreter, eu fico com o rubi de volta.",
+            "E, se quiser que eu reforce essa carcaça, traga fragmentos. Eu não trabalho de graça para Scrap nenhum.",
+            "Gemas lapidadas também servem. Essas, sim, eu sei apreciar. Por uma delas, até conto uma história.",
+        };
+
+        /// <summary>O que ele diz das outras vezes, antes de abrir a loja.</summary>
+        public static readonly string[] CrisolRepeatLines =
+        {
+            "Você de novo. Diga logo o que quer.",
+        };
+
+        /// <summary>O que ele diz depois da purificacao.</summary>
+        public static readonly string[] CrisolPurifiedLines =
+        {
+            "Sentiu? O vapor está limpo. Fazia anos que esta cisterna não cheirava a outra coisa que não verde.",
+            "Não pense que isso me comove. ...Mas a bancada está trabalhando melhor. Diga o que quer.",
+        };
+
+        /// <summary>A memoria que ele vende por uma gema: como lapidou a coroa do Rei de Prata.</summary>
+        public static readonly string[] CrisolMemoryLines =
+        {
+            "Quer saber da Coroa de Facetas? Então ouça, e não interrompa.",
+            "O Rei de Prata me deu um bloco de quartzo do tamanho da minha cabeça e disse: novecentas e vinte e cinco facetas. Uma para cada Nobre.",
+            "Levei três anos. Cada faceta tinha que refletir a luz de todas as outras. Se uma ficasse torta, a coroa inteira ficava cega.",
+            "No dia da coroação, a luz de Cravejada inteira passou por ela. Os geodos acenderam de ponta a ponta. Eu vi do fundo do salão, de pé, atrás dos Nobres.",
+            "Ele nem olhou para mim. Olhou para o próprio reflexo, multiplicado novecentas e vinte e cinco vezes.",
+            "...Foi a coisa mais bonita que eu já fiz. E foi feita para alguém que só sabia olhar para si mesmo.",
         };
 
         /// <summary>A area de onde o acido do poco de fuga parte, e ate que altura ele sobe.</summary>
@@ -574,9 +664,24 @@ namespace EchoesOfCravejada.EditorTools
 
         /// <summary>Onde o Boiler Master fica, ate onde ele anda e a area que o acorda.</summary>
         public static (int X, int Y) BossTile => (181, 56);
-        public static (int X0, int X1) BossRange => (160, 190);
+
+        /// <summary>
+        /// Ate onde ele anda: a sala inteira, de parede a parede. Nao sobra
+        /// canto onde se fique na altura da cabeca dele sem que ele alcance.
+        /// </summary>
+        public static (int X0, int X1) BossRange => (154, 195);
+
+        /// <summary>Metade da largura do corpo dele (o colisor tem 2.8).</summary>
+        public const float BossHalfWidth = 1.4f;
+
         public static Area BossWakeArea => Area.Between(156, 56, 194, 66);
         public const string BossGate = "Gate_ArenaExit";
+
+        /// <summary>
+        /// A passagem da sala pre-boss pra arena: a coluna que o selo fecha
+        /// enquanto ele luta. Com a grade da saida, a arena fica trancada.
+        /// </summary>
+        public static Area ArenaSeal => Area.Between(199, 56, 199, 60);
 
         /// <summary>Onde nao ha parede de fundo: os saloes abertos, por onde se ve o horizonte.</summary>
         public static readonly List<Area> Voids = new List<Area>();
@@ -585,9 +690,6 @@ namespace EchoesOfCravejada.EditorTools
 
         /// <summary>Onde o Scrap aparece quando chega do District 1.</summary>
         public static (int X, int Y) SpawnTile => (15, 6);
-
-        /// <summary>O tablado onde os Tarnished fazem o primeiro polimento.</summary>
-        public static Area PolishStation => new Area(35, 8, 5, 4);
 
         /// <summary>O fim do mapa: o toco que leva aos Silent Geodes.</summary>
         public static (int X, int Y) District3Tile => (108, 96);
@@ -755,13 +857,35 @@ namespace EchoesOfCravejada.EditorTools
             Shine(x + 1.5f, y + 3f, 7f, 0.9f, Glow.Lamp);
         }
 
-        private static void Tell(LoreKind kind, string group, string name, string title, int x, int y,
+        private static LoreSpec Tell(LoreKind kind, string group, string name, string title, int x, int y,
             params string[] lines)
         {
-            Lore.Add(new LoreSpec { Kind = kind, Name = name, Title = title, X = x, Y = y, Lines = lines });
+            var spec = new LoreSpec { Kind = kind, Name = name, Title = title, X = x, Y = y, Lines = lines };
+            Lore.Add(spec);
 
             // Entra como marcador tambem, pra a validacao conferir que da pra chegar.
             Mark(group, name, x, y);
+            return spec;
+        }
+
+        /// <summary>Uma pagina do livro de turnos: se le e se leva, pro velho encanador.</summary>
+        private static void Logbook(string group, int number, string title, int x, int y, params string[] lines)
+        {
+            LoreSpec page = Tell(LoreKind.Page, group, "Lore_Logbook_" + number, title, x, y, lines);
+            page.CollectId = LogbookPrefix + number;
+            page.CollectMessage = "Página do livro de turnos guardada";
+        }
+
+        private static void Reward(string group, RewardKind kind, string id, int x, int y, int amount = 0)
+        {
+            Rewards.Add(new RewardSpec { Kind = kind, Id = id, X = x, Y = y, Amount = amount });
+            Mark(group, id, x, y);
+        }
+
+        private static void Veil(string name, int x0, int y0, int x1, int y1)
+        {
+            Carve(x0, y0, x1, y1);
+            Veils.Add((name, Area.Between(x0, y0, x1, y1)));
         }
 
         private static void Mark(string group, string name, int x, int y, bool mustReach = true)
@@ -1341,10 +1465,10 @@ namespace EchoesOfCravejada.EditorTools
 
             Enemy(EnemyKind.ValveSentry, "Sentry_StuckValve", 82, 82, 31, -1, 13);
 
-            Tell(LoreKind.Page, room, "Lore_Logbook_1", "pagina do livro de turnos", 95, 31,
-                "LIVRO DE TURNOS DA CALDEIRA  -  turno da noite.",
-                "Pressao acima do normal de novo. Abri a valvula de alivio duas vezes e ela voltou a subir.",
-                "Avisei la em cima. Disseram que e o tempo. Aqui embaixo nao tem tempo.");
+            Logbook(room, 1, "página do livro de turnos", 95, 31,
+                "LIVRO DE TURNOS DA CALDEIRA — turno da noite.",
+                "Pressão acima do normal de novo. Abri a válvula de alívio duas vezes, e a pressão voltou a subir.",
+                "Avisei lá em cima. Disseram que é o tempo. Aqui embaixo nem existe tempo.");
 
             // A escada que desce pra cisterna. Uma ponte de cano mantem o
             // caminho da sala reto por cima dela.
@@ -1441,23 +1565,42 @@ namespace EchoesOfCravejada.EditorTools
             PipeFloor(141, 146, 38);
 
             // Ele termina num mirante que da direto pro lago da Cadeia de Vapor.
+            // Quem sobe pelos canos acha la um cofre de fragmentos.
             Carve(150, 39, 152, 42);
             Mark(room, "Secret_Overlook", 151, 39);
+            Reward(room, RewardKind.ShardCache, "D2_Overlook_Cache", 151, 39, 40);
+
+            // Depois da purificacao, uma soldadora tira a mascara aqui: e quem
+            // conta quem era o Mestre das Caldeiras.
+            LoreSpec welder = Tell(LoreKind.Tarnished, room, "Npc_Solda", "Solda", 124, 31,
+                "Pode chegar perto. Tirei a máscara. É a primeira vez que respiro sem ela desde que vim soldar aqui embaixo.",
+                "Você derrubou o Mestre das Caldeiras? ...Então precisa saber quem ele era. Era o nosso chefe de manutenção.",
+                "Quando a Coroa mandou recolher as nossas máscaras para os de prata, foi ele que escondeu as caixas e jurou que não havia nenhuma.",
+                "Depois se trancou com as caldeiras para manter a pressão. Sem vapor, aqui embaixo, a gente congelava antes de o Óxido chegar.",
+                "Ele nos salvou duas vezes. Na segunda, já não sabia quem era. Obrigada por deixá-lo descansar.");
+            welder.AfterPurification = true;
 
             Carve(150, 31, 152, 35);
 
-            Tell(LoreKind.Graffiti, room, "Lore_Graffiti_1", "a pichacao", 105, 31,
+            Tell(LoreKind.Graffiti, room, "Lore_Graffiti_1", "a pichação", 105, 31,
                 "Riscado na chapa, em letra de quem tinha pressa:",
-                "\"A PRATA BEBE, O LATAO SUA.\"");
+                "\"A PRATA BEBE, O LATÃO SUA.\"");
 
             Tell(LoreKind.GraffitiMask, room, "Lore_Graffiti_2", "o desenho", 139, 31,
-                "Um desenho tosco, feito a giz: uma mascara de soldador.",
-                "Embaixo, outra mao escreveu: \"quem tem mascara, tem cara\".",
-                "E, mais embaixo, uma terceira: \"e quem nao tem?\"");
+                "Um desenho tosco, feito a giz: uma máscara de soldador.",
+                "Embaixo, outra mão escreveu: \"quem tem máscara tem cara\".",
+                "E, mais embaixo, uma terceira: \"e quem não tem?\"");
 
-            Tell(LoreKind.Graffiti, room, "Lore_Graffiti_3", "a pichacao", 144, 39,
-                "La no alto, onde so chega quem anda pelos canos:",
-                "\"ELES NUNCA DESCERAM AQUI. NEM PRA VER.\"");
+            Tell(LoreKind.Graffiti, room, "Lore_Graffiti_3", "a pichação", 144, 39,
+                "Lá no alto, onde só chega quem anda pelos canos:",
+                "\"ELES NUNCA DESCERAM ATÉ AQUI. NEM PARA VER.\"",
+                "E, mais abaixo, outra mão, de outro dia: \"DAQUI EU VIA AS LUZES DA AVENIDA DAS FACETAS PELO RESPIRO DO TETO. APAGARAM UMA POR UMA.\"")
+                .PurifiedLines = new[]
+            {
+                "Lá no alto, onde só chega quem anda pelos canos:",
+                "\"ELES NUNCA DESCERAM ATÉ AQUI. NEM PARA VER.\"",
+                "Embaixo, em giz novo, numa letra que ainda treme: \"um desceu. era de sucata.\"",
+            };
 
             Enemy(EnemyKind.BrassWelder, "Welder_Hall_1", 117, 129, 31);
             Enemy(EnemyKind.BrassWelder, "Welder_Hall_2", 137, 145, 31);
@@ -1543,6 +1686,14 @@ namespace EchoesOfCravejada.EditorTools
             Carve(204, 41, 207, 44);
             Mark(room, "Secret_SilverFragment", 206, 41);
 
+            // No nicho: uma gema, e a carta que alguem escondeu atras de um cano.
+            Reward(room, RewardKind.Gem, "D2_Chain_Gem", 206, 41);
+            Tell(LoreKind.Page, room, "Lore_Letter", "uma carta dobrada", 204, 41,
+                "Uma carta dobrada em quatro, presa atrás de um cano com um rebite.",
+                "\"Pequena, o vapor está mais pesado esta semana. Não venha me visitar no turno. Fique no distrito de cobre, perto das janelas.\"",
+                "\"Se mandarem todo mundo descer pela calha, não tenha medo. Eu desço os canos atrás de você. Prometo.\"",
+                "A carta nunca foi enviada.");
+
             Carve(204, 35, 207, 38);
 
             // Os canos que saem do acido e alimentam cada bocal.
@@ -1615,10 +1766,10 @@ namespace EchoesOfCravejada.EditorTools
             Valve(room, "Valve_Maze_B", 209, 30, 210, 28, "vent:Lift_Maze_Up");
             Valve(room, "Valve_Maze_C", 231, 37, 232, 35, "vent:Lift_Maze_Elevator");
 
-            Tell(LoreKind.Page, room, "Lore_Logbook_3", "pagina do livro de turnos", 227, 35,
-                "LIVRO DE TURNOS DA CALDEIRA  -  a letra esta tremida.",
-                "Tres colegas nao voltaram do turno. Fui procurar no corredor de baixo.",
-                "Achei as ferramentas deles. So as ferramentas. Estavam verdes.");
+            Logbook(room, 3, "página do livro de turnos", 227, 35,
+                "LIVRO DE TURNOS DA CALDEIRA — a letra está tremida.",
+                "Três colegas não voltaram do turno. Fui procurá-los no corredor de baixo.",
+                "Achei as ferramentas deles. Só as ferramentas. Estavam verdes.");
 
             Enemy(EnemyKind.AcidBloater, "Bloater_Maze", 214, 218, 28);
             Leech("Leech_Maze", 232, 40, 35, 230, 234);
@@ -1668,10 +1819,10 @@ namespace EchoesOfCravejada.EditorTools
 
             Bench(room, "Workbench_PreBoss", 206, 56);
 
-            Tell(LoreKind.Page, room, "Lore_Logbook_4", "ultima pagina do livro de turnos", 211, 56,
-                "LIVRO DE TURNOS DA CALDEIRA  -  a ultima pagina.",
-                "Esta quase em branco. No meio dela, uma linha so:",
-                "\"As mascaras funcionam.\"");
+            Logbook(room, 4, "última página do livro de turnos", 211, 56,
+                "LIVRO DE TURNOS DA CALDEIRA — a última página.",
+                "Está quase em branco. No meio dela, uma linha só:",
+                "\"As máscaras funcionam.\"");
 
             // Do topo do elevador tambem sai um tunel pra Torre das Valvulas.
             Carve(227, 56, 245, 59);
@@ -1713,10 +1864,11 @@ namespace EchoesOfCravejada.EditorTools
             Acid("Acid_BoilerRoom", 158, 50, 192, 53);
             Grate(158, 192, 55);
 
-            // Um bloco em cada entrada. E onde ficam as valvulas das paredes, e
-            // o primeiro degrau pras plataformas.
-            Solid(155, 56, 157, 57);
-            Solid(193, 56, 195, 57);
+            // Um degrau baixo de cada lado, dentro do caminho dele: e por eles
+            // que se sobe nas plataformas no meio da luta. (Antes eram blocos
+            // fora do alcance dele, de onde dava pra bater sem apanhar.)
+            PipeFloor(157, 158, 57);
+            PipeFloor(192, 193, 57);
 
             PipeFloor(160, 165, 59);
             PipeFloor(185, 190, 59);
@@ -1734,8 +1886,8 @@ namespace EchoesOfCravejada.EditorTools
             Gate(BossGate, 150, 56, 150, 59, GateOpener.Boss);
 
             // As tres valvulas da luta: girar uma devolve a pressao pro boss.
-            Valve(room, "Valve_Arena_West", 155, 60, 156, 58).Arena = true;
-            Valve(room, "Valve_Arena_East", 193, 60, 194, 58).Arena = true;
+            Valve(room, "Valve_Arena_West", 154, 58, 155, 56).Arena = true;
+            Valve(room, "Valve_Arena_East", 194, 58, 195, 56).Arena = true;
             Valve(room, "Valve_Arena_Top", 174, 66, 175, 64).Arena = true;
 
             // Tres caldeiras atras da grade, cada uma no seu compasso.
@@ -1838,7 +1990,8 @@ namespace EchoesOfCravejada.EditorTools
             Solid(116, 96, 121, 96);
             Solid(124, 103, 130, 104);
 
-            // Os dois atalhos que a purificacao abre chegam no poco de fuga.
+            // So se chega aqui pelo poco de fuga, e so se chega no poco pela
+            // sala do boss: a saida do distrito tem uma entrada so.
 
             // O toco: no fundo dele comeca o District 3. Nao ha volta.
             Carve(107, 96, 109, 99);
@@ -1873,11 +2026,11 @@ namespace EchoesOfCravejada.EditorTools
             RunPipe(PipeLayer.Far, true, (66, 46), (66, 54));
             RunPipe(PipeLayer.Far, true, (67, 46), (67, 54));
 
-            Tell(LoreKind.Plaque, room, "Lore_MasterPipe", "a inscricao do cano-mestre", 132, 96,
-                "Um cano da grossura de uma casa, subindo ate sumir na rocha. Esta seco, e corroido por dentro.",
-                "Na placa, em letra de fundicao:",
+            Tell(LoreKind.Plaque, room, "Lore_MasterPipe", "a inscrição do cano-mestre", 132, 96,
+                "Um cano da grossura de uma casa, subindo até sumir na rocha. Está seco e corroído por dentro.",
+                "Na placa, em letra de fundição:",
                 "\"PARA A CIDADE DE PRATA.\"",
-                "Alguem riscou por cima, a prego: \"nada mais sobe\".");
+                "Alguém riscou por cima, a prego: \"nada mais sobe\".");
 
             // Os ultimos canos, ainda do lado do latao.
             RunPipe(PipeLayer.Back, false, (139, 102), (130, 102), (130, 99));
@@ -1931,6 +2084,13 @@ namespace EchoesOfCravejada.EditorTools
 
             Mark(room, "Secret_SilverFragment_Sewer", 142, 7);
 
+            // Na ultima ilha, quase na coluna de saida: um cofre e a placa do coletor.
+            Reward(room, RewardKind.ShardCache, "D2_Sewer_Cache", 142, 7, 30);
+            Tell(LoreKind.Plaque, room, "Lore_SewerPlaque", "a placa do coletor", 144, 7,
+                "Uma placa de latão, meio afundada na lama do esgoto:",
+                "\"COLETOR DE CONDENSADO N.º 4. NÃO ENTRAR SEM MÁSCARA.\"",
+                "Embaixo, alguém riscou nomes, um por linha. Doze. O último está pela metade.");
+
             Fumes("Sewer", Area.Between(64, 4, 148, 5), 0.20f);
             Plumb(Area.Between(62, 6, 150, 14), 801, PipeLayer.Back, true, 0);
             RunPipe(PipeLayer.Mid, true, (60, 12), (152, 12));
@@ -1945,9 +2105,9 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>
         /// Um salao enorme por cima do Salao dos Welders, com tres andares de
         /// passarela de grade. Chega-se pela coluna que a Valvula Emperrada
-        /// liga. Daqui sai-se pro sotao (oeste), de volta pro salao por uma
-        /// escotilha (que uma valvula abre) e, depois da purificacao, direto
-        /// pro poco de fuga.
+        /// liga. Daqui sai-se pro sotao (oeste) e de volta pro salao por uma
+        /// escotilha (que uma valvula abre). No andar de cima, a terceira
+        /// bancada do distrito e o cofre do velho encanador.
         /// </summary>
         private static void BuildMachineHall()
         {
@@ -1994,25 +2154,54 @@ namespace EchoesOfCravejada.EditorTools
             PressureBoiler("Boiler_HallVault", 63, 78, 68, 78, "Wall_HallVault");
             Mark(room, "Secret_SilverFragment_Hall", 56, 78);
 
+            // O velho encanador: conta por que sobrou operario aqui embaixo, e
+            // pede as quatro paginas do livro de turnos, que e dele.
             Tell(LoreKind.Tarnished, room, "Lore_OldPlumber", "o velho encanador", 58, 78,
-                "...Nao bata. Eu ouvi a caldeira estourar. Achei que era o fim, e era so voce.",
+                "...Não bata. Eu ouvi a caldeira estourar. Achei que era o fim, e era só você.",
                 "Sou encanador. Era. Estou neste cofre desde que o verde subiu pelos canos.",
-                "Sabe por que sobrou operario aqui embaixo? Porque a gente ja usava mascara. Pra soldar. Ninguem nos deu: era o servico.",
-                "O Oxide veio pelo vapor, e o vapor a gente ja nao respirava direito fazia anos.",
-                "Os de prata, la em cima, nunca precisaram de mascara...",
-                "...ate precisarem.");
+                "Sabe por que sobrou operário aqui embaixo? Porque a gente já usava máscara. Para soldar. Ninguém nos deu as máscaras por bondade: era o serviço.",
+                "O Óxido veio pelo vapor, e fazia anos que a gente já não respirava direito aquele vapor.",
+                "Os de prata, lá em cima, nunca precisaram de máscara...",
+                "...até precisarem.",
+                "Uma coisa, já que você anda pelos canos: o meu livro de turnos. Arrancaram as folhas quando o verde subiu, e o vento das caldeiras as espalhou.",
+                "São quatro páginas. Se achar, traga-as para mim. Quero o livro inteiro de novo antes de... bom. Antes.")
+                .Quest = new QuestSpec
+            {
+                ItemPrefix = LogbookPrefix,
+                ItemCount = LogbookCount,
+                PurifiedGreeting = "O verde foi embora dos canos. Pela primeira vez em anos, abri o respiro da máscara.",
+                Progress = new[]
+                {
+                    new[] { "Nada ainda? As páginas estão por aí. Uma delas eu sei que caiu perto da sala das caldeiras." },
+                    new[] { "Uma página! Faltam três. É a minha letra: reconheço até de longe." },
+                    new[] { "Duas. Metade do livro. Ainda faltam duas." },
+                    new[] { "Três! Falta só uma. Procure nos lugares altos: o vento das caldeiras sobe." },
+                },
+                Complete = new[]
+                {
+                    "O livro inteiro... Turno da noite, turno da manhã, e a última página. Eu escrevi tudo isso e tinha esquecido.",
+                    "Não tenho nada de prata para te dar. Mas tenho isto: uma gema que o chefe de manutenção me deu, no dia em que se trancou com as caldeiras.",
+                    "Ele disse para guardar até alguém merecer. Acho que é você.",
+                },
+                Done = new[]
+                {
+                    "Leio o livro toda noite. Não há mais noite aqui embaixo, mas eu leio assim mesmo.",
+                },
+            };
 
-            Tell(LoreKind.Page, room, "Lore_Logbook_2", "pagina do livro de turnos", 96, 48,
-                "LIVRO DE TURNOS DA CALDEIRA  -  turno da manha.",
-                "A agua esta com gosto de cobre. Nao e do cano: troquei o cano.",
-                "O manometro tres nao sai do vermelho. Parei de olhar pra ele.");
+            // A terceira bancada do distrito, no andar de cima, perto do cofre.
+            Bench(room, "Workbench_MachineHall", 74, 78);
+
+            Logbook(room, 2, "página do livro de turnos", 96, 48,
+                "LIVRO DE TURNOS DA CALDEIRA — turno da manhã.",
+                "A água está com gosto de cobre. Não é do cano: troquei o cano.",
+                "O manômetro três não sai do vermelho. Parei de olhar para ele.");
 
             // Oeste, no andar 2: a passagem pro sotao.
             Carve(57, 68, 61, 71);
 
-            // Leste, no andar 2: o atalho pro poco de fuga, que so abre depois.
-            Carve(133, 68, 137, 70);
-            Gate("Gate_HallToRising", 135, 68, 135, 70, GateOpener.Purification);
+            // (Leste nao ha saida: o poco de fuga, e a saida do distrito, so se
+            // alcancam pela sala do boss.)
 
             Enemy(EnemyKind.BrassWelder, "Welder_Machine_1", 68, 80, 48);
             Enemy(EnemyKind.BrassWelder, "Welder_Machine_2", 100, 118, 48);
@@ -2093,6 +2282,15 @@ namespace EchoesOfCravejada.EditorTools
 
             Mark(room, "Secret_SilverFragment_Attic", 13, 50);
 
+            // No fundo do sotao: uma gema, e o relatorio que mostra quem mandou
+            // manter as caldeiras no limite.
+            Reward(room, RewardKind.Gem, "D2_Attic_Gem", 13, 50);
+            Tell(LoreKind.Page, room, "Lore_InspectionReport", "um relatório de inspeção", 20, 50,
+                "Um relatório com o selo dos 925, esquecido debaixo de um manômetro.",
+                "\"INSPEÇÃO DAS CALDEIRAS DO DISTRITO DE LATÃO. Pressão acima do limite em todas as linhas. Recomendo desligar metade das caldeiras.\"",
+                "Carimbado por cima, em vermelho: \"NEGADO. A CIDADE NÃO PODE ESCURECER. — O REI DE PRATA.\"",
+                "Na margem, a lápis: \"então que escureça aqui embaixo.\"");
+
             // A parede de manometros.
             for (int x = 12; x <= 44; x += 6)
             {
@@ -2161,6 +2359,15 @@ namespace EchoesOfCravejada.EditorTools
             Put(Debris(0), 230, 6);
 
             Mark(room, "Secret_SilverFragment_Depot", 207, 18);
+
+            // No patamar alto: um cofre, e a ficha que conta o que o chefe de
+            // manutencao fez com as mascaras.
+            Reward(room, RewardKind.ShardCache, "D2_Depot_Cache", 207, 18, 50);
+            Tell(LoreKind.Page, room, "Lore_DepotSheet", "a ficha do depósito", 203, 18,
+                "Uma ficha de inventário, pregada na porta do depósito.",
+                "\"ORDEM DA COROA: recolher todas as máscaras de solda e enviá-las ao Distrito de Prata. Prioridade: Nobres.\"",
+                "Logo abaixo, à mão: \"Recolhidas: nenhuma. Não há máscaras neste depósito. — O chefe de manutenção.\"",
+                "Nas prateleiras atrás da ficha, só restam as marcas de caixas retiradas às pressas.");
 
             Furnace("Furnace_Depot", 232, 6);
             Fix(FixtureKind.GaugeBig, "Gauge_Depot", 228, 12);
@@ -2236,6 +2443,15 @@ namespace EchoesOfCravejada.EditorTools
 
             Mark(room, "Secret_SilverFragment_Tower", 281, 76);
 
+            // No alto da torre, de onde se ve a sala das caldeiras: um reforco
+            // de chassi e o diario de quem virou o Mestre das Caldeiras.
+            Reward(room, RewardKind.Chassis, "D2_Tower_Chassis", 281, 76);
+            Tell(LoreKind.Page, room, "Lore_ChiefDiary", "o diário do chefe de manutenção", 278, 76,
+                "Um caderno de capa de couro, deixado no alto da torre, virado para a sala das caldeiras.",
+                "\"Se as caldeiras pararem, o vapor para. Sem vapor, os de baixo congelam antes de o Óxido chegar.\"",
+                "\"Vou ficar com elas. Alguém tem que manter a pressão. Tranquem a porta por fora e não a abram, ouçam o que ouvirem.\"",
+                "A última página tem só a marca de uma mão, queimada no papel.");
+
             Boiler("Boiler_Tower_Base", 254, 6);
             Boiler("Boiler_Tower_Top", 262, 76);
             Fix(FixtureKind.GaugeBig, "Gauge_Tower_1", 264, 14);
@@ -2267,10 +2483,17 @@ namespace EchoesOfCravejada.EditorTools
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// Por cima da Sala de Caldeiras: um corredor largo que liga o alto da
-        /// Torre das Valvulas ao poco de fuga. A porta do poco so abre com a
-        /// purificacao — antes disso e um beco com vista, e depois e o atalho
-        /// de volta.
+        /// Por cima da Sala de Caldeiras: o desafio do distrito. Um corredor
+        /// largo que sai do alto da Torre das Valvulas e acaba num mirante, de
+        /// onde se ve a cidade la em cima pela primeira vez.
+        ///
+        /// Ate a purificacao, a entrada (o tunel da torre) fica tampada por uma
+        /// nevoa densa de Oxide. Depois dela, so se chega ao mirante com o que o
+        /// Mestre das Caldeiras deixa: os canos ficam longe e alto demais um do
+        /// outro sem o Salto de Pressao. No mirante, uma gema e a placa.
+        ///
+        /// Nao ha mais porta pro poco de fuga: a saida do distrito e so pela
+        /// sala do boss.
         /// </summary>
         private static void BuildHighGallery()
         {
@@ -2280,17 +2503,21 @@ namespace EchoesOfCravejada.EditorTools
             Carve(150, 76, 226, 90);
             Voids.Add(Area.Between(150, 76, 226, 90));
 
-            // O patamar oeste, na altura da ultima plataforma do poco, e os
-            // degraus de cano que sobem ate ele.
+            // O patamar oeste (o mirante) e tres canos que sobem ate ele, cada
+            // um 4 acima e longe do outro: so com o segundo pulo no ar.
             Solid(150, 76, 160, 87);
             PipeFloor(184, 187, 77);
-            PipeFloor(178, 181, 79);
-            PipeFloor(172, 175, 81);
-            PipeFloor(166, 169, 83);
-            PipeFloor(161, 164, 85);
+            PipeFloor(176, 179, 81);
+            PipeFloor(168, 171, 85);
 
-            Carve(149, 88, 149, 91);
-            Gate("Gate_GalleryToRising", 149, 88, 149, 91, GateOpener.Purification);
+            // A nevoa que tampa o tunel da torre ate a purificacao.
+            Veil("Veil_HighGallery", 230, 76, 231, 79);
+
+            Reward(room, RewardKind.Gem, "D2_Gallery_Gem", 153, 88);
+            Tell(LoreKind.Plaque, room, "Lore_GalleryView", "a placa do mirante", 157, 88,
+                "Daqui, por uma fresta na rocha, dá para ver lá em cima pela primeira vez: os geodos de Cravejada, imensos e apagados.",
+                "Uma placa de latão, aparafusada na beirada: \"GALERIA ALTA — ACESSO RESTRITO AOS INSPETORES DA COROA.\"",
+                "Riscado embaixo, a prego: \"agora é de quem subir.\"");
 
             Enemy(EnemyKind.BrassWelder, "Welder_Gallery_1", 190, 205, 76);
             Enemy(EnemyKind.BrassWelder, "Welder_Gallery_2", 208, 224, 76);
@@ -2381,6 +2608,18 @@ namespace EchoesOfCravejada.EditorTools
             return rules;
         }
 
+        /// <summary>
+        /// Depois do boss: o Salto de Pressao, um segundo pulo no ar. Conta como
+        /// no District 3 — sobe 4 tiles e vai uns 9 de lado, com o dash.
+        /// </summary>
+        private static LevelMap.JumpRules RulesAfterBoss()
+        {
+            LevelMap.JumpRules rules = LevelMap.JumpRules.Comfortable();
+            rules.MaxRise = 4;
+            rules.MaxRun += 5;
+            return rules;
+        }
+
         private static void Open(LevelMap map, Area area)
         {
             map.Fill(area.X, area.Y, area.Right, area.Top, LevelMap.Air);
@@ -2391,7 +2630,7 @@ namespace EchoesOfCravejada.EditorTools
         /// caldeira que alcancar, e repete com o mapa mudado, ate nada mais
         /// mudar. Devolve o estado final e o alcance nele.
         /// </summary>
-        private static WorldState Play(out LevelMap.Reach reach, List<string> log)
+        private static WorldState Play(out LevelMap.Reach reach, List<string> log, bool bossFalls = true)
         {
             var world = new WorldState { Map = Map.Clone() };
 
@@ -2407,16 +2646,23 @@ namespace EchoesOfCravejada.EditorTools
                 world.Map.Fill(area.X, area.Y, area.Right, area.Top, LevelMap.Rock);
             }
 
+            // A nevoa densa e parede ate a purificacao.
+            foreach ((string _, Area area) in Veils)
+            {
+                world.Map.Fill(area.X, area.Y, area.Right, area.Top, LevelMap.Rock);
+            }
+
             foreach (Vent vent in Vents)
             {
                 if (!vent.StartsOff) world.LiveVents.Add(vent.Name);
             }
 
-            LevelMap.JumpRules rules = Rules();
             LevelMap.Lift[] clouds = CloudAreas();
 
             while (true)
             {
+                // Depois do boss o Scrap tem o Salto de Pressao.
+                LevelMap.JumpRules rules = world.BossDown ? RulesAfterBoss() : Rules();
                 reach = world.Map.Explore(SpawnTile, rules, world.Lifts(), world.Jets(), clouds);
                 bool changed = false;
 
@@ -2475,7 +2721,7 @@ namespace EchoesOfCravejada.EditorTools
                     }
                 }
 
-                if (!world.BossDown && reach.CanStand(BossTile.X, BossTile.Y))
+                if (bossFalls && !world.BossDown && reach.CanStand(BossTile.X, BossTile.Y))
                 {
                     world.BossDown = true;
                     changed = true;
@@ -2497,6 +2743,8 @@ namespace EchoesOfCravejada.EditorTools
                     {
                         if (gate.Opener == GateOpener.Purification) Open(world.Map, gate.Area);
                     }
+
+                    foreach ((string _, Area area) in Veils) Open(world.Map, area);
                 }
 
                 if (!changed) return world;
@@ -2602,6 +2850,32 @@ namespace EchoesOfCravejada.EditorTools
             if (!world.BossDown) problems.Add("Nao da pra chegar no Boiler Master.");
             if (!world.Purified) problems.Add("Nao da pra chegar no topo do poco de fuga: o distrito nunca e purificado.");
 
+            // A saida e so pela sala do boss: sem derrota-lo, nada da fase
+            // (nem caminho alternativo) chega no poco de fuga ou na saida.
+            Play(out LevelMap.Reach withoutBoss, null, bossFalls: false);
+            if (withoutBoss.CanStand(District3Tile.X, District3Tile.Y))
+            {
+                problems.Add("Da pra chegar na saida pros Silent Geodes sem passar pelo Boiler Master.");
+            }
+
+            if (TouchesAny(withoutBoss, PurifyArea))
+            {
+                problems.Add("Da pra chegar no topo do poco de fuga sem passar pelo Boiler Master.");
+            }
+
+            CheckArena(world, problems);
+
+            // O mirante da Galeria Alta e o desafio de depois do boss: sem o
+            // Salto de Pressao, nao se chega nele.
+            LevelMap.Reach withoutJump = world.Map.Explore(SpawnTile, Rules(), world.Lifts(), world.Jets(), CloudAreas());
+            foreach (RewardSpec reward in Rewards)
+            {
+                if (reward.Id == "D2_Gallery_Gem" && withoutJump.CanStand(reward.X, reward.Y))
+                {
+                    problems.Add("Da pra chegar no mirante da Galeria Alta sem o Salto de Pressao: o desafio nao cobra nada.");
+                }
+            }
+
             foreach (Marker marker in Markers)
             {
                 if (!marker.MustReach) continue;
@@ -2617,7 +2891,6 @@ namespace EchoesOfCravejada.EditorTools
             }
 
             if (!reach.CanStand(CrisolTile.X, CrisolTile.Y)) problems.Add("Nao da pra chegar em Crisol.");
-            if (!TouchesAny(reach, PolishStation)) problems.Add("Nao da pra chegar no tablado do polimento.");
 
             foreach (EnemySpec enemy in Enemies)
             {
@@ -2667,6 +2940,67 @@ namespace EchoesOfCravejada.EditorTools
             }
 
             return problems;
+        }
+
+        /// <summary>
+        /// A arena do Mestre das Caldeiras, como a do Coletor no District 1:
+        /// durante a luta (o selo da entrada e a grade da saida fechados) nao
+        /// se sai dela; as plataformas se alcancam do chao; e nao ha patamar na
+        /// altura da cabeca dele fora de onde o corpo dele passa.
+        /// </summary>
+        private static void CheckArena(WorldState world, List<string> problems)
+        {
+            LevelMap fight = world.Map.Clone();
+
+            Area seal = ArenaSeal;
+            fight.Fill(seal.X, seal.Y, seal.Right, seal.Top, LevelMap.Rock);
+
+            foreach (GateSpec gate in Gates)
+            {
+                if (gate.Name == BossGate) fight.Fill(gate.Area.X, gate.Area.Y, gate.Area.Right, gate.Area.Top, LevelMap.Rock);
+            }
+
+            LevelMap.Reach inFight = fight.Explore(BossTile, Rules());
+            // Da grade da saida (x 150) ao selo da entrada (x 199), por dentro.
+            Area arena = Area.Between(151, BossTile.Y, 198, 71);
+
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    if (!arena.Contains(x, y) && inFight.CanStand(x, y))
+                    {
+                        problems.Add($"Durante a luta da pra sair da arena: ({x}, {y}).");
+                        return;
+                    }
+                }
+            }
+
+            int floor = BossTile.Y;
+            float reachLeft = BossRange.X0 + 0.5f - BossHalfWidth;
+            float reachRight = BossRange.X1 + 0.5f + BossHalfWidth;
+
+            for (int y = floor + 1; y <= floor + 3; y++)
+            {
+                for (int x = arena.X; x <= arena.Right; x++)
+                {
+                    bool underBoss = x + 1f > reachLeft && x < reachRight;
+                    if (fight.IsStandable(x, y) && !underBoss)
+                    {
+                        problems.Add($"Ha um patamar na altura da cabeca do Mestre das Caldeiras, fora do alcance dele, em ({x}, {y}).");
+                    }
+                }
+            }
+
+            foreach (LevelMap.Perch perch in fight.FindPerches())
+            {
+                if (perch.Y <= floor + 3 || !arena.Contains(perch.X, perch.Y) || !arena.Contains(perch.Right, perch.Y)) continue;
+
+                bool reached = false;
+                for (int x = perch.X; x <= perch.Right && !reached; x++) reached = inFight.CanStand(x, perch.Y);
+
+                if (!reached) problems.Add($"A plataforma da arena em {perch} nao se alcanca do chao durante a luta.");
+            }
         }
 
         /// <summary>A ordem em que a validacao abriu a fase. Serve pra conferir o desenho.</summary>

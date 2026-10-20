@@ -35,6 +35,9 @@ namespace EchoesOfCravejada
 
         private static bool _unlocked;
 
+        /// <summary>A recarga de verdade: os Pistoes regulados da loja a encurtam.</summary>
+        private float Cooldown => cooldown * Shop.DashCooldownScale;
+
         /// <summary>Verdadeiro durante o arranque.</summary>
         public bool IsDashing => Time.time < _dashUntil;
 
@@ -105,7 +108,7 @@ namespace EchoesOfCravejada
             // As costas esfriam aos poucos.
             if (_sprite != null && _unlocked)
             {
-                float heat = Mathf.Clamp01((_readyAt - Time.time) / Mathf.Max(0.1f, cooldown));
+                float heat = Mathf.Clamp01((_readyAt - Time.time) / Mathf.Max(0.1f, Cooldown));
                 _sprite.color = Color.Lerp(Color.white, heatColor, heat);
             }
 
@@ -115,7 +118,7 @@ namespace EchoesOfCravejada
 
             _direction = _controller.Facing;
             _dashUntil = Time.time + duration;
-            _readyAt = Time.time + cooldown;
+            _readyAt = Time.time + Cooldown;
             if (!_controller.IsGrounded) _usedInAir = true;
 
             // O Knockback trava a direcao pelo tempo do arranque, pra o

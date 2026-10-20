@@ -508,5 +508,456 @@ namespace EchoesOfCravejada.EditorTools
 
             return canvas;
         }
+
+        // ------------------------------------------------------------------
+        // O rastejante de engrenagem
+        // ------------------------------------------------------------------
+
+        /// <summary>Quantos quadros tem a caminhada do rastejante de engrenagem.</summary>
+        public const int CogCrawlerFrames = 4;
+
+        private static readonly Rgba Copper = new Rgba(166, 96, 58);
+        private static readonly Rgba CopperLight = new Rgba(212, 138, 84);
+        private static readonly Rgba CopperDark = new Rgba(98, 54, 38);
+        private static readonly Rgba OxideGlow = new Rgba(120, 255, 170);
+        private static readonly Rgba OxideCore = new Rgba(230, 255, 235);
+        private static readonly Rgba Steel = new Rgba(118, 116, 130);
+        private static readonly Rgba SteelLight = new Rgba(170, 168, 180);
+        private static readonly Rgba SteelDark = new Rgba(72, 70, 84);
+
+        private const int ShellTeeth = 8;
+
+        /// <summary>
+        /// Um quadro do rastejante de engrenagem, 24x16, olhando pra esquerda:
+        /// um bicho de relojoaria do poco. O casco e uma engrenagem grande de
+        /// cobre, a cabeca e um pinhao de ferro, e nas costas ainda esta a
+        /// chave de dar corda.
+        ///
+        /// O Oxide comeu o cobre: azinhavre por cima (mais embaixo, onde
+        /// escorre), dois dentes partidos, uma rachadura que vaza verde e o
+        /// olho aceso da mesma cor.
+        ///
+        /// O casco nao gira — a mancha e os dentes quebrados ficam no lugar e
+        /// o ciclo fecha sem salto. Quem mexe sao as patas, o mecanismo que se
+        /// ve pelo miolo do casco e a chave nas costas.
+        /// </summary>
+        public static PixelCanvas CogCrawler(int frame)
+        {
+            frame = (frame % CogCrawlerFrames + CogCrawlerFrames) % CogCrawlerFrames;
+
+            // Nos quadros em que uma das patas esta no ar, o corpo sobe um pixel.
+            int bob = frame % 2 == 1 ? -1 : 0;
+
+            var legs = new PixelCanvas(24, 16);
+            var body = new PixelCanvas(24, 16);
+
+            CogCrawlerLegs(legs, frame, bob);
+            CogCrawlerShell(body, frame, bob);
+            CogCrawlerHead(body, bob);
+            CogCrawlerKey(body, frame, bob);
+            AddOutline(body);
+            CogCrawlerAntennae(body, bob);
+
+            legs.Blit(body, 0, 0);
+            return legs;
+        }
+
+        /// <summary>
+        /// Tres patas de arame, em tripe: a da frente e a de tras andam juntas,
+        /// a do meio no contratempo. Cada uma fica tres quadros no chao,
+        /// empurrando pra tras, e um no ar, voltando pra frente.
+        /// </summary>
+        private static void CogCrawlerLegs(PixelCanvas canvas, int frame, int bob)
+        {
+            int[] hips = { 9, 13, 17 };
+
+            // Onde o pe fica em relacao ao quadril, e se esta no ar.
+            int[] offset = { -1, 0, 1, 0 };
+            bool[] lifted = { false, false, false, true };
+
+            for (int leg = 0; leg < hips.Length; leg++)
+            {
+                int step = (frame + (leg == 1 ? 2 : 0)) % 4;
+                int hipX = hips[leg];
+                int hipY = 10 + bob;
+                int footX = hipX + offset[step] - 1;
+                int footY = lifted[step] ? 14 : 15;
+
+                // O joelho dobra pra fora do corpo, pra tras.
+                int kneeX = hipX + 1;
+                int kneeY = 12 + bob;
+
+                Line(canvas, hipX, hipY, kneeX, kneeY, Steel);
+                Line(canvas, kneeX, kneeY, footX, footY, SteelLight);
+                canvas.Set(kneeX, kneeY, SteelDark);
+                canvas.Set(footX, footY, SteelDark);
+            }
+        }
+
+        /// <summary>O casco: a engrenagem de cobre, o aro, e o mecanismo de latao girando la dentro.</summary>
+        private static void CogCrawlerShell(PixelCanvas canvas, int frame, int bob)
+        {
+            const float cx = 13.5f;
+            float cy = 6.5f + bob;
+            const float tip = 6.3f;
+            const float root = 4.6f;
+            const float window = 2.6f;
+
+            // Um quarto de volta a cada ciclo: as quatro varetas se repetem.
+            double spin = frame * (Math.PI / 2.0) / CogCrawlerFrames;
+
+            for (int py = 0; py < 16; py++)
+            {
+                for (int px = 0; px < 24; px++)
+                {
+                    float dx = px + 0.5f - cx;
+                    float dy = py + 0.5f - cy;
+                    float r = (float)Math.Sqrt(dx * dx + dy * dy);
+                    double angle = Math.Atan2(dy, dx);
+
+                    // Os dentes: onde o cosseno passa do limiar, a borda vai ate a ponta.
+                    bool tooth = Math.Cos(angle * ShellTeeth) > 0.4;
+                    int toothIndex = ((int)Math.Round(angle * ShellTeeth / (2.0 * Math.PI)) % ShellTeeth + ShellTeeth) % ShellTeeth;
+
+                    float edge = tooth ? tip : root;
+
+                    // Dois dentes partidos, em cima e atras: um sumiu, o outro e um toco.
+                    if (tooth && toothIndex == 7) edge = root;
+                    if (tooth && toothIndex == 6) edge = root + 0.6f;
+
+                    if (r > edge) continue;
+
+                    Rgba color;
+
+                    if (r < 1f)
+                    {
+                        // O eixo.
+                        color = BrassShine;
+                    }
+                    else if (r < window)
+                    {
+                        // O miolo: o escuro de dentro, com as varetas de latao.
+                        double nearest = Math.Abs(Math.IEEERemainder(angle - spin, Math.PI / 2.0));
+                        bool spoke = nearest * r < 0.7;
+                        color = spoke ? Brass : IronDark;
+                    }
+                    else if (r < window + 0.8f)
+                    {
+                        // O sulco entre o miolo e o aro.
+                        color = CopperDark;
+                    }
+                    else
+                    {
+                        // O aro e os dentes, com a luz vindo de cima e da esquerda.
+                        float light = -(dx + dy) / Math.Max(r, 0.01f);
+                        color = light > 0.5f ? CopperLight : (light < -0.6f ? CopperDark : Copper);
+
+                        // O azinhavre: em manchas de 2x2 no aro, nao nos dentes, e
+                        // mais denso embaixo, onde escorre.
+                        int local = py - bob;
+                        float chance = 0.15f + 0.65f * (local / 13f);
+                        if (r <= root && Noise(px >> 1, local >> 1) < chance)
+                        {
+                            color = light < -0.2f ? VerdigrisDark : Verdigris;
+                        }
+                    }
+
+                    canvas.Set(px, py, color);
+                }
+            }
+
+            // A rachadura no aro, de cima pra dentro, vazando o verde do Oxide.
+            int top = (int)Math.Floor(cy);
+            (int X, int Y, bool Glow)[] crack =
+            {
+                (11, top - 4, false),
+                (11, top - 3, true),
+                (12, top - 3, false),
+                (12, top - 2, true),
+            };
+
+            foreach ((int X, int Y, bool Glow) piece in crack)
+            {
+                canvas.Set(piece.X, piece.Y, piece.Glow ? OxideGlow : Outline);
+            }
+        }
+
+        /// <summary>A cabeca: um pinhao de ferro na frente do casco, com o olho aceso pelo Oxide.</summary>
+        private static void CogCrawlerHead(PixelCanvas canvas, int bob)
+        {
+            const float cx = 5.5f;
+            float cy = 8.5f + bob;
+            const float tip = 3.4f;
+            const float root = 2.6f;
+
+            for (int py = 0; py < 16; py++)
+            {
+                for (int px = 0; px < 12; px++)
+                {
+                    float dx = px + 0.5f - cx;
+                    float dy = py + 0.5f - cy;
+                    float r = (float)Math.Sqrt(dx * dx + dy * dy);
+                    bool tooth = Math.Cos(Math.Atan2(dy, dx) * 6) > 0.2;
+
+                    if (r > (tooth ? tip : root)) continue;
+
+                    float light = -(dx + dy) / Math.Max(r, 0.01f);
+                    canvas.Set(px, py, light > 0.4f ? SteelLight : (light < -0.5f ? SteelDark : Steel));
+                }
+            }
+
+            // O olho, virado pra frente: uma fresta escura com o verde no fundo.
+            int eyeY = (int)Math.Floor(cy) - 1;
+            canvas.Fill(2, eyeY, 4, 2, Outline);
+            canvas.Fill(2, eyeY, 3, 1, OxideGlow);
+            canvas.Set(2, eyeY, OxideCore);
+
+            // As pincas: dois dentes de ferro embaixo da cabeca.
+            int jawY = (int)Math.Floor(cy) + 2;
+            canvas.Set(2, jawY, SteelLight);
+            canvas.Set(1, jawY + 1, Steel);
+            canvas.Set(4, jawY + 1, SteelLight);
+            canvas.Set(3, jawY + 2, Steel);
+        }
+
+        /// <summary>
+        /// A chave de dar corda, espetada nas costas. Ela gira: vista de lado,
+        /// a argola alarga e afina a cada quadro.
+        /// </summary>
+        private static void CogCrawlerKey(PixelCanvas canvas, int frame, int bob)
+        {
+            int[] widths = { 3, 2, 1, 2 };
+            int width = widths[frame];
+            int stemY = 5 + bob;
+
+            canvas.Fill(19, stemY, 2, 1, BrassShade);
+
+            int left = 22 - width / 2;
+            for (int py = stemY - 2; py <= stemY + 2; py++)
+            {
+                for (int px = left; px < left + width; px++)
+                {
+                    // A argola e vazada no meio quando esta de frente.
+                    bool hole = width == 3 && px == left + 1 && py != stemY - 2 && py != stemY + 2 && py != stemY;
+                    if (hole) continue;
+
+                    canvas.Set(px, py, px == left ? Brass : BrassShade);
+                }
+            }
+
+            canvas.Set(left, stemY - 2, BrassShine);
+        }
+
+        /// <summary>Duas antenas de arame, curvadas pra frente. Ficam sem contorno, finas.</summary>
+        private static void CogCrawlerAntennae(PixelCanvas canvas, int bob)
+        {
+            int baseY = 4 + bob;
+
+            Line(canvas, 4, baseY, 2, baseY - 3, Steel);
+            canvas.Set(1, baseY - 3, OxideGlow);
+
+            Line(canvas, 6, baseY, 5, baseY - 3, SteelDark);
+            canvas.Set(4, baseY - 4, Verdigris);
+        }
+
+        /// <summary>Contorna de escuro tudo o que nao e transparente, por fora.</summary>
+        private static void AddOutline(PixelCanvas canvas)
+        {
+            var edges = new System.Collections.Generic.List<(int X, int Y)>();
+
+            for (int py = 0; py < canvas.Height; py++)
+            {
+                for (int px = 0; px < canvas.Width; px++)
+                {
+                    if (canvas.Get(px, py).A != 0) continue;
+
+                    bool touches = canvas.Get(px - 1, py).A != 0 || canvas.Get(px + 1, py).A != 0
+                        || canvas.Get(px, py - 1).A != 0 || canvas.Get(px, py + 1).A != 0;
+
+                    if (touches) edges.Add((px, py));
+                }
+            }
+
+            foreach ((int X, int Y) edge in edges) canvas.Set(edge.X, edge.Y, Outline);
+        }
+
+        // ------------------------------------------------------------------
+        // As ferramentas do ourives
+        // ------------------------------------------------------------------
+
+        /// <summary>Quantas ferramentas do ourives ha.</summary>
+        public const int MasterToolCount = 3;
+
+        private static readonly Rgba Wood = new Rgba(150, 96, 52);
+        private static readonly Rgba WoodLight = new Rgba(198, 140, 82);
+        private static readonly Rgba WoodDark = new Rgba(96, 58, 34);
+        private static readonly Rgba Glass = new Rgba(150, 210, 230);
+        private static readonly Rgba GlassShine = new Rgba(235, 250, 255);
+
+        /// <summary>
+        /// Uma ferramenta do mestre do Rebite, 12x12, contornada pra se ler
+        /// solta no chao: 0 o buril (cabo de cogumelo e lamina), 1 a lupa
+        /// (aro de latao e vidro), 2 a pinca (duas hastes que se fecham na ponta).
+        /// </summary>
+        public static PixelCanvas MasterTool(int kind)
+        {
+            var canvas = new PixelCanvas(12, 12);
+
+            switch (kind)
+            {
+                case 0:
+                    // O cabo redondo, embaixo a esquerda.
+                    canvas.Fill(1, 7, 4, 3, Wood);
+                    canvas.Fill(2, 6, 2, 1, WoodLight);
+                    canvas.Fill(2, 10, 2, 1, WoodDark);
+                    canvas.Set(1, 7, WoodLight);
+                    canvas.Set(4, 9, WoodDark);
+
+                    // A virola de latao e a lamina subindo na diagonal.
+                    canvas.Fill(5, 6, 2, 2, Brass);
+                    Line(canvas, 6, 5, 10, 1, IronLight);
+                    Line(canvas, 7, 5, 10, 2, Iron);
+                    canvas.Set(10, 1, BrassShine);
+                    break;
+
+                case 1:
+                    // O aro e o vidro.
+                    for (int py = 0; py < 12; py++)
+                    {
+                        for (int px = 0; px < 12; px++)
+                        {
+                            float dx = px + 0.5f - 5f;
+                            float dy = py + 0.5f - 5f;
+                            float r = (float)Math.Sqrt(dx * dx + dy * dy);
+
+                            if (r <= 2.6f) canvas.Set(px, py, Glass);
+                            else if (r <= 3.8f) canvas.Set(px, py, dx + dy < 0f ? BrassShine : Brass);
+                        }
+                    }
+
+                    canvas.Set(4, 3, GlassShine);
+                    canvas.Set(3, 4, GlassShine);
+
+                    // O cabo, saindo pra baixo e pra direita.
+                    Line(canvas, 8, 8, 10, 10, Wood);
+                    Line(canvas, 9, 8, 11, 10, WoodDark);
+                    canvas.Set(8, 8, BrassShade);
+                    break;
+
+                default:
+                    // Unidas em cima, abertas no meio, fechadas na ponta.
+                    Line(canvas, 5, 1, 3, 5, IronLight);
+                    Line(canvas, 3, 5, 5, 10, IronLight);
+                    Line(canvas, 6, 1, 8, 5, Iron);
+                    Line(canvas, 8, 5, 6, 10, Iron);
+                    canvas.Fill(5, 0, 2, 2, Brass);
+                    canvas.Set(5, 11, IronLight);
+                    canvas.Set(6, 11, Iron);
+                    break;
+            }
+
+            AddOutline(canvas);
+            return canvas;
+        }
+
+        // ------------------------------------------------------------------
+        // Recompensas escondidas
+        // ------------------------------------------------------------------
+
+        private static readonly Rgba GemLight = new Rgba(200, 245, 255);
+        private static readonly Rgba GemMid = new Rgba(110, 200, 230);
+        private static readonly Rgba GemDark = new Rgba(50, 120, 170);
+
+        /// <summary>
+        /// Uma gema lapidada, 12x12: um losango facetado azul-claro, com a
+        /// mesa (a face de cima) mais clara e um brilho no canto.
+        /// </summary>
+        public static PixelCanvas CutGem()
+        {
+            var canvas = new PixelCanvas(12, 12);
+
+            // A coroa: a faixa de cima, larga e baixa.
+            canvas.Fill(3, 2, 6, 1, GemLight);
+            canvas.Fill(2, 3, 8, 2, GemMid);
+            canvas.Fill(4, 3, 4, 1, GemLight);
+
+            // O pavilhao: afunila ate a ponta de baixo.
+            for (int row = 0; row < 5; row++)
+            {
+                int half = 4 - row;
+                canvas.Fill(6 - half, 5 + row, half * 2, 1, row % 2 == 0 ? GemMid : GemDark);
+                canvas.Set(6 - half, 5 + row, GemDark);
+            }
+
+            // As arestas da mesa e o brilho no canto de cima.
+            canvas.Fill(2, 4, 8, 1, GemDark);
+            canvas.Set(3, 3, BrassShine.WithAlpha(255));
+            canvas.Set(4, 3, Rgba.Lerp(GemLight, new Rgba(255, 255, 255), 0.6f));
+
+            AddOutline(canvas);
+            return canvas;
+        }
+
+        /// <summary>
+        /// Um cofre de fragmentos, 14x12: uma caixinha de latao com cintas de
+        /// ferro, entreaberta, com fragmentos aparecendo pela fresta.
+        /// </summary>
+        public static PixelCanvas ShardCache()
+        {
+            var canvas = new PixelCanvas(14, 12);
+
+            // A caixa.
+            canvas.Fill(1, 5, 12, 6, BrassShade);
+            canvas.Fill(1, 5, 12, 1, Brass);
+            canvas.Fill(4, 5, 1, 6, IronDark);
+            canvas.Fill(9, 5, 1, 6, IronDark);
+            canvas.Fill(6, 7, 2, 2, IronLight);
+
+            // A tampa, entreaberta.
+            canvas.Fill(1, 2, 12, 2, Brass);
+            canvas.Fill(1, 2, 12, 1, BrassShine);
+
+            // Os fragmentos pela fresta, azulados como os opacos.
+            var shard = new Rgba(150, 175, 190);
+            var shardLight = new Rgba(215, 230, 238);
+            canvas.Fill(3, 4, 2, 1, shard);
+            canvas.Fill(7, 4, 3, 1, shard);
+            canvas.Set(8, 4, shardLight);
+            canvas.Set(4, 4, shardLight);
+
+            AddOutline(canvas);
+            return canvas;
+        }
+
+        /// <summary>Uma linha de pixels entre dois pontos (Bresenham).</summary>
+        private static void Line(PixelCanvas canvas, int x0, int y0, int x1, int y1, Rgba color)
+        {
+            int dx = Math.Abs(x1 - x0);
+            int dy = -Math.Abs(y1 - y0);
+            int sx = x0 < x1 ? 1 : -1;
+            int sy = y0 < y1 ? 1 : -1;
+            int error = dx + dy;
+
+            while (true)
+            {
+                canvas.Set(x0, y0, color);
+                if (x0 == x1 && y0 == y1) return;
+
+                int doubled = 2 * error;
+                if (doubled >= dy) { error += dy; x0 += sx; }
+                if (doubled <= dx) { error += dx; y0 += sy; }
+            }
+        }
+
+        /// <summary>Um numero entre 0 e 1 que so depende da celula: o mesmo em todo quadro.</summary>
+        private static float Noise(int x, int y)
+        {
+            unchecked
+            {
+                int hash = x * 374761393 + y * 668265263;
+                hash = (hash ^ (hash >> 13)) * 1274126177;
+                return ((hash ^ (hash >> 16)) & 1023) / 1023f;
+            }
+        }
     }
 }

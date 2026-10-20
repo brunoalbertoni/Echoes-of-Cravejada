@@ -19,7 +19,14 @@ namespace EchoesOfCravejada.EditorTools
     /// alavanca enferrujada: raspar ate o portao abrir. Atras dele, a bancada.
     ///
     /// O ANDAR 2 (mais acima, voltando pra leste). O desafio misto: tudo junto.
-    /// Termina num poco que desce direto na arena.
+    ///
+    /// A TRIAGEM (o andar 2 continuando pra leste). A galeria onde o Coletor
+    /// separava as pecas: dois fossos de espinhos e mais corrompidos. Termina
+    /// num buraco no chao.
+    ///
+    /// A ANTESSALA (embaixo da Triagem, voltando pra oeste). Um corredor com
+    /// espinhos que acaba na segunda bancada, do lado do poco que desce na
+    /// arena: quem morre pro boss renasce perto dele.
     ///
     /// A ARENA (embaixo, a leste). A sala do Rusty Scrapper: um fosso rebaixado
     /// entre dois patamares. A saida fica gradeada ate ele cair.
@@ -54,28 +61,28 @@ namespace EchoesOfCravejada.EditorTools
             "############################################################################################################",
             "############################################################################################################",
             "############################################################################################################",
-            "####....................................#####.......########################################################",
-            "####....................................#####.......########################################################",
-            "####................................................########################################################",
-            "####................................................########################################################",
-            "####.............................###................########################################################",
-            "####............==..==...........###................########################################################",
-            "####....######^^^^^^^^^##########################...########################################################",
-            "####....#########################################...########################################################",
-            "####....#########################################...##############################################....######",
-            "####....#########################################...##############################################....######",
-            "####....##............................###########...##############################################....######",
-            "####....##............................###########...##############################################....######",
-            "####....##............................###########...##############################################....######",
-            "####..................................###########...##############################################....######",
-            "####..................................###########...##############################################....######",
-            "####..................................###########...##############################################....######",
-            "#################^^^######^^^#####....###########...##############################################....######",
-            "##################################....###########...##############################################....######",
-            "##################################....###########...##############################################....######",
-            "##################################....###########...##############################################....######",
-            "##################################....###########...##############################################....######",
-            "##################################....###########...##############################################....######",
+            "####....................................#####...................................#####..........#############",
+            "####....................................#####...................................#####..........#############",
+            "####.........................................................................==................#############",
+            "####...........................................................................................#############",
+            "####.............................###.....................................==....................#############",
+            "####............==..==...........###...........................................................#############",
+            "####....######^^^^^^^^^#####################################^^^^######^^^^^^^^############.....#############",
+            "####....##################################################################################==...#############",
+            "####....##################################################################################.....###....######",
+            "####....##################################################################################...==###....######",
+            "####....##............................####################################################.....###....######",
+            "####....##............................####################################################==...###....######",
+            "####....##............................###########...######################################.....###....######",
+            "####..................................###########............................................==###....######",
+            "####..................................###########..............................................###....######",
+            "####..................................###########.........................................==...###....######",
+            "#################^^^######^^^#####....###########..............................................###....######",
+            "##################################....###########............................................==###....######",
+            "##################################....###########..............................................###....######",
+            "##################################....###########...#...##########^^^^############################....######",
+            "##################################....###########...#...##########################################....######",
+            "##################################....###########...#...##########################################....######",
             "##################################....###########.......###.##.####..####.########################....######",
             "##################################....###########.......###..........####.########################....######",
             "##################################....###########.........................########################....######",
@@ -88,26 +95,26 @@ namespace EchoesOfCravejada.EditorTools
             "###########......................#....##########.......................................................#####",
             "######..................................########.......=====......=====................................#####",
             "######..................................########.......................................................#####",
-            "#####............................###################......................#############.......##############",
-            "#####............................###################......................#############.......##############",
+            "#####............................###############...==....................==...#########.......##############",
+            "#####............................###############..............................#########.......##############",
             "#####.....................=====.........###############################################.......##############",
             "####....................................###############################################.......##############",
-            "####...............=====................###############################################.......##############",
-            "####...................................################################################^^^^^^^##############",
-            "####........=====......................#####################################################################",
-            "####...................................#####################################################################",
-            "##########............................######################################################################",
-            "##########............................######################################################################",
-            "####........=====.....................######################################################################",
-            "####..................................######################################################################",
-            "####................=====..............#####################################################################",
-            "#####..................................#####################################################################",
-            "#####.......................=====.......####################################################################",
-            "#####...................................####################################################################",
-            "#####.............########.........#########################################################################",
-            "#########.......############.......#########################################################################",
-            "############################################################################################################",
-            "############################################################################################################",
+            "####...............=====................###########################...............#####.......##############",
+            "####...................................############################...............#####^^^^^^^##############",
+            "####........=====......................############################...............##########################",
+            "####...................................#####...............####...................##########################",
+            "##########............................######...............####...................##########################",
+            "##########............................######...............####....###.....#################################",
+            "####........=====.....................######...............####....###.....#################################",
+            "####..................................######...............####....###.....#################################",
+            "####................=====..............#####...............####....###.....#################################",
+            "#####..................................#...........................###.....#################################",
+            "#####.......................=====..................................###.....#################################",
+            "#####......................................................###########.....#################################",
+            "#####.............########.........#############^^^^^^^^^^^###########.....#################################",
+            "#########.......############.......###################################.....#################################",
+            "######################################################################.....#################################",
+            "######################################################################^^^^^#################################",
             "############################################################################################################",
             "############################################################################################################",
         };
@@ -150,8 +157,14 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>A alavanca enferrujada, do lado de ca do portao.</summary>
         public static (int X, int Y) LeverTile => (13, 40);
 
-        /// <summary>A Goldsmith Workbench, do lado de la. Canto de baixo, a esquerda.</summary>
+        /// <summary>A Bancada de Ourives, do lado de la. Canto de baixo, a esquerda.</summary>
         public static (int X, int Y) WorkbenchTile => (5, 40);
+
+        /// <summary>A segunda bancada, no fim da Antessala, do lado do poco que desce na arena.</summary>
+        public static (int X, int Y) PreBossWorkbenchTile => (57, 37);
+
+        /// <summary>Todas as bancadas do distrito, na ordem em que se acha.</summary>
+        public static (int X, int Y)[] Workbenches => new[] { WorkbenchTile, PreBossWorkbenchTile };
 
         /// <summary>Um autômato corrompido que anda de um lado pro outro num trecho de chao.</summary>
         public readonly struct Patrol
@@ -181,58 +194,449 @@ namespace EchoesOfCravejada.EditorTools
             // Andar 2: o desafio misto.
             new Patrol("Crawler_Mixed_1", 24, 32, 50),
             new Patrol("Crawler_Mixed_2", 36, 47, 50),
+
+            // A Triagem: um entre os dois fossos, outro antes do buraco.
+            new Patrol("Crawler_Sorting_1", 64, 69, 50),
+            new Patrol("Crawler_Sorting_2", 79, 88, 50),
+
+            // A Antessala: o ultimo antes da bancada.
+            new Patrol("Crawler_Antechamber", 72, 86, 37),
         };
 
-        /// <summary>Um personagem com quem da pra conversar.</summary>
-        public readonly struct NpcSpot
+        /// <summary>O que um personagem faz alem de conversar.</summary>
+        public enum NpcRole
         {
+            /// <summary>So conversa.</summary>
+            Plain,
+
+            /// <summary>O Ferrolho: monta no Scrap o motor do Coletor, que vira o Steam Dash.</summary>
+            MotorFitter,
+
+            /// <summary>O Rebite: pede as tres ferramentas do mestre e paga com uma gema.</summary>
+            ToolsQuest,
+        }
+
+        /// <summary>
+        /// Um personagem com quem da pra conversar. As falas ficam aqui, uma
+        /// por tela; quais delas ele diz depende de como o distrito esta.
+        /// </summary>
+        public sealed class NpcSpot
+        {
+            public string Name;
+            public int X;
+            public int Y;
+
+            /// <summary>Qual esqueleto: 0 de lenco, 1 de capuz.</summary>
+            public int Variant;
+
+            /// <summary>O tamanho do esqueleto. A Pequena e menor que os outros.</summary>
+            public float Scale = 1f;
+
+            public NpcRole Role = NpcRole.Plain;
+
+            /// <summary>So aparece depois que o Coletor cai, com a purificacao.</summary>
+            public bool AfterBoss;
+
+            /// <summary>O que ele diz com o Oxide no ar.</summary>
+            public string[] Lines;
+
+            /// <summary>O que ele diz depois da purificacao. Vazio repete Lines.</summary>
+            public string[] PurifiedLines;
+
+            // --- MotorFitter ---
+
+            /// <summary>Depois da purificacao, enquanto o Scrap nao traz o motor.</summary>
+            public string[] WaitingLines;
+
+            /// <summary>Com o motor na mao: ao fim desta conversa o Scrap ganha o Steam Dash.</summary>
+            public string[] InstallLines;
+
+            // --- ToolsQuest ---
+
+            /// <summary>A abertura de qualquer conversa depois da purificacao.</summary>
+            public string PurifiedGreeting;
+
+            /// <summary>Depois de ouvir o pedido: com nenhuma, uma ou duas ferramentas na mao.</summary>
+            public string[] NoToolLines;
+            public string[] OneToolLines;
+            public string[] TwoToolLines;
+
+            /// <summary>Com as tres: ao fim desta conversa ele entrega a gema.</summary>
+            public string[] CompleteLines;
+
+            // --- Os dois ---
+
+            /// <summary>Depois que o servico acabou: o motor montado, as ferramentas entregues.</summary>
+            public string[] DoneLines;
+        }
+
+        /// <summary>
+        /// Os primeiros personagens do jogo: esqueletos de autômatos
+        /// descartados antes do Scrap.
+        /// </summary>
+        public static readonly NpcSpot[] Npcs =
+        {
+            // No fundo do poco, ao lado de onde o Scrap acorda: a historia
+            // inicial. Ele conta a queda da cidade e, de passagem, fala do
+            // Noble riscado que subiu pelos canos: e o Crisol do District 2.
+            // Depois da purificacao, aponta a Pista de Provas.
+            new NpcSpot
+            {
+                Name = "Refugo", X = 13, Y = 4, Variant = 0,
+                Lines = new[]
+                {
+                    "Olha só... mais um caiu lá do alto. E este ainda acende os olhos.",
+                    "Bem-vindo ao Poço de Sucata, pequeno. É para cá que Cravejada joga tudo o que não brilha mais.",
+                    "Aqui todo mundo me chama de Refugo. Antes, eu carregava lampiões de cristal pela Avenida das Facetas, lá em cima.",
+                    "A cidade inteira cintilava dentro dos geodos. Quem mandava eram os 925 Nobres, forjados em prata pura. Diziam que o tempo não os tocava.",
+                    "Mas o Rei de Prata quis energia sem fim e mandou cavar até o Coração de Quartzo. Quando a broca o furou, o verde subiu.",
+                    "Está vendo essa névoa? É o Óxido. Ele come o metal, apaga os cristais e embaralha a cabeça da gente até sobrar só a raiva.",
+                    "Primeiro, a Coroa mandava para cá os que enlouqueciam. Depois, os que só rangiam. Depois, qualquer um.",
+                    "Uma vez caiu até um de prata, todo riscado. Não ficou nem um dia: subiu pelos canos resmungando sobre pedras e coroas.",
+                    "Mas você é diferente. O Óxido passa por você e não gruda. Nunca vi isso.",
+                    "Suba. O único caminho é para cima. E cuidado com o Coletor: é ele quem empurra os descartados para o fundo.",
+                },
+                PurifiedLines = new[]
+                {
+                    "Está sentindo? O ar ficou leve. Fazia tanto tempo que eu não via o poço sem verde que tinha esquecido a cor da rocha.",
+                    "Então foi você que derrubou o Coletor. Ouvi o estrondo daqui de baixo e achei que fosse a calha despejando mais um.",
+                    "A névoa grossa que tampava o túnel ali do lado também sumiu. Atrás dela fica a Pista de Provas.",
+                    "Era lá que a Coroa testava os autômatos recém-montados. Quem não chegava ao fim descia pela calha. Quase ninguém chegava.",
+                    "Dizem que o prêmio do fim ainda está lá, esperando. Mas o último vão é largo demais para um pulo comum.",
+                },
+            },
+
+            // Na sala da bancada: de onde ela veio, o que ela faz e o que
+            // acontece ao morrer. No fim, pede as ferramentas do mestre.
+            new NpcSpot
+            {
+                Name = "Rebite", X = 8, Y = 40, Variant = 1, Role = NpcRole.ToolsQuest,
+                Lines = new[]
+                {
+                    "Chegou até aqui raspando a alavanca? Então você sabe polir. Isso é raro aqui embaixo.",
+                    "Esta é uma Bancada de Ourives. Encoste nela, e ela guarda o seu lugar e conserta o seu corpo.",
+                    "Ela desceu pela calha junto com o meu mestre, um ourives de latão. O Óxido pegou primeiro nas mãos dele. Eu era o aprendiz; desci atrás.",
+                    "Ele não se levantou mais. A bancada, sim: continua funcionando, como se ainda esperasse por ele.",
+                    "Se você quebrar lá fora, é para cá que volta. Mas os cacos que carregava ficam onde você caiu.",
+                    "Volte lá e pegue-os antes de quebrar de novo. Se quebrar duas vezes, eles se perdem de vez.",
+                    "E não se engane: enquanto você se remonta, os corrompidos também se levantam. Todos eles.",
+                    "Uma última coisa. As ferramentas do meu mestre se espalharam pelo distrito quando ele caiu: um buril, uma lupa e uma pinça.",
+                    "Se encontrá-las, traga-as para mim. Não quero que fiquem jogadas no meio da sucata.",
+                    "O caminho continua por cima. Pule de uma parede para a outra, como fez no poço.",
+                },
+                PurifiedGreeting = "A luz voltou. Olhe a bancada: o latão está brilhando como no dia em que o mestre a poliu.",
+                NoToolLines = new[]
+                {
+                    "Ainda nada? O buril, a lupa e a pinça. Ele nunca largava as três.",
+                    "Procure nos cantos aonde ninguém vai. A sucata esconde bem o que é pequeno.",
+                },
+                OneToolLines = new[]
+                {
+                    "Você achou uma delas! Faltam duas.",
+                    "Guarde-a com você até encontrar as outras. Quero ver o conjunto inteiro de novo.",
+                },
+                TwoToolLines = new[]
+                {
+                    "Duas! Falta só uma.",
+                    "Ele dizia que ferramenta separada é ferramenta perdida. Ache a última, por favor.",
+                },
+                CompleteLines = new[]
+                {
+                    "O buril, a lupa e a pinça... São mesmo dele. O cabo da lupa ainda tem a marca dos dedos.",
+                    "Vou deixá-las aqui, na bancada. É onde elas devem ficar.",
+                    "Tome. É a última gema que ele lapidou. Nunca chegou a entregá-la a ninguém.",
+                    "Aqui embaixo ela não compra nada. Mas guarde-a: uma gema lapidada vale muito para quem ainda sabe o que é brilho.",
+                },
+                DoneLines = new[]
+                {
+                    "As ferramentas estão no lugar delas agora. Obrigado, Scrap.",
+                    "Às vezes eu pego a lupa e olho a sucata através dela. Tudo parece maior. Até a gente.",
+                },
+            },
+
+            // No comeco do andar 2, antes dos espinhos: quem era o Coletor e a
+            // dica de luta (ele pisca em amarelo antes de cada golpe). Era
+            // mecanico de caldeira: e ele quem monta o motor do Coletor no
+            // Scrap, e o motor e o Steam Dash.
+            new NpcSpot
+            {
+                Name = "Ferrolho", X = 12, Y = 50, Variant = 0, Role = NpcRole.MotorFitter,
+                Lines = new[]
+                {
+                    "Psiu. Devagar. Daqui para a frente o chão é de espinhos, e lá embaixo mora o Coletor.",
+                    "Eu o conheci antes da praga. Era só um varredor grande, a vapor, que recolhia o que caía da calha e separava as peças boas.",
+                    "Ele cantarolava enquanto trabalhava. Um zumbido de caldeira. A gente até gostava.",
+                    "Então o Óxido entrou nas engrenagens dele. Ele continuou recolhendo... só que esqueceu a diferença entre peça solta e peça viva.",
+                    "Repare no motor de vapor nas costas dele: é o que o faz arrancar daquele jeito. Eu era mecânico de caldeira; sei montar um desses.",
+                    "Se ele cair, traga-me o motor. Eu o instalo em você, e você vai arrancar como ele.",
+                    "E não fique parado na frente dele. Quando ele pisca em amarelo, é porque vai bater.",
+                },
+                WaitingLines = new[]
+                {
+                    "O verde sumiu... Então você conseguiu. O Coletor caiu mesmo.",
+                    "Mas cadê o motor? Ele ficou lá na arena, no meio da carcaça. Vá buscá-lo, e eu o instalo em você.",
+                },
+                InstallLines = new[]
+                {
+                    "Isso! O motor do Coletor, ainda morno. Segure firme, que vai sacudir.",
+                    "Pronto: os pistões estão nas suas pernas. Solte o vapor, e você arranca para a frente, reto, sem cair.",
+                    "Com isso você cruza o abismo depois da arena. Do outro lado, o vapor sobe até os encanamentos de latão.",
+                    "Ele cantarolava quando arrancava. Se ouvir um zumbido nas costas, não se assuste: é só o motor se lembrando.",
+                },
+                DoneLines = new[]
+                {
+                    "O motor está se dando bem com você. Nem parece que era de outro.",
+                    "Se um vão parecer largo demais, arranque no meio do pulo. O vapor segura você no ar por um instante.",
+                },
+            },
+
+            // Na boca da Pista de Provas, depois da purificacao: a que se
+            // escondia atras da nevoa. E a "Pequena" do Muro dos Nomes, e da a
+            // pista da pinca que esta la dentro.
+            new NpcSpot
+            {
+                Name = "Pequena", X = 37, Y = 6, Variant = 1, Scale = 0.8f, AfterBoss = true,
+                Lines = new[]
+                {
+                    "Não precisa ter medo de mim. Sou só a Pequena. Fui eu que escrevi o nome no muro, lá embaixo.",
+                    "Eu me escondi atrás da névoa, na Pista de Provas. O verde não me deixava sair... mas também não deixava o Coletor entrar.",
+                    "Lá dentro há espinhos rentes ao chão, largos demais para pular. Só se passa quicando neles, com o cinzel para baixo.",
+                    "Depois vêm uma chaminé estreita e, no fim, um vão que ninguém nunca cruzou.",
+                    "Do outro lado do vão está o prêmio que a Coroa guardava para quem completasse a prova. Eu tentei por anos.",
+                    "Ah, e há uma pinça de ourives caída no fundo da chaminé. Não sei de quem é.",
+                    "Acho que agora vou voltar ao muro e riscar uma coisa nova embaixo do meu nome: \"ainda aqui\".",
+                },
+            },
+        };
+
+        /// <summary>O desenho de uma coisa que se le com E.</summary>
+        public enum LoreKind
+        {
+            /// <summary>Um papel no chao.</summary>
+            Page,
+
+            /// <summary>Riscos na parede, feitos pelos descartados.</summary>
+            Graffiti,
+
+            /// <summary>Uma placa de latao pregada na rocha.</summary>
+            Plaque,
+        }
+
+        /// <summary>
+        /// Um pedaco da historia do distrito, pra achar e ler: chegar perto e
+        /// apertar E. X e Y sao a celula onde o Scrap para.
+        /// </summary>
+        public readonly struct LoreSpot
+        {
+            public readonly LoreKind Kind;
             public readonly string Name;
+
+            /// <summary>O que aparece no aviso, depois de "E: ler".</summary>
+            public readonly string Title;
+
             public readonly int X;
             public readonly int Y;
 
-            /// <summary>Qual esqueleto: 0 de lenco, 1 de capuz.</summary>
-            public readonly int Variant;
+            /// <summary>So aparece depois que o Rusty Scrapper cai, com a purificacao.</summary>
+            public readonly bool AfterBoss;
 
             public readonly string[] Lines;
 
-            public NpcSpot(string name, int x, int y, int variant, string[] lines)
+            /// <summary>O que se le depois da purificacao, se mudou. Nulo repete Lines.</summary>
+            public readonly string[] PurifiedLines;
+
+            public LoreSpot(LoreKind kind, string name, string title, int x, int y, bool afterBoss, string[] lines,
+                string[] purifiedLines = null)
             {
+                Kind = kind;
                 Name = name;
+                Title = title;
                 X = x;
                 Y = y;
-                Variant = variant;
+                AfterBoss = afterBoss;
                 Lines = lines;
+                PurifiedLines = purifiedLines;
             }
         }
 
         /// <summary>
-        /// Os dois primeiros personagens do jogo: esqueletos de autômatos
-        /// descartados antes do Scrap. As falas ficam aqui, uma por tela.
+        /// O que se le pelo distrito. Conta, na ordem em que se acha, quem
+        /// joga a sucata aqui e por que: a calha da Coroa, o decreto dos
+        /// Nobles, o muro dos que ja foram e o que o Coletor era antes.
+        /// A etiqueta ao lado do Scrap so faz sentido no District 4, quando
+        /// ele acha a propria ficha de prototipo.
         /// </summary>
-        public static readonly NpcSpot[] Npcs =
+        public static readonly LoreSpot[] Lore =
         {
-            // No fundo do poco, ao lado de onde o Scrap acorda: a historia inicial.
-            new NpcSpot("Refugo", 13, 4, 0, new[]
+            new LoreSpot(LoreKind.Page, "Lore_TornTag", "uma etiqueta rasgada", 22, 6, false, new[]
             {
-                "Olha so... mais um caiu do alto. E esse ainda acende os olhos.",
-                "Bem-vindo ao Poco de Sucata, pequeno. E pra ca que Cravejada joga tudo o que nao brilha mais.",
-                "Esta vendo a nevoa verde? E o Oxide. Ele come o metal, apaga os cristais e deixa a gente... assim.",
-                "A cidade la em cima era uma joia. Agora esta sem polimento, e ninguem que desceu aqui voltou pra contar.",
-                "Mas voce e diferente. O Oxide passa por voce e nao gruda. Nunca vi isso.",
-                "Suba. O unico caminho e pra cima. E cuidado com o Coletor: e ele quem empurra os descartados pra ca.",
+                "Um pedaço de etiqueta preso num arame partido, caído bem onde você acordou.",
+                "A tinta borrou quase toda. Só dá para ler o fim: \"...TO N.º 7 — DESTINO: POÇO DE SUCATA.\"",
+                "No verso, um carimbo vermelho pela metade: \"REJEI...\"",
             }),
 
-            // Na sala da bancada: o que ela faz e o que acontece ao morrer.
-            new NpcSpot("Rebite", 8, 40, 1, new[]
+            new LoreSpot(LoreKind.Plaque, "Lore_ChutePlaque", "a placa da calha", 31, 4, false, new[]
             {
-                "Chegou ate aqui raspando a alavanca? Entao voce sabe polir. Isso e raro, aqui embaixo.",
-                "Essa e uma Goldsmith Workbench. Encoste nela e ela guarda o seu lugar e conserta o seu corpo.",
-                "Se voce quebrar la fora, e pra ca que volta. Mas os cacos que carregava ficam onde voce caiu.",
-                "Volte la e pegue antes de quebrar de novo. Se quebrar duas vezes, eles se perdem de vez.",
-                "E nao se engane: enquanto voce se remonta, os corrompidos tambem se levantam. Todos eles.",
-                "O caminho continua por cima. Pule de uma parede na outra, como fez no poco.",
+                "Uma placa de latão, pregada na rocha e verde de azinhavre. As letras em relevo ainda se leem:",
+                "\"CALHA DE DESCARTE N.º 1 — SERVIÇO DE LIMPEZA DA COROA.\"",
+                "\"O QUE NÃO BRILHA, DESCE.\"",
+                "Por baixo, riscado a prego: \"e o que desce não sobe\". E, em outra letra, mais recente: \"ainda\".",
+            }),
+
+            new LoreSpot(LoreKind.Graffiti, "Lore_WallOfNames", "o muro dos nomes", 6, 5, false, new[]
+            {
+                "A rocha está coberta de riscos, uns por cima dos outros: números de série, apelidos, pequenas engrenagens desenhadas.",
+                "\"LAMPIÃO-12. AINDA ACENDO.\" \"BIGORNA. TRABALHEI QUARENTA ANOS.\" \"PEQUENA. NUNCA TIVE NÚMERO.\"",
+                "Embaixo de todos, em letra grande: \"QUEM LER ISTO, LEMBRE-SE DE NÓS.\"",
+                "No fim da parede ainda há espaço. Alguém deixou um prego pendurado ali, à espera do próximo nome.",
+            },
+            // Depois da purificacao, a Pequena voltou ao muro, e alguem usou o prego.
+            new[]
+            {
+                "A rocha está coberta de riscos, uns por cima dos outros: números de série, apelidos, pequenas engrenagens desenhadas.",
+                "Embaixo de \"PEQUENA. NUNCA TIVE NÚMERO.\", alguém acrescentou, em letra fresca: \"AINDA AQUI.\"",
+                "O prego que estava pendurado no fim da parede foi usado. No espaço vazio, recém-riscado: \"COLETOR N.º 1. TAMBÉM ERA UM DE NÓS.\"",
+                "Embaixo de todos, em letra grande: \"QUEM LER ISTO, LEMBRE-SE DE NÓS.\"",
+            }),
+
+            // Logo depois da nevoa: o que era a Pista de Provas. So se le
+            // depois da purificacao, porque antes nao da pra passar.
+            new LoreSpot(LoreKind.Plaque, "Lore_TrialPlaque", "a placa da Pista", 45, 6, false, new[]
+            {
+                "Uma placa de latão polido, a única do poço que o azinhavre não comeu.",
+                "\"PISTA DE PROVAS DA COROA. TODO AUTÔMATO RECÉM-MONTADO DEVE COMPLETÁ-LA.\"",
+                "\"QUEM NÃO COMPLETA, DESCE.\"",
+                "Mais abaixo, em letra menor: \"O prêmio no fim da pista pertence a quem o alcançar.\"",
+            }),
+
+            new LoreSpot(LoreKind.Page, "Lore_Decree", "um decreto dos Nobres", 32, 40, false, new[]
+            {
+                "Um papel timbrado, com o selo dos 925 em cera prateada. Desceu pela calha junto com alguém.",
+                "\"DECRETO DO CONSELHO DOS 925 NOBLES. A corrosão verde não atinge a prata pura.\"",
+                "\"Todo autômato de cobre ou de latão que apresentar manchas, rangidos ou desobediência será recolhido e descartado.\"",
+                "\"Não há cura. Há descarte. Por ordem de Sua Majestade, o Rei de Prata.\"",
+                "Na margem, alguém anotou a carvão: \"a prata também mancha. Eu vi.\"",
+            }),
+
+            // Na entrada da Triagem: o que o Coletor fazia antes do Oxide, nas
+            // palavras dele. Confirma o que o Ferrolho conta no andar 2.
+            new LoreSpot(LoreKind.Page, "Lore_SortingList", "a lista da triagem", 55, 50, false, new[]
+            {
+                "Uma folha presa num prego, com duas colunas escritas a giz em letra de máquina, toda igual.",
+                "\"PEÇAS BOAS: engrenagens, molas, rebites, lentes. SOBEM PELA CALHA.\"",
+                "\"PEÇAS RUINS: todo o resto. FICAM NO POÇO.\"",
+                "Embaixo, uma terceira coluna, começada depois, numa letra que treme: \"PEÇAS QUE SE MEXEM:\". Está em branco.",
+            }),
+
+            // No meio do fosso da arena: aparece quando o Coletor cai. E dela
+            // que sai o aro de prata que o Crisol pede no District 2.
+            new LoreSpot(LoreKind.Plaque, "Lore_CollectorPlate", "a placa do Coletor", 62, 20, true, new[]
+            {
+                "Onde o Coletor caiu, sobrou um pedaço de chassi com uma placa de latão rebitada. A ferrugem se soltou com a queda.",
+                "\"COLETOR DE REFUGO N.º 1 — SERVIÇO DE LIMPEZA DA COROA. MANTER O POÇO LIMPO. NÃO PARAR.\"",
+                "Ninguém jamais desceu para mandá-lo parar.",
+                "Preso entre as chapas há algo que não é dele: um aro de prata pequeno, bem polido. Você o guarda.",
             }),
         };
+
+        // ------------------------------------------------------------------
+        // O que se pega
+        // ------------------------------------------------------------------
+
+        public enum ItemKind
+        {
+            /// <summary>Uma das ferramentas do mestre do Rebite. Art diz qual desenho.</summary>
+            MasterTool,
+
+            /// <summary>O motor de vapor do Coletor, pra levar ao Ferrolho.</summary>
+            Motor,
+
+            /// <summary>Um reforco de chassi: +1 de vida.</summary>
+            Chassis,
+        }
+
+        /// <summary>Algo que flutua no lugar e o Scrap pega ao encostar. X e Y sao a celula onde ele para.</summary>
+        public readonly struct ItemSpot
+        {
+            public readonly ItemKind Kind;
+
+            /// <summary>Com que nome ele lembra que ja foi pego (e que ja foi entregue).</summary>
+            public readonly string Id;
+
+            /// <summary>O aviso na tela ao pegar.</summary>
+            public readonly string Message;
+
+            public readonly int X;
+            public readonly int Y;
+
+            /// <summary>So aparece depois que o Coletor cai, com a purificacao.</summary>
+            public readonly bool AfterBoss;
+
+            /// <summary>Pras ferramentas: 0 buril, 1 lupa, 2 pinca.</summary>
+            public readonly int Art;
+
+            public ItemSpot(ItemKind kind, string id, string message, int x, int y, bool afterBoss = false, int art = 0)
+            {
+                Kind = kind;
+                Id = id;
+                Message = message;
+                X = x;
+                Y = y;
+                AfterBoss = afterBoss;
+                Art = art;
+            }
+        }
+
+        /// <summary>O comeco do id de cada ferramenta do mestre: e por ele que se contam.</summary>
+        public const string MasterToolPrefix = "Tool_";
+
+        public const int MasterToolCount = 3;
+
+        public const string MotorId = "Motor_Collector";
+
+        public static readonly ItemSpot[] Items =
+        {
+            // As ferramentas do mestre: todas depois do Rebite (o pedido vem
+            // antes da busca), menos a da Pista de Provas, que fica no poco mas
+            // so abre depois do boss. Uma no andar 2, em cima do bloco de
+            // rocha; uma na Triagem; uma no fundo da chamine da Pista.
+            new ItemSpot(ItemKind.MasterTool, MasterToolPrefix + "Graver", "Buril do ourives encontrado", 34, 52, art: 0),
+            new ItemSpot(ItemKind.MasterTool, MasterToolPrefix + "Loupe", "Lupa do ourives encontrada", 78, 54, art: 1),
+            new ItemSpot(ItemKind.MasterTool, MasterToolPrefix + "Tweezers", "Pinça do ourives encontrada", 64, 7, art: 2),
+
+            // O motor fica no fosso da arena quando o Coletor cai, longe da placa dele.
+            new ItemSpot(ItemKind.Motor, MotorId, "Motor de vapor do Coletor: leve-o ao Ferrolho", 67, 20, afterBoss: true),
+
+            // O premio do fim da Pista de Provas.
+            new ItemSpot(ItemKind.Chassis, "D1_Trial_Chassis", null, 79, 13),
+        };
+
+        // ------------------------------------------------------------------
+        // A nevoa da Pista e o selo da arena
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// O tunel da Pista de Provas, a direita do poco: as celulas que a
+        /// nevoa densa de Oxide fecha. No mapa sao ar; quem fecha e o objeto,
+        /// ate a purificacao.
+        /// </summary>
+        public static (int X, int Y, int Width, int Height) TrialVeil => (41, 6, 2, 3);
+
+        /// <summary>Uma celula dentro da Pista: nao da pra chegar nela com a nevoa no lugar.</summary>
+        public static (int X, int Y) TrialInsideTile => (46, 6);
+
+        /// <summary>
+        /// A boca do poco que desce na arena: a grade que fecha quando o
+        /// Coletor acorda e abre quando ele cai (ou quando o Scrap cai).
+        /// </summary>
+        public static (int X, int Y, int Width) ArenaSeal => (49, 34, 3);
+
+        /// <summary>
+        /// A coluna de vapor que sobe do fosso da arena ate a Antessala, por
+        /// um buraco proprio no chao dela: o poco do selo fica so pra descer.
+        /// So aparece com a purificacao — antes dela nao se sai da arena.
+        /// </summary>
+        public static readonly LevelMap.Lift ArenaReturnVent = new LevelMap.Lift(53, 55, 21, 38);
 
         /// <summary>Onde ha espinhos de sucata.</summary>
         public static bool IsSpike(int x, int y) => Map.IsSpike(x, y);
@@ -260,10 +664,17 @@ namespace EchoesOfCravejada.EditorTools
         public static (int X, int Y) BossSpawnTile => (62, 20);
 
         /// <summary>
-        /// O pe do poco que desce do andar 2, na entrada da arena. A sala "se
-        /// fecha ao entrar": quando essa mecanica existir, o portao vai aqui.
+        /// O pe do poco que desce da Antessala, ja no chao da arena. A arena e
+        /// plana de parede a parede: nao ha patamar de onde bater no Coletor
+        /// sem ele alcancar. Quem fecha o poco durante a luta e o ArenaSeal.
         /// </summary>
-        public static (int X, int Y) EntryGateTile => (50, 22);
+        public static (int X, int Y) EntryGateTile => (50, 20);
+
+        /// <summary>
+        /// Ate onde o Coletor anda: o chao inteiro da arena, de parede a
+        /// parede (x 48 a 77), menos meia largura dele de cada lado.
+        /// </summary>
+        public static (float Min, float Max) BossRange => (48f + 1.7f, 78f - 1.7f);
 
         /// <summary>O comeco da saida, do outro lado. O portao que o boss destranca.</summary>
         public static (int X, int Y) ExitGateTile => (78, 22);
@@ -627,9 +1038,30 @@ namespace EchoesOfCravejada.EditorTools
             Ore(GreyBand, 42, 50, PropLayer.Back);
             Ore(BlueBand, 20, 57, PropLayer.Middle);
             Ore(RustBand, 60, 44, PropLayer.Middle);
-            Ore(GreyBand, 70, 52, PropLayer.Middle);
-            Ore(BlueBand, 58, 55, PropLayer.Middle);
+            Ore(GreyBand, 70, 46, PropLayer.Middle);
+            Ore(BlueBand, 58, 57, PropLayer.Middle);
             Ore(RustBand, 12, 47, PropLayer.Middle);
+
+            // --- A Triagem: as pecas que o Coletor separou e nunca subiram ---
+            Ground(Crate(2), 53, 50);
+            Ground(GreyRock(3), 57, 50);
+            Ground(Debris(1), 58, 50);
+            Ore(RustBand, 65, 50, PropLayer.Back);
+            Ground(Crate(0), 78, 50);
+            Stacked(Debris(0), 78, 51);
+            Ground(Crate(3), 89, 50);
+            Ground(DarkWeed(2), 67, 50, PropLayer.Front);
+            Ore(GreyBand, 86, 52, PropLayer.Back);
+
+            // --- A Antessala ---
+            Ground(Fence(0), 61, 37);
+            Ground(Fence(1), 62, 37);
+            Ground(GreyRock(1), 64, 37);
+            Ground(Debris(0), 71, 37);
+            Ground(Crate(1), 92, 37);
+            Ground(GreyWeed(2), 76, 37, PropLayer.Back);
+            Ground(DarkRock(2), 88, 37, PropLayer.Front);
+            Ore(BlueBand, 80, 39, PropLayer.Back);
 
             // --- O abismo ---
             Ground(GreyRock(3), 82, 22);
@@ -641,20 +1073,17 @@ namespace EchoesOfCravejada.EditorTools
             Ore(RustBand, 90, 12, PropLayer.Middle);
             Ore(GreyBand, 104, 18, PropLayer.Middle);
 
-            // --- Arena: os dois patamares ---
-            Ground(Fence(2), 50, 22);
-            Ground(Fence(0), 51, 22);
-            Ground(Fence(1), 74, 22);
-            Ground(Fence(2), 75, 22);
-            Ground(GreyRock(3), 79, 22);
-            Ground(DarkWeed(3), 77, 22, PropLayer.Front);
+            // --- Arena: o degrau da saida. Os patamares de cada lado do fosso
+            //     sairam: de cima deles dava pra bater no Coletor sem ele alcancar ---
+            Ground(Fence(1), 79, 22);
+            Ground(Fence(2), 80, 22);
+            Ground(DarkWeed(3), 77, 20, PropLayer.Front);
 
             // --- Arena: o fosso. A sucata fica amontoada nos cantos, encostada
             //     nos patamares; o meio fica livre pra luta ---
             Ground(Crate(1), 52, 20);
             Stacked(Crate(0), 52, 21);
-            Ground(Debris(0), 53, 20);
-            Ground(GreyRock(2), 54, 20);
+            // (53 a 55 ficam livres: e de la que sobe o vapor da volta.)
             Ground(Debris(1), 71, 20);
             Ground(Crate(3), 72, 20);
             Stacked(Debris(1), 72, 21);
@@ -744,16 +1173,31 @@ namespace EchoesOfCravejada.EditorTools
             (42f, 52f, 8f),
             (50f, 40f, 8f),
 
+            // A Triagem e a Antessala. O canto da bancada fica de fora: e a
+            // luz quente do lampiao que tem que mandar ali.
+            (62f, 52f, 7f),
+            (74f, 52f, 8f),
+            (88f, 52f, 7f),
+            (92f, 40f, 7f),
+            (78f, 39f, 8f),
+
+            // A Pista de Provas: nao se ve antes da purificacao, e depois
+            // viram os lampioes que a iluminam.
+            (52f, 9f, 8f),
+            (65f, 11f, 7f),
+            (79f, 15f, 7f),
+
             // O abismo: o verde sobe do fundo, por entre os espinhos.
             (90f, 18f, 9f),
             (84f, 25f, 6f),
             (98f, 26f, 7f),
         };
 
-        /// <summary>Lampioes: a luz quente e parada das salas seguras. So a bancada tem.</summary>
+        /// <summary>Lampioes: a luz quente e parada das salas seguras. So as bancadas tem.</summary>
         public static readonly (float X, float Y, float Radius)[] LampGlows =
         {
             (6.5f, 43f, 7f),
+            (58.5f, 40f, 7f),
         };
 
         /// <summary>Uma faixa deitada de nevoa do Oxide.</summary>
@@ -811,6 +1255,12 @@ namespace EchoesOfCravejada.EditorTools
             // Os andares de cima: um veu baixo, so pra o chao nao ficar limpo.
             new FogBank("Fog_Floor1", 22f, 41f, 30f, 2f, 0.12f, 1.6f, false),
             new FogBank("Fog_Floor2", 28f, 51f, 44f, 2f, 0.12f, 2.2f, false),
+            new FogBank("Fog_Sorting", 73f, 51f, 42f, 2f, 0.12f, 2.0f, false),
+
+            // A nevoa que tampa o tunel da Pista de Provas: grossa a ponto de
+            // tapar o que esta atras, na frente do Scrap. Some com o resto.
+            new FogBank("Fog_TrialVeil", 41.5f, 7.5f, 2.5f, 3f, 0.5f, 7f, true),
+            new FogBank("Fog_Antechamber", 78f, 38f, 30f, 2f, 0.10f, 1.4f, false),
         };
 
         /// <summary>
@@ -862,14 +1312,17 @@ namespace EchoesOfCravejada.EditorTools
                 }
             }
 
-            // A partir do poco vertical o caminho conta com o pulo de parede.
-            // Sem o Steam Dash o abismo tem que barrar; com ele (que soma uns
-            // 3 tiles a um pulo) e com o vapor da saida, o mapa todo abre.
-            var noDash = new LevelMap.JumpRules { WallJump = true };
-            var rules = new LevelMap.JumpRules { WallJump = true, MaxRun = 8 };
+            // A partir do poco vertical o caminho conta com o pulo de parede, e
+            // o pogo nos espinhos ele tem desde o comeco. Sem o Steam Dash o
+            // abismo tem que barrar; com ele (que soma uns 3 tiles a um pulo) e
+            // com o vapor da saida, o mapa todo abre.
+            var noDash = new LevelMap.JumpRules { WallJump = true, Pogo = true };
+            var rules = new LevelMap.JumpRules { WallJump = true, Pogo = true, MaxRun = 8 };
 
             LevelMap.Reach beforeBoss = Map.Explore(SpawnTile, noDash);
-            LevelMap.Reach reach = Map.Explore(SpawnTile, rules, new[] { District2Vent });
+            // Depois do boss: o vapor pro District 2 e o da volta da arena.
+            LevelMap.Lift[] purifiedLifts = { District2Vent, ArenaReturnVent };
+            LevelMap.Reach reach = Map.Explore(SpawnTile, rules, purifiedLifts);
 
             if (beforeBoss.CanStand(FarLedgeTile.X, FarLedgeTile.Y))
             {
@@ -931,11 +1384,50 @@ namespace EchoesOfCravejada.EditorTools
             MustReach(ReturnTile, "A chegada de quem volta do District 2");
             MustReach(LeverTile, "A alavanca");
             MustReach((WorkbenchTile.X + 1, WorkbenchTile.Y), "A bancada");
+            MustReach((PreBossWorkbenchTile.X + 1, PreBossWorkbenchTile.Y), "A bancada da Antessala");
+
+            // A da Antessala existe pra quem morre pro boss: tem que dar pra
+            // chegar nela antes de ganhar o Steam Dash.
+            if (!beforeBoss.CanStand(PreBossWorkbenchTile.X + 1, PreBossWorkbenchTile.Y))
+            {
+                problems.Add("A bancada da Antessala so e alcancada com o Steam Dash, depois do boss.");
+            }
             MustReach(EntryGateTile, "A entrada da arena");
 
             foreach (NpcSpot npc in Npcs)
             {
                 MustReach((npc.X, npc.Y), $"O personagem {npc.Name}");
+            }
+
+            foreach (LoreSpot lore in Lore)
+            {
+                MustReach((lore.X, lore.Y), $"O texto {lore.Name}");
+            }
+
+            // Tudo o que se le ou com quem se conversa: o HUD so mostra um
+            // aviso por vez, entao as areas nao podem se encostar. E conversar
+            // trava o Scrap, entao nada disso pode ficar no caminho de uma patrulha.
+            var talkSpots = new List<(string Name, int X, int Y)>();
+            foreach (NpcSpot npc in Npcs) talkSpots.Add((npc.Name, npc.X, npc.Y));
+            foreach (LoreSpot lore in Lore) talkSpots.Add((lore.Name, lore.X, lore.Y));
+
+            for (int i = 0; i < talkSpots.Count; i++)
+            {
+                for (int j = i + 1; j < talkSpots.Count; j++)
+                {
+                    if (Math.Abs(talkSpots[i].X - talkSpots[j].X) < 3 && Math.Abs(talkSpots[i].Y - talkSpots[j].Y) < 3)
+                    {
+                        problems.Add($"{talkSpots[i].Name} e {talkSpots[j].Name} estao perto demais: os avisos se sobrepoem.");
+                    }
+                }
+
+                foreach (Patrol crawler in Crawlers)
+                {
+                    if (talkSpots[i].Y == crawler.Y && talkSpots[i].X >= crawler.X0 - 2 && talkSpots[i].X <= crawler.X1 + 2)
+                    {
+                        problems.Add($"{talkSpots[i].Name} fica na patrulha de {crawler.Name}.");
+                    }
+                }
             }
 
             foreach (Patrol crawler in Crawlers)
@@ -968,6 +1460,85 @@ namespace EchoesOfCravejada.EditorTools
             MustReach(ExitGateTile, "A saida da arena");
             MustReach(FarLedgeTile, "A beirada de la do abismo");
 
+            foreach (ItemSpot item in Items)
+            {
+                MustReach((item.X, item.Y), $"O item {item.Id}");
+            }
+
+            // A Pista de Provas: com a nevoa no lugar, nao se entra.
+            (int X, int Y, int Width, int Height) veil = TrialVeil;
+            Map.Fill(veil.X, veil.Y, veil.X + veil.Width - 1, veil.Y + veil.Height - 1, LevelMap.Rock);
+            LevelMap.Reach veiled = Map.Explore(SpawnTile, rules);
+            Map.Fill(veil.X, veil.Y, veil.X + veil.Width - 1, veil.Y + veil.Height - 1, LevelMap.Air);
+
+            if (veiled.CanStand(TrialInsideTile.X, TrialInsideTile.Y))
+            {
+                problems.Add("Da pra entrar na Pista de Provas com a nevoa no lugar: ela nao esta fechando nada.");
+            }
+
+            // A primeira parte da Pista e de pogo: sem ele, nao se passa.
+            var noPogo = new LevelMap.JumpRules { WallJump = true, MaxRun = 8 };
+            LevelMap.Reach withoutPogo = Map.Explore(SpawnTile, noPogo, purifiedLifts);
+
+            foreach (ItemSpot item in Items)
+            {
+                bool inTrial = !veiled.CanStand(item.X, item.Y);
+
+                // O que fica fora da Pista e nao depende do boss tem que dar
+                // pra pegar antes dele, sem o Steam Dash.
+                if (!inTrial && !item.AfterBoss && !beforeBoss.CanStand(item.X, item.Y))
+                {
+                    problems.Add($"O item {item.Id} so e alcancado com o Steam Dash, e ele nao depende do boss.");
+                }
+
+                // As ferramentas vem depois do pedido: atras do portao do
+                // Rebite. So a da Pista fica antes dele no mapa.
+                if (item.Kind == ItemKind.MasterTool && !inTrial && locked.CanStand(item.X, item.Y))
+                {
+                    problems.Add($"A ferramenta {item.Id} da pra pegar antes de passar pelo Rebite.");
+                }
+
+                // O premio da Pista e de quem ja tem o motor, e sabe quicar.
+                if (item.Kind == ItemKind.Chassis && inTrial && beforeBoss.CanStand(item.X, item.Y))
+                {
+                    problems.Add($"Da pra chegar no premio da Pista ({item.Id}) sem o Steam Dash.");
+                }
+
+                if (inTrial && withoutPogo.CanStand(item.X, item.Y))
+                {
+                    problems.Add($"Da pra chegar em {item.Id}, na Pista, sem o pogo: os espinhos nao estao cobrando ele.");
+                }
+
+                // E de qualquer lugar da pra voltar pro poco.
+                LevelMap.Reach back = Map.Explore((item.X, item.Y), rules, purifiedLifts);
+                if (!back.CanStand(Npcs[0].X, Npcs[0].Y))
+                {
+                    problems.Add($"Quem pega o item {item.Id} nao consegue voltar pro poco.");
+                }
+            }
+
+            // Depois do boss da pra voltar da arena ate o poco e ate o Ferrolho,
+            // mesmo antes de ele montar o motor.
+            LevelMap.Reach fromArena = Map.Explore(BossSpawnTile, noDash, purifiedLifts);
+            foreach (NpcSpot npc in Npcs)
+            {
+                if (!fromArena.CanStand(npc.X, npc.Y))
+                {
+                    problems.Add($"Da arena, sem o Steam Dash, nao se volta ate {npc.Name}.");
+                }
+            }
+
+            // Mas durante a luta o selo fecha o poco: nao se volta pra bancada.
+            (int X, int Y, int Width) seal = ArenaSeal;
+            Map.Fill(seal.X, seal.Y, seal.X + seal.Width - 1, seal.Y, LevelMap.Rock);
+            LevelMap.Reach duringFight = Map.Explore(BossSpawnTile, rules);
+            Map.Fill(seal.X, seal.Y, seal.X + seal.Width - 1, seal.Y, LevelMap.Air);
+
+            if (duringFight.CanStand(PreBossWorkbenchTile.X + 1, PreBossWorkbenchTile.Y))
+            {
+                problems.Add("Com o selo fechado ainda da pra sair da arena pelo poco.");
+            }
+
             void MustBeOpen((int X, int Y, int Width, int Height) area, string what)
             {
                 for (int y = area.Y; y < area.Y + area.Height; y++)
@@ -988,6 +1559,43 @@ namespace EchoesOfCravejada.EditorTools
             if (arenaFloor.Length < 16)
             {
                 problems.Add($"O fosso da arena tem so {arenaFloor.Length} tiles de chao continuo: e pouco pra uma luta.");
+            }
+
+            // Nada de patamar na altura da cabeca dele fora de onde o corpo dele
+            // passa: dali se bate no Coletor sem que ele alcance. Dentro do
+            // caminho dele pode (os degraus): quando ele passa por baixo, encosta.
+            // Mais alto (as plataformas do meio) pode, que o salto com pancada
+            // dele chega la.
+            (int X, int Y, int Width, int Height) arenaArea = ArenaBounds;
+            const float bossHalfWidth = 1.5f;
+            for (int y = arenaArea.Y + 1; y <= arenaArea.Y + 3; y++)
+            {
+                for (int x = arenaArea.X; x < arenaArea.X + arenaArea.Width; x++)
+                {
+                    bool underBoss = x + 1f > BossRange.Min - bossHalfWidth && x < BossRange.Max + bossHalfWidth;
+                    if (IsStandable(x, y) && !underBoss)
+                    {
+                        problems.Add($"Ha um patamar na altura da cabeca do Coletor, fora do alcance dele, em ({x}, {y}).");
+                    }
+                }
+            }
+
+            // E no meio da luta (o selo fechado, sem o vapor da volta) da pra
+            // subir nas plataformas de cima: e por elas que se passa por cima dele.
+            Map.Fill(seal.X, seal.Y, seal.X + seal.Width - 1, seal.Y, LevelMap.Rock);
+            LevelMap.Reach inFight = Map.Explore(BossSpawnTile, noDash);
+            Map.Fill(seal.X, seal.Y, seal.X + seal.Width - 1, seal.Y, LevelMap.Air);
+
+            foreach (LevelMap.Perch perch in perches)
+            {
+                bool inArena = perch.Y > arenaArea.Y + 3 && perch.Y < arenaArea.Y + arenaArea.Height
+                    && perch.X >= arenaArea.X && perch.Right < arenaArea.X + arenaArea.Width;
+                if (!inArena) continue;
+
+                bool reached = false;
+                for (int x = perch.X; x <= perch.Right && !reached; x++) reached = inFight.CanStand(x, perch.Y);
+
+                if (!reached) problems.Add($"A plataforma da arena em {perch} nao se alcanca do chao durante a luta.");
             }
 
             for (int i = 0; i < Windows.Length; i++)

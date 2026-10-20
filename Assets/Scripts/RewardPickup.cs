@@ -9,6 +9,8 @@ namespace EchoesOfCravejada
     ///   Safira            a gema que o Resonant guarda
     ///   ResonanceStrike   o que o Geode Drill deixa ao cair
     ///   Chassis           um reforco de chassi escondido (+1 de vida)
+    ///   Gem               uma gema lapidada, escondida
+    ///   ShardCache        um cofre de fragmentos: Amount de uma vez
     ///
     /// As que ja vem na cena tem um id e nao voltam depois de pegas; as que um
     /// inimigo solta nao tem, e quem cuida de nao repetir e quem solta.
@@ -21,9 +23,14 @@ namespace EchoesOfCravejada
             Sapphire,
             ResonanceStrike,
             Chassis,
+            Gem,
+            ShardCache,
         }
 
         [SerializeField] private Kind kind;
+
+        [Tooltip("So pro cofre: quantos fragmentos ele guarda.")]
+        [SerializeField] private int amount = 1;
 
         [Tooltip("So pras que ja vem na cena: o nome com que ela lembra que foi pega.")]
         [SerializeField] private string id;
@@ -42,10 +49,11 @@ namespace EchoesOfCravejada
         }
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(Kind newKind, string newId)
+        public void Configure(Kind newKind, string newId, int newAmount = 1)
         {
             kind = newKind;
             id = newId;
+            amount = newAmount;
         }
 
         public static void Drop(Vector3 position, Sprite sprite, Kind kind, Color tint)
@@ -101,6 +109,16 @@ namespace EchoesOfCravejada
                     var health = controller.GetComponent<ScrapHealth>();
                     if (health != null) health.UpgradeChassis();
                     ChassisTime = Time.time;
+                    break;
+
+                case Kind.Gem:
+                    GemPurse.Add(1);
+                    HudNotice.Show("Gema lapidada encontrada");
+                    break;
+
+                case Kind.ShardCache:
+                    ScrapWallet.Add(amount);
+                    HudNotice.Show($"Cofre aberto: {amount} {Shop.CurrencyName(Currency.Shards, amount)}");
                     break;
             }
 

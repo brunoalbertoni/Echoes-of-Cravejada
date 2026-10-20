@@ -54,6 +54,9 @@ namespace EchoesOfCravejada
         public static bool IsPurified =>
             Purified.Contains(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
 
+        /// <summary>Quantos segundos a transformacao leva. Quem espera ela acabar (a cena do boss) usa.</summary>
+        public float Duration => duration;
+
         /// <summary>Quando aconteceu. O HUD usa pra mostrar o aviso.</summary>
         public static float PurifiedTime { get; private set; } = -100f;
 

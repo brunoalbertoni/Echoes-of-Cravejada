@@ -28,7 +28,7 @@ namespace EchoesOfCravejada
         [SerializeField] private float scrapeTime = 2.4f;
 
         [Tooltip("O que o aviso diz que ele transmuta. Ex.: \"vidro em prata\".")]
-        [SerializeField] private string effect = "a materia";
+        [SerializeField] private string effect = "a matéria";
 
         [Header("O que ele muda")]
         [SerializeField] private GameObject[] vanish;

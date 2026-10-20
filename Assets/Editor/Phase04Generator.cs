@@ -172,6 +172,9 @@ namespace EchoesOfCravejada.EditorTools
             // O mapa desta fase conta com tudo o que ele ganhou ate aqui, entao
             // o Scrap ja chega com as tres — mesmo dando Play direto na cena.
             scrap.GetComponent<ScrapDash>().SetUnlockedFromStart(true);
+
+            // A ferrugem saiu na purificacao do District 1: aqui ele ja chega polido.
+            scrap.GetComponent<ScrapAppearance>().SetPolishedFromStart(true);
             scrap.gameObject.AddComponent<AbilityGrant>().Configure(true, true, true);
 
             var root = new GameObject("Mechanics").transform;

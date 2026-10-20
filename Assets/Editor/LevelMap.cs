@@ -360,6 +360,16 @@ namespace EchoesOfCravejada.EditorTools
             /// <summary>Quanto ele anda de lado ao so cair de uma beirada, sem pular.</summary>
             public int WalkOffRun = 1;
 
+            /// <summary>
+            /// Se ele quica nos espinhos com o cinzel pra baixo (o pogo). Conta
+            /// so com o espinho logo embaixo dos pes, e por baixo do que o
+            /// jogo da: o pogo sobe uns 2.2 tiles e anda uns 3.5 de lado.
+            /// </summary>
+            public bool Pogo;
+
+            public int PogoRise = 1;
+            public int PogoRun = 3;
+
             /// <summary>A cada tantos tiles de queda ele ganha mais um de alcance lateral.</summary>
             public int FallPerExtraRun = 3;
 
@@ -542,6 +552,14 @@ namespace EchoesOfCravejada.EditorTools
                 if (rules.WallJump && CanWallJump(x, y, rules.WallJumpMaxGap))
                 {
                     Push(x, y, AirState(rules.MaxRise, rules.MaxRun, 0));
+                }
+
+                // O pogo: no ar, com espinho logo embaixo, ele quica pra cima.
+                if (rules.Pogo && IsSpike(x, y - 1))
+                {
+                    int pogoRise = Math.Min(rules.PogoRise, rules.MaxRise);
+                    int pogoRun = Math.Min(Math.Max(run, rules.PogoRun), rules.MaxRun);
+                    Push(x, y, AirState(pogoRise, pogoRun, 0));
                 }
 
                 if (rise > 0)

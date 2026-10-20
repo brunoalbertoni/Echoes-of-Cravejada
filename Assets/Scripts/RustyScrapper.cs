@@ -15,12 +15,15 @@ namespace EchoesOfCravejada
     ///               choque que so se evita pulando.
     ///
     /// Ao chegar na metade ele solta uma nuvem densa de Oxide — que nao faz
-    /// nada ao Scrap. Ao cair, deixa o Steam Dash, abre a saida e purifica a area.
+    /// nada ao Scrap. Ao cair, roda a cena da queda (ver Fall): ele explode em
+    /// Oxide, a area e purificada, o motor de vapor das costas dele aparece no
+    /// fosso e a ferrugem sai do corpo do Scrap. E o Ferrolho quem monta o motor
+    /// no Scrap: e o Steam Dash.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class RustyScrapper : MonoBehaviour, IDamageable
     {
-        [SerializeField] private int maxHealth = 14;
+        [SerializeField] private int maxHealth = 30;
 
         [Header("Arena")]
         [Tooltip("Ate onde ele anda, em x de mundo, e a altura do chao em que pisa.")]
@@ -35,7 +38,6 @@ namespace EchoesOfCravejada
         [SerializeField] private Sprite chunkSprite;
         [SerializeField] private Sprite waveSprite;
         [SerializeField] private Sprite shardSprite;
-        [SerializeField] private Sprite dashSprite;
         [SerializeField] private ParticleSystem oxideCloud;
 
         [Header("O que acontece quando ele cai")]
@@ -64,7 +66,7 @@ namespace EchoesOfCravejada
 
         /// <summary>Usado pelos geradores de fase.</summary>
         public void Configure(float newMinX, float newMaxX, float newFloorY, Rect newWakeArea,
-            Sprite chunk, Sprite wave, Sprite shard, Sprite dash, ParticleSystem cloud,
+            Sprite chunk, Sprite wave, Sprite shard, ParticleSystem cloud,
             Gate gate, AreaPurifier newPurifier)
         {
             minX = newMinX;
@@ -74,7 +76,6 @@ namespace EchoesOfCravejada
             chunkSprite = chunk;
             waveSprite = wave;
             shardSprite = shard;
-            dashSprite = dash;
             oxideCloud = cloud;
             exitGate = gate;
             purifier = newPurifier;
@@ -327,19 +328,117 @@ namespace EchoesOfCravejada
             _dead = true;
             StopAllCoroutines();
 
-            Vector3 place = new Vector3(transform.position.x, floorY, 0f);
+            // A barra de vida some e a grade da entrada abre ja.
+            if (Fighting == this) Fighting = null;
 
-            for (int i = 0; i < 12; i++)
+            StartCoroutine(Fall());
+        }
+
+        /// <summary>
+        /// A cena da queda. Ele trava, treme e pisca em verde, solta jatos de
+        /// Oxide cada vez mais fortes e estoura numa nuvem. Quando a nuvem
+        /// assenta: a purificacao, o motor dele no fosso (aparece com ela) e,
+        /// por fim, a crosta saindo do corpo do Scrap.
+        /// </summary>
+        private IEnumerator Fall()
+        {
+            Cinematic.Begin();
+
+            var controller = _player != null ? _player.GetComponent<ScrapController>() : null;
+            var body = _player != null ? _player.GetComponent<Rigidbody2D>() : null;
+
+            void Hold()
             {
-                ShardPickup.Spawn(place + Vector3.up * 0.2f, shardSprite, 1, i);
+                if (controller != null) controller.ControlLocked = true;
             }
 
-            DashPickup.Drop(place, dashSprite);
+            // O Scrap para onde esta (mas cai, se estava no ar).
+            Hold();
+            if (body != null) body.linearVelocity = new Vector2(0f, Mathf.Min(0f, body.linearVelocity.y));
+
+            Vector3 home = new Vector3(transform.position.x, floorY, 0f);
+
+            // 1 e 2. Travado, tremendo e piscando, os jatos de Oxide e o estouro.
+            yield return BossFall.Explode(transform, _sprite, oxideCloud, home, Hold);
+
+            // Os fragmentos se espalham de onde ele estava.
+            for (int i = 0; i < 12; i++)
+            {
+                ShardPickup.Spawn(home + Vector3.up * 0.2f, shardSprite, 1, i);
+            }
 
             if (exitGate != null) exitGate.Open();
-            if (purifier != null) purifier.Purify();
+
+            // Deixa a nuvem assentar um pouco antes de a luz mudar.
+            for (float t = 0f; t < 1.2f; t += Time.deltaTime)
+            {
+                Hold();
+                yield return null;
+            }
+
+            // 3. A purificacao. No fim dela aparece o que estava esperando por
+            //    ela: o motor dele no fosso, o vapor da volta, a Pequena...
+            if (purifier != null)
+            {
+                purifier.Purify();
+
+                for (float t = 0f; t < purifier.Duration + 0.2f; t += Time.deltaTime)
+                {
+                    Hold();
+                    yield return null;
+                }
+            }
+
+            // 4. E a crosta sai do corpo do Scrap: ele volta a brilhar.
+            yield return Polish(controller);
+
+            if (controller != null) controller.ControlLocked = false;
+            Cinematic.End();
 
             Destroy(gameObject);
+        }
+
+        /// <summary>
+        /// A troca de aparencia: o Scrap pisca em branco, incha um pouco e volta
+        /// ao tamanho ja polido.
+        /// </summary>
+        private IEnumerator Polish(ScrapController controller)
+        {
+            var appearance = _player != null ? _player.GetComponent<ScrapAppearance>() : null;
+            var look = _player != null ? _player.GetComponent<SpriteRenderer>() : null;
+            if (appearance == null) yield break;
+
+            Vector3 size = _player.localScale;
+            var glare = new Color(1f, 0.95f, 0.75f);
+
+            const float shine = 1.2f;
+            bool changed = false;
+
+            for (float t = 0f; t < shine; t += Time.deltaTime)
+            {
+                if (controller != null) controller.ControlLocked = true;
+
+                float k = t / shine;
+
+                // Troca no meio do brilho, quando ele esta mais claro.
+                if (!changed && k >= 0.5f)
+                {
+                    appearance.Polish();
+                    ScrapCameraFollow.Shake(0.1f, 0.3f);
+                    changed = true;
+                }
+
+                float swell = 1f + 0.18f * Mathf.Sin(k * Mathf.PI);
+                _player.localScale = new Vector3(size.x * swell, size.y * swell, size.z);
+                if (look != null) look.color = Color.Lerp(Color.white, glare, Mathf.Sin(k * Mathf.PI));
+
+                yield return null;
+            }
+
+            _player.localScale = size;
+            if (look != null) look.color = Color.white;
+
+            HudNotice.Show("A purificação arrancou a ferrugem do seu corpo");
         }
 
         private void OnTriggerEnter2D(Collider2D other)

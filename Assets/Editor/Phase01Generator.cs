@@ -156,6 +156,9 @@ namespace EchoesOfCravejada.EditorTools
             BuildTilemaps(tiles, groundLayer);
             BuildBackdrop(unlitMaterial);
             Transform scrap = BuildScrap(scrapSprite, polishedSprite, groundLayer, Phase01Layout.SpawnTile);
+
+            // A primeira cena do jogo: ele acordando no monte de sucata.
+            scrap.gameObject.AddComponent<WakeUpCutscene>();
             BuildCamera(scrap, Phase01Layout.Width, Phase01Layout.Height, OxideHaze);
             BuildLighting();
             BuildFog(fogMaterial);
@@ -551,7 +554,8 @@ namespace EchoesOfCravejada.EditorTools
 
             scrap.AddComponent<ScrapChisel>().Configure(slash);
 
-            // O Steam Dash ja vai junto, desligado: quem liga e o Rusty Scrapper, ao cair.
+            // O Steam Dash ja vai junto, desligado: quem liga e o Ferrolho, ao
+            // montar o motor do Rusty Scrapper.
             scrap.AddComponent<ScrapDash>();
 
             // Por ultimo, porque le o estado de todos os outros.
@@ -709,7 +713,7 @@ namespace EchoesOfCravejada.EditorTools
             }
         }
 
-        private static void CreateFogBank(Transform parent, Phase01Layout.FogBank bank, Material material)
+        internal static void CreateFogBank(Transform parent, Phase01Layout.FogBank bank, Material material)
         {
             var fogObject = new GameObject(bank.Name);
             fogObject.transform.SetParent(parent, false);
@@ -976,9 +980,153 @@ namespace EchoesOfCravejada.EditorTools
             var rigidbody = bossObject.AddComponent<Rigidbody2D>();
             rigidbody.bodyType = RigidbodyType2D.Kinematic;
 
-            // A nuvem de Oxide da metade da luta: uma baforada so, sem dano.
+            // A nuvem de Oxide: a baforada da metade da luta (sem dano) e, na
+            // queda, os jatos e o estouro dele.
+            ParticleSystem cloud = CreateOxideCloud(bossObject.transform, steamMaterial);
+
+            // --- O que muda quando ele cai ---
+            // So aparecem com a purificacao: a passagem pro District 2, o vapor
+            // que leva da arena de volta a Antessala, o que se le no lugar dele
+            // (a placa do chassi), o motor dele e quem se escondia na nevoa.
+            var appear = new List<GameObject> { passage, BuildArenaReturn(root.transform, steamMaterial) };
+
+            foreach (Phase01Layout.LoreSpot spot in Phase01Layout.Lore)
+            {
+                if (spot.AfterBoss) appear.Add(CreateLore(root.transform, spot));
+            }
+
+            foreach (Phase01Layout.ItemSpot spot in Phase01Layout.Items)
+            {
+                if (spot.AfterBoss) appear.Add(CreateItem(root.transform, spot));
+            }
+
+            foreach (Phase01Layout.NpcSpot spot in Phase01Layout.Npcs)
+            {
+                if (spot.AfterBoss) appear.Add(CreateNpc(root.transform, spot));
+            }
+
+            // E somem: os corrompidos e a nevoa que tampa a Pista de Provas.
+            var vanish = new List<GameObject> { BuildTrialVeil(root.transform, groundLayer) };
+            if (enemies != null) vanish.Add(enemies);
+
+            BuildArenaSeal(root.transform, groundLayer);
+
+            var purifierObject = new GameObject("AreaPurifier");
+            purifierObject.transform.SetParent(root.transform, false);
+
+            var purifier = purifierObject.AddComponent<AreaPurifier>();
+            purifier.Configure(global, corrupted.ToArray(), purified.ToArray(), fog, tilemaps.ToArray(),
+                cameraObject != null ? cameraObject.GetComponent<Camera>() : null,
+                appear.ToArray(),
+                vanish.ToArray(),
+                new[] { exitGate });
+
+            // Ele anda pela arena inteira, e acorda quando o Scrap pisa em
+            // qualquer lugar dela.
+            bossObject.AddComponent<RustyScrapper>().Configure(
+                Phase01Layout.BossRange.Min, Phase01Layout.BossRange.Max, spawn.Y,
+                new Rect(arena.X, arena.Y, arena.Width, 10f),
+                Phase02Assets.LoadSprite(Phase02Assets.ScrapChunk),
+                Phase02Assets.LoadSprite(Phase02Assets.ShockWave),
+                Phase02Assets.LoadSprite(Phase02Assets.Shard),
+                cloud, exitGate, purifier);
+        }
+
+        /// <summary>
+        /// A coluna de vapor que sobe do fosso da arena ate a Antessala. Volta
+        /// desligada: e a purificacao que a acende.
+        /// </summary>
+        private static GameObject BuildArenaReturn(Transform parent, Material steamMaterial)
+        {
+            var root = new GameObject("ArenaReturn");
+            root.transform.SetParent(parent, false);
+
+            LevelMap.Lift vent = Phase01Layout.ArenaReturnVent;
+            var cells = new RectInt(vent.X0, vent.Bottom, vent.X1 - vent.X0 + 1, vent.Top - vent.Bottom + 1);
+
+            SceneKit.CreateSteamVent(root.transform, "Lift_ToAntechamber", cells, SteamVent.Mode.Lift, 1,
+                0f, 0f, steamMaterial);
+
+            var nozzle = new GameObject("Nozzle");
+            nozzle.transform.SetParent(root.transform, false);
+            nozzle.transform.position = new Vector3(vent.X0, vent.Bottom - 1, 0f);
+
+            var nozzleSprite = nozzle.AddComponent<SpriteRenderer>();
+            nozzleSprite.sprite = Phase02Assets.LoadSprite(Phase02Assets.NozzleName(cells.width));
+            nozzleSprite.sortingLayerName = Phase01Assets.SortingTerrain;
+            nozzleSprite.sortingOrder = 21;
+
+            return root;
+        }
+
+        /// <summary>
+        /// A nevoa densa que tampa o tunel da Pista de Provas: uma parede
+        /// invisivel, com o verde por cima (o banco de nevoa "Fog_Veil" do
+        /// layout) e uma luz. Some com a purificacao.
+        /// </summary>
+        private static GameObject BuildTrialVeil(Transform parent, int groundLayer)
+        {
+            (int X, int Y, int Width, int Height) cells = Phase01Layout.TrialVeil;
+
+            var veil = new GameObject("OxideVeil_Trial") { layer = groundLayer };
+            veil.transform.SetParent(parent, false);
+            veil.transform.position = new Vector3(cells.X, cells.Y, 0f);
+
+            var wall = veil.AddComponent<BoxCollider2D>();
+            wall.size = new Vector2(cells.Width, cells.Height);
+            wall.offset = new Vector2(cells.Width * 0.5f, cells.Height * 0.5f);
+
+            veil.AddComponent<OxideVeil>();
+
+            CreatePointLight(veil.transform, "Glow",
+                (cells.X + cells.Width * 0.5f, cells.Y + cells.Height * 0.5f), OxideGreen, 0.9f, 4.5f);
+
+            return veil;
+        }
+
+        /// <summary>
+        /// A grade na boca do poco que desce na arena: aberta, ela some; fecha
+        /// enquanto o Coletor luta, pra nao dar pra fugir pra Antessala.
+        /// </summary>
+        private static void BuildArenaSeal(Transform parent, int groundLayer)
+        {
+            (int X, int Y, int Width) cells = Phase01Layout.ArenaSeal;
+            CreateArenaSeal(parent, groundLayer, new RectInt(cells.X, cells.Y, cells.Width, 1));
+        }
+
+        /// <summary>
+        /// Uma grade de arena de chefe, deitada ou em pe: fecha as celulas
+        /// enquanto ele luta (ver ArenaSeal). As fases a usam pra trancar a arena.
+        /// </summary>
+        internal static void CreateArenaSeal(Transform parent, int groundLayer, RectInt cells)
+        {
+            var seal = new GameObject("Gate_ArenaEntry") { layer = groundLayer };
+            seal.transform.SetParent(parent, false);
+            seal.transform.position = new Vector3(cells.x, cells.y, 0f);
+
+            var bars = seal.AddComponent<SpriteRenderer>();
+            bars.sprite = Phase02Assets.LoadSprite(Phase02Assets.GateBars);
+            bars.drawMode = SpriteDrawMode.Tiled;
+            bars.size = new Vector2(cells.width, cells.height);
+            bars.sortingLayerName = Phase01Assets.SortingTerrain;
+            bars.sortingOrder = 15;
+
+            var wall = seal.AddComponent<BoxCollider2D>();
+            wall.size = new Vector2(cells.width, cells.height);
+            wall.offset = new Vector2(cells.width * 0.5f, cells.height * 0.5f);
+
+            seal.AddComponent<ArenaSeal>();
+        }
+
+        /// <summary>
+        /// A nuvem de Oxide de um chefe: um filho dele, parado, que so solta
+        /// verde quando alguem manda (a baforada no meio da luta e a explosao
+        /// da queda, ver BossFall).
+        /// </summary>
+        internal static ParticleSystem CreateOxideCloud(Transform boss, Material material)
+        {
             var cloudObject = new GameObject("OxideCloud");
-            cloudObject.transform.SetParent(bossObject.transform, false);
+            cloudObject.transform.SetParent(boss, false);
             cloudObject.transform.localPosition = new Vector3(0f, 1.5f, 0f);
 
             var cloud = cloudObject.AddComponent<ParticleSystem>();
@@ -992,7 +1140,7 @@ namespace EchoesOfCravejada.EditorTools
             main.startSize = new ParticleSystem.MinMaxCurve(3f, 6f);
             main.startColor = new Color(OxideGreen.r, OxideGreen.g, OxideGreen.b, 0.35f);
             main.simulationSpace = ParticleSystemSimulationSpace.World;
-            main.maxParticles = 120;
+            main.maxParticles = 320;
 
             ParticleSystem.EmissionModule emission = cloud.emission;
             emission.rateOverTime = 0f;
@@ -1006,35 +1154,15 @@ namespace EchoesOfCravejada.EditorTools
             fade.enabled = true;
             fade.color = new ParticleSystem.MinMaxGradient(SceneKit.FadeInOut(0.1f, 0.5f));
 
-            var cloudRenderer = cloudObject.GetComponent<ParticleSystemRenderer>();
-            cloudRenderer.sortingLayerName = Phase01Assets.SortingForeground;
-            cloudRenderer.sortingOrder = 8;
-            if (steamMaterial != null) cloudRenderer.sharedMaterial = steamMaterial;
+            var renderer = cloudObject.GetComponent<ParticleSystemRenderer>();
+            renderer.sortingLayerName = Phase01Assets.SortingForeground;
+            renderer.sortingOrder = 8;
+            if (material != null) renderer.sharedMaterial = material;
 
             cloud.Stop();
-
-            // --- O que muda quando ele cai ---
-            var purifierObject = new GameObject("AreaPurifier");
-            purifierObject.transform.SetParent(root.transform, false);
-
-            var purifier = purifierObject.AddComponent<AreaPurifier>();
-            purifier.Configure(global, corrupted.ToArray(), purified.ToArray(), fog, tilemaps.ToArray(),
-                cameraObject != null ? cameraObject.GetComponent<Camera>() : null,
-                new[] { passage },
-                enemies != null ? new[] { enemies } : new GameObject[0],
-                new[] { exitGate });
-
-            // Ele anda so no fosso, e acorda quando o Scrap pisa em qualquer
-            // lugar da arena.
-            bossObject.AddComponent<RustyScrapper>().Configure(
-                52.8f + 0.9f, 74f - 0.9f - 0.8f, spawn.Y,
-                new Rect(arena.X, arena.Y, arena.Width, 10f),
-                Phase02Assets.LoadSprite(Phase02Assets.ScrapChunk),
-                Phase02Assets.LoadSprite(Phase02Assets.ShockWave),
-                Phase02Assets.LoadSprite(Phase02Assets.Shard),
-                Phase02Assets.LoadSprite(Phase02Assets.DashModule),
-                cloud, exitGate, purifier);
+            return cloud;
         }
+
 
         // ------------------------------------------------------------------
         // Mecanicas: espinhos, inimigos, alavanca, portao e bancada
@@ -1047,7 +1175,7 @@ namespace EchoesOfCravejada.EditorTools
             BuildSpikes(root.transform);
             BuildCrawlers(root.transform);
             BuildLeverAndGate(root.transform, groundLayer);
-            BuildWorkbench(root.transform);
+            BuildWorkbenches(root.transform);
             BuildNpcs(root.transform);
         }
 
@@ -1056,29 +1184,187 @@ namespace EchoesOfCravejada.EditorTools
             var root = new GameObject("Npcs");
             root.transform.SetParent(parent, false);
 
+            // Quem so aparece depois do boss (a Pequena) e montado junto com
+            // ele, pra entrar na lista do que a purificacao acende.
             foreach (Phase01Layout.NpcSpot spot in Phase01Layout.Npcs)
             {
-                var npcObject = new GameObject("Npc_" + spot.Name);
-                npcObject.transform.SetParent(root.transform, false);
-                npcObject.transform.position = new Vector3(spot.X + 0.5f, spot.Y, 0f);
-
-                var renderer = npcObject.AddComponent<SpriteRenderer>();
-                renderer.sprite = Phase02Assets.LoadSprite(Phase02Assets.SkeletonName(spot.Variant));
-                renderer.sortingLayerName = Phase01Assets.SortingActors;
-                renderer.sortingOrder = -4;
-
-                // A area em volta onde da pra conversar.
-                var area = npcObject.AddComponent<BoxCollider2D>();
-                area.isTrigger = true;
-                area.size = new Vector2(3f, 2.5f);
-                area.offset = new Vector2(0f, 1.25f);
-
-                npcObject.AddComponent<Npc>().Configure(spot.Name, spot.Lines);
-
-                // Uma luz fraca em cima dele, pra dar pra achar no escuro.
-                CreatePointLight(npcObject.transform, "Glow", (spot.X + 0.5f, spot.Y + 1f),
-                    new Color(0.80f, 0.95f, 0.90f), 0.55f, 3.5f);
+                if (!spot.AfterBoss) CreateNpc(root.transform, spot);
             }
+
+            // O que se le pelo mapa. A placa do Coletor fica de fora pelo
+            // mesmo motivo.
+            var loreRoot = new GameObject("Lore");
+            loreRoot.transform.SetParent(parent, false);
+
+            foreach (Phase01Layout.LoreSpot spot in Phase01Layout.Lore)
+            {
+                if (!spot.AfterBoss) CreateLore(loreRoot.transform, spot);
+            }
+
+            // O que se pega. O motor do Coletor tambem fica de fora.
+            var itemRoot = new GameObject("Items");
+            itemRoot.transform.SetParent(parent, false);
+
+            foreach (Phase01Layout.ItemSpot spot in Phase01Layout.Items)
+            {
+                if (!spot.AfterBoss) CreateItem(itemRoot.transform, spot);
+            }
+        }
+
+        /// <summary>
+        /// Um esqueleto com quem se conversa. O papel diz qual componente: o
+        /// Ferrolho monta o motor, o Rebite pede as ferramentas, o resto so fala.
+        /// </summary>
+        private static GameObject CreateNpc(Transform parent, Phase01Layout.NpcSpot spot)
+        {
+            var npcObject = new GameObject("Npc_" + spot.Name);
+            npcObject.transform.SetParent(parent, false);
+            npcObject.transform.position = new Vector3(spot.X + 0.5f, spot.Y, 0f);
+            npcObject.transform.localScale = new Vector3(spot.Scale, spot.Scale, 1f);
+
+            var renderer = npcObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = Phase02Assets.LoadSprite(Phase02Assets.SkeletonName(spot.Variant));
+            renderer.sortingLayerName = Phase01Assets.SortingActors;
+            renderer.sortingOrder = -4;
+
+            // A area em volta onde da pra conversar. Dividida pela escala, pra
+            // a Pequena nao ter uma area menor que os outros.
+            var area = npcObject.AddComponent<BoxCollider2D>();
+            area.isTrigger = true;
+            area.size = new Vector2(3f, 2.5f) / spot.Scale;
+            area.offset = new Vector2(0f, 1.25f) / spot.Scale;
+
+            Npc npc;
+            switch (spot.Role)
+            {
+                case Phase01Layout.NpcRole.MotorFitter:
+                    var fitter = npcObject.AddComponent<FerrolhoNpc>();
+                    fitter.ConfigureMotor(Phase01Layout.MotorId, spot.WaitingLines, spot.InstallLines, spot.DoneLines);
+                    npc = fitter;
+                    break;
+
+                case Phase01Layout.NpcRole.ToolsQuest:
+                    var quest = npcObject.AddComponent<ItemQuestNpc>();
+                    quest.ConfigureQuest(Phase01Layout.MasterToolPrefix, Phase01Layout.MasterToolCount, 1,
+                        "Gema lapidada recebida", spot.PurifiedGreeting,
+                        new[] { new LineSet(spot.NoToolLines), new LineSet(spot.OneToolLines), new LineSet(spot.TwoToolLines) },
+                        spot.CompleteLines, spot.DoneLines);
+                    npc = quest;
+                    break;
+
+                default:
+                    npc = npcObject.AddComponent<Npc>();
+                    break;
+            }
+
+            npc.Configure(spot.Name, spot.Lines);
+            if (spot.PurifiedLines != null) npc.ConfigurePurified(spot.PurifiedLines);
+
+            // Uma luz fraca em cima dele, pra dar pra achar no escuro.
+            CreatePointLight(npcObject.transform, "Glow", (spot.X + 0.5f, spot.Y + 1f),
+                new Color(0.80f, 0.95f, 0.90f), 0.55f, 3.5f);
+
+            return npcObject;
+        }
+
+        /// <summary>
+        /// Algo que flutua e se pega ao encostar: uma ferramenta do ourives, o
+        /// motor do Coletor ou um reforco de chassi.
+        /// </summary>
+        private static GameObject CreateItem(Transform parent, Phase01Layout.ItemSpot spot)
+        {
+            var item = new GameObject("Item_" + spot.Id);
+            item.transform.SetParent(parent, false);
+            item.transform.position = new Vector3(spot.X + 0.5f, spot.Y + 0.8f, 0f);
+
+            var renderer = item.AddComponent<SpriteRenderer>();
+            renderer.sortingLayerName = Phase01Assets.SortingActors;
+            renderer.sortingOrder = -1;
+
+            var trigger = item.AddComponent<CircleCollider2D>();
+            trigger.isTrigger = true;
+            trigger.radius = 0.7f;
+
+            Color glow = new Color(0.95f, 0.90f, 0.75f);
+
+            switch (spot.Kind)
+            {
+                case Phase01Layout.ItemKind.MasterTool:
+                    renderer.sprite = Phase02Assets.LoadSprite(Phase02Assets.MasterToolName(spot.Art));
+                    item.AddComponent<KeyItemPickup>().Configure(spot.Id, spot.Message,
+                        Phase01Layout.MasterToolPrefix, Phase01Layout.MasterToolCount);
+                    break;
+
+                case Phase01Layout.ItemKind.Motor:
+                    renderer.sprite = Phase02Assets.LoadSprite(Phase02Assets.DashModule);
+                    item.AddComponent<KeyItemPickup>().Configure(spot.Id, spot.Message);
+                    glow = new Color(1f, 0.75f, 0.5f);
+                    break;
+
+                case Phase01Layout.ItemKind.Chassis:
+                    // O mesmo reforco escondido dos outros distritos: o modulo, dourado.
+                    renderer.sprite = Phase02Assets.LoadSprite(Phase02Assets.DashModule);
+                    renderer.color = new Color(1f, 0.85f, 0.45f);
+                    item.AddComponent<RewardPickup>().Configure(RewardPickup.Kind.Chassis, spot.Id);
+                    break;
+            }
+
+            CreatePointLight(item.transform, "Glow", (spot.X + 0.5f, spot.Y + 0.8f), glow, 0.5f, 3f);
+            return item;
+        }
+
+        /// <summary>
+        /// Uma pagina, um muro riscado ou uma placa: chegar perto e apertar E.
+        /// Os desenhos sao os mesmos do District 2.
+        /// </summary>
+        private static GameObject CreateLore(Transform parent, Phase01Layout.LoreSpot spot)
+        {
+            var loreObject = new GameObject(spot.Name);
+            loreObject.transform.SetParent(parent, false);
+            loreObject.transform.position = new Vector3(spot.X + 0.5f, spot.Y, 0f);
+
+            var area = loreObject.AddComponent<BoxCollider2D>();
+            area.isTrigger = true;
+            area.size = new Vector2(2.6f, 2.5f);
+            area.offset = new Vector2(0f, 1.25f);
+
+            // O desenho fica num filho, pra poder subir pra parede sem tirar
+            // a area de leitura do chao.
+            var artObject = new GameObject("Art");
+            artObject.transform.SetParent(loreObject.transform, false);
+
+            var art = artObject.AddComponent<SpriteRenderer>();
+            art.sortingLayerName = Phase01Assets.SortingTerrain;
+
+            switch (spot.Kind)
+            {
+                case Phase01Layout.LoreKind.Page:
+                    art.sprite = Phase02Assets.LoadSprite(Phase02Assets.LoosePage);
+                    art.sortingOrder = 22;
+                    break;
+
+                case Phase01Layout.LoreKind.Graffiti:
+                    artObject.transform.localPosition = new Vector3(0f, 2f, 0f);
+                    art.sprite = Phase02Assets.LoadSprite(Phase02Assets.ScribbleText);
+                    art.sortingOrder = 4;
+                    break;
+
+                case Phase01Layout.LoreKind.Plaque:
+                    artObject.transform.localPosition = new Vector3(0f, 2.2f, 0f);
+                    art.sprite = Phase02Assets.LoadSprite(Phase02Assets.Plaque);
+                    art.sortingOrder = 6;
+                    break;
+            }
+
+            var readable = loreObject.AddComponent<Npc>();
+            readable.ConfigureReadable(spot.Title, spot.Lines);
+            if (spot.PurifiedLines != null) readable.ConfigurePurified(spot.PurifiedLines);
+
+            // Uma luz fraca, pra dar pra achar no escuro.
+            CreatePointLight(loreObject.transform, "Glow", (spot.X + 0.5f, spot.Y + 1.2f),
+                new Color(0.95f, 0.90f, 0.75f), 0.5f, 3.5f);
+
+            return loreObject;
         }
 
         /// <summary>
@@ -1142,14 +1428,20 @@ namespace EchoesOfCravejada.EditorTools
                 // ser empurrado pra dentro do chao.
                 var trigger = crawler.AddComponent<BoxCollider2D>();
                 trigger.isTrigger = true;
-                trigger.size = new Vector2(0.8f, 0.6f);
-                trigger.offset = new Vector2(0f, -0.2f);
+                trigger.size = new Vector2(1f, 0.7f);
+                trigger.offset = new Vector2(0f, -0.1f);
 
                 var body = crawler.AddComponent<Rigidbody2D>();
                 body.bodyType = RigidbodyType2D.Kinematic;
 
-                crawler.AddComponent<Damageable>().Configure(2, 3, shard);
+                crawler.AddComponent<Damageable>().Configure(5, 3, shard);
                 crawler.AddComponent<CrawlerEnemy>().Configure(patrol.X0 + 0.5f, patrol.X1 + 0.5f, walk);
+
+                // O verde do Oxide vazando pela rachadura e pelo olho: sem isso,
+                // no escuro do poco, ele vira so um vulto.
+                Vector3 at = crawler.transform.position;
+                CreatePointLight(crawler.transform, "Glow", (at.x - 0.2f, at.y + 0.1f),
+                    OxideGreen, 0.4f, 1.6f);
             }
         }
 
@@ -1197,11 +1489,19 @@ namespace EchoesOfCravejada.EditorTools
                 Phase02Assets.LoadSprite(Phase02Assets.LeverClean));
         }
 
-        private static void BuildWorkbench(Transform parent)
+        private static void BuildWorkbenches(Transform parent)
         {
-            (int X, int Y) tile = Phase01Layout.WorkbenchTile;
+            (int X, int Y)[] tiles = Phase01Layout.Workbenches;
 
-            var benchObject = new GameObject("Workbench");
+            for (int i = 0; i < tiles.Length; i++)
+            {
+                BuildWorkbench(parent, i == 0 ? "Workbench" : $"Workbench_{i + 1}", tiles[i]);
+            }
+        }
+
+        private static void BuildWorkbench(Transform parent, string name, (int X, int Y) tile)
+        {
+            var benchObject = new GameObject(name);
             benchObject.transform.SetParent(parent, false);
             benchObject.transform.position = new Vector3(tile.X, tile.Y, 0f);
 

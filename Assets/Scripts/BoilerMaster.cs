@@ -19,12 +19,16 @@ namespace EchoesOfCravejada
     /// As tres valvulas da arena sao a saida inteligente: raspar e girar uma,
     /// no meio da luta, devolve a pressao pra dentro dele e o atordoa.
     ///
-    /// Ao cair, deixa o Pressure Jump e abre a saida.
+    /// Ao cair, explode em Oxide (a mesma cena de queda do Coletor, ver
+    /// BossFall), deixa o Pressure Jump e abre a saida pro poco de fuga.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class BoilerMaster : MonoBehaviour, IDamageable
     {
-        [SerializeField] private int maxHealth = 20;
+        [SerializeField] private int maxHealth = 40;
+
+        [Tooltip("A nuvem de Oxide da queda: um filho dele.")]
+        [SerializeField] private ParticleSystem oxideCloud;
 
         [Header("Arena")]
         [SerializeField] private float minX;
@@ -90,6 +94,12 @@ namespace EchoesOfCravejada
             rewardSprite = reward;
             valves = newValves;
             exitGate = gate;
+        }
+
+        /// <summary>Usado pelos geradores de fase: a nuvem de Oxide em que ele explode ao cair.</summary>
+        public void ConfigureCloud(ParticleSystem cloud)
+        {
+            oxideCloud = cloud;
         }
 
         private void Awake()
@@ -339,7 +349,35 @@ namespace EchoesOfCravejada
             _defeated = true;
             StopAllCoroutines();
 
+            // A barra de vida some e a grade da entrada abre ja.
+            if (Fighting == this) Fighting = null;
+
+            StartCoroutine(Fall());
+        }
+
+        /// <summary>
+        /// A cena da queda: a explosao em Oxide e, quando a nuvem assenta, os
+        /// fragmentos, o Pressure Jump e a grade do poco de fuga se abrindo. A
+        /// purificacao fica pro topo do poco, depois da fuga do acido.
+        /// </summary>
+        private IEnumerator Fall()
+        {
+            Cinematic.Begin();
+
+            var controller = _player != null ? _player.GetComponent<ScrapController>() : null;
+            var body = _player != null ? _player.GetComponent<Rigidbody2D>() : null;
+
+            void Hold()
+            {
+                if (controller != null) controller.ControlLocked = true;
+            }
+
+            Hold();
+            if (body != null) body.linearVelocity = new Vector2(0f, Mathf.Min(0f, body.linearVelocity.y));
+
             Vector3 place = new Vector3(transform.position.x, floorY, 0f);
+
+            yield return BossFall.Explode(transform, _sprite, oxideCloud, place, Hold);
 
             for (int i = 0; i < 16; i++)
             {
@@ -348,8 +386,18 @@ namespace EchoesOfCravejada
 
             PressureJumpPickup.Drop(place, rewardSprite);
 
-            if (exitGate != null) exitGate.Open();
+            yield return BossFall.Hold(1.0f, Hold);
 
+            if (exitGate != null) exitGate.Open();
+            ScrapCameraFollow.Shake(0.12f, 0.5f);
+
+            yield return BossFall.Hold(0.6f, Hold);
+
+            if (controller != null) controller.ControlLocked = false;
+            Cinematic.End();
+
+            // A nuvem ainda esta no ar: so some com ele quando ela assentar.
+            yield return new WaitForSeconds(3f);
             Destroy(gameObject);
         }
 

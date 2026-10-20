@@ -67,7 +67,7 @@ namespace EchoesOfCravejada
 
             if (_sprite == null) return;
 
-            // A arte do pack olha pra esquerda.
+            // A arte olha pra esquerda.
             _sprite.flipX = _direction > 0;
 
             if (walkFrames != null && walkFrames.Length > 0)

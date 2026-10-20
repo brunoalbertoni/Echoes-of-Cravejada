@@ -27,7 +27,7 @@ namespace EchoesOfCravejada
         public static float SapphireSocketedTime { get; private set; } = -100f;
 
         /// <summary>O dano a mais que o cinzel causa por causa das gemas cravadas.</summary>
-        public static int BonusDamage => RubySocketed ? 1 : 0;
+        public static int BonusDamage => (RubySocketed ? 1 : 0) + Shop.BonusDamage;
 
         /// <summary>Por quanto se multiplica o ruido do corpo (passo, pulo, queda).</summary>
         public static float BodyNoise => SapphireSocketed ? 0.5f : 1f;

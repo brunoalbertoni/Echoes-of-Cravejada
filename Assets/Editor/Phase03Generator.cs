@@ -184,6 +184,9 @@ namespace EchoesOfCravejada.EditorTools
             // O mapa desta fase conta com o Steam Dash e o Pressure Jump, entao
             // aqui o Scrap ja chega com os dois — mesmo dando Play direto na cena.
             scrap.GetComponent<ScrapDash>().SetUnlockedFromStart(true);
+
+            // A ferrugem saiu na purificacao do District 1: aqui ele ja chega polido.
+            scrap.GetComponent<ScrapAppearance>().SetPolishedFromStart(true);
             scrap.gameObject.AddComponent<AbilityGrant>().Configure(true, true);
             scrap.gameObject.AddComponent<ScrapNoise>();
 

@@ -42,14 +42,56 @@ namespace EchoesOfCravejada
             if (target != null) transform.position = Resolve(DesiredPosition());
         }
 
+        // O tremor: forca e ate quando. Estatico pra quem treme a tela nao
+        // precisar achar a camera.
+        private static float _shakeStrength;
+        private static float _shakeUntil;
+        private static float _shakeLength = 1f;
+        private Vector3 _shakeOffset;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetShake()
+        {
+            _shakeStrength = 0f;
+            _shakeUntil = 0f;
+        }
+
+        /// <summary>
+        /// Treme a tela por um tempo, em tiles de deslocamento, diminuindo ate
+        /// parar. Um tremor mais fraco nao corta um mais forte em andamento.
+        /// </summary>
+        public static void Shake(float strength, float duration)
+        {
+            float remaining = Mathf.Max(0f, _shakeUntil - Time.time);
+            float current = _shakeLength > 0f ? _shakeStrength * remaining / _shakeLength : 0f;
+            if (strength < current) return;
+
+            _shakeStrength = strength;
+            _shakeLength = Mathf.Max(0.01f, duration);
+            _shakeUntil = Time.time + duration;
+        }
+
         private void LateUpdate()
         {
             if (target == null) return;
+
+            // O tremor do quadro anterior sai antes de seguir o alvo, senao ele
+            // entra no amortecimento e a camera escorrega.
+            transform.position -= _shakeOffset;
+            _shakeOffset = Vector3.zero;
 
             Vector3 desired = Vector3.SmoothDamp(
                 transform.position, DesiredPosition(), ref _velocity, smoothTime);
 
             transform.position = Resolve(desired);
+
+            float left = _shakeUntil - Time.time;
+            if (left > 0f)
+            {
+                float strength = _shakeStrength * left / _shakeLength;
+                _shakeOffset = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f) * strength;
+                transform.position += _shakeOffset;
+            }
         }
 
         private Vector3 DesiredPosition()

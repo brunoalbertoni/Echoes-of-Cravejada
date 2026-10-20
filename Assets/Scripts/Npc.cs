@@ -8,7 +8,9 @@ namespace EchoesOfCravejada
     /// apertar o botao abre a fala, e apertar de novo passa pra proxima ate
     /// acabar. Enquanto conversa, o Scrap fica parado.
     ///
-    /// As falas sao so texto, uma por tela, mostradas pelo GameHud.
+    /// As falas sao so texto, uma por tela, mostradas pelo GameHud. Depois da
+    /// purificacao ele pode dizer outras; e quem herda daqui pode escolher as
+    /// falas pelo que o Scrap ja fez (PickLines).
     ///
     /// Teclas: E ou K; no controle, o botao de cima.
     /// </summary>
@@ -20,6 +22,10 @@ namespace EchoesOfCravejada
         [TextArea(2, 4)]
         [SerializeField] private string[] lines;
 
+        [Tooltip("O que ele diz depois que a area e purificada. Vazio repete as de cima.")]
+        [TextArea(2, 4)]
+        [SerializeField] private string[] purifiedLines;
+
         [Tooltip("O que aparece no aviso antes do nome: 'conversar com', 'ler'...")]
         [SerializeField] private string prompt = "conversar com";
 
@@ -30,6 +36,10 @@ namespace EchoesOfCravejada
         private SpriteRenderer _sprite;
         private int _line = -1;
 
+        // As falas desta conversa, escolhidas quando ela comeca: o que o Scrap
+        // faz no meio (ou no fim) dela nao troca o texto na tela.
+        private string[] _talk;
+
         /// <summary>O personagem perto do qual o Scrap esta, se houver.</summary>
         public static Npc Nearby { get; private set; }
 
@@ -38,11 +48,18 @@ namespace EchoesOfCravejada
 
         public string DisplayName => displayName;
 
+        /// <summary>
+        /// O desenho de quem fala, pro retrato na caixa de dialogo: o sprite
+        /// dele, ou o do filho quando o corpo fica num filho (a Assistente, no
+        /// armario). Nulo pro que se le — pagina, placa, gravura nao tem rosto.
+        /// </summary>
+        public SpriteRenderer Portrait { get; private set; }
+
         /// <summary>O verbo do aviso: "conversar com" pra gente, "ler" pra coisa escrita.</summary>
         public string Prompt => prompt;
 
         /// <summary>A fala na tela agora, ou null se ele nao esta falando.</summary>
-        public string CurrentLine => _line >= 0 && lines != null && _line < lines.Length ? lines[_line] : null;
+        public string CurrentLine => _line >= 0 && _talk != null && _line < _talk.Length ? _talk[_line] : null;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
@@ -69,9 +86,31 @@ namespace EchoesOfCravejada
             facesPlayer = false;
         }
 
+        /// <summary>Usado pelos geradores de fase: o que ele diz depois da purificacao.</summary>
+        public void ConfigurePurified(string[] newLines)
+        {
+            purifiedLines = newLines;
+        }
+
+        /// <summary>As falas de sempre, as configuradas primeiro (antes da purificacao).</summary>
+        protected string[] FirstLines => lines;
+
+        /// <summary>
+        /// As falas da proxima conversa. Por padrao, as de depois da
+        /// purificacao, se a area ja foi purificada e ele tiver alguma.
+        /// </summary>
+        protected virtual string[] PickLines()
+        {
+            bool purified = AreaPurifier.IsPurified && purifiedLines != null && purifiedLines.Length > 0;
+            return purified ? purifiedLines : lines;
+        }
+
         private void Awake()
         {
             _sprite = GetComponent<SpriteRenderer>();
+
+            // So quem conversa vira o rosto; e so quem conversa tem retrato.
+            if (facesPlayer) Portrait = _sprite != null ? _sprite : GetComponentInChildren<SpriteRenderer>();
         }
 
         private void Reset()
@@ -86,6 +125,9 @@ namespace EchoesOfCravejada
             // Com a loja aberta, o botao de conversar e o de fechar a loja.
             if (Crisol.ShopOpen != null) return;
 
+            // Numa cena o E e o de pular a cena, nao o de conversar.
+            if (Cinematic.Active) return;
+
             // Olha pra quem esta falando com ele. A arte olha pra direita.
             if (_sprite != null && facesPlayer) _sprite.flipX = _controller.transform.position.x < transform.position.x;
 
@@ -94,14 +136,30 @@ namespace EchoesOfCravejada
             // So comeca a conversa com os pes no chao; continuar pode a qualquer hora.
             if (_line < 0 && !_controller.IsGrounded) return;
 
+            if (_line < 0) _talk = PickLines();
+
             _line++;
 
-            if (lines == null || _line >= lines.Length)
+            if (_talk == null || _line >= _talk.Length)
             {
                 EndTalk(true);
                 return;
             }
 
+            Talking = this;
+            _controller.ControlLocked = true;
+        }
+
+        /// <summary>
+        /// Comeca uma conversa com estas falas, agora, sem esperar o botao. O
+        /// Crisol usa pra contar a memoria que acabou de vender.
+        /// </summary>
+        protected void StartTalk(string[] newLines)
+        {
+            if (_controller == null || newLines == null || newLines.Length == 0) return;
+
+            _talk = newLines;
+            _line = 0;
             Talking = this;
             _controller.ControlLocked = true;
         }

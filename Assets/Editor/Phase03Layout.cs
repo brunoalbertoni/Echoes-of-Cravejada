@@ -182,13 +182,13 @@ namespace EchoesOfCravejada.EditorTools
 
         public static readonly string[] CrisolLines =
         {
-            "Scrap. Voce chegou ate aqui. Admito que nao apostei nisso.",
-            "Olhe em volta. Ametista, quartzo leitoso, cristal fume... isto aqui e o meu oficio. Aqui eu sei o nome de tudo.",
-            "Voce reparou que eles so acendem com barulho? Era assim que os mineiros enxergavam. Batiam na pedra e andavam enquanto ela brilhava.",
-            "Eu trabalhei pros 925 Nobles. Eu estava la quando resolveram furar ate o Heart of Quartz. Eu VI a escavacao.",
+            "Scrap. Você chegou até aqui. Admito que não apostei nisso.",
+            "Olhe em volta. Ametista, quartzo leitoso, cristal fumê... isto aqui é o meu ofício. Aqui eu sei o nome de tudo.",
+            "Você reparou que eles só acendem com barulho? Era assim que os mineiros enxergavam: batiam na pedra e andavam enquanto ela brilhava.",
+            "Eu trabalhei para os 925 Nobres. Eu estava lá quando resolveram furar até o Coração de Quartzo. Eu VI a escavação.",
             "Eu disse que era um erro. Disse na frente de todos. Sabe o que fazem com prata que fala demais? Riscam.",
-            "E por isso que eu sou arranhado assim, Scrap. Nao foi o tempo. Foi de proposito. Me riscaram e me jogaram fora.",
-            "...Chega. O seu polimento esta decente, alias. Nao conte pra ninguem que eu disse isso.",
+            "É por isso que sou arranhado assim, Scrap. Não foi o tempo. Foi de propósito. Riscaram-me e jogaram-me no Poço de Sucata.",
+            "...Chega. O seu polimento está decente, aliás. Não conte a ninguém que eu disse isso.",
         };
 
         /// <summary>A sequencia da Porta Harmonica: as notas, na ordem em que precisam soar.</summary>
@@ -221,10 +221,10 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>A placa gravada no chassi da broca, que so aparece quando ela para.</summary>
         public static readonly string[] DrillPlaqueLines =
         {
-            "Por baixo da crosta de Oxide ha uma placa de prata, rebitada no chassi.",
+            "Por baixo da crosta de Óxido há uma placa de prata, rebitada no chassi.",
             "\"POR ORDEM DE SUA MAJESTADE, O REI DE PRATA.\"",
-            "Embaixo, a data da primeira perfuracao. E mais nada. Nenhum nome de mineiro.",
-            "Entao foi ele. Nao foi acidente, nem praga: foi uma ordem.",
+            "Embaixo, a data da primeira perfuração. E mais nada. Nenhum nome de mineiro.",
+            "Então foi ele. Não foi acidente nem praga: foi uma ordem.",
         };
 
         /// <summary>O brilho verde no fundo do Poco da Broca.</summary>
@@ -450,8 +450,8 @@ namespace EchoesOfCravejada.EditorTools
             Mark(room, "Secret_Chassis", SecretChassisTile.X, SecretChassisTile.Y);
 
             Tell("sign", room, "Lore_Frontier", "o aviso dos mineiros", 14, 40,
-                "Uma tabua pregada na ultima chapa de latao. A tinta descascou, mas da pra ler:",
-                "\"DAQUI PRA FRENTE NAO HA LAMPIAO. A PEDRA ACENDE COM BARULHO.\"",
+                "Uma tábua pregada na última chapa de latão. A tinta descascou, mas dá para ler:",
+                "\"DAQUI PARA A FRENTE NÃO HÁ LAMPIÃO. A PEDRA ACENDE COM BARULHO.\"",
                 "E, mais embaixo, em letra menor: \"...e o barulho acorda os que ficaram.\"");
 
             Scatter(16, 40, 40, 50, 4, 11);
@@ -590,21 +590,21 @@ namespace EchoesOfCravejada.EditorTools
             Ledge(235, 237, 51);
 
             Tell("engraving0", room, "Lore_Engraving_1", "a primeira gravura", 198, 40,
-                "Riscada na pedra, do tamanho de uma parede: uma fila de mineiros, de picareta no ombro.",
-                "Estao descendo. Todos olham pra baixo.");
+                "Riscada na pedra, do tamanho de uma parede: uma fila de mineiros de picareta no ombro.",
+                "Estão descendo. Todos olham para baixo.");
 
             Tell("engraving1", room, "Lore_Engraving_2", "a segunda gravura", 208, 40,
                 "Uma figura maior que as outras, de coroa. O Rei de Prata.",
-                "Ele nao segura ferramenta nenhuma. So aponta. Pra baixo.");
+                "Ele não segura ferramenta nenhuma. Só aponta. Para baixo.");
 
             Tell("engraving2", room, "Lore_Engraving_3", "a terceira gravura", 220, 40,
-                "Uma broca, em espiral, descendo pela rocha. Em volta dela, riscos de impacto.",
-                "Os mineiros agora sao menores. Estao atras dela, nao na frente.");
+                "Uma broca em espiral, descendo pela rocha. Em volta dela, riscos de impacto.",
+                "Os mineiros agora são menores. Estão atrás dela, não na frente.");
 
-            Tell("engraving3", room, "Lore_Engraving_4", "a ultima gravura", 230, 40,
-                "Um losango enorme no fundo da terra: o Heart of Quartz.",
-                "Ha uma fenda nele, de cima a baixo. Quem gravou pintou a fenda de verde.",
-                "Depois desta, a parede esta lisa. Ninguem voltou pra gravar o resto.");
+            Tell("engraving3", room, "Lore_Engraving_4", "a última gravura", 230, 40,
+                "Um losango enorme no fundo da terra: o Coração de Quartzo.",
+                "Há uma fenda nele, de cima a baixo. Quem gravou pintou a fenda de verde.",
+                "Depois desta, a parede está lisa. Ninguém voltou para gravar o resto.");
 
             Foe(FoeKind.ShardSentinel, "Sentinel_Gallery", 214, 214, 40);
             Foe(FoeKind.CrystalMite, "Mite_Gallery_1", 200, 206, 40, 201);
@@ -634,10 +634,10 @@ namespace EchoesOfCravejada.EditorTools
             Carve(247, 6, 268, 80);
             Spikes(247, 268, 6);
 
-            Tell("edge", room, "Lore_DrillShaft", "a beirada do poco", 245, 56,
-                "O chao acaba aqui. O poco e redondo, liso, e largo demais pra ter sido feito a mao.",
-                "La no fundo, muito longe, alguma coisa verde pulsa. Devagar. Como se respirasse.",
-                "Nao ha como descer. Ainda.");
+            Tell("edge", room, "Lore_DrillShaft", "a beirada do poço", 245, 56,
+                "O chão acaba aqui. O poço é redondo, liso e largo demais para ter sido feito à mão.",
+                "Lá no fundo, muito longe, alguma coisa verde pulsa. Devagar. Como se respirasse.",
+                "Não há como descer. Ainda.");
 
             Echoes.Add(new EchoSpot(243, 56, 1, 0, false));
         }
@@ -711,9 +711,9 @@ namespace EchoesOfCravejada.EditorTools
                 Kind = "miner", Name = "Tarnished_Miner_1", Title = "Mineiro", X = 110, Y = 56,
                 Lines = new[]
                 {
-                    "Escuta. ...Ouviu? Ela afinou. A pedra inteira afinou.",
-                    "A gente passou anos aqui embaixo sem poder dar um pio. Agora vamos fazer barulho de proposito.",
-                    "Vai ter concerto. Voce e convidado, pequeno. Foi voce que desligou aquela coisa.",
+                    "Escute. ...Ouviu? Ela afinou. A pedra inteira afinou.",
+                    "A gente passou anos aqui embaixo sem poder dar um pio. Agora vamos fazer barulho de propósito.",
+                    "Vai haver concerto. Você é convidado, pequeno. Foi você que desligou aquela coisa.",
                 },
             });
 
@@ -722,9 +722,9 @@ namespace EchoesOfCravejada.EditorTools
                 Kind = "miner", Name = "Tarnished_Miner_2", Title = "Mineira", X = 136, Y = 56,
                 Lines = new[]
                 {
-                    "Cafe? E de borra de caldeira, mas esta quente.",
-                    "Eu operei a broca, sabia? No comeco eramos seis la dentro. Depois ela nao precisou mais da gente.",
-                    "Ninguem nos disse o que tinha la embaixo. So disseram: mais fundo.",
+                    "Café? É de borra de caldeira, mas está quente.",
+                    "Eu operei a broca, sabia? No começo, éramos seis lá dentro. Depois, ela não precisou mais da gente.",
+                    "Ninguém nos disse o que havia lá embaixo. Só disseram: mais fundo.",
                 },
             });
 
@@ -733,10 +733,10 @@ namespace EchoesOfCravejada.EditorTools
                 Kind = "crisol", Name = "Npc_Crisol_Purified", Title = "Crisol", X = 121, Y = 56,
                 Lines = new[]
                 {
-                    "Voce viu a placa. Entao agora voce sabe o que eu sabia.",
-                    "Eu avisei, e me riscaram. Voce desceu la, com esse corpo de sucata, e fez a maquina parar.",
+                    "Você viu a placa. Então agora você sabe o que eu sabia.",
+                    "Eu avisei, e riscaram-me. Você desceu lá, com esse corpo de sucata, e fez a máquina parar.",
                     "...Obrigado, Scrap.",
-                    "Talvez voce nao seja so sucata, afinal. Nao me faca repetir.",
+                    "Talvez você não seja só sucata, afinal. Não me faça repetir.",
                 },
             });
 
@@ -761,8 +761,8 @@ namespace EchoesOfCravejada.EditorTools
 
             Tell("page", room, "Lore_MinerNote", "um bilhete de mineiro", 94, 56,
                 "Um papel dobrado, preso debaixo de um capacete.",
-                "\"Ela nao para mais. Desligamos a chave e ela nao parou. Ninguem esta mais la dentro e ela nao parou.\"",
-                "\"Se voce esta lendo: nao faca barulho perto dela. Ela nao enxerga. Ela escuta.\"");
+                "\"Ela não para mais. Desligamos a chave, e ela não parou. Não há mais ninguém lá dentro, e ela não parou.\"",
+                "\"Se você está lendo isto: não faça barulho perto dela. Ela não enxerga. Ela escuta.\"");
 
             Scatter(90, 56, 100, 64, 5, 91);
         }
@@ -844,9 +844,9 @@ namespace EchoesOfCravejada.EditorTools
             Barrier("Barrier_Exit", 33, 32, 5);
 
             Tell("edge", room, "Lore_Exit", "o fim do cristal", 11, 32,
-                "O cristal acaba aqui. Daqui pra frente a parede e de marmore branco, lisa, com veios de ouro.",
-                "Ha vidro quebrado no chao, e um cheiro doce, de laboratorio. The Alchemical Ateliers.",
-                "Depois de entrar, nao ha como voltar.");
+                "O cristal acaba aqui. Daqui para a frente, a parede é de mármore branco, lisa, com veios de ouro.",
+                "Há vidro quebrado no chão e um cheiro doce, de laboratório. Os Ateliês Alquímicos.",
+                "Depois de entrar, não há como voltar.");
 
             Lamps.Add((14f, 35f, 6f));
 
