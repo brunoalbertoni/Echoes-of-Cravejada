@@ -50,6 +50,13 @@ namespace EchoesOfCravejada.EditorTools
         /// </summary>
         private static readonly Color BackWallTint = new Color(0.45f, 0.55f, 0.52f);
 
+        /// <summary>
+        /// Se a queda do Coletor termina na cutscene desenhada da troca de
+        /// visual. Desligada por enquanto: as cutscenes entram quando o jogo
+        /// estiver completo. Sem ela, o Scrap brilha e troca de visual na hora.
+        /// </summary>
+        private static readonly bool UsePurificationCartoon = false;
+
         [MenuItem("Echoes/Gerar Phase 1 (Scrap Yard)", false, 10)]
         public static void Generate()
         {
@@ -70,6 +77,7 @@ namespace EchoesOfCravejada.EditorTools
         public static void ValidateLayout()
         {
             List<string> problems = Phase01Layout.Validate();
+            problems.AddRange(Phase01Decor.Validate());
 
             if (problems.Count == 0)
             {
@@ -104,7 +112,9 @@ namespace EchoesOfCravejada.EditorTools
 
             // Um mapa quebrado vira uma cena que nao da pra jogar, entao o
             // aviso vem antes de gastar tempo gerando.
-            foreach (string problem in Phase01Layout.Validate())
+            List<string> layoutProblems = Phase01Layout.Validate();
+            layoutProblems.AddRange(Phase01Decor.Validate());
+            foreach (string problem in layoutProblems)
             {
                 Debug.LogWarning($"[Phase 1] {problem}");
             }
@@ -146,6 +156,18 @@ namespace EchoesOfCravejada.EditorTools
                 return;
             }
 
+            // Os descartados, o rastejante e o Coletor, no detalhe do Scrap.
+            Phase02Assets.EnsureDistrict1Art();
+
+            // A cenografia: vigas, canos, calha, montes de sucata, carcacas, postes...
+            Phase01DecorBuilder.EnsureArt();
+
+            // O que se le: o desenho do mapa e o grande, da leitura, de cada um.
+            WriteLoreArt();
+
+            // Os quadros da cutscene desenhada da purificacao (fim do boss).
+            if (UsePurificationCartoon) CartoonAssets.EnsureArt();
+
             Sprite scrapSprite = Phase01Assets.CreateScrapPlaceholder();
             Sprite polishedSprite = Phase02Assets.LoadSprite(Phase02Assets.ScrapPolished);
             Material fogMaterial = Phase01Assets.GetOrCreateFogMaterial();
@@ -166,6 +188,10 @@ namespace EchoesOfCravejada.EditorTools
             BuildMarkers();
             BuildTravel();
             BuildMechanics(groundLayer);
+
+            // Depois da luz (as luzes dela vao pra raiz Lighting) e antes do
+            // boss (a purificacao procura as pecas dela pelo nome).
+            Phase01DecorBuilder.Build();
             BuildBossAndPurification(groundLayer, fogMaterial);
 
             EditorSceneManager.MarkSceneDirty(scene);
@@ -508,8 +534,9 @@ namespace EchoesOfCravejada.EditorTools
 
             var collider = scrap.AddComponent<CapsuleCollider2D>();
             collider.direction = CapsuleDirection2D.Vertical;
-            collider.size = new Vector2(0.8f, 1.2f);
-            collider.offset = new Vector2(0f, 0.6f);
+            // O Scrap e pequeno: a caixa acompanha o desenho (uns 1,2 tile de altura).
+            collider.size = new Vector2(0.7f, 1.05f);
+            collider.offset = new Vector2(0f, 0.525f);
             collider.sharedMaterial = GetOrCreateFrictionlessMaterial();
 
             var groundCheck = new GameObject("GroundCheck");
@@ -530,7 +557,7 @@ namespace EchoesOfCravejada.EditorTools
             // quando cai no acido.
             // Os olhos dele iluminam em volta. Sem isso ele some nos trechos
             // escuros: a ferrugem do corpo tem quase a cor da sombra.
-            CreatePointLight(scrap.transform, "EyeGlow", (spawn.X + 0.5f, spawn.Y + 1.15f),
+            CreatePointLight(scrap.transform, "EyeGlow", (spawn.X + 0.5f, spawn.Y + 0.75f),
                 new Color(1f, 0.90f, 0.70f), 0.75f, 4.5f);
 
             scrap.AddComponent<ScrapAppearance>().Configure(sprite, polishedSprite);
@@ -601,14 +628,17 @@ namespace EchoesOfCravejada.EditorTools
             camera.nearClipPlane = -100f;
             camera.farClipPlane = 100f;
 
-            // 480x270 a 16 PPU mostra ~17 tiles de altura: o Scrap fica pequeno
-            // no quadro o bastante pra a sala respirar.
+            // 384x216 a 16 PPU mostra ~13,5 tiles de altura: um leve zoom sobre
+            // os 480x270 de antes, com o Scrap ainda pequeno o bastante pra a
+            // sala respirar. O zoom vem daqui, nao do Size da Camera: o Pixel
+            // Perfect sobrescreve o Size. Use resolucoes que dividem 1920x1080
+            // sem sobrar (480x270, 384x216, 320x180), senao nada muda.
             var pixelPerfect = cameraObject.AddComponent<PixelPerfectCamera>();
             pixelPerfect.assetsPPU = Phase01Assets.PixelsPerUnit;
-            pixelPerfect.refResolutionX = 480;
-            pixelPerfect.refResolutionY = 270;
+            pixelPerfect.refResolutionX = 384;
+            pixelPerfect.refResolutionY = 216;
 
-            camera.orthographicSize = 270f / (2f * Phase01Assets.PixelsPerUnit);
+            camera.orthographicSize = 216f / (2f * Phase01Assets.PixelsPerUnit);
 
             cameraObject.AddComponent<AudioListener>();
 
@@ -933,6 +963,9 @@ namespace EchoesOfCravejada.EditorTools
                 {
                     if (light.lightType == Light2D.LightType.Global) global = light;
                     else if (light.name.StartsWith("OxideGlow") || light.name == "LairGlow") corrupted.Add(light);
+
+                    // Os postes de lampiao da cenografia: acendem com a onda.
+                    else if (light.name.StartsWith(Phase01DecorBuilder.LampLightPrefix)) purified.Add(light);
                 }
 
                 // Um lampiao quente onde havia cada brilho de Oxide. O
@@ -965,8 +998,13 @@ namespace EchoesOfCravejada.EditorTools
             bossObject.transform.SetParent(root.transform, false);
             bossObject.transform.position = new Vector3(spawn.X + 6.5f, spawn.Y, 0f);
 
+            // Os quadros dele: inteiro e rachado (da metade da vida pra baixo).
+            Sprite[] bossFrames = Phase02Assets.LoadSheet(Phase02Assets.ColetorSheet, ColetorArt.FrameCount);
+            Sprite[] bossCracked = Phase02Assets.LoadSheet(Phase02Assets.ColetorCrackedSheet, ColetorArt.FrameCount);
+
             var bossSprite = bossObject.AddComponent<SpriteRenderer>();
-            bossSprite.sprite = Phase02Assets.LoadSprite(Phase02Assets.RustyScrapper);
+            bossSprite.sprite = bossFrames[ColetorArt.Dormant];
+            bossSprite.flipX = true;
             bossSprite.sortingLayerName = Phase01Assets.SortingActors;
             bossSprite.sortingOrder = -2;
 
@@ -1009,6 +1047,10 @@ namespace EchoesOfCravejada.EditorTools
             var vanish = new List<GameObject> { BuildTrialVeil(root.transform, groundLayer) };
             if (enemies != null) vanish.Add(enemies);
 
+            // As pocas e os respiros de Oxide da cenografia.
+            GameObject oxideDecor = GameObject.Find(Phase01DecorBuilder.OxideRoot);
+            if (oxideDecor != null) vanish.Add(oxideDecor);
+
             BuildArenaSeal(root.transform, groundLayer);
 
             var purifierObject = new GameObject("AreaPurifier");
@@ -1021,6 +1063,18 @@ namespace EchoesOfCravejada.EditorTools
                 vanish.ToArray(),
                 new[] { exitGate });
 
+            // A cutscene desenhada da troca de visual. Fica num objeto proprio:
+            // o boss se destroi no fim da queda. Desligada por enquanto (ver
+            // UsePurificationCartoon): sem ela, o Scrap so brilha e troca.
+            PurificationCartoon cartoon = null;
+            if (UsePurificationCartoon)
+            {
+                var cartoonObject = new GameObject("PurificationCartoon");
+                cartoonObject.transform.SetParent(bossObject.transform.parent, false);
+                cartoon = cartoonObject.AddComponent<PurificationCartoon>();
+                cartoon.Configure(CartoonAssets.LoadShots());
+            }
+
             // Ele anda pela arena inteira, e acorda quando o Scrap pisa em
             // qualquer lugar dela.
             bossObject.AddComponent<RustyScrapper>().Configure(
@@ -1029,7 +1083,7 @@ namespace EchoesOfCravejada.EditorTools
                 Phase02Assets.LoadSprite(Phase02Assets.ScrapChunk),
                 Phase02Assets.LoadSprite(Phase02Assets.ShockWave),
                 Phase02Assets.LoadSprite(Phase02Assets.Shard),
-                cloud, exitGate, purifier);
+                cloud, exitGate, purifier, cartoon, bossFrames, bossCracked);
         }
 
         /// <summary>
@@ -1201,6 +1255,16 @@ namespace EchoesOfCravejada.EditorTools
                 if (!spot.AfterBoss) CreateLore(loreRoot.transform, spot);
             }
 
+            // As placas de tutorial. A da Pista de Provas ja vem na cena: quem
+            // a esconde ate a purificacao e a nevoa na frente do tunel.
+            var tutorialRoot = new GameObject("Tutorials");
+            tutorialRoot.transform.SetParent(parent, false);
+
+            foreach (Phase01Layout.TutorialSpot spot in Phase01Layout.Tutorials)
+            {
+                CreateTutorialSign(tutorialRoot.transform, spot);
+            }
+
             // O que se pega. O motor do Coletor tambem fica de fora.
             var itemRoot = new GameObject("Items");
             itemRoot.transform.SetParent(parent, false);
@@ -1212,7 +1276,7 @@ namespace EchoesOfCravejada.EditorTools
         }
 
         /// <summary>
-        /// Um esqueleto com quem se conversa. O papel diz qual componente: o
+        /// Um descartado com quem se conversa. O papel diz qual componente: o
         /// Ferrolho monta o motor, o Rebite pede as ferramentas, o resto so fala.
         /// </summary>
         private static GameObject CreateNpc(Transform parent, Phase01Layout.NpcSpot spot)
@@ -1222,10 +1286,16 @@ namespace EchoesOfCravejada.EditorTools
             npcObject.transform.position = new Vector3(spot.X + 0.5f, spot.Y, 0f);
             npcObject.transform.localScale = new Vector3(spot.Scale, spot.Scale, 1f);
 
+            // O corpo de lata de cada um, parado mas vivo: respira, pisca e
+            // mexe no que e seu (a lanterna, a lupa, o manometro, o giz).
+            Sprite[] idle = Phase02Assets.LoadSheet(Phase02Assets.DiscardedSheet(spot.Variant), DiscardedArt.IdleFrames);
+
             var renderer = npcObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = Phase02Assets.LoadSprite(Phase02Assets.SkeletonName(spot.Variant));
+            renderer.sprite = idle[0];
             renderer.sortingLayerName = Phase01Assets.SortingActors;
             renderer.sortingOrder = -4;
+
+            npcObject.AddComponent<SpriteLoop>().Configure(idle, 5f, DiscardedArt.BlinkFrame);
 
             // A area em volta onde da pra conversar. Dividida pela escala, pra
             // a Pequena nao ter uma area menor que os outros.
@@ -1313,9 +1383,17 @@ namespace EchoesOfCravejada.EditorTools
             return item;
         }
 
+        /// <summary>Grava os desenhos do LoreArt: o do mapa (pivo no meio da base) e o da leitura.</summary>
+        private static void WriteLoreArt()
+        {
+            LoreArtAssets.Write(LoreArt.Phase01.Values);
+        }
+
         /// <summary>
         /// Uma pagina, um muro riscado ou uma placa: chegar perto e apertar E.
-        /// Os desenhos sao os mesmos do District 2.
+        /// Cada um tem o desenho proprio no mapa e um grande, que aparece na
+        /// tela durante a leitura (LoreArt). O que nao tiver usa os desenhos
+        /// genericos do District 2, sem o grande.
         /// </summary>
         private static GameObject CreateLore(Transform parent, Phase01Layout.LoreSpot spot)
         {
@@ -1336,7 +1414,15 @@ namespace EchoesOfCravejada.EditorTools
             var art = artObject.AddComponent<SpriteRenderer>();
             art.sortingLayerName = Phase01Assets.SortingTerrain;
 
-            switch (spot.Kind)
+            var readable = loreObject.AddComponent<Npc>();
+            readable.ConfigureReadable(spot.Title, spot.Lines);
+            if (spot.PurifiedLines != null) readable.ConfigurePurified(spot.PurifiedLines);
+
+            if (LoreArt.Phase01.TryGetValue(spot.Name, out LoreArt.Piece own))
+            {
+                LoreArtAssets.Apply(own, artObject, readable, Phase01Assets.SortingTerrain);
+            }
+            else switch (spot.Kind)
             {
                 case Phase01Layout.LoreKind.Page:
                     art.sprite = Phase02Assets.LoadSprite(Phase02Assets.LoosePage);
@@ -1356,15 +1442,45 @@ namespace EchoesOfCravejada.EditorTools
                     break;
             }
 
-            var readable = loreObject.AddComponent<Npc>();
-            readable.ConfigureReadable(spot.Title, spot.Lines);
-            if (spot.PurifiedLines != null) readable.ConfigurePurified(spot.PurifiedLines);
-
             // Uma luz fraca, pra dar pra achar no escuro.
             CreatePointLight(loreObject.transform, "Glow", (spot.X + 0.5f, spot.Y + 1.2f),
                 new Color(0.95f, 0.90f, 0.75f), 0.5f, 3.5f);
 
             return loreObject;
+        }
+
+        /// <summary>
+        /// Uma placa de tutorial fincada no chao. A area cobre o trecho onde o
+        /// movimento comeca a ser preciso; enquanto o Scrap esta nela, o painel
+        /// com a mini cena fica aberto no canto da tela.
+        /// </summary>
+        private static GameObject CreateTutorialSign(Transform parent, Phase01Layout.TutorialSpot spot)
+        {
+            var signObject = new GameObject(spot.Name);
+            signObject.transform.SetParent(parent, false);
+            signObject.transform.position = new Vector3(spot.X + 0.5f, spot.Y, 0f);
+
+            var art = signObject.AddComponent<SpriteRenderer>();
+            art.sprite = Phase02Assets.LoadSprite(Phase02Assets.TutorialSignName((int)spot.Kind));
+            art.sortingLayerName = Phase01Assets.SortingTerrain;
+            art.sortingOrder = 6;
+
+            // A area, em coordenadas do objeto (que esta no meio da celula da placa).
+            float left = spot.AreaX0;
+            float right = spot.AreaX1 + 1f;
+            var area = signObject.AddComponent<BoxCollider2D>();
+            area.isTrigger = true;
+            area.size = new Vector2(right - left, 2.5f);
+            area.offset = new Vector2((left + right) * 0.5f - (spot.X + 0.5f), 1.25f);
+
+            ScrapMove move = spot.Kind == Phase01Layout.TutorialKind.Pogo ? ScrapMove.Pogo : ScrapMove.WallJump;
+            signObject.AddComponent<TutorialSign>().Configure(move, art);
+
+            // Uma luz fraca, pra dar pra achar no escuro.
+            CreatePointLight(signObject.transform, "Glow", (spot.X + 0.5f, spot.Y + 1.4f),
+                new Color(0.95f, 0.90f, 0.75f), 0.5f, 3f);
+
+            return signObject;
         }
 
         /// <summary>
@@ -1410,7 +1526,7 @@ namespace EchoesOfCravejada.EditorTools
             var root = new GameObject("Enemies");
             root.transform.SetParent(parent, false);
 
-            Sprite[] walk = Phase02Assets.CrawlerWalkSprites();
+            Sprite[] frames = Phase02Assets.LoadSheet(Phase02Assets.CrawlerSheet, CrawlerArt.FrameCount);
             Sprite shard = Phase02Assets.LoadSprite(Phase02Assets.Shard);
 
             foreach (Phase01Layout.Patrol patrol in Phase01Layout.Crawlers)
@@ -1420,7 +1536,7 @@ namespace EchoesOfCravejada.EditorTools
                 crawler.transform.position = new Vector3((patrol.X0 + patrol.X1 + 1) * 0.5f, patrol.Y + 0.5f, 0f);
 
                 var renderer = crawler.AddComponent<SpriteRenderer>();
-                renderer.sprite = walk.Length > 0 ? walk[0] : null;
+                renderer.sprite = frames[CrawlerArt.Walk];
                 renderer.sortingLayerName = Phase01Assets.SortingActors;
                 renderer.sortingOrder = -3;
 
@@ -1435,7 +1551,7 @@ namespace EchoesOfCravejada.EditorTools
                 body.bodyType = RigidbodyType2D.Kinematic;
 
                 crawler.AddComponent<Damageable>().Configure(5, 3, shard);
-                crawler.AddComponent<CrawlerEnemy>().Configure(patrol.X0 + 0.5f, patrol.X1 + 0.5f, walk);
+                crawler.AddComponent<CrawlerEnemy>().Configure(patrol.X0 + 0.5f, patrol.X1 + 0.5f, frames);
 
                 // O verde do Oxide vazando pela rachadura e pelo olho: sem isso,
                 // no escuro do poco, ele vira so um vulto.

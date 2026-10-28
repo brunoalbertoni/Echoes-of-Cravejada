@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.U2D.Sprites;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -55,6 +56,20 @@ namespace EchoesOfCravejada.EditorTools
         public const string Hatch = "hatch";
         public const string Workbench = "workbench";
         public const string ScrapPolished = "scrap_polished";
+
+        // A decoracao dos operarios.
+        public const string HangingLamp = "decor_lamp";
+        public const string Locker = "decor_locker";
+        public const string LockerOpen = "decor_locker_open";
+        public const string MaskRack = "decor_mask_rack";
+        public const string EmptyShelf = "decor_shelf";
+        public const string Barrel = "decor_barrel";
+        public const string Railing = "decor_railing";
+        public const string CrownPoster = "decor_crown_poster";
+        public const string RoomSign = "decor_sign";
+        public const string Chain = "decor_chain";
+        public const string ElevatorCage = "elevator_cage";
+        public const string ElevatorRail = "elevator_rail";
         public const string SkylineFar = "skyline_far";
         public const string SkylineNear = "skyline_near";
 
@@ -65,7 +80,6 @@ namespace EchoesOfCravejada.EditorTools
         public const string LeverRusty = "lever_rusty";
         public const string LeverClean = "lever_clean";
         public const string GateBars = "gate_bars";
-        public const string RustyScrapper = "rusty_scrapper";
         public const string ScrapChunk = "scrap_chunk";
         public const string ShockWave = "shock_wave";
         public const string DashModule = "dash_module";
@@ -89,7 +103,34 @@ namespace EchoesOfCravejada.EditorTools
         public const string ScribbleMask = "scribble_mask";
         public const string Plaque = "plaque";
 
-        public static string SkeletonName(int variant) => "skeleton_" + variant;
+        /// <summary>
+        /// As folhas de quadros do District 1, no detalhe do Scrap: o
+        /// rastejante, o Coletor (inteiro e rachado) e os descartados.
+        /// </summary>
+        public const string CrawlerSheet = "crawler_sheet";
+        public const string ColetorSheet = "coletor_sheet";
+        public const string ColetorCrackedSheet = "coletor_cracked_sheet";
+
+        /// <summary>
+        /// As folhas de quadros do District 2, no detalhe do Scrap: os quatro
+        /// inimigos, o Mestre das Caldeiras (normal e em sobrepressao) e quem
+        /// se conversa (ver District2NpcArt).
+        /// </summary>
+        public const string LeechSheet = "d2_leech_sheet";
+        public const string SentrySheet = "d2_sentry_sheet";
+        public const string WelderSheet = "d2_welder_sheet";
+        public const string BloaterSheet = "d2_bloater_sheet";
+        public const string MasterSheet = "d2_master_sheet";
+        public const string MasterHotSheet = "d2_master_hot_sheet";
+
+        /// <summary>0 o velho encanador, 1 Solda, 2 Crisol.</summary>
+        public static string District2NpcSheet(int variant) => "d2_npc_" + variant + "_sheet";
+
+        /// <summary>Um descartado por variacao: 0 Refugo, 1 Rebite, 2 Ferrolho, 3 Pequena.</summary>
+        public static string DiscardedSheet(int variant) => "discarded_" + variant + "_sheet";
+
+        /// <summary>As placas de tutorial: 0 pulo de parede, 1 golpe pra baixo.</summary>
+        public static string TutorialSignName(int icon) => "tutorial_sign_" + icon;
 
         /// <summary>O nome de um quadro do Scrap: sucata ou polido, e o numero do quadro.</summary>
         public static string HeroFrameName(bool polished, int frame)
@@ -104,9 +145,6 @@ namespace EchoesOfCravejada.EditorTools
             for (int i = 0; i < frames.Length; i++) frames[i] = LoadSprite(HeroFrameName(polished, i));
             return frames;
         }
-
-        /// <summary>O autômato rastejante: um bicho de engrenagem tomado pelo Oxide, um sprite por quadro.</summary>
-        public static string CogCrawlerName(int frame) => "cog_crawler_" + frame;
 
         /// <summary>As ferramentas do mestre do Rebite: 0 buril, 1 lupa, 2 pinca.</summary>
         public static string MasterToolName(int kind) => "master_tool_" + kind;
@@ -169,6 +207,19 @@ namespace EchoesOfCravejada.EditorTools
             WriteSprite(Workbench, BrassArt.Workbench(), corner);
             WriteSprite(ScrapPolished, BrassArt.ScrapPolished(), new Vector2(0.5f, 0f));
 
+            WriteSprite(HangingLamp, BrassArt.HangingLamp(), corner);
+            WriteSprite(Locker, BrassArt.Locker(false), corner);
+            WriteSprite(LockerOpen, BrassArt.Locker(true), corner);
+            WriteSprite(MaskRack, BrassArt.MaskRack(), corner);
+            WriteSprite(EmptyShelf, BrassArt.EmptyShelf(), corner);
+            WriteSprite(Barrel, BrassArt.Barrel(), corner);
+            WriteSprite(CrownPoster, BrassArt.CrownPoster(), corner);
+            WriteSprite(RoomSign, BrassArt.RoomSign(), corner);
+            WriteSprite(Railing, BrassArt.Railing(), corner, true);
+            WriteSprite(Chain, BrassArt.Chain(), corner, true);
+            WriteSprite(ElevatorCage, BrassArt.ElevatorCage(), corner);
+            WriteSprite(ElevatorRail, BrassArt.ElevatorRail(), corner, true);
+
             foreach (int width in nozzleWidths.Distinct())
             {
                 WriteSprite(NozzleName(width), BrassArt.Nozzle(width), corner);
@@ -229,7 +280,6 @@ namespace EchoesOfCravejada.EditorTools
             WriteSprite(LeverClean, ScrapArt.Lever(true), feet);
             WriteSprite(GateBars, ScrapArt.GateBars(), Vector2.zero, true);
             WriteSprite(Workbench, BrassArt.Workbench(), Vector2.zero);
-            WriteSprite(RustyScrapper, ScrapArt.RustyScrapper(), feet);
             WriteSprite(ScrapChunk, ScrapArt.ScrapChunk(), new Vector2(0.5f, 0.5f));
             WriteSprite(ShockWave, ScrapArt.ShockWave(), feet);
             WriteSprite(DashModule, ScrapArt.DashModule(), new Vector2(0.5f, 0.5f));
@@ -238,12 +288,11 @@ namespace EchoesOfCravejada.EditorTools
 
             for (int i = 0; i < HeroArt.FrameCount; i++)
             {
-                WriteSprite(HeroFrameName(false, i), scrapFrames[i], feet);
-                WriteSprite(HeroFrameName(true, i), polishedFrames[i], feet);
+                // O Scrap tem o dobro de pixels por tile do mundo: mais detalhe num corpo menor.
+                WriteSprite(HeroFrameName(false, i), scrapFrames[i], feet, false, HeroArt.PixelsPerUnit);
+                WriteSprite(HeroFrameName(true, i), polishedFrames[i], feet, false, HeroArt.PixelsPerUnit);
             }
 
-            WriteSprite(SkeletonName(0), ScrapArt.Skeleton(0), feet);
-            WriteSprite(SkeletonName(1), ScrapArt.Skeleton(1), feet);
             WriteSprite(NozzleName(4), BrassArt.Nozzle(4), Vector2.zero);
 
             // O que se le pelo mapa: o District 1 tambem tem.
@@ -252,11 +301,9 @@ namespace EchoesOfCravejada.EditorTools
             WriteSprite(ScribbleText, ScrapArt.Scribble(0), middle);
             WriteSprite(Plaque, ScrapArt.Plaque(), middle);
 
-            // O rastejante: 24x16 com o pivo no centro, como era o tile do
-            // escorpiao que ele substitui — os pes continuam no chao.
-            for (int frame = 0; frame < ScrapArt.CogCrawlerFrames; frame++)
+            for (int icon = 0; icon < ScrapArt.TutorialSignIcons; icon++)
             {
-                WriteSprite(CogCrawlerName(frame), ScrapArt.CogCrawler(frame), middle);
+                WriteSprite(TutorialSignName(icon), ScrapArt.TutorialSign(icon), feet);
             }
 
             for (int kind = 0; kind < ScrapArt.MasterToolCount; kind++)
@@ -273,18 +320,152 @@ namespace EchoesOfCravejada.EditorTools
             return true;
         }
 
-        /// <summary>Os quadros da caminhada do inimigo rastejante, em ordem.</summary>
-        public static Sprite[] CrawlerWalkSprites()
+        /// <summary>
+        /// A arte em alta que so o District 1 usa: os descartados, o
+        /// rastejante e o Coletor. Fica fora do EnsureMechanicsArt, que as
+        /// outras fases tambem chamam.
+        /// </summary>
+        public static void EnsureDistrict1Art()
         {
-            var frames = new List<Sprite>();
-
-            for (int frame = 0; frame < ScrapArt.CogCrawlerFrames; frame++)
+            Phase01Assets.EnsureFolders();
+            if (!AssetDatabase.IsValidFolder(BrassFolder))
             {
-                Sprite sprite = LoadSprite(CogCrawlerName(frame));
-                if (sprite != null) frames.Add(sprite);
+                AssetDatabase.CreateFolder(Phase01Assets.GeneratedRoot, "Brass");
             }
 
-            return frames.ToArray();
+            var feet = new Vector2(0.5f, 0f);
+
+            // Os descartados, o rastejante e o Coletor: folhas de quadros com
+            // 32 pixels por tile, como o Scrap.
+            for (int variant = 0; variant < DiscardedArt.Count; variant++)
+            {
+                WriteSheet(DiscardedSheet(variant), DiscardedArt.Frames(variant), feet, DiscardedArt.PixelsPerUnit);
+            }
+
+            // O rastejante tem o pivo meio tile acima dos pes, como o desenho antigo.
+            WriteSheet(CrawlerSheet, CrawlerArt.Frames(), new Vector2(0.5f, CrawlerArt.PivotY), CrawlerArt.PixelsPerUnit);
+            var soles = new Vector2(0.5f, ColetorArt.PivotY);
+            WriteSheet(ColetorSheet, ColetorArt.Frames(false), soles, ColetorArt.PixelsPerUnit);
+            WriteSheet(ColetorCrackedSheet, ColetorArt.Frames(true), soles, ColetorArt.PixelsPerUnit);
+        }
+
+        /// <summary>
+        /// A arte em alta que so o District 2 usa: os inimigos, o boss e quem
+        /// se conversa. Os desenhos antigos (brass_welder, crisol...) ficam,
+        /// porque as outras fases ainda os usam.
+        /// </summary>
+        public static void EnsureDistrict2Art()
+        {
+            Phase01Assets.EnsureFolders();
+            if (!AssetDatabase.IsValidFolder(BrassFolder))
+            {
+                AssetDatabase.CreateFolder(Phase01Assets.GeneratedRoot, "Brass");
+            }
+
+            WriteSheet(LeechSheet, LeechArt.Frames(), new Vector2(0.5f, LeechArt.PivotY), LeechArt.PixelsPerUnit);
+            WriteSheet(SentrySheet, SentryArt.Frames(), new Vector2(SentryArt.PivotX, SentryArt.PivotY), SentryArt.PixelsPerUnit);
+            WriteSheet(WelderSheet, WelderArt.Frames(), new Vector2(WelderArt.PivotX, WelderArt.PivotY), WelderArt.PixelsPerUnit);
+            WriteSheet(BloaterSheet, BloaterArt.Frames(), new Vector2(BloaterArt.PivotX, BloaterArt.PivotY), BloaterArt.PixelsPerUnit);
+
+            var bossPivot = new Vector2(BoilerMasterArt.PivotX, BoilerMasterArt.PivotY);
+            WriteSheet(MasterSheet, BoilerMasterArt.Frames(false), bossPivot, BoilerMasterArt.PixelsPerUnit);
+            WriteSheet(MasterHotSheet, BoilerMasterArt.Frames(true), bossPivot, BoilerMasterArt.PixelsPerUnit);
+
+            for (int variant = 0; variant < District2NpcArt.Count; variant++)
+            {
+                WriteSheet(District2NpcSheet(variant), District2NpcArt.Frames(variant), new Vector2(0.5f, 0f), District2NpcArt.PixelsPerUnit);
+            }
+        }
+
+        /// <summary>Os quadros de uma folha, na ordem em que foram desenhados.</summary>
+        public static Sprite[] LoadSheet(string name, int count)
+        {
+            string path = SpritePath(name);
+            Dictionary<string, Sprite> sprites = SpritesOf(path);
+            var frames = new Sprite[count];
+
+            for (int i = 0; i < count; i++)
+            {
+                if (!sprites.TryGetValue(SheetFrameName(name, i), out frames[i]))
+                {
+                    Debug.LogWarning($"[Phase 2] Quadro {i} da folha '{name}' nao existe em {path}.");
+                }
+            }
+
+            return frames;
+        }
+
+        private static string SheetFrameName(string sheet, int frame) => sheet + "_" + frame.ToString("00");
+
+        /// <summary>
+        /// Grava varios quadros do mesmo tamanho numa folha so (em grade, oito
+        /// por linha) e a fatia, um sprite por quadro, todos com o mesmo pivo.
+        /// </summary>
+        internal static void WriteSheet(string name, PixelCanvas[] frames, Vector2 pivot, int pixelsPerUnit)
+        {
+            const int columns = 8;
+            int width = frames[0].Width;
+            int height = frames[0].Height;
+            int rows = (frames.Length + columns - 1) / columns;
+
+            var sheet = new PixelCanvas(width * Mathf.Min(columns, frames.Length), height * rows);
+            for (int i = 0; i < frames.Length; i++)
+            {
+                sheet.Blit(frames[i], (i % columns) * width, (i / columns) * height);
+            }
+
+            string path = SpritePath(name);
+            WriteCanvas(path, sheet);
+
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer == null) return;
+
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Multiple;
+            importer.spritePixelsPerUnit = pixelsPerUnit;
+            importer.filterMode = FilterMode.Point;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.mipmapEnabled = false;
+            importer.alphaIsTransparency = true;
+            importer.wrapMode = TextureWrapMode.Clamp;
+            importer.SaveAndReimport();
+
+            var factories = new SpriteDataProviderFactories();
+            factories.Init();
+            ISpriteEditorDataProvider provider = factories.GetSpriteEditorDataProviderFromObject(importer);
+            provider.InitSpriteEditorDataProvider();
+
+            // Reaproveita o id de quem ja existia, pra cena nao perder a referencia.
+            var previous = new Dictionary<string, GUID>();
+            foreach (SpriteRect old in provider.GetSpriteRects()) previous[old.name] = old.spriteID;
+
+            var rects = new List<SpriteRect>();
+            var pairs = new List<SpriteNameFileIdPair>();
+
+            for (int i = 0; i < frames.Length; i++)
+            {
+                string frameName = SheetFrameName(name, i);
+                int x = (i % columns) * width;
+                int y = (i / columns) * height;
+
+                var rect = new SpriteRect
+                {
+                    name = frameName,
+                    spriteID = previous.TryGetValue(frameName, out GUID id) ? id : GUID.Generate(),
+                    // O Rect da textura tem origem embaixo; a grade e medida de cima.
+                    rect = new Rect(x, sheet.Height - y - height, width, height),
+                    alignment = SpriteAlignment.Custom,
+                    pivot = pivot,
+                };
+
+                rects.Add(rect);
+                pairs.Add(new SpriteNameFileIdPair(rect.name, rect.spriteID));
+            }
+
+            provider.SetSpriteRects(rects.ToArray());
+            provider.GetDataProvider<ISpriteNameFileIdDataProvider>()?.SetNameFileIdPairs(pairs);
+            provider.Apply();
+            importer.SaveAndReimport();
         }
 
         /// <summary>
@@ -432,7 +613,8 @@ namespace EchoesOfCravejada.EditorTools
             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
         }
 
-        internal static void WriteSprite(string name, PixelCanvas canvas, Vector2 pivot, bool tiled = false)
+        internal static void WriteSprite(string name, PixelCanvas canvas, Vector2 pivot, bool tiled = false,
+            int pixelsPerUnit = Phase01Assets.PixelsPerUnit)
         {
             string path = SpritePath(name);
             WriteCanvas(path, canvas);
@@ -442,7 +624,7 @@ namespace EchoesOfCravejada.EditorTools
 
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Single;
-            importer.spritePixelsPerUnit = Phase01Assets.PixelsPerUnit;
+            importer.spritePixelsPerUnit = pixelsPerUnit;
             importer.filterMode = FilterMode.Point;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.mipmapEnabled = false;

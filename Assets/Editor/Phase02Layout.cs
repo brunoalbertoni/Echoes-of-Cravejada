@@ -6,49 +6,91 @@ namespace EchoesOfCravejada.EditorTools
     /// <summary>
     /// O desenho da Phase 2 — District 2: The Brass Pipelines.
     ///
-    /// O sistema circulatorio de Cravejada. Nao e um corredor: e uma rede de
-    /// dezessete salas onde quase toda sala leva a mais de uma.
+    /// O sistema circulatorio de Cravejada, organizado em volta de um centro.
     ///
-    /// O caminho principal, que e o do documento de design:
-    ///   1  Galeria de Transicao     a sucata vira latao; o primeiro polimento
-    ///   2  Os Primeiros Canos       tres colunas de vapor pra subir, sem perigo
-    ///   3  A Valvula Emperrada      uma poca de acido; a valvula seca
-    ///   4  Cisterna de Crisol       sala segura: bancada, Crisol e a loja
-    ///   5  Salao dos Welders        combate, com um caminho por cima dos canos
-    ///   6  A Cadeia de Vapor        um lago de acido cruzado de coluna em jato
-    ///   7  O Labirinto de Valvulas  tres valvulas em sequencia ligam o elevador
-    ///   8  Workbench pre-boss       respiro antes da arena
-    ///   9  A Sala de Caldeiras      a arena do Boiler Master
-    ///   10 O Acido Ascendente       a fuga, com o acido subindo atras
-    ///   11 Saida pros Silent Geodes o latao vira cristal
+    /// A ENTRADA (linear e curta): 1 Galeria de Transicao, 2 Primeiros Canos,
+    /// 3 Valvula Emperrada. Cada corrompido novo aparece uma vez, sozinho, e a
+    /// primeira pagina do livro de turnos fica no caminho.
     ///
-    /// E as areas fora dele, que ligam umas salas nas outras:
-    ///   A  O Esgoto                 por baixo de tudo: cisterna, primeiros canos e salao
-    ///   B  A Casa de Maquinas       tres andares de passarela por cima do salao
-    ///   C  A Galeria dos Manometros o sotao, com um atalho de volta pro comeco
-    ///   D  O Deposito               embaixo do labirinto, ate o lago e a torre
-    ///   E  A Torre das Valvulas     quatro andares, um por valvula, do deposito ao alto
-    ///   F  A Galeria Alta           por cima da arena, da torre ao poco de fuga
+    /// O CENTRO: 5 a Praca (o Salao dos Welders) e, embaixo dela, 4 a
+    /// Cisterna, com Crisol, a loja, a bancada e o cofre do velho encanador,
+    /// que pede as paginas. Da Praca sobe a Escadaria das Tres Travas, que
+    /// leva ao boss e fica fechada ate as tres alas acabarem.
     ///
-    /// Diferente da Phase 1, este mapa nao e um desenho em texto: com 290x110
+    /// AS TRES ALAS, em qualquer ordem. Cada uma conta um pedaco da historia,
+    /// guarda uma pagina do livro, termina numa valvula que abre uma trava e
+    /// tem um atalho de mao unica de volta pra Praca:
+    ///   Alta  (B Casa de Maquinas, C Sotao)     a culpa da Coroa
+    ///   Baixa (A Esgoto, D Deposito, E Torre)   os operarios e as mascaras
+    ///   Leste (6 Cadeia de Vapor, 7 Labirinto)  quem ficou pra tras
+    ///
+    /// O BOSS E DEPOIS: 8 pre-boss, 9 Sala de Caldeiras. A queda do Boiler
+    /// Master purifica o distrito e abre a grade leste: um tunel curto e a
+    /// coluna pra F Galeria Alta (o desafio do Salto de Pressao). A direita
+    /// dela, G a subida; por cima dela, a passarela ate H a estacao do
+    /// elevador, que fica em cima do poco da Escadaria — cuja escada, la em
+    /// cima, desabou. O elevador e a saida pro District 3: a fase inteira e
+    /// uma subida.
+    ///
+    /// A dificuldade e a mesma do comeco ao fim: calibrada pro Scrap que sai
+    /// do District 1 com o Steam Dash, e que pode comprar na loja de Crisol.
+    /// O mapa conta com o dash: ha vaos que so se cruzam com ele, e alguns so
+    /// emendando dash em nuvem de vapor.
+    ///
+    /// Gemas sao raras: a fase tem exatamente duas (o nicho secreto da Cadeia
+    /// de Vapor e a do encanador), e a validacao cobra.
+    ///
+    /// Diferente da Phase 1, este mapa nao e um desenho em texto: com 290x113
     /// tiles ele ficaria impossivel de ler. Cada sala e um metodo que escava a
     /// rocha e, no mesmo lugar, declara o que mora nela — vapor, acido,
     /// valvulas, inimigos, canos, luzes. Mexer na sala e mexer no metodo dela.
-    ///
-    /// Aqui o Scrap ja tem o Steam Dash, e o mapa conta com ele: ha vaos que
-    /// so se cruzam com dash, e alguns so emendando dash em nuvem de vapor.
     ///
     /// Este arquivo nao depende de UnityEngine de proposito: assim da pra rodar
     /// Validate() fora do editor e conferir que o mapa e navegavel de verdade.
     /// </summary>
     public static class Phase02Layout
     {
-        public const int Width = 290;
-        public const int Height = 110;
+        public const int Width = 216;
+        public const int Height = 140;
 
         // Nomes usados pra ligar a saida de uma cena a chegada na outra.
         public const string SceneName = "Phase02_BrassPipelines";
         public const string FromDistrict1SpawnId = "FromDistrict1";
+
+        /// <summary>
+        /// As tres alas que se abrem da Praca, e as salas de cada uma. O
+        /// jogador faz na ordem que quiser; cada uma acaba numa valvula que
+        /// abre uma trava da Escadaria. A validacao confere que nenhuma ala
+        /// depende de outra e que o boss pede as tres.
+        /// </summary>
+        public static readonly (string Wing, string[] Rooms)[] Wings =
+        {
+            ("Alta", new[] { "B_MachineHall", "C_GaugeAttic" }),
+            ("Baixa", new[] { "A_Sewer", "D_Depot", "E_ValveTower" }),
+            ("Leste", new[] { "06_SteamChain", "07_ValveMaze" }),
+        };
+
+        /// <summary>A sala que contem a celula, ou null.</summary>
+        public static string RoomAt(int x, int y)
+        {
+            foreach ((string name, Area area) in Rooms)
+            {
+                if (area.Contains(x, y)) return name;
+            }
+
+            return null;
+        }
+
+        /// <summary>A ala de uma sala, ou null se ela e da entrada, do centro ou do boss.</summary>
+        public static string WingOf(string room)
+        {
+            foreach ((string wing, string[] rooms) in Wings)
+            {
+                if (Array.IndexOf(rooms, room) >= 0) return wing;
+            }
+
+            return null;
+        }
 
         // ------------------------------------------------------------------
         // Tipos
@@ -151,6 +193,18 @@ namespace EchoesOfCravejada.EditorTools
 
             /// <summary>Se e uma das tres da arena, que atordoam o Boiler Master.</summary>
             public bool Arena;
+
+            /// <summary>
+            /// Se e a valvula do fim de uma ala: abre uma das tres travas da
+            /// Escadaria, e o jogo avisa no HUD.
+            /// </summary>
+            public bool Lock;
+
+            /// <summary>
+            /// O que ela muda longe da vista, dito no HUD quando gira. Toda
+            /// valvula que liga vapor em outra sala precisa de um.
+            /// </summary>
+            public string Notice;
         }
 
         public enum GateOpener
@@ -198,6 +252,12 @@ namespace EchoesOfCravejada.EditorTools
             public int Direction = 1;
             public int Range = 14;
             public int CeilingY;
+
+            /// <summary>
+            /// A celula onde ele comeca, pra quem anda. -1 e o meio do trecho.
+            /// Quando dois dividem o mesmo chao, cada um comeca num ponto.
+            /// </summary>
+            public int StartX = -1;
         }
 
         /// <summary>
@@ -206,6 +266,9 @@ namespace EchoesOfCravejada.EditorTools
         /// </summary>
         public sealed class BoilerSpec
         {
+            /// <summary>A sala, pra saber a que ala ela pertence.</summary>
+            public string Group;
+
             public string Name;
             public int X;
             public int Y;
@@ -314,6 +377,36 @@ namespace EchoesOfCravejada.EditorTools
 
             /// <summary>Bocal de vapor virado de lado. Size e a altura em tiles.</summary>
             NozzleSide,
+
+            /// <summary>Lampiao pendurado, 1x2. X e Y sao o canto de baixo; o topo encosta no teto.</summary>
+            Lamp,
+
+            /// <summary>Armario de operario, 1x2. Flipped: aberto e vazio.</summary>
+            Locker,
+
+            /// <summary>O cabide das mascaras, 2x1.5: uma mascara so, e as marcas das outras.</summary>
+            MaskRack,
+
+            /// <summary>Prateleira vazia do deposito, 2x2.</summary>
+            Shelf,
+
+            /// <summary>Tambor de ferro, 1x1.5.</summary>
+            Barrel,
+
+            /// <summary>Guarda-corpo de passarela. Size e a largura em tiles.</summary>
+            Railing,
+
+            /// <summary>Cartaz da Coroa, 2x2.</summary>
+            Poster,
+
+            /// <summary>Placa de sala, 3x1.</summary>
+            Sign,
+
+            /// <summary>Corrente pendurada. Size e a altura em tiles.</summary>
+            Chain,
+
+            /// <summary>Os trilhos do poco do elevador, 3 de largura. Size e a altura em tiles.</summary>
+            ElevatorRail,
         }
 
         /// <summary>Um objeto de cenario que nao cabe num tile. X e Y sao o canto de baixo, a esquerda.</summary>
@@ -617,11 +710,11 @@ namespace EchoesOfCravejada.EditorTools
         public static readonly List<(string Name, Area Area)> Veils = new List<(string, Area)>();
 
         /// <summary>Onde Crisol fica.</summary>
-        public static (int X, int Y) CrisolTile => (112, 19);
+        public static (int X, int Y) CrisolTile => (90, 25);
 
         public static readonly string[] CrisolLines =
         {
-            "Hm. Mais um pedaço de sucata que desceu pelos canos errados.",
+            "Hum. Mais um pedaço de sucata que desceu pelos canos errados.",
             "Eu sou Crisol, o Lapidário. Já cravei pedra em coroa. Hoje conserto lata para quem não sabe o que é brilho.",
             "Esse aro de prata que você carrega... o Coletor deixou cair, não foi? Dê-me isso aqui. Você nem sabe o que é isso.",
             "É um engaste. Serve para segurar uma gema no chassi. Tome: um rubi bruto. Vamos ver se essa sucata aguenta uma pedra de verdade.",
@@ -639,14 +732,14 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>O que ele diz depois da purificacao.</summary>
         public static readonly string[] CrisolPurifiedLines =
         {
-            "Sentiu? O vapor está limpo. Fazia anos que esta cisterna não cheirava a outra coisa que não verde.",
+            "Sentiu? O vapor está limpo. Fazia anos que esta cisterna só cheirava a verde.",
             "Não pense que isso me comove. ...Mas a bancada está trabalhando melhor. Diga o que quer.",
         };
 
         /// <summary>A memoria que ele vende por uma gema: como lapidou a coroa do Rei de Prata.</summary>
         public static readonly string[] CrisolMemoryLines =
         {
-            "Quer saber da Coroa de Facetas? Então ouça, e não interrompa.",
+            "Quer saber da Coroa de Facetas? Então ouça e não interrompa.",
             "O Rei de Prata me deu um bloco de quartzo do tamanho da minha cabeça e disse: novecentas e vinte e cinco facetas. Uma para cada Nobre.",
             "Levei três anos. Cada faceta tinha que refletir a luz de todas as outras. Se uma ficasse torta, a coroa inteira ficava cega.",
             "No dia da coroação, a luz de Cravejada inteira passou por ela. Os geodos acenderam de ponta a ponta. Eu vi do fundo do salão, de pé, atrás dos Nobres.",
@@ -655,33 +748,30 @@ namespace EchoesOfCravejada.EditorTools
         };
 
         /// <summary>A area de onde o acido do poco de fuga parte, e ate que altura ele sobe.</summary>
-        public const string RisingAcidPool = "Acid_RisingAcid";
-        public static Area RisingAcidTrigger => Area.Between(142, 56, 151, 60);
-        public const float RisingAcidHeight = 44f;
-
-        /// <summary>Chegar aqui depois do boss purifica o distrito: e o topo da fuga.</summary>
-        public static Area PurifyArea => Area.Between(128, 96, 136, 100);
 
         /// <summary>Onde o Boiler Master fica, ate onde ele anda e a area que o acorda.</summary>
-        public static (int X, int Y) BossTile => (181, 56);
+        public static (int X, int Y) BossTile => (149, 59);
 
         /// <summary>
         /// Ate onde ele anda: a sala inteira, de parede a parede. Nao sobra
         /// canto onde se fique na altura da cabeca dele sem que ele alcance.
         /// </summary>
-        public static (int X0, int X1) BossRange => (154, 195);
+        public static (int X0, int X1) BossRange => (135, 176);
 
         /// <summary>Metade da largura do corpo dele (o colisor tem 2.8).</summary>
         public const float BossHalfWidth = 1.4f;
 
-        public static Area BossWakeArea => Area.Between(156, 56, 194, 66);
+        public static Area BossWakeArea => Area.Between(136, 59, 174, 69);
         public const string BossGate = "Gate_ArenaExit";
 
         /// <summary>
         /// A passagem da sala pre-boss pra arena: a coluna que o selo fecha
         /// enquanto ele luta. Com a grade da saida, a arena fica trancada.
         /// </summary>
-        public static Area ArenaSeal => Area.Between(199, 56, 199, 60);
+        public static Area ArenaSeal => Area.Between(131, 59, 131, 63);
+
+        /// <summary>A arena por dentro: do selo da entrada (x 131) a grade da saida (x 180).</summary>
+        public static Area ArenaInside => Area.Between(132, 59, 179, 74);
 
         /// <summary>Onde nao ha parede de fundo: os saloes abertos, por onde se ve o horizonte.</summary>
         public static readonly List<Area> Voids = new List<Area>();
@@ -689,10 +779,18 @@ namespace EchoesOfCravejada.EditorTools
         private static readonly List<(Area Area, Material Material)> MaterialZones = new List<(Area, Material)>();
 
         /// <summary>Onde o Scrap aparece quando chega do District 1.</summary>
-        public static (int X, int Y) SpawnTile => (15, 6);
+        public static (int X, int Y) SpawnTile => (12, 6);
 
         /// <summary>O fim do mapa: o toco que leva aos Silent Geodes.</summary>
-        public static (int X, int Y) District3Tile => (108, 96);
+        public static (int X, int Y) District3Tile => (121, 100);
+
+        /// <summary>
+        /// O elevador da estacao, em cima do poco da Escadaria: a cabine (3 de
+        /// largura, piso na linha Y) e ate que altura ela sobe antes de a cena
+        /// trocar. E a unica saida do distrito.
+        /// </summary>
+        public static Area ElevatorCar => Area.Between(120, 100, 122, 102);
+        public const float ElevatorTopY = 133f;
 
         // Cada camada de cano guarda, por celula, pra que lados ele continua
         // e se e de cobre velho. Guardar a mascara (e nao so "tem cano aqui")
@@ -722,8 +820,7 @@ namespace EchoesOfCravejada.EditorTools
             BuildValveMaze();
             BuildWorkbenchRoom();
             BuildBoilerRoom();
-            BuildRisingAcid();
-            BuildGeodeExit();
+            BuildExitTunnel();
 
             BuildSewer();
             BuildMachineHall();
@@ -731,6 +828,8 @@ namespace EchoesOfCravejada.EditorTools
             BuildDepot();
             BuildValveTower();
             BuildHighGallery();
+            BuildElevatorClimb();
+            BuildElevatorStation();
         }
 
         // ------------------------------------------------------------------
@@ -801,7 +900,7 @@ namespace EchoesOfCravejada.EditorTools
         }
 
         private static void Enemy(EnemyKind kind, string name, int x0, int x1, int y,
-            int direction = 1, int range = 14, int ceilingY = 0)
+            int direction = 1, int range = 14, int ceilingY = 0, int start = -1)
         {
             Enemies.Add(new EnemySpec
             {
@@ -813,6 +912,7 @@ namespace EchoesOfCravejada.EditorTools
                 Direction = direction,
                 Range = range,
                 CeilingY = ceilingY,
+                StartX = start,
             });
         }
 
@@ -835,10 +935,12 @@ namespace EchoesOfCravejada.EditorTools
             BreakableWalls.Add((name, Area.Between(x0, y0, x1, y1)));
         }
 
-        private static void PressureBoiler(string name, int x, int y, int standX, int standY, params string[] walls)
+        private static void PressureBoiler(string group, string name, int x, int y, int standX, int standY,
+            params string[] walls)
         {
             PressureBoilers.Add(new BoilerSpec
             {
+                Group = group,
                 Name = name,
                 X = x,
                 Y = y,
@@ -1313,850 +1415,285 @@ namespace EchoesOfCravejada.EditorTools
         }
 
         // ------------------------------------------------------------------
+        // Decoracao dos operarios
+        // ------------------------------------------------------------------
+
+        private static int _decor;
+
+        private static string DecorName(string kind) => $"{kind}_{_decor++}";
+
+        /// <summary>Um lampiao pendurado, encostado no teto. topAir e a ultima linha de ar embaixo do teto.</summary>
+        private static void Lamp(int x, int topAir, float intensity = 0.8f)
+        {
+            Fix(FixtureKind.Lamp, DecorName("Lamp"), x, topAir - 1);
+            Shine(x + 0.5f, topAir - 1.2f, 6.5f, intensity, Glow.Lamp);
+        }
+
+        /// <summary>Guarda-corpo em cima de um chao (y e a linha onde se pisa).</summary>
+        private static void Rail(int x0, int x1, int y)
+        {
+            Fixtures.Add(new Fixture(FixtureKind.Railing, DecorName("Rail"), x0, y, x1 - x0 + 1));
+        }
+
+        /// <summary>Corrente pendurada do teto, de topAir pra baixo.</summary>
+        private static void HangChain(int x, int topAir, int length)
+        {
+            Fixtures.Add(new Fixture(FixtureKind.Chain, DecorName("Chain"), x, topAir - length + 1, length));
+        }
+
+        /// <summary>Uma fileira de armarios de operario no chao. Um em cada tres esta aberto e vazio.</summary>
+        private static void Lockers(int x0, int y, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Fixtures.Add(new Fixture(FixtureKind.Locker, DecorName("Locker"), x0 + i, y, 0, i % 3 == 1));
+            }
+        }
+
+        private static void Decor(FixtureKind kind, int x, int y) => Fix(kind, DecorName(kind.ToString()), x, y);
+
+        // ------------------------------------------------------------------
         // 1. A Galeria de Transicao
         // ------------------------------------------------------------------
 
+        /// <summary>
+        /// Onde o Scrap chega do District 1, por um poco gradeado. A metade
+        /// oeste ainda e a rocha cor de ferrugem do Scrap Pit; a leste o latao
+        /// comeca, com o tablado onde ele ganha o primeiro polimento. Um bloater
+        /// sozinho na saida ensina o primeiro corrompido do distrito.
+        /// </summary>
         private static void BuildGallery()
         {
             const string room = "01_Gallery";
-            Room(room, 6, 6, 50, 15);
+            Room(room, 3, 6, 37, 13);
 
-            // A metade oeste ainda e o Scrap Pit: rocha cor de ferrugem.
-            MaterialZones.Add((Area.Between(0, 0, 23, 22), Material.Rock));
+            MaterialZones.Add((Area.Between(0, 0, 18, 20), Material.Rock));
 
-            Carve(6, 6, 28, 14);
-            Carve(29, 7, 50, 15);
+            Carve(3, 6, 36, 13);
+            Solid(3, 11, 9, 13);
+            Solid(16, 13, 21, 13);
 
-            // Um pedaco de teto mais baixo de cada lado, pra a galeria nao ser um caixote.
-            Solid(14, 13, 20, 14);
-            Solid(40, 14, 46, 15);
+            // O poco por onde se chega, ja com a grade fechada por cima.
+            Carve(7, 1, 9, 5);
+            Grate(7, 9, 5);
+            Shine(8.5f, 3f, 6f, 0.8f, Glow.Oxide);
+            Leaks.Add(new Leak(8.5f, 5f, 0f, 1f));
+            Hazes.Add(new Haze("Oxide_Gallery", 12f, 7f, 16f, 2.5f, 0.14f, 1.1f, false, Glow.Oxide));
 
-            // O poco por onde se chega do Scrap Pit, ja com a tampa fechada: uma
-            // grade por cima. Da pra ver o Oxide la embaixo, mas nao ha volta.
-            Carve(10, 2, 12, 5);
-            Grate(10, 12, 5);
+            // O tablado do polimento, com dois lampioes: a primeira luz limpa.
+            Solid(22, 6, 27, 6);
+            Mark(room, "Tarnished_1", 23, 7);
+            Mark(room, "Tarnished_2", 26, 7);
+            Lamp(23, 13);
+            Lamp(26, 13);
+            Decor(FixtureKind.Sign, 23, 10);
 
-            // O tablado do polimento.
-            Solid(35, 7, 39, 7);
+            // A saida pros Primeiros Canos.
+            Carve(37, 6, 37, 9);
 
-            // Passagem pros Primeiros Canos.
-            Carve(51, 7, 51, 11);
+            Enemy(EnemyKind.AcidBloater, "Bloater_Gallery", 28, 46, 6, start: 32);
 
-            Mark(room, "Tarnished_1", 33, 7);
-            Mark(room, "Tarnished_2", 37, 8);
-            Mark(room, "Tarnished_3", 41, 7);
+            // Lado da sucata.
+            Put(GreyRock(3), 4, 6);
+            Put(Debris(1), 5, 6);
+            Put(Crate(1), 11, 6);
+            Put(Crate(0), 14, 6);
+            Put(Crate(2), 14, 7);
+            Put(Debris(0), 15, 6);
+            Put(Fence(0), 17, 6);
+            Put(Fence(1), 18, 6);
+            Put(DarkRock(1), 12, 6, PropLayer.Front);
+            Put(DarkWeed(2), 19, 6, PropLayer.Front);
+            Ore(Phase01Layout.RustBand, 15, 9, PropLayer.Back);
+            Ore(Phase01Layout.GreyBand, 1, 8, PropLayer.Middle);
 
-            // --- Lado da sucata ---
-            Put(GreyRock(3), 6, 6);
-            Put(Debris(1), 7, 6);
-            Put(Crate(1), 8, 6);
-            Put(Crate(0), 16, 6);
-            Put(Crate(2), 16, 7);
-            Put(Debris(0), 17, 6);
-            Put(GreyRock(1), 18, 6);
-            Put(Fence(0), 20, 6);
-            Put(Fence(1), 21, 6);
-            Put(GreyRock(2), 23, 6);
-            Put(DarkRock(1), 13, 6, PropLayer.Front);
-            Put(DarkWeed(2), 22, 6, PropLayer.Front);
-            Ore(Phase01Layout.RustBand, 18, 6, PropLayer.Back);
-            Ore(Phase01Layout.GreyBand, 2, 9, PropLayer.Middle);
-            Ore(Phase01Layout.RustBand, 16, 17, PropLayer.Middle);
+            // Lado do latao.
+            Furnace("Furnace_Gallery", 35, 6);
+            Fix(FixtureKind.GaugeBig, "Gauge_Gallery", 30, 10);
+            Decor(FixtureKind.Barrel, 20, 6);
+            Decor(FixtureKind.Barrel, 21, 6);
+            HangChain(31, 13, 3);
 
-            // O Oxide ainda sobe pelo poco, e clareia o lugar onde se chega.
-            Shine(11.5f, 4f, 6f, 0.8f, Glow.Oxide);
-            Shine(16f, 9.5f, 9f, 0.7f, Glow.Oxide);
-            Leaks.Add(new Leak(11.5f, 5f, 0f, 1f));
-            Hazes.Add(new Haze("Oxide_Gallery", 14f, 7f, 18f, 2.5f, 0.14f, 1.1f, false, Glow.Oxide));
-
-            // --- Lado do latao ---
-            Put(Crate(3), 26, 6);
-            Put(Crate(1), 47, 7);
-            Put(Crate(2), 48, 7);
-            Put(Crate(0), 48, 8);
-
-            Fix(FixtureKind.GaugeBig, "Gauge_Gallery", 30, 11);
-            Furnace("Furnace_Gallery", 44, 7);
-
-            // Dois lampioes em cima do tablado: e a unica luz limpa da sala.
-            Shine(35f, 11.5f, 6f, 0.75f, Glow.Lamp);
-            Shine(40f, 11.5f, 6f, 0.75f, Glow.Lamp);
-
-            Plumb(Area.Between(25, 7, 50, 15), 101, PipeLayer.Back, false);
-            RunPipe(PipeLayer.Mid, false, (24, 13), (33, 13), (33, 11));
-            RunPipe(PipeLayer.Mid, true, (26, 9), (26, 12), (30, 12));
-            RunPipe(PipeLayer.Far, false, (12, 6), (26, 6));
-
-            Steam(room, Area.Between(29, 7, 50, 15), 0.07f);
-            DripsIn(Area.Between(25, 7, 50, 15), 7, 11, false);
+            RunPipe(PipeLayer.Back, false, (19, 12), (37, 12));
+            RunPipe(PipeLayer.Back, true, (28, 12), (28, 7));
+            RunPipe(PipeLayer.Mid, false, (33, 13), (33, 10), (37, 10));
+            Steam(room, Area.Between(19, 6, 36, 13), 0.07f);
+            DripsIn(Area.Between(19, 6, 36, 13), 6, 11, false);
         }
 
         // ------------------------------------------------------------------
         // 2. Os Primeiros Canos
         // ------------------------------------------------------------------
 
+        /// <summary>
+        /// Um poco de tres colunas de vapor, alternando de lado: ensina a subir
+        /// no vapor, sem perigo. No alto, uma prateleira leva pra Valvula
+        /// Emperrada. A coluna que continua subindo (ate o Sotao) so liga com a
+        /// valvula de la: e um atalho de volta, nao um caminho.
+        /// </summary>
         private static void BuildFirstPipes()
         {
             const string room = "02_FirstPipes";
-            Room(room, 52, 7, 60, 40);
+            Room(room, 38, 6, 46, 39);
 
-            Carve(52, 7, 60, 40);
+            Carve(38, 6, 46, 39);
 
-            // Cada coluna sobe um andar e larga o Scrap do lado da proxima. A
-            // plataforma de chegada fica 3 tiles abaixo do topo do vapor, entao
-            // sair cedo da coluna ainda da certo — aqui nao e pra ter erro.
-            Lift("Lift_FirstPipes_A", 53, 55, 7, 17);
+            Lift("Lift_FirstPipes_A", 38, 40, 6, 16);
+            PipeFloor(43, 46, 14);
+            Rail(43, 46, 15);
 
-            PipeFloor(56, 60, 14);
-            Lift("Lift_FirstPipes_B", 58, 60, 15, 25);
+            Lift("Lift_FirstPipes_B", 44, 46, 15, 26);
+            PipeFloor(38, 41, 23);
+            Rail(38, 41, 24);
 
-            PipeFloor(52, 55, 22);
-            Lift("Lift_FirstPipes_C", 52, 54, 23, 33);
+            Lift("Lift_FirstPipes_C", 38, 40, 24, 39);
 
-            // A prateleira que recebe a ultima coluna e leva pra sala da valvula.
-            Solid(57, 29, 60, 30);
+            // A prateleira de cima, na altura da porta da Valvula Emperrada.
+            Solid(42, 33, 46, 35);
 
-            Fix(FixtureKind.GaugeSmall, "Gauge_FirstPipes_A", 52, 10);
-            Fix(FixtureKind.GaugeSmall, "Gauge_FirstPipes_B", 57, 18);
-            Fix(FixtureKind.GaugeSmall, "Gauge_FirstPipes_C", 55, 26);
+            // A coluna do Sotao: continua a C pra cima, desligada.
+            Carve(38, 40, 40, 61);
+            Lift("Lift_ToAttic", 38, 40, 40, 64, false).StartsOff = true;
 
-            // O cano que alimenta cada bocal.
-            RunPipe(PipeLayer.Mid, false, (50, 9), (52, 9), (52, 7));
-            RunPipe(PipeLayer.Mid, false, (62, 16), (60, 16), (60, 15));
-            RunPipe(PipeLayer.Mid, false, (50, 24), (52, 24), (52, 23));
+            Fix(FixtureKind.GaugeSmall, "Gauge_FirstPipes_A", 45, 9);
+            Fix(FixtureKind.GaugeSmall, "Gauge_FirstPipes_B", 39, 19);
+            Fix(FixtureKind.GaugeSmall, "Gauge_FirstPipes_C", 45, 28);
+            Lamp(44, 39, 0.6f);
 
-            RunPipe(PipeLayer.Back, false, (56, 5), (56, 13));
-            RunPipe(PipeLayer.Back, true, (57, 16), (57, 28));
-            RunPipe(PipeLayer.Back, false, (59, 26), (59, 28));
-            RunPipe(PipeLayer.Back, true, (55, 34), (55, 42));
-            RunPipe(PipeLayer.Back, false, (50, 36), (62, 36));
-            RunPipe(PipeLayer.Back, false, (50, 20), (56, 20), (56, 21));
-            RunPipe(PipeLayer.Far, true, (28, 2), (28, 22));
-
-            Steam(room, Area.Between(52, 30, 60, 40), 0.12f);
+            RunPipe(PipeLayer.Mid, false, (36, 8), (38, 8), (38, 5));
+            RunPipe(PipeLayer.Mid, false, (48, 17), (46, 17), (46, 14));
+            RunPipe(PipeLayer.Mid, false, (36, 25), (38, 25), (38, 23));
+            RunPipe(PipeLayer.Back, true, (42, 6), (42, 13));
+            RunPipe(PipeLayer.Back, false, (43, 16), (43, 32));
+            Steam(room, Area.Between(38, 30, 46, 39), 0.12f);
         }
 
         // ------------------------------------------------------------------
         // 3. A Valvula Emperrada
         // ------------------------------------------------------------------
 
+        /// <summary>
+        /// Uma sala de bombas cortada por uma poca de acido larga demais pro
+        /// dash. A valvula fica antes dela, a vista: girar seca a poca. Do
+        /// outro lado, uma sentinela atira por cima do buraco, uma sanguessuga
+        /// espera no teto, e numa prateleira a primeira pagina do livro de
+        /// turnos — o encanador, na Cisterna, vai querer de volta.
+        /// </summary>
         private static void BuildStuckValve()
         {
             const string room = "03_StuckValve";
-            Room(room, 61, 31, 96, 40);
+            Room(room, 47, 36, 80, 44);
 
-            Carve(61, 31, 96, 40);
+            Carve(47, 36, 80, 44);
+            Solid(47, 43, 52, 44);
+            Solid(74, 44, 80, 44);
 
-            // A poca que fecha o caminho: larga demais ate pro dash. A valvula a
-            // seca, e os dois degraus do fundo deixam sair do outro lado.
-            Carve(68, 27, 79, 30);
-            Solid(68, 27, 69, 28);
-            Solid(78, 27, 79, 28);
-            Acid("Acid_StuckValve", 68, 27, 79, 29);
-            Solid(68, 27, 69, 28);
-            Solid(78, 27, 79, 28);
+            // A poca, com um degrau de cada lado pra descer depois de seca.
+            Carve(55, 32, 66, 35);
+            Solid(55, 32, 56, 33);
+            Solid(65, 32, 66, 33);
+            Acid("Acid_StuckValve", 57, 32, 64, 33);
 
-            // A mesma valvula liga a coluna de vapor que sobe pra Casa de Maquinas.
-            Carve(64, 41, 66, 47);
-            Lift("Lift_ToMachineHall", 64, 66, 33, 49, false).StartsOff = true;
+            Valve(room, "Valve_StuckValve", 48, 38, 49, 36, "pool:Acid_StuckValve");
+            RunPipe(PipeLayer.Mid, true, (49, 38), (49, 37), (58, 37), (58, 35));
 
-            Valve(room, "Valve_StuckValve", 61, 33, 62, 31, "pool:Acid_StuckValve", "vent:Lift_ToMachineHall");
-            RunPipe(PipeLayer.Mid, true, (62, 33), (62, 32), (67, 32), (67, 30));
+            Enemy(EnemyKind.ValveSentry, "Sentry_StuckValve", 69, 69, 36, -1, 9);
+            Leech("Leech_StuckValve", 72, 44, 36, 71, 75);
 
-            Enemy(EnemyKind.ValveSentry, "Sentry_StuckValve", 82, 82, 31, -1, 13);
-
-            Logbook(room, 1, "página do livro de turnos", 95, 31,
+            // A prateleira da pagina, e a porta pra Praca.
+            Solid(76, 36, 80, 37);
+            Logbook(room, 1, "página do livro de turnos", 79, 38,
                 "LIVRO DE TURNOS DA CALDEIRA — turno da noite.",
                 "Pressão acima do normal de novo. Abri a válvula de alívio duas vezes, e a pressão voltou a subir.",
                 "Avisei lá em cima. Disseram que é o tempo. Aqui embaixo nem existe tempo.");
+            Carve(81, 38, 81, 41);
 
-            // A escada que desce pra cisterna. Uma ponte de cano mantem o
-            // caminho da sala reto por cima dela.
-            //
-            // A ponte comeca uma coluna depois do primeiro degrau de proposito:
-            // e por essa fresta que se desce. Com a ponte cobrindo o degrau
-            // inteiro o Scrap nao caberia de pe pra entrar embaixo dela.
-            Carve(84, 29, 86, 30);
-            Carve(87, 27, 87, 30);
-            Carve(88, 27, 89, 29);
-            Carve(90, 25, 92, 29);
-            PipeFloor(88, 92, 30);
-            Carve(93, 23, 95, 27);
-            Carve(96, 21, 98, 25);
+            Fix(FixtureKind.GaugeBig, "Gauge_StuckValve", 52, 40);
+            Decor(FixtureKind.Sign, 59, 41);
+            Furnace("Furnace_StuckValve", 77, 38);
+            Decor(FixtureKind.Barrel, 53, 36);
+            Decor(FixtureKind.Barrel, 67, 36);
+            Lamp(50, 42);
+            Lamp(70, 44);
+            Lamp(78, 43, 0.6f);
 
-            Fix(FixtureKind.GaugeBig, "Gauge_StuckValve", 61, 36);
-            Furnace("Furnace_StuckValve", 94, 32);
-
-            Fumes("StuckValve", Area.Between(68, 27, 79, 29));
-            Plumb(Area.Between(61, 31, 96, 40), 301, PipeLayer.Back, false);
-            Plumb(Area.Between(66, 31, 82, 40), 302, PipeLayer.Back, true, 3);
-            RunPipe(PipeLayer.Mid, false, (73, 42), (73, 37), (80, 37), (80, 42));
-            RunPipe(PipeLayer.Far, false, (30, 18), (50, 18));
-
-            Steam(room, Area.Between(61, 31, 96, 40));
-            DripsIn(Area.Between(68, 31, 79, 40), 3, 31, true);
-            DripsIn(Area.Between(82, 31, 96, 40), 6, 32, false);
+            Fumes("StuckValve", Area.Between(57, 32, 64, 34));
+            RunPipe(PipeLayer.Back, false, (47, 42), (81, 42));
+            RunPipe(PipeLayer.Back, true, (61, 42), (61, 37));
+            RunPipe(PipeLayer.Back, false, (68, 42), (68, 38), (72, 38));
+            RunPipe(PipeLayer.Mid, true, (60, 46), (60, 43), (64, 43), (64, 46));
+            Steam(room, Area.Between(47, 36, 80, 44));
+            DripsIn(Area.Between(55, 36, 66, 44), 3, 31, true);
         }
 
         // ------------------------------------------------------------------
         // 4. A Cisterna de Crisol
         // ------------------------------------------------------------------
 
+        /// <summary>
+        /// A sala segura, embaixo da Praca: desce-se por uma escada de canos
+        /// no chao dela. A bancada, Crisol e o estoque dele, o alcapao da Ala
+        /// Baixa, e o cofre do velho encanador atras de uma parede rachada —
+        /// a caldeira corrompida do lado ensina que elas derrubam parede.
+        /// </summary>
         private static void BuildCistern()
         {
             const string room = "04_Cistern";
-            Room(room, 99, 19, 120, 27);
+            Room(room, 84, 25, 112, 31);
 
-            Carve(99, 19, 120, 27);
+            Carve(84, 25, 112, 31);
+            Solid(84, 30, 86, 31);
+            Solid(110, 30, 112, 31);
 
-            // Cantos de cima arredondados: e uma cisterna, nao um corredor.
-            Solid(99, 26, 101, 27);
-            Solid(117, 26, 120, 27);
-            Solid(119, 24, 120, 25);
+            // A escada de canos que desce da Praca.
+            Carve(94, 25, 99, 33);
+            PipeFloor(98, 99, 27);
+            PipeFloor(94, 95, 29);
+            PipeFloor(98, 99, 31);
+            Fix(FixtureKind.Hatch, "Hatch_Cistern", 92, 25);
 
-            // A escotilha fica no pe da escada. A sala e "selada contra o gas".
-            Fix(FixtureKind.Hatch, "Hatch_Cistern", 96, 21);
+            Bench(room, "Workbench_Cistern", 85, 25);
+            Mark(room, "Crisol", CrisolTile.X, CrisolTile.Y);
 
-            Bench(room, "Workbench_Cistern", 103, 19);
-            Mark(room, "Crisol", 112, 19);
+            // O estoque de Crisol, no canto dele.
+            Decor(FixtureKind.Shelf, 87, 28);
+            Put(Crate(0), 91, 25);
+            Put(Crate(2), 92, 26);
 
-            // Um alcapao no chao: por ele se desce pro Esgoto. So desce.
-            Carve(107, 15, 108, 18);
+            // O alcapao da Ala Baixa: so desce.
+            Carve(102, 15, 103, 24);
+            Decor(FixtureKind.Barrel, 100, 25);
 
-            // O estoque de Crisol.
-            Put(Crate(0), 115, 19);
-            Put(Crate(2), 116, 19);
-            Put(Crate(1), 116, 20);
-            Put(Crate(3), 117, 19);
-            Put(Crate(0), 118, 19);
-            Put(Crate(3), 118, 20);
+            // A caldeira corrompida, a parede rachada e o cofre.
+            PressureBoiler(room, "Boiler_PlumberVault", 105, 25, 104, 25, "Wall_PlumberVault");
+            Cracked("Wall_PlumberVault", 113, 25, 113, 27);
+            Carve(114, 25, 121, 29);
+            Put(Crate(3), 120, 25);
+            Put(Crate(0), 121, 25);
+            Put(Crate(2), 121, 26);
+            Put(Debris(1), 115, 25);
+            Lamp(117, 29, 0.6f);
 
-            Fix(FixtureKind.GaugeSmall, "Gauge_Cistern", 110, 23);
+            OldPlumber(room, 118, 25);
 
-            // Lampiao: a primeira luz quente e parada do distrito.
-            Shine(113.5f, 23f, 8f, 1.0f, Glow.Lamp);
+            Lamp(89, 31, 1f);
+            Lamp(108, 31, 0.8f);
+            Fix(FixtureKind.GaugeSmall, "Gauge_Cistern", 101, 28);
 
-            RunPipe(PipeLayer.Back, false, (97, 25), (122, 25));
-            RunPipe(PipeLayer.Back, false, (108, 25), (108, 21));
-            RunPipe(PipeLayer.Back, true, (102, 25), (102, 22), (100, 22));
+            RunPipe(PipeLayer.Back, false, (83, 30), (113, 30));
+            RunPipe(PipeLayer.Back, true, (101, 30), (101, 27));
+            RunPipe(PipeLayer.Back, true, (116, 28), (122, 28));
         }
-
-        // ------------------------------------------------------------------
-        // 5. O Salao dos Welders
-        // ------------------------------------------------------------------
-
-        private static void BuildWelderHall()
-        {
-            const string room = "05_WelderHall";
-            Room(room, 100, 31, 149, 43);
-
-            Carve(97, 31, 99, 35);
-            Carve(100, 31, 149, 43);
-
-            // Dois blocos no chao: cobertura na luta, e o primeiro degrau do
-            // caminho de cima.
-            Solid(112, 31, 115, 32);
-            Solid(131, 31, 135, 32);
-
-            // O caminho alternativo, por cima dos canos.
-            PipeFloor(118, 122, 34);
-            PipeFloor(125, 130, 36);
-            PipeFloor(133, 138, 38);
-            PipeFloor(141, 146, 38);
-
-            // Ele termina num mirante que da direto pro lago da Cadeia de Vapor.
-            // Quem sobe pelos canos acha la um cofre de fragmentos.
-            Carve(150, 39, 152, 42);
-            Mark(room, "Secret_Overlook", 151, 39);
-            Reward(room, RewardKind.ShardCache, "D2_Overlook_Cache", 151, 39, 40);
-
-            // Depois da purificacao, uma soldadora tira a mascara aqui: e quem
-            // conta quem era o Mestre das Caldeiras.
-            LoreSpec welder = Tell(LoreKind.Tarnished, room, "Npc_Solda", "Solda", 124, 31,
-                "Pode chegar perto. Tirei a máscara. É a primeira vez que respiro sem ela desde que vim soldar aqui embaixo.",
-                "Você derrubou o Mestre das Caldeiras? ...Então precisa saber quem ele era. Era o nosso chefe de manutenção.",
-                "Quando a Coroa mandou recolher as nossas máscaras para os de prata, foi ele que escondeu as caixas e jurou que não havia nenhuma.",
-                "Depois se trancou com as caldeiras para manter a pressão. Sem vapor, aqui embaixo, a gente congelava antes de o Óxido chegar.",
-                "Ele nos salvou duas vezes. Na segunda, já não sabia quem era. Obrigada por deixá-lo descansar.");
-            welder.AfterPurification = true;
-
-            Carve(150, 31, 152, 35);
-
-            Tell(LoreKind.Graffiti, room, "Lore_Graffiti_1", "a pichação", 105, 31,
-                "Riscado na chapa, em letra de quem tinha pressa:",
-                "\"A PRATA BEBE, O LATÃO SUA.\"");
-
-            Tell(LoreKind.GraffitiMask, room, "Lore_Graffiti_2", "o desenho", 139, 31,
-                "Um desenho tosco, feito a giz: uma máscara de soldador.",
-                "Embaixo, outra mão escreveu: \"quem tem máscara tem cara\".",
-                "E, mais embaixo, uma terceira: \"e quem não tem?\"");
-
-            Tell(LoreKind.Graffiti, room, "Lore_Graffiti_3", "a pichação", 144, 39,
-                "Lá no alto, onde só chega quem anda pelos canos:",
-                "\"ELES NUNCA DESCERAM ATÉ AQUI. NEM PARA VER.\"",
-                "E, mais abaixo, outra mão, de outro dia: \"DAQUI EU VIA AS LUZES DA AVENIDA DAS FACETAS PELO RESPIRO DO TETO. APAGARAM UMA POR UMA.\"")
-                .PurifiedLines = new[]
-            {
-                "Lá no alto, onde só chega quem anda pelos canos:",
-                "\"ELES NUNCA DESCERAM ATÉ AQUI. NEM PARA VER.\"",
-                "Embaixo, em giz novo, numa letra que ainda treme: \"um desceu. era de sucata.\"",
-            };
-
-            Enemy(EnemyKind.BrassWelder, "Welder_Hall_1", 117, 129, 31);
-            Enemy(EnemyKind.BrassWelder, "Welder_Hall_2", 137, 145, 31);
-            Leech("Leech_Hall_1", 108, 43, 31, 101, 111);
-            Leech("Leech_Hall_2", 124, 43, 31, 117, 130);
-            Leech("Leech_Hall_3", 140, 43, 31, 136, 146);
-
-            Boiler("Boiler_Hall_West", 102, 31);
-            Boiler("Boiler_Hall_East", 126, 31);
-            Furnace("Furnace_Hall", 119, 31);
-            Furnace("Furnace_Hall_East", 143, 31);
-
-            Fix(FixtureKind.GaugeBig, "Gauge_Hall_1", 108, 37);
-            Fix(FixtureKind.GaugeBig, "Gauge_Hall_2", 138, 33);
-            Fix(FixtureKind.GaugeSmall, "Gauge_Hall_3", 123, 39);
-
-            Put(Crate(1), 136, 31);
-            Put(Crate(3), 137, 31);
-            Put(Debris(1), 110, 31);
-            Put(Crate(0), 113, 33);
-
-            Plumb(Area.Between(100, 31, 149, 43), 501, PipeLayer.Back, false);
-            Plumb(Area.Between(104, 31, 146, 43), 502, PipeLayer.Back, true, 3);
-            RunPipe(PipeLayer.Mid, false, (98, 41), (116, 41), (116, 44));
-            RunPipe(PipeLayer.Mid, true, (132, 44), (132, 41), (151, 41));
-            RunPipe(PipeLayer.Far, false, (50, 17), (76, 17));
-            RunPipe(PipeLayer.Far, true, (58, 14), (58, 22));
-            RunPipe(PipeLayer.Far, true, (68, 14), (68, 22));
-
-            Leaks.Add(new Leak(116.5f, 41f, 0f, -1f));
-            Leaks.Add(new Leak(140f, 41.5f, 0f, -1f));
-
-            Steam(room, Area.Between(100, 31, 149, 43), 0.11f);
-            DripsIn(Area.Between(100, 31, 149, 43), 8, 51, false);
-        }
-
-        // ------------------------------------------------------------------
-        // 6. A Cadeia de Vapor
-        // ------------------------------------------------------------------
-
-        private static void BuildSteamChain()
-        {
-            const string room = "06_SteamChain";
-            Room(room, 153, 12, 203, 45);
-
-            Carve(153, 12, 203, 45);
-            Voids.Add(Area.Between(153, 12, 203, 45));
-
-            // A sacada de onde se parte, e o patamar onde se chega.
-            Solid(153, 12, 156, 30);
-            Solid(196, 12, 203, 34);
-
-            Acid("Acid_SteamChain", 157, 12, 195, 15);
-
-            // A travessia, de oeste pra leste: coluna, ilha, jato, ilha,
-            // coluna que pulsa, ilha, patamar.
-            Lift("Lift_Chain_1", 158, 160, 24, 36);
-            PipeFloor(162, 165, 33);
-
-            // O jato comeca rente a ponta da ilha: e so andar pra dentro dele.
-            Jet("Jet_Chain", 166, 176, 34, 37, 1);
-            PipeFloor(178, 184, 32);
-
-            Vent pulsing = Lift("Lift_Chain_2", 186, 188, 18, 40);
-            pulsing.OnTime = 2.6f;
-            pulsing.OffTime = 1.3f;
-
-            // La embaixo, rente ao acido, a plataforma do tunel que vem do Deposito.
-            PipeFloor(190, 194, 17);
-            Enemy(EnemyKind.ValveSentry, "Sentry_Chain", 202, 202, 35, -1, 8);
-
-            PipeFloor(190, 193, 37);
-
-            // O caminho de volta, por baixo. Sao degraus altos demais pra subir,
-            // entao so serve pra voltar: a ida continua sendo pelo vapor.
-            PipeFloor(190, 193, 30);
-            PipeFloor(173, 177, 27);
-            PipeFloor(167, 170, 27);
-            PipeFloor(162, 164, 27);
-
-            // O segredo: uma coluna que so pega quem pula, e leva a um nicho no alto.
-            Lift("Lift_Chain_Secret", 200, 202, 38, 43);
-            Carve(204, 41, 207, 44);
-            Mark(room, "Secret_SilverFragment", 206, 41);
-
-            // No nicho: uma gema, e a carta que alguem escondeu atras de um cano.
-            Reward(room, RewardKind.Gem, "D2_Chain_Gem", 206, 41);
-            Tell(LoreKind.Page, room, "Lore_Letter", "uma carta dobrada", 204, 41,
-                "Uma carta dobrada em quatro, presa atrás de um cano com um rebite.",
-                "\"Pequena, o vapor está mais pesado esta semana. Não venha me visitar no turno. Fique no distrito de cobre, perto das janelas.\"",
-                "\"Se mandarem todo mundo descer pela calha, não tenha medo. Eu desço os canos atrás de você. Prometo.\"",
-                "A carta nunca foi enviada.");
-
-            Carve(204, 35, 207, 38);
-
-            // Os canos que saem do acido e alimentam cada bocal.
-            RunPipe(PipeLayer.Mid, true, (159, 10), (159, 22));
-            RunPipe(PipeLayer.Mid, true, (187, 10), (187, 16));
-            RunPipe(PipeLayer.Mid, false, (165, 47), (165, 38));
-            RunPipe(PipeLayer.Mid, false, (205, 37), (201, 37));
-
-            // Tubulacao colossal atravessando o salao.
-            RunPipe(PipeLayer.Far, false, (75, 20), (103, 20));
-            RunPipe(PipeLayer.Far, true, (84, 4), (84, 24));
-            RunPipe(PipeLayer.Far, false, (95, 4), (95, 20));
-            RunPipe(PipeLayer.Far, true, (75, 11), (95, 11));
-
-            Fumes("SteamChain", Area.Between(157, 12, 195, 15), 0.18f);
-            Hazes.Add(new Haze("Steam_SteamChain", 178f, 30f, 46f, 14f, 0.06f, 2.4f, false, Glow.Steam));
-
-            Skylines.Add(new Skyline("Skyline_Chain_Far", 13f, false, 3f, 0.25f));
-            Skylines.Add(new Skyline("Skyline_Chain_Near", 11f, true, 2f, 0.5f));
-
-            DripsIn(Area.Between(157, 12, 195, 45), 5, 61, true);
-        }
-
-        // ------------------------------------------------------------------
-        // 7. O Labirinto de Valvulas
-        // ------------------------------------------------------------------
-
-        private static void BuildValveMaze()
-        {
-            const string room = "07_ValveMaze";
-            Room(room, 208, 28, 237, 40);
-
-            // Vestibulo, no andar do meio, e o poco de escada do lado dele.
-            Carve(208, 35, 210, 40);
-            Carve(211, 28, 217, 40);
-
-            // Andar de baixo: um corredor comprido, com duas pocas rasas.
-            Carve(209, 28, 237, 32);
-
-            // A escada do poco: um bloco no chao e dois canos.
-            Solid(211, 28, 213, 29);
-            PipeFloor(215, 217, 31);
-            PipeFloor(211, 213, 33);
-
-            Carve(222, 27, 224, 27);
-            Acid("Acid_Maze_1", 222, 27, 224, 27);
-            Carve(231, 27, 233, 27);
-            Acid("Acid_Maze_2", 231, 27, 233, 27);
-
-            // Um portao no meio do corredor de baixo.
-            Gate("Gate_Maze", 227, 28, 227, 32, GateOpener.Valve);
-
-            // No fim do corredor, uma coluna sobe pro andar do meio, lado leste.
-            Carve(235, 33, 237, 34);
-            Lift("Lift_Maze_Up", 235, 237, 28, 36).StartsOff = true;
-
-            // Andar do meio, lado leste. Um buraco no chao devolve pro corredor:
-            // e o que deixa a volta possivel.
-            Carve(223, 35, 237, 40);
-            Carve(228, 33, 229, 34);
-
-            // O elevador de vapor, que leva ao andar de cima.
-            Carve(223, 41, 226, 60);
-            Lift("Lift_Maze_Elevator", 223, 225, 35, 57).StartsOff = true;
-
-            // Tres valvulas, em sequencia: a do vestibulo abre o portao; a do
-            // beco de baixo liga a coluna do fim do corredor; a do andar do
-            // meio, que so se alcanca por essa coluna, liga o elevador.
-            Valve(room, "Valve_Maze_A", 208, 37, 209, 35, "gate:Gate_Maze");
-            Valve(room, "Valve_Maze_B", 209, 30, 210, 28, "vent:Lift_Maze_Up");
-            Valve(room, "Valve_Maze_C", 231, 37, 232, 35, "vent:Lift_Maze_Elevator");
-
-            Logbook(room, 3, "página do livro de turnos", 227, 35,
-                "LIVRO DE TURNOS DA CALDEIRA — a letra está tremida.",
-                "Três colegas não voltaram do turno. Fui procurá-los no corredor de baixo.",
-                "Achei as ferramentas deles. Só as ferramentas. Estavam verdes.");
-
-            Enemy(EnemyKind.AcidBloater, "Bloater_Maze", 214, 218, 28);
-            Leech("Leech_Maze", 232, 40, 35, 230, 234);
-
-            Furnace("Furnace_Maze", 216, 28);
-            Fix(FixtureKind.GaugeBig, "Gauge_Maze_Elevator", 227, 37);
-
-            Fumes("Maze_1", Area.Between(222, 27, 224, 27), 0.10f);
-            Fumes("Maze_2", Area.Between(231, 27, 233, 27), 0.10f);
-
-            // Aqui o encanamento e o proprio labirinto: duas camadas, bem cheias.
-            Plumb(Area.Between(209, 28, 237, 32), 701, PipeLayer.Back, false, 0);
-            Plumb(Area.Between(223, 35, 237, 40), 702, PipeLayer.Back, true, 0);
-            Plumb(Area.Between(211, 28, 217, 40), 703, PipeLayer.Back, true, 2);
-            RunPipe(PipeLayer.Mid, false, (210, 39), (207, 39));
-            RunPipe(PipeLayer.Mid, true, (211, 31), (209, 31));
-            RunPipe(PipeLayer.Mid, false, (233, 39), (239, 39));
-            RunPipe(PipeLayer.Mid, false, (226, 42), (226, 58));
-            RunPipe(PipeLayer.Mid, true, (218, 34), (221, 34), (221, 38), (218, 38));
-            RunPipe(PipeLayer.Far, false, (104, 15), (119, 15));
-            RunPipe(PipeLayer.Far, true, (114, 10), (114, 22));
-
-            Leaks.Add(new Leak(221f, 36f, -1f, 0f));
-            Steam(room, Area.Between(223, 35, 237, 40), 0.12f);
-            DripsIn(Area.Between(214, 28, 237, 32), 6, 71, true);
-        }
-
-        // ------------------------------------------------------------------
-        // 8. A Workbench antes do boss
-        // ------------------------------------------------------------------
-
-        private static void BuildWorkbenchRoom()
-        {
-            const string room = "08_PreBoss";
-            Room(room, 204, 56, 221, 63);
-
-            Carve(204, 56, 221, 63);
-
-            // Chegada do elevador.
-            Carve(222, 56, 222, 60);
-
-            // Uma calha de volta pro labirinto: o elevador so sobe.
-            Carve(214, 41, 215, 55);
-
-            // Passagem pra arena.
-            Carve(199, 56, 203, 60);
-
-            Bench(room, "Workbench_PreBoss", 206, 56);
-
-            Logbook(room, 4, "última página do livro de turnos", 211, 56,
-                "LIVRO DE TURNOS DA CALDEIRA — a última página.",
-                "Está quase em branco. No meio dela, uma linha só:",
-                "\"As máscaras funcionam.\"");
-
-            // Do topo do elevador tambem sai um tunel pra Torre das Valvulas.
-            Carve(227, 56, 245, 59);
-
-            Fix(FixtureKind.Hatch, "Hatch_PreBoss", 204, 56);
-            Fix(FixtureKind.GaugeBig, "Gauge_PreBoss", 210, 60);
-
-            Put(Crate(2), 219, 56);
-            Put(Crate(0), 220, 56);
-            Put(Crate(1), 220, 57);
-
-            Shine(217f, 60f, 7f, 0.7f, Glow.Lamp);
-
-            RunPipe(PipeLayer.Back, false, (202, 62), (223, 62));
-            RunPipe(PipeLayer.Back, true, (212, 62), (212, 58));
-            RunPipe(PipeLayer.Back, false, (218, 62), (218, 59), (223, 59));
-        }
-
-        // ------------------------------------------------------------------
-        // 9. A Sala de Caldeiras
-        // ------------------------------------------------------------------
-
-        private static void BuildBoilerRoom()
-        {
-            const string room = "09_BoilerRoom";
-            Room(room, 152, 56, 198, 71);
-
-            Carve(152, 56, 198, 71);
-            Voids.Add(Area.Between(152, 56, 198, 71));
-
-            // Cantos de cima chanfrados: a sala e quase redonda.
-            Solid(152, 70, 155, 71);
-            Solid(152, 68, 153, 69);
-            Solid(195, 70, 198, 71);
-            Solid(197, 68, 198, 69);
-
-            // O tanque de acido e o piso de grade por cima dele.
-            Carve(158, 50, 192, 54);
-            Acid("Acid_BoilerRoom", 158, 50, 192, 53);
-            Grate(158, 192, 55);
-
-            // Um degrau baixo de cada lado, dentro do caminho dele: e por eles
-            // que se sobe nas plataformas no meio da luta. (Antes eram blocos
-            // fora do alcance dele, de onde dava pra bater sem apanhar.)
-            PipeFloor(157, 158, 57);
-            PipeFloor(192, 193, 57);
-
-            PipeFloor(160, 165, 59);
-            PipeFloor(185, 190, 59);
-            PipeFloor(168, 172, 61);
-            PipeFloor(178, 182, 61);
-            PipeFloor(174, 176, 63);
-
-            // Saida pro poco do acido ascendente.
-            Carve(149, 56, 151, 59);
-
-            Mark(room, "BossSpawn_BoilerMaster", BossTile.X, BossTile.Y);
-            Mark(room, "Gate_Entry", 198, 56);
-
-            // A saida fica gradeada ate ele cair.
-            Gate(BossGate, 150, 56, 150, 59, GateOpener.Boss);
-
-            // As tres valvulas da luta: girar uma devolve a pressao pro boss.
-            Valve(room, "Valve_Arena_West", 154, 58, 155, 56).Arena = true;
-            Valve(room, "Valve_Arena_East", 194, 58, 195, 56).Arena = true;
-            Valve(room, "Valve_Arena_Top", 174, 66, 175, 64).Arena = true;
-
-            // Tres caldeiras atras da grade, cada uma no seu compasso.
-            Boiler("Boiler_Arena_West", 161, 56);
-            Boiler("Boiler_Arena_Center", 173, 56);
-            Boiler("Boiler_Arena_East", 185, 56);
-
-            Fix(FixtureKind.GaugeBig, "Gauge_Arena_West", 167, 66);
-            Fix(FixtureKind.GaugeBig, "Gauge_Arena_East", 181, 66);
-
-            // As mangueiras: das caldeiras ate o teto.
-            RunPipe(PipeLayer.Mid, true, (162, 62), (162, 73));
-            RunPipe(PipeLayer.Mid, false, (175, 62), (175, 65));
-            RunPipe(PipeLayer.Mid, true, (187, 62), (187, 73));
-            RunPipe(PipeLayer.Mid, false, (150, 69), (157, 69), (157, 66));
-            RunPipe(PipeLayer.Mid, false, (200, 69), (195, 69), (195, 66));
-            RunPipe(PipeLayer.Far, false, (74, 33), (100, 33));
-            RunPipe(PipeLayer.Far, true, (80, 27), (80, 36));
-            RunPipe(PipeLayer.Far, true, (94, 27), (94, 36));
-
-            // O acido ilumina a sala de baixo pra cima, por entre as barras.
-            Fumes("BoilerRoom", Area.Between(158, 50, 192, 53), 0.14f);
-            Hazes.Add(new Haze("Steam_BoilerRoom", 175f, 66f, 44f, 6f, 0.09f, 2.2f, false, Glow.Steam));
-
-            Skylines.Add(new Skyline("Skyline_Arena_Far", 53f, false, 3f, 0.25f));
-            Skylines.Add(new Skyline("Skyline_Arena_Near", 52.5f, true, 2f, 0.5f));
-
-            DripsIn(Area.Between(158, 56, 192, 71), 7, 91, false);
-        }
-
-        // ------------------------------------------------------------------
-        // 10. O Acido Ascendente
-        // ------------------------------------------------------------------
-
-        private static void BuildRisingAcid()
-        {
-            const string room = "10_RisingAcid";
-            Room(room, 138, 50, 148, 99);
-
-            Carve(138, 50, 148, 99);
-
-            // A beirada de onde se entra, e o poco de acido do lado dela.
-            Solid(142, 50, 148, 55);
-            Acid("Acid_RisingAcid", 138, 50, 141, 53);
-
-            // Cinco colunas empilhadas, alternando de lado, como nos Primeiros
-            // Canos — so que agora com acido embaixo e uma delas pulsando.
-            Lift("Lift_Rising_1", 138, 140, 56, 66);
-
-            PipeFloor(142, 146, 63);
-            Lift("Lift_Rising_2", 144, 146, 64, 74);
-
-            PipeFloor(138, 141, 71);
-            Vent pulsing = Lift("Lift_Rising_3", 138, 140, 72, 82);
-            pulsing.OnTime = 2.4f;
-            pulsing.OffTime = 1.1f;
-
-            PipeFloor(142, 146, 79);
-            Lift("Lift_Rising_4", 144, 146, 80, 90);
-
-            PipeFloor(138, 141, 87);
-            Lift("Lift_Rising_5", 138, 140, 88, 98);
-
-            // Onde o acido comeca a subir, e ate onde ele chega.
-            Mark(room, "RisingAcid_Start", 139, 54, false);
-            Mark(room, "RisingAcid_Top", 143, 95, false);
-
-            RunPipe(PipeLayer.Mid, true, (139, 48), (139, 54));
-            RunPipe(PipeLayer.Back, false, (147, 56), (147, 101));
-            RunPipe(PipeLayer.Back, true, (143, 48), (143, 62));
-            RunPipe(PipeLayer.Back, false, (142, 64), (142, 78));
-            RunPipe(PipeLayer.Back, true, (141, 88), (141, 101));
-            RunPipe(PipeLayer.Back, false, (136, 68), (150, 68));
-            RunPipe(PipeLayer.Back, false, (136, 84), (150, 84));
-            RunPipe(PipeLayer.Far, true, (71, 26), (71, 50));
-
-            Fix(FixtureKind.GaugeBig, "Gauge_Rising_1", 147, 60);
-            Fix(FixtureKind.GaugeBig, "Gauge_Rising_2", 142, 75);
-            Fix(FixtureKind.GaugeBig, "Gauge_Rising_3", 147, 92);
-
-            Fumes("RisingAcid", Area.Between(138, 50, 141, 53), 0.16f);
-            Steam(room, Area.Between(138, 90, 148, 99), 0.12f);
-        }
-
-        // ------------------------------------------------------------------
-        // 11. A saida pros Silent Geodes
-        // ------------------------------------------------------------------
-
-        private static void BuildGeodeExit()
-        {
-            const string room = "11_GeodeExit";
-            Room(room, 110, 96, 137, 104);
-
-            // Daqui pra oeste o latao acabou: e rocha azulada e cristal.
-            MaterialZones.Add((Area.Between(98, 88, 128, 109), Material.Crystal));
-
-            Carve(110, 96, 137, 104);
-
-            // Um degrau no chao e um pedaco de teto mais baixo.
-            Solid(116, 96, 121, 96);
-            Solid(124, 103, 130, 104);
-
-            // So se chega aqui pelo poco de fuga, e so se chega no poco pela
-            // sala do boss: a saida do distrito tem uma entrada so.
-
-            // O toco: no fundo dele comeca o District 3. Nao ha volta.
-            Carve(107, 96, 109, 99);
-            Mark(room, "Exit_District3", 108, 96);
-
-            Exits.Add(new Exit("Exit_District3", Area.Between(107, 96, 107, 99),
-                Phase03Layout.SceneName, Phase03Layout.FromDistrict2SpawnId));
-
-            // Cristais: em pe no chao, e incrustados na rocha em volta.
-            Ore(Phase01Layout.BlueBand, 111, 96, PropLayer.Back);
-            Ore(Phase01Layout.BlueBand, 118, 97, PropLayer.Back);
-            Ore(Phase01Layout.BlueBand, 123, 96, PropLayer.Middle);
-            Ore(Phase01Layout.BlueBand, 114, 100, PropLayer.Back);
-            Ore(Phase01Layout.BlueBand, 103, 98, PropLayer.Middle);
-            Ore(Phase01Layout.BlueBand, 105, 102, PropLayer.Middle);
-            Ore(Phase01Layout.BlueBand, 112, 106, PropLayer.Middle);
-            Ore(Phase01Layout.BlueBand, 120, 92, PropLayer.Middle);
-            Ore(Phase01Layout.BlueBand, 126, 106, PropLayer.Middle);
-            Ore(Phase01Layout.BlueBand, 108, 92, PropLayer.Middle);
-            Ore(Phase01Layout.GreyBand, 127, 96, PropLayer.Back);
-
-            Put(DarkRock(0), 113, 96, PropLayer.Front);
-            Put(DarkRock(2), 125, 96, PropLayer.Front);
-            Put(GreyRock(4), 122, 96);
-
-            Shine(112f, 98f, 7f, 0.9f, Glow.Crystal);
-            Shine(119f, 99.5f, 6f, 0.8f, Glow.Crystal);
-            Shine(108.5f, 98f, 6f, 1.0f, Glow.Crystal);
-            Shine(124f, 97.5f, 5f, 0.6f, Glow.Crystal);
-
-            // O cano-mestre: enorme, seco, saindo do distrito pra cima.
-            RunPipe(PipeLayer.Far, true, (66, 46), (66, 54));
-            RunPipe(PipeLayer.Far, true, (67, 46), (67, 54));
-
-            Tell(LoreKind.Plaque, room, "Lore_MasterPipe", "a inscrição do cano-mestre", 132, 96,
-                "Um cano da grossura de uma casa, subindo até sumir na rocha. Está seco e corroído por dentro.",
-                "Na placa, em letra de fundição:",
-                "\"PARA A CIDADE DE PRATA.\"",
-                "Alguém riscou por cima, a prego: \"nada mais sobe\".");
-
-            // Os ultimos canos, ainda do lado do latao.
-            RunPipe(PipeLayer.Back, false, (139, 102), (130, 102), (130, 99));
-            RunPipe(PipeLayer.Back, true, (135, 106), (135, 100));
-            Fix(FixtureKind.GaugeSmall, "Gauge_GeodeExit", 133, 100);
-        }
-
-        // ------------------------------------------------------------------
-        // A. O Esgoto
-        // ------------------------------------------------------------------
 
         /// <summary>
-        /// Por baixo de tudo: um canal de acido comprido, cruzado de ilha em
-        /// ilha com o dash. Desce-se pra ca pelo alcapao da cisterna; sai-se a
-        /// oeste, no pe dos Primeiros Canos, ou a leste, por uma coluna de
-        /// vapor que brota no fim do Salao dos Welders.
+        /// O velho encanador: conta por que sobrou operario aqui embaixo e
+        /// pede as quatro paginas do livro de turnos, que e dele. Uma esta na
+        /// entrada; as outras tres, uma em cada ala. Paga com uma das duas
+        /// gemas do distrito.
         /// </summary>
-        private static void BuildSewer()
+        private static void OldPlumber(string room, int x, int y)
         {
-            const string room = "A_Sewer";
-            Room(room, 62, 4, 150, 14);
-
-            Carve(62, 6, 150, 14);
-            Carve(64, 4, 148, 5);
-            Acid("Acid_Sewer", 64, 4, 148, 5);
-
-            // As ilhas: vaos de 5 tiles, um pulo com dash cada.
-            int[,] islands =
-            {
-                { 68, 71 }, { 77, 80 }, { 86, 89 }, { 95, 98 }, { 104, 108 },
-                { 114, 117 }, { 123, 126 }, { 132, 135 }, { 141, 144 },
-            };
-
-            for (int i = 0; i < islands.GetLength(0); i++)
-            {
-                Solid(islands[i, 0], 4, islands[i, 1], 6);
-            }
-
-            // Oeste: uma porta pro pe dos Primeiros Canos.
-            Carve(61, 7, 61, 10);
-
-            // Leste: uma coluna de vapor que sobe ate o chao do Salao dos Welders.
-            Carve(147, 15, 149, 30);
-            Lift("Lift_Sewer_Up", 147, 149, 6, 32);
-
-            Enemy(EnemyKind.AcidBloater, "Bloater_Sewer_1", 86, 89, 7);
-            Enemy(EnemyKind.AcidBloater, "Bloater_Sewer_2", 123, 126, 7);
-            Enemy(EnemyKind.ValveSentry, "Sentry_Sewer", 62, 62, 6, 1, 30);
-            Leech("Leech_Sewer_1", 97, 14, 7, 95, 98);
-            Leech("Leech_Sewer_2", 133, 14, 7, 132, 135);
-
-            Mark(room, "Secret_SilverFragment_Sewer", 142, 7);
-
-            // Na ultima ilha, quase na coluna de saida: um cofre e a placa do coletor.
-            Reward(room, RewardKind.ShardCache, "D2_Sewer_Cache", 142, 7, 30);
-            Tell(LoreKind.Plaque, room, "Lore_SewerPlaque", "a placa do coletor", 144, 7,
-                "Uma placa de latão, meio afundada na lama do esgoto:",
-                "\"COLETOR DE CONDENSADO N.º 4. NÃO ENTRAR SEM MÁSCARA.\"",
-                "Embaixo, alguém riscou nomes, um por linha. Doze. O último está pela metade.");
-
-            Fumes("Sewer", Area.Between(64, 4, 148, 5), 0.20f);
-            Plumb(Area.Between(62, 6, 150, 14), 801, PipeLayer.Back, true, 0);
-            RunPipe(PipeLayer.Mid, true, (60, 12), (152, 12));
-            RunPipe(PipeLayer.Far, true, (31, 5), (75, 5));
-            DripsIn(Area.Between(62, 6, 150, 14), 6, 81, true);
-        }
-
-        // ------------------------------------------------------------------
-        // B. A Casa de Maquinas
-        // ------------------------------------------------------------------
-
-        /// <summary>
-        /// Um salao enorme por cima do Salao dos Welders, com tres andares de
-        /// passarela de grade. Chega-se pela coluna que a Valvula Emperrada
-        /// liga. Daqui sai-se pro sotao (oeste) e de volta pro salao por uma
-        /// escotilha (que uma valvula abre). No andar de cima, a terceira
-        /// bancada do distrito e o cofre do velho encanador.
-        /// </summary>
-        private static void BuildMachineHall()
-        {
-            const string room = "B_MachineHall";
-            Room(room, 62, 48, 132, 90);
-
-            Carve(62, 48, 132, 90);
-
-            // Andar 1. Os vaos entre as passarelas pedem dash.
-            Grate(62, 80, 57);
-            Grate(87, 104, 57);
-            Grate(111, 132, 57);
-
-            // Andar 2. O vao do meio e largo demais pra um dash so: ha uma nuvem
-            // de vapor parada nele, que devolve o dash no meio do caminho.
-            Grate(62, 96, 67);
-            Grate(110, 132, 67);
-            Cloud("Cloud_Hall", 102, 68, 105, 71);
-
-            // Andar 3.
-            Grate(62, 90, 77);
-            Grate(98, 125, 77);
-
-            // Do chao ao andar 1, sempre ligada, no vao entre as passarelas.
-            Lift("Lift_Hall_1", 82, 84, 48, 60);
-
-            // Do andar 1 ao 2, ligada pela valvula do andar 1.
-            Lift("Lift_Hall_2", 98, 100, 58, 70).StartsOff = true;
-            Valve(room, "Valve_Hall_1", 62, 60, 64, 58, "vent:Lift_Hall_2");
-
-            // Do andar 2 ao 3, pulsando.
-            Vent pulsing = Lift("Lift_Hall_3", 93, 95, 68, 80);
-            pulsing.OnTime = 2.4f;
-            pulsing.OffTime = 1.2f;
-
-            // A valvula do andar 3 abre a escotilha do chao, que cai no Salao dos Welders.
-            Carve(120, 44, 121, 47);
-            Gate("Gate_HallHatch", 120, 47, 121, 47, GateOpener.Valve, 1, 0);
-            Valve(room, "Valve_Hall_2", 121, 80, 123, 78, "gate:Gate_HallHatch");
-
-            // Uma caldeira corrompida no andar 3: explodi-la derruba a parede do cofre.
-            Carve(54, 78, 60, 82);
-            Cracked("Wall_HallVault", 61, 78, 61, 80);
-            PressureBoiler("Boiler_HallVault", 63, 78, 68, 78, "Wall_HallVault");
-            Mark(room, "Secret_SilverFragment_Hall", 56, 78);
-
-            // O velho encanador: conta por que sobrou operario aqui embaixo, e
-            // pede as quatro paginas do livro de turnos, que e dele.
-            Tell(LoreKind.Tarnished, room, "Lore_OldPlumber", "o velho encanador", 58, 78,
+            Tell(LoreKind.Tarnished, room, "Lore_OldPlumber", "o velho encanador", x, y,
                 "...Não bata. Eu ouvi a caldeira estourar. Achei que era o fim, e era só você.",
                 "Sou encanador. Era. Estou neste cofre desde que o verde subiu pelos canos.",
                 "Sabe por que sobrou operário aqui embaixo? Porque a gente já usava máscara. Para soldar. Ninguém nos deu as máscaras por bondade: era o serviço.",
@@ -2172,15 +1709,15 @@ namespace EchoesOfCravejada.EditorTools
                 PurifiedGreeting = "O verde foi embora dos canos. Pela primeira vez em anos, abri o respiro da máscara.",
                 Progress = new[]
                 {
-                    new[] { "Nada ainda? As páginas estão por aí. Uma delas eu sei que caiu perto da sala das caldeiras." },
-                    new[] { "Uma página! Faltam três. É a minha letra: reconheço até de longe." },
+                    new[] { "Nada ainda? O vento das caldeiras espalhou as folhas pelo distrito inteiro: lá em cima, lá embaixo e do outro lado do lago." },
+                    new[] { "Uma página! Faltam três. É a minha letra: reconheço até de longe. As outras devem estar nas alas: em cima, embaixo e do outro lado do lago." },
                     new[] { "Duas. Metade do livro. Ainda faltam duas." },
-                    new[] { "Três! Falta só uma. Procure nos lugares altos: o vento das caldeiras sobe." },
+                    new[] { "Três! Falta só uma. Procure na ala em que você ainda não esteve." },
                 },
                 Complete = new[]
                 {
-                    "O livro inteiro... Turno da noite, turno da manhã, e a última página. Eu escrevi tudo isso e tinha esquecido.",
-                    "Não tenho nada de prata para te dar. Mas tenho isto: uma gema que o chefe de manutenção me deu, no dia em que se trancou com as caldeiras.",
+                    "O livro inteiro... Turno da noite, turno da manhã e a última página. Eu escrevi tudo isso e tinha esquecido.",
+                    "Não tenho nada de prata para lhe dar. Mas tenho isto: uma gema que o chefe de manutenção me deu no dia em que se trancou com as caldeiras.",
                     "Ele disse para guardar até alguém merecer. Acho que é você.",
                 },
                 Done = new[]
@@ -2188,294 +1725,865 @@ namespace EchoesOfCravejada.EditorTools
                     "Leio o livro toda noite. Não há mais noite aqui embaixo, mas eu leio assim mesmo.",
                 },
             };
+        }
 
-            // A terceira bancada do distrito, no andar de cima, perto do cofre.
-            Bench(room, "Workbench_MachineHall", 74, 78);
+        // ------------------------------------------------------------------
+        // 5. A Praca dos Operarios
+        // ------------------------------------------------------------------
 
-            Logbook(room, 2, "página do livro de turnos", 96, 48,
+        /// <summary>
+        /// O centro do distrito: o salao onde os operarios trocavam de turno.
+        /// Armarios, o cabide das mascaras, as pichacoes. Chega-se por um
+        /// balcao a oeste, vindo da Valvula Emperrada.
+        ///
+        /// Daqui sai tudo: a coluna do balcao sobe pra Casa de Maquinas (Ala
+        /// Alta); a escada no chao desce pra Cisterna e, dela, pro Esgoto (Ala
+        /// Baixa); a porta leste da na Cadeia de Vapor (Ala Leste). E, a vista
+        /// desde o balcao, a Escadaria das Tres Travas sobe pro boss.
+        /// </summary>
+        private static void BuildWelderHall()
+        {
+            const string room = "05_WelderHall";
+            Room(room, 82, 34, 130, 46);
+
+            Carve(82, 34, 130, 46);
+
+            // O balcao de chegada, e o degrau que desce pro salao.
+            Solid(82, 34, 89, 37);
+            Solid(90, 34, 91, 35);
+            Rail(86, 89, 38);
+
+            // Ala Alta: a coluna do balcao, que atravessa o teto. Ocupa so
+            // metade do buraco: pela outra metade se desce de volta.
+            Carve(83, 47, 86, 51);
+            Lift("Lift_ToMachineHall", 83, 84, 38, 53);
+
+            // Ala Baixa: o buraco no chao por onde a coluna do Esgoto devolve
+            // quem sobe de la. (A entrada da ala e o alcapao da Cisterna.)
+
+            // Ala Leste: a porta.
+            Carve(131, 34, 131, 38);
+            Decor(FixtureKind.Sign, 127, 39);
+
+            // O caminho por cima dos canos, ate a pichacao do alto.
+            PipeFloor(100, 104, 36);
+            PipeFloor(106, 110, 38);
+            PipeFloor(112, 115, 40);
+            Rail(112, 115, 41);
+
+            // --- A Escadaria das Tres Travas ---
+            //
+            // Um poco que sobe do teto da Praca ate a sala antes da arena, com
+            // uma coluna sempre ligada do lado oeste e tres grades atravessadas.
+            // Cada grade abre com a valvula do fim de uma ala: foram os operarios
+            // que trancaram a porta por fora, como o chefe pediu. O lado leste do
+            // poco fica livre pra descer de volta.
+            Carve(118, 47, 122, 58);
+            Lift("Lift_LockStair", 118, 119, 34, 60);
+            Gate("Trava_Alta", 118, 49, 122, 49, GateOpener.Valve, 1, 0);
+            Gate("Trava_Baixa", 118, 53, 122, 53, GateOpener.Valve, 1, 0);
+            Gate("Trava_Leste", 118, 57, 122, 57, GateOpener.Valve, 1, 0);
+
+            // Os escombros da escadaria la de cima, caidos no pe do poco.
+            Put(Debris(0), 116, 34);
+            Put(Debris(1), 117, 34);
+            Put(Crate(3), 121, 34);
+            Put(Debris(0), 122, 34);
+            Put(Debris(1), 123, 35, PropLayer.Front);
+            Fixtures.Add(new Fixture(FixtureKind.Railing, DecorName("RailFallen"), 120, 34, 2));
+
+            // O painel: um manometro por trava, do lado do poco.
+            Fix(FixtureKind.GaugeBig, "Gauge_Lock_Alta", 123, 44);
+            Fix(FixtureKind.GaugeBig, "Gauge_Lock_Baixa", 125, 44);
+            Fix(FixtureKind.GaugeBig, "Gauge_Lock_Leste", 127, 44);
+            Shine(120.5f, 47f, 5f, 0.8f, Glow.Furnace, true);
+            Shine(120.5f, 55f, 5f, 0.8f, Glow.Furnace, true);
+
+            // O vestiario: armarios, o cabide das mascaras com uma so, e as
+            // pichacoes de quem ficou.
+            Lockers(106, 34, 6);
+            Decor(FixtureKind.MaskRack, 86, 40);
+            Decor(FixtureKind.Poster, 123, 39);
+            Decor(FixtureKind.Sign, 104, 43);
+
+            Tell(LoreKind.Graffiti, room, "Lore_Graffiti_1", "a pichação", 92, 34,
+                "Riscado na chapa, em letra de quem tinha pressa:",
+                "\"A PRATA BEBE, O LATÃO SUA.\"");
+
+            Tell(LoreKind.GraffitiMask, room, "Lore_Graffiti_2", "o desenho", 88, 38,
+                "Um desenho tosco, feito a giz, ao lado do cabide: uma máscara de soldador.",
+                "Embaixo, outra mão escreveu: \"Quem tem máscara tem cara.\"",
+                "E, mais embaixo, uma terceira: \"E quem não tem?\"");
+
+            Tell(LoreKind.Graffiti, room, "Lore_Graffiti_3", "a pichação", 114, 41,
+                "Lá no alto, onde só chega quem anda pelos canos:",
+                "\"ELES NUNCA DESCERAM ATÉ AQUI. NEM PARA VER.\"",
+                "E, mais abaixo, outra mão, de outro dia: \"DAQUI EU VIA AS LUZES DA AVENIDA DAS FACETAS PELO RESPIRO DO TETO. APAGARAM-SE UMA A UMA.\"")
+                .PurifiedLines = new[]
+            {
+                "Lá no alto, onde só chega quem anda pelos canos:",
+                "\"ELES NUNCA DESCERAM ATÉ AQUI. NEM PARA VER.\"",
+                "Embaixo, em giz novo, numa letra que ainda treme: \"Um desceu. Era de sucata.\"",
+            };
+
+            // Depois da purificacao, uma soldadora tira a mascara aqui, na
+            // frente dos armarios: e quem conta quem era o Mestre das Caldeiras.
+            LoreSpec welder = Tell(LoreKind.Tarnished, room, "Npc_Solda", "Solda", 106, 34,
+                "Pode chegar perto. Tirei a máscara. É a primeira vez que respiro sem ela desde que vim soldar aqui embaixo.",
+                "Você derrubou o Mestre das Caldeiras? ...Então precisa saber quem ele era. Era o nosso chefe de manutenção.",
+                "Quando a Coroa mandou recolher as nossas máscaras para os de prata, foi ele quem escondeu as caixas e jurou que não havia nenhuma.",
+                "Depois se trancou com as caldeiras para manter a pressão. Sem vapor, aqui embaixo, a gente congelava antes de o Óxido chegar.",
+                "Ele nos salvou duas vezes. Na segunda, já não sabia quem era. Obrigada por deixá-lo descansar.");
+            welder.AfterPurification = true;
+
+            Enemy(EnemyKind.BrassWelder, "Welder_Hall_1", 100, 125, 34, start: 106);
+            Enemy(EnemyKind.BrassWelder, "Welder_Hall_2", 100, 125, 34, start: 115);
+            Leech("Leech_Hall", 124, 46, 34, 100, 125);
+
+            Boiler("Boiler_Hall_West", 100, 34);
+            Furnace("Furnace_Hall", 122, 34);
+            Lamp(90, 46);
+            Lamp(100, 46);
+            Lamp(110, 46);
+            Lamp(126, 46);
+            HangChain(96, 46, 4);
+            HangChain(116, 46, 3);
+
+            RunPipe(PipeLayer.Back, false, (82, 44), (117, 44));
+            RunPipe(PipeLayer.Back, true, (97, 44), (97, 36));
+            RunPipe(PipeLayer.Back, false, (123, 42), (131, 42));
+            RunPipe(PipeLayer.Mid, false, (111, 47), (111, 44), (117, 44));
+            Leaks.Add(new Leak(97.5f, 42f, 1f, 0f));
+            Steam(room, Area.Between(82, 34, 130, 46), 0.10f);
+            DripsIn(Area.Between(90, 34, 117, 46), 8, 51, false);
+        }
+
+        // ------------------------------------------------------------------
+        // 6. A Cadeia de Vapor (Ala Leste)
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Um lago de acido que se cruza no vapor: coluna, ilha, jato, ilha,
+        /// coluna que pulsa e o patamar do outro lado, com a bancada da ala e a
+        /// porta do Labirinto. A volta e por baixo, por canos baixos ate a
+        /// primeira coluna.
+        ///
+        /// O segredo da ala — e uma das duas gemas do distrito — fica num
+        /// nicho no alto da parede oeste, em cima da porta: so se chega
+        /// saindo do topo da coluna que pulsa e emendando dash em duas nuvens.
+        /// </summary>
+        private static void BuildSteamChain()
+        {
+            const string room = "06_SteamChain";
+            Room(room, 132, 24, 162, 48);
+
+            Carve(132, 24, 162, 48);
+            Voids.Add(Area.Between(132, 24, 162, 48));
+
+            Solid(132, 24, 135, 33);
+            Solid(159, 24, 162, 43);
+            Acid("Acid_SteamChain", 136, 24, 158, 26);
+
+            // A travessia.
+            Lift("Lift_Chain_1", 136, 138, 27, 40);
+            PipeFloor(140, 143, 36);
+            Rail(140, 143, 37);
+            Jet("Jet_Chain", 144, 150, 37, 40, 1);
+            PipeFloor(150, 154, 33);
+            Rail(150, 154, 34);
+
+            Vent pulsing = Lift("Lift_Chain_2", 155, 157, 27, 47);
+            pulsing.OnTime = 2.6f;
+            pulsing.OffTime = 1.3f;
+
+            // A volta, por baixo: do patamar se cai na ilha do jato, e dali num
+            // cano baixo ate a primeira coluna.
+            PipeFloor(144, 147, 30);
+
+            // Rente ao acido, uma ilha de respiro pra quem cai — e pra quem desce
+            // de proposito.
+            PipeFloor(146, 148, 27);
+            Tell(LoreKind.GraffitiMask, room, "Lore_LakeMask", "uma máscara de solda", 147, 28,
+                "Uma máscara de solda, rachada ao meio, presa entre o cano e a grade.",
+                "Por dentro, gravado a prego, em letra pequena: \"PARA A PEQUENA, QUANDO CRESCER.\"",
+                "A máscara é do tamanho de uma cabeça de criança.");
+
+            // O patamar, a bancada da ala e a porta do Labirinto.
+            Bench(room, "Workbench_Chain", 159, 44);
+            Carve(163, 44, 163, 47);
+
+            // O segredo: duas nuvens no alto e o nicho em cima da porta oeste.
+            Cloud("Cloud_Chain_1", 149, 44, 151, 47);
+            Cloud("Cloud_Chain_2", 141, 44, 143, 47);
+            PipeFloor(132, 135, 44);
+            Reward(room, RewardKind.Gem, "D2_Chain_Gem", 133, 45);
+            Tell(LoreKind.Page, room, "Lore_Letter", "uma carta dobrada", 135, 45,
+                "Uma carta dobrada em quatro, presa atrás de um cano com um rebite.",
+                "\"Pequena, o vapor está mais pesado esta semana. Não venha me visitar no turno. Fique no distrito de cobre, perto das janelas.\"",
+                "\"Se mandarem todo mundo descer pela calha, não tenha medo. Eu desço os canos atrás de você. Prometo.\"",
+                "A carta nunca foi enviada.");
+
+            Enemy(EnemyKind.ValveSentry, "Sentry_Chain_2", 143, 143, 37, -1, 5);
+            Enemy(EnemyKind.AcidBloater, "Bloater_Chain", 150, 154, 34, start: 153);
+
+            Decor(FixtureKind.Sign, 133, 40);
+            Lamp(160, 48);
+            HangChain(139, 48, 5);
+            HangChain(153, 48, 4);
+
+            RunPipe(PipeLayer.Mid, true, (137, 22), (137, 26));
+            RunPipe(PipeLayer.Mid, true, (156, 22), (156, 26));
+            RunPipe(PipeLayer.Mid, false, (143, 49), (143, 41), (144, 41));
+            RunPipe(PipeLayer.Far, false, (66, 18), (81, 18));
+            RunPipe(PipeLayer.Far, true, (70, 11), (70, 24));
+            RunPipe(PipeLayer.Far, true, (78, 11), (78, 24));
+
+            Fumes("SteamChain", Area.Between(136, 24, 158, 26), 0.18f);
+            Hazes.Add(new Haze("Steam_SteamChain", 147f, 40f, 28f, 10f, 0.06f, 2.4f, false, Glow.Steam));
+            Skylines.Add(new Skyline("Skyline_Chain_Far", 25f, false, 3f, 0.25f));
+            Skylines.Add(new Skyline("Skyline_Chain_Near", 23f, true, 2f, 0.5f));
+            DripsIn(Area.Between(136, 27, 158, 48), 5, 61, true);
+        }
+
+        // ------------------------------------------------------------------
+        // 7. O Labirinto de Valvulas (Ala Leste)
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Tres valvulas em sequencia, cada uma abrindo a proxima, todas a
+        /// vista. Entra-se pelo alto de um poco e cai-se no corredor de baixo:
+        ///   A, no pe do poco, abre o portao do corredor;
+        ///   B, no fim do corredor, liga a coluna pro andar do meio;
+        ///   C, no andar do meio, e a da trava.
+        /// Um buraco no andar do meio devolve ao corredor, e a coluna do poco
+        /// (sempre ligada) leva de volta a porta: da pra sair a qualquer hora.
+        /// O corredor de baixo e onde os colegas do livro de turnos sumiram.
+        /// </summary>
+        private static void BuildValveMaze()
+        {
+            const string room = "07_ValveMaze";
+            Room(room, 164, 27, 185, 47);
+
+            // O poco de entrada: a porta da no alto dele, sobre um degrau. Uma
+            // coluna sempre ligada sobe o poco: e por ela que se sai, a
+            // qualquer hora.
+            Carve(164, 27, 170, 47);
+            Solid(164, 43, 165, 43);
+            Lift("Lift_Maze_Elevator", 168, 170, 27, 46);
+
+            // Corredor de baixo, o portao no meio, e o beco da valvula B.
+            Carve(171, 27, 185, 31);
+            Gate("Gate_Maze", 176, 27, 176, 31, GateOpener.Valve);
+            Valve(room, "Valve_Maze_A", 166, 29, 167, 27, "gate:Gate_Maze");
+            Valve(room, "Valve_Maze_B", 184, 29, 185, 27, "vent:Lift_Maze_Up");
+            Carve(181, 32, 183, 35);
+            Lift("Lift_Maze_Up", 181, 183, 27, 38).StartsOff = true;
+
+            Logbook(room, 3, "página do livro de turnos", 172, 27,
+                "LIVRO DE TURNOS DA CALDEIRA — a letra está tremida.",
+                "Três colegas não voltaram do turno. Fui procurá-los no corredor de baixo.",
+                "Achei as ferramentas deles. Só as ferramentas. Estavam verdes.");
+
+            // Andar do meio: a valvula da trava, e um buraco no chao que devolve
+            // ao corredor de baixo (o portao ja esta aberto quando se chega aqui).
+            Carve(172, 36, 185, 41);
+            Carve(175, 32, 176, 35);
+            Valve(room, "Valve_Maze_C", 172, 38, 173, 36, "gate:Trava_Leste").Lock = true;
+
+            Enemy(EnemyKind.AcidBloater, "Bloater_Maze", 177, 185, 27, start: 180);
+            Leech("Leech_Maze", 180, 31, 27, 177, 185);
+            Enemy(EnemyKind.BrassWelder, "Welder_Maze", 177, 180, 36);
+            Enemy(EnemyKind.ValveSentry, "Sentry_Maze", 185, 185, 36, -1, 4);
+
+            Decor(FixtureKind.Sign, 166, 45);
+            Fix(FixtureKind.GaugeBig, "Gauge_Maze_1", 168, 34);
+            Fix(FixtureKind.GaugeBig, "Gauge_Maze_2", 182, 39);
+            Decor(FixtureKind.Barrel, 174, 27);
+            Lamp(167, 47, 0.7f);
+            Lamp(180, 31, 0.5f);
+            Lamp(183, 41, 0.6f);
+            HangChain(169, 47, 6);
+
+            Plumb(Area.Between(171, 27, 185, 31), 701, PipeLayer.Back, false, 0);
+            Plumb(Area.Between(172, 36, 185, 41), 702, PipeLayer.Back, true, 0);
+            RunPipe(PipeLayer.Mid, true, (170, 33), (164, 33));
+            Leaks.Add(new Leak(170f, 33.5f, -1f, 0f));
+            Steam(room, Area.Between(172, 36, 185, 41), 0.12f);
+            DripsIn(Area.Between(171, 27, 185, 31), 5, 71, true);
+        }
+
+        // ------------------------------------------------------------------
+        // 8. A sala antes da arena
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// No alto da Escadaria das Travas: a bancada de antes da luta e a
+        /// porta da sala das caldeiras, trancada por fora. O poco da Escadaria
+        /// abre no chao, e por ele se desce de volta pra Praca. Depois da
+        /// purificacao, o atalho da Galeria Alta cai aqui.
+        /// </summary>
+        private static void BuildWorkbenchRoom()
+        {
+            const string room = "08_PreBoss";
+            Room(room, 110, 59, 128, 65);
+
+            Carve(110, 59, 128, 65);
+
+            // Passagem pra arena, a leste. O selo fecha a coluna do lado dela.
+            Carve(129, 59, 131, 63);
+
+            Bench(room, "Workbench_PreBoss", 111, 59);
+            Fix(FixtureKind.Hatch, "Hatch_PreBoss", 128, 59);
+
+            // O poco da Escadaria nao acaba aqui: continua subindo ate a
+            // estacao do elevador, la no alto. Mas a escadaria desabou — os
+            // degraus que sobraram ficam pendurados, longe demais um do outro
+            // pra subir, e os pedacos cairam aqui e na Praca.
+            BrokenStairway();
+            Fix(FixtureKind.GaugeBig, "Gauge_PreBoss", 124, 62);
+            Decor(FixtureKind.Poster, 114, 62);
+
+            Tell(LoreKind.Graffiti, room, "Lore_BoilerDoor", "a porta da sala das caldeiras", 126, 59,
+                "A porta da sala das caldeiras tem uma tranca soldada pelo lado de fora.",
+                "Riscado no latão, em letras de mãos diferentes: \"NÃO ABRAM.\" \"OUÇAM O QUE OUVIREM.\" \"ELE PEDIU.\"",
+                "E, mais embaixo, mais fundo, como quem riscou muitas vezes no mesmo lugar: \"Desculpe, chefe.\"");
+
+            // Os escombros da escada, no chao da antessala.
+            Put(Debris(0), 114, 59);
+            Put(Debris(1), 115, 59);
+            Put(Crate(2), 116, 59);
+            Put(Debris(0), 124, 59);
+            Put(Crate(0), 125, 59);
+            Put(Crate(1), 125, 60);
+            Fixtures.Add(new Fixture(FixtureKind.Railing, DecorName("RailFallen"), 113, 59, 2));
+            Lamp(111, 65);
+            Lamp(127, 65, 0.6f);
+
+            RunPipe(PipeLayer.Back, false, (108, 64), (131, 64));
+            RunPipe(PipeLayer.Back, true, (121, 64), (121, 61));
+        }
+
+        /// <summary>
+        /// A escadaria quebrada: o poco da Escadaria das Travas continua acima
+        /// da antessala ate o piso da estacao do elevador. Sobraram quatro
+        /// lances, alternando de lado, cada um cinco tiles acima do outro —
+        /// nem com o Salto de Pressao se sobe por eles. Descer, da: e o atalho
+        /// de volta de quem chega na estacao.
+        /// </summary>
+        private static void BrokenStairway()
+        {
+            Carve(114, 66, 126, 98);
+
+            int[,] flights = { { 121, 125, 77 }, { 115, 119, 83 }, { 121, 125, 89 }, { 115, 119, 95 } };
+            for (int i = 0; i < flights.GetLength(0); i++)
+            {
+                int x0 = flights[i, 0];
+                int x1 = flights[i, 1];
+                int y = flights[i, 2];
+
+                PipeFloor(x0, x1, y);
+
+                // O guarda-corpo, partido no meio de cada lance.
+                Rail(x0, x0 + 1, y + 1);
+                Put(Debris(i % 2), x1, y + 1);
+            }
+
+            // Os pedacos dos lances que faltam, pendurados nas paredes.
+            Put(Debris(1), 114, 72, PropLayer.Back);
+            Put(Debris(0), 126, 80, PropLayer.Back);
+            Put(Debris(1), 114, 88, PropLayer.Back);
+            HangChain(117, 98, 6);
+            HangChain(124, 98, 9);
+            HangChain(120, 88, 4);
+            Lamp(126, 98, 0.5f);
+
+            Fix(FixtureKind.GaugeBig, "Gauge_Stairway_1", 113, 78);
+            Fix(FixtureKind.GaugeBig, "Gauge_Stairway_2", 126, 92);
+            RunPipe(PipeLayer.Back, true, (113, 66), (113, 98));
+            RunPipe(PipeLayer.Back, false, (127, 66), (127, 98));
+            Hazes.Add(new Haze("Steam_Stairway", 120f, 94f, 12f, 5f, 0.07f, 1.5f, false, Glow.Steam));
+            DripsIn(Area.Between(114, 66, 126, 98), 4, 141, false);
+        }
+
+        // ------------------------------------------------------------------
+        // 9. A Sala de Caldeiras
+        // ------------------------------------------------------------------
+
+        private static void BuildBoilerRoom()
+        {
+            const string room = "09_BoilerRoom";
+            Room(room, 132, 59, 178, 74);
+
+            // Entra-se a oeste, vindo do pre-boss (o selo fecha x 131); sai-se a
+            // leste, pro poco de fuga (a grade fica em x 180).
+            Carve(132, 59, 178, 74);
+            Voids.Add(Area.Between(132, 59, 178, 74));
+
+            Solid(175, 73, 178, 74);
+            Solid(177, 71, 178, 72);
+            Solid(132, 73, 135, 74);
+            Solid(132, 71, 133, 72);
+
+            Carve(138, 53, 172, 57);
+            Acid("Acid_BoilerRoom", 138, 53, 172, 56);
+            Grate(138, 172, 58);
+
+            PipeFloor(172, 173, 60);
+            PipeFloor(137, 138, 60);
+            PipeFloor(165, 170, 62);
+            PipeFloor(140, 145, 62);
+            PipeFloor(158, 162, 64);
+            PipeFloor(148, 152, 64);
+            PipeFloor(154, 156, 66);
+
+            Carve(179, 59, 181, 62);
+
+            Mark(room, "BossSpawn_BoilerMaster", BossTile.X, BossTile.Y);
+            Mark(room, "Gate_Entry", 132, 59);
+
+            Gate(BossGate, 180, 59, 180, 62, GateOpener.Boss);
+
+            Boiler("Boiler_Arena_West", 142, 59);
+            Boiler("Boiler_Arena_Center", 154, 59);
+            Boiler("Boiler_Arena_East", 166, 59);
+
+            Fix(FixtureKind.GaugeBig, "Gauge_Arena_West", 148, 69);
+            Fix(FixtureKind.GaugeBig, "Gauge_Arena_East", 162, 69);
+            HangChain(140, 74, 4);
+            HangChain(170, 74, 4);
+
+            RunPipe(PipeLayer.Mid, true, (168, 65), (168, 76));
+            RunPipe(PipeLayer.Mid, false, (155, 65), (155, 68));
+            RunPipe(PipeLayer.Mid, true, (143, 65), (143, 76));
+            RunPipe(PipeLayer.Mid, false, (180, 72), (173, 72), (173, 69));
+            RunPipe(PipeLayer.Mid, false, (130, 72), (135, 72), (135, 69));
+            RunPipe(PipeLayer.Far, false, (66, 34), (89, 34));
+            RunPipe(PipeLayer.Far, true, (71, 28), (71, 38));
+            RunPipe(PipeLayer.Far, true, (84, 28), (84, 38));
+
+            Fumes("BoilerRoom", Area.Between(138, 53, 172, 56), 0.14f);
+            Hazes.Add(new Haze("Steam_BoilerRoom", 156f, 69f, 44f, 6f, 0.09f, 2.2f, false, Glow.Steam));
+            Skylines.Add(new Skyline("Skyline_Arena_Far", 56f, false, 3f, 0.25f));
+            Skylines.Add(new Skyline("Skyline_Arena_Near", 55.5f, true, 2f, 0.5f));
+            DripsIn(Area.Between(138, 59, 172, 74), 7, 91, false);
+        }
+
+        // ------------------------------------------------------------------
+        // O tunel da caldeira
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Atras da grade leste da arena, que abre quando o Boiler Master cai
+        /// (e o distrito se purifica): um tunel curto e, no fim dele, a coluna
+        /// que sobe pra Galeria Alta. Dali em diante e so subir.
+        /// </summary>
+        private static void BuildExitTunnel()
+        {
+            Carve(182, 59, 188, 62);
+
+            // A coluna ocupa so metade do poco: pela outra metade se desce.
+            Carve(183, 63, 186, 77);
+            Lift("Lift_ToHighGallery", 183, 184, 59, 80);
+
+            Decor(FixtureKind.Sign, 185, 66);
+            Decor(FixtureKind.Barrel, 187, 59);
+            Lamp(187, 62, 0.6f);
+            Shine(184f, 70f, 5f, 0.6f, Glow.Steam);
+            RunPipe(PipeLayer.Back, false, (181, 62), (188, 62));
+            RunPipe(PipeLayer.Back, true, (187, 63), (187, 77));
+            Fix(FixtureKind.GaugeSmall, "Gauge_ExitTunnel", 182, 61);
+        }
+
+        // ------------------------------------------------------------------
+        // A. O Esgoto (Ala Baixa)
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// O comeco da Ala Baixa, embaixo da Cisterna: cai-se pelo alcapao numa
+        /// ilha e cruza-se o canal de ilha em ilha, com o dash, ate a coluna
+        /// que (religada no fim da ala) devolve o Scrap a Praca. Dali um tunel
+        /// curto segue pro Deposito. A oeste, um patamar seco com as marcas de
+        /// quem ficou preso aqui.
+        /// </summary>
+        private static void BuildSewer()
+        {
+            const string room = "A_Sewer";
+            Room(room, 86, 6, 129, 14);
+
+            Carve(86, 6, 129, 14);
+
+            // O canal: ilhas largas e vaos de tres, que se pulam sem dash. Cada
+            // vao e uma poca so dele, encaixada entre as ilhas — o acido nunca
+            // passa por baixo de onde se pisa.
+            int[,] gaps = { { 89, 91 }, { 96, 98 }, { 107, 109 }, { 114, 116 }, { 121, 123 } };
+            for (int i = 0; i < gaps.GetLength(0); i++)
+            {
+                Carve(gaps[i, 0], 3, gaps[i, 1], 5);
+                Acid("Acid_Sewer_" + (i + 1), gaps[i, 0], 3, gaps[i, 1], 5);
+            }
+
+            // Uma ilha mais alta no meio: pisa-se em 7.
+            Solid(110, 6, 113, 6);
+
+            Tell(LoreKind.Graffiti, room, "Lore_SewerTally", "as marcas de giz", 86, 6,
+                "Riscos de giz na parede, em grupos de cinco. Dezenas de grupos.",
+                "Em cima deles, numa letra cansada: \"DIAS SEM SUBIR.\"",
+                "O último grupo tem só três riscos.");
+
+            // A coluna de volta pra Praca: sempre ligada, e o jeito de sair do
+            // Esgoto a qualquer hora.
+            Carve(126, 15, 128, 33);
+            Lift("Lift_Sewer_Up", 126, 128, 6, 36);
+
+            Tell(LoreKind.Plaque, room, "Lore_SewerPlaque", "a placa do coletor", 124, 6,
+                "Uma placa de latão, meio afundada na lama do esgoto:",
+                "\"COLETOR DE CONDENSADO N.º 4. NÃO ENTRAR SEM MÁSCARA.\"",
+                "Embaixo, alguém riscou nomes, um por linha. Doze. O último está pela metade.");
+
+            // O tunel pro Deposito.
+            Carve(130, 6, 140, 9);
+            Tell(LoreKind.Graffiti, room, "Lore_TunnelArrow", "a seta pintada", 131, 6,
+                "Uma seta pintada às pressas na parede, apontando para o leste: \"DEPÓSITO — MÁSCARAS\".",
+                "Alguém riscou \"MÁSCARAS\" com tinta fresca e escreveu por cima: \"NADA\".",
+                "A tinta escorreu antes de secar.");
+
+            // So sanguessugas aqui embaixo, cada uma no meio de uma ilha larga:
+            // da pra ve-las do vao anterior e esperar ela cair antes de pular.
+            Leech("Leech_Sewer_1", 94, 14, 6, 92, 95);
+            Leech("Leech_Sewer_2", 112, 14, 7, 110, 113);
+            Leech("Leech_Sewer_3", 119, 14, 6, 117, 120);
+            Leech("Leech_Tunnel", 137, 9, 6, 124, 152);
+
+            Decor(FixtureKind.Barrel, 87, 6);
+            Decor(FixtureKind.Sign, 100, 11);
+            HangChain(105, 14, 4);
+            HangChain(122, 14, 3);
+            Lamp(87, 14, 0.5f);
+            Lamp(107, 14, 0.5f);
+
+            Fumes("Sewer", Area.Between(89, 3, 123, 5), 0.20f);
+            RunPipe(PipeLayer.Mid, true, (84, 12), (130, 12));
+            RunPipe(PipeLayer.Back, true, (90, 13), (90, 7));
+            RunPipe(PipeLayer.Back, false, (115, 13), (115, 8));
+            RunPipe(PipeLayer.Back, true, (130, 9), (141, 9));
+            RunPipe(PipeLayer.Far, true, (44, 4), (64, 4));
+            DripsIn(Area.Between(86, 6, 129, 14), 5, 81, true);
+            DripsIn(Area.Between(130, 6, 140, 9), 4, 82, true);
+        }
+
+        // ------------------------------------------------------------------
+        // B. A Casa de Maquinas (Ala Alta)
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// A Ala Alta: um salao de quatro andares de passarela por cima da
+        /// Praca, com as caldeiras grandes no fundo. Chega-se pela coluna do
+        /// balcao da Praca, que abre no chao, a leste.
+        ///
+        /// O caminho: chao → coluna sempre ligada → andar 1, cuja valvula (no
+        /// fim leste, a vista) liga a coluna pro andar 2 → no andar 2, um vao
+        /// cruzado por uma nuvem e a coluna que pulsa → andar 3, com a bancada
+        /// da ala e a valvula da trava, que abre tambem a escotilha do chao,
+        /// de volta pro balcao da Praca.
+        ///
+        /// Fora do caminho: a oeste do andar 1, a porta do Sotao; no fim do
+        /// andar 2, o cartaz da Coroa; e, depois de outra nuvem no andar 3, um
+        /// cofre.
+        /// </summary>
+        private static void BuildMachineHall()
+        {
+            const string room = "B_MachineHall";
+            Room(room, 44, 52, 92, 84);
+
+            Carve(44, 52, 92, 84);
+
+            // Chao: o buraco da coluna que sobe da Praca. Pela metade leste
+            // dele se cai de volta no balcao, a qualquer hora.
+            Lift("Lift_Hall_1", 70, 72, 52, 64);
+
+            Logbook(room, 2, "página do livro de turnos", 91, 52,
                 "LIVRO DE TURNOS DA CALDEIRA — turno da manhã.",
                 "A água está com gosto de cobre. Não é do cano: troquei o cano.",
                 "O manômetro três não sai do vermelho. Parei de olhar para ele.");
 
-            // Oeste, no andar 2: a passagem pro sotao.
-            Carve(57, 68, 61, 71);
+            // Andar 1.
+            Grate(44, 68, 61);
+            Grate(74, 92, 61);
+            Rail(74, 92, 62);
+            Carve(43, 62, 43, 65);
+            Valve(room, "Valve_Hall_1", 89, 64, 90, 62, "vent:Lift_Hall_2");
+            Lift("Lift_Hall_2", 80, 82, 62, 74).StartsOff = true;
 
-            // (Leste nao ha saida: o poco de fuga, e a saida do distrito, so se
-            // alcancam pela sala do boss.)
+            // Andar 2: o vao do meio pede a nuvem.
+            Grate(47, 57, 71);
+            Grate(66, 78, 71);
+            Grate(84, 92, 71);
+            Rail(66, 78, 72);
+            Cloud("Cloud_Hall", 60, 72, 63, 75);
+            Tell(LoreKind.Plaque, room, "Lore_CrownPoster", "um cartaz da Coroa", 54, 72,
+                "Um cartaz desbotado, com o selo dos 925 Nobres:",
+                "\"O VAPOR É O SANGUE DA CIDADE. CADA OPERÁRIO, UMA GOTA.\"",
+                "Alguém completou embaixo, a carvão: \"E eles bebem.\"");
+            Decor(FixtureKind.Poster, 52, 74);
 
-            Enemy(EnemyKind.BrassWelder, "Welder_Machine_1", 68, 80, 48);
-            Enemy(EnemyKind.BrassWelder, "Welder_Machine_2", 100, 118, 48);
-            Enemy(EnemyKind.AcidBloater, "Bloater_Machine", 112, 130, 58);
-            Enemy(EnemyKind.ValveSentry, "Sentry_Machine_1", 131, 131, 68, -1, 20);
-            Enemy(EnemyKind.ValveSentry, "Sentry_Machine_2", 100, 100, 78, 1, 24);
-            Leech("Leech_Machine_1", 92, 56, 48, 88, 96);
-            Leech("Leech_Machine_2", 116, 66, 58, 112, 130);
-            Leech("Leech_Machine_3", 74, 76, 68, 66, 90);
+            Vent pulsing = Lift("Lift_Hall_3", 44, 46, 72, 83);
+            pulsing.OnTime = 2.4f;
+            pulsing.OffTime = 1.2f;
 
-            Boiler("Boiler_Machine_1", 70, 48);
-            Boiler("Boiler_Machine_2", 104, 48);
-            Boiler("Boiler_Machine_3", 126, 48);
-            Furnace("Furnace_Machine_1", 90, 48);
-            Furnace("Furnace_Machine_2", 114, 48);
+            // Andar 3: a bancada da ala, a valvula da trava, e, depois de uma
+            // nuvem, o cofre.
+            Grate(47, 70, 80);
+            Rail(47, 70, 81);
+            Bench(room, "Workbench_MachineHall", 49, 81);
 
-            Fix(FixtureKind.GaugeBig, "Gauge_Machine_1", 76, 62);
-            Fix(FixtureKind.GaugeBig, "Gauge_Machine_2", 108, 72);
-            Fix(FixtureKind.GaugeBig, "Gauge_Machine_3", 86, 82);
-            Fix(FixtureKind.GaugeBig, "Gauge_Machine_4", 118, 84);
+            Valve(room, "Valve_Hall_2", 65, 83, 66, 81, "gate:Trava_Alta").Lock = true;
 
-            Plumb(Area.Between(62, 48, 132, 90), 901, PipeLayer.Back, false);
-            Plumb(Area.Between(66, 48, 128, 90), 902, PipeLayer.Back, true, 4);
-            Plumb(Area.Between(62, 48, 132, 56), 903, PipeLayer.Back, false, 0);
-            Plumb(Area.Between(62, 58, 132, 66), 904, PipeLayer.Back, true, 0);
-            RunPipe(PipeLayer.Mid, false, (72, 54), (72, 92));
-            RunPipe(PipeLayer.Mid, true, (106, 54), (106, 92));
-            RunPipe(PipeLayer.Mid, false, (128, 54), (128, 92));
-            RunPipe(PipeLayer.Far, false, (30, 36), (67, 36));
-            RunPipe(PipeLayer.Far, true, (30, 42), (67, 42));
-            RunPipe(PipeLayer.Far, true, (44, 23), (44, 46));
-            RunPipe(PipeLayer.Far, false, (58, 23), (58, 46));
+            Cloud("Cloud_Hall_Cache", 74, 81, 76, 84);
+            Grate(81, 92, 80);
+            Reward(room, RewardKind.ShardCache, "D2_Hall_Cache", 90, 81, 20);
+            Mark(room, "Secret_SilverFragment_Hall", 90, 81);
 
-            Leaks.Add(new Leak(72.5f, 66f, 1f, 0f));
-            Leaks.Add(new Leak(106.5f, 76f, -1f, 0f));
+            Enemy(EnemyKind.BrassWelder, "Welder_Machine_1", 44, 82, 52, start: 56);
+            Leech("Leech_Machine_1", 76, 60, 52, 44, 82);
+            Enemy(EnemyKind.AcidBloater, "Bloater_Machine", 74, 92, 62, start: 81);
+            Enemy(EnemyKind.ValveSentry, "Sentry_Machine_1", 45, 45, 62, 1, 8);
+            Enemy(EnemyKind.ValveSentry, "Sentry_Machine_2", 92, 92, 72, -1, 6);
+            Leech("Leech_Machine_2", 70, 79, 72, 66, 78);
+            Enemy(EnemyKind.BrassWelder, "Welder_Machine_2", 53, 70, 81, start: 58);
 
-            Hazes.Add(new Haze("Steam_MachineHall", 97f, 84f, 70f, 8f, 0.08f, 3.2f, false, Glow.Steam));
-            DripsIn(Area.Between(62, 48, 132, 90), 9, 91, false);
+            // As caldeiras grandes no fundo, as fornalhas e o resto.
+            Boiler("Boiler_Machine_1", 52, 52);
+            Boiler("Boiler_Machine_2", 61, 52);
+            Boiler("Boiler_Machine_3", 76, 52);
+            Furnace("Furnace_Machine_1", 66, 52);
+            Furnace("Furnace_Machine_2", 84, 62);
+            Decor(FixtureKind.Sign, 79, 57);
+            Decor(FixtureKind.Poster, 86, 74);
+            Fix(FixtureKind.GaugeBig, "Gauge_Machine_1", 57, 64);
+            Fix(FixtureKind.GaugeBig, "Gauge_Machine_2", 88, 66);
+            Fix(FixtureKind.GaugeBig, "Gauge_Machine_3", 72, 76);
+            Decor(FixtureKind.Barrel, 69, 81);
+            Lamp(58, 60);
+            Lamp(86, 60);
+            Lamp(52, 70);
+            Lamp(72, 70);
+            Lamp(56, 84);
+            Lamp(86, 84);
+            HangChain(64, 84, 6);
+            HangChain(78, 84, 4);
+
+            RunPipe(PipeLayer.Mid, false, (57, 51), (57, 86));
+            RunPipe(PipeLayer.Mid, true, (82, 51), (82, 61));
+            RunPipe(PipeLayer.Back, false, (44, 69), (92, 69));
+            RunPipe(PipeLayer.Back, true, (44, 78), (92, 78));
+            RunPipe(PipeLayer.Back, false, (68, 52), (68, 60));
+            RunPipe(PipeLayer.Far, false, (22, 35), (46, 35));
+            RunPipe(PipeLayer.Far, true, (30, 26), (30, 42));
+            Leaks.Add(new Leak(57.5f, 66f, 1f, 0f));
+            Leaks.Add(new Leak(82.5f, 58f, -1f, 0f));
+
+            Hazes.Add(new Haze("Steam_MachineHall", 68f, 80f, 48f, 7f, 0.08f, 3.2f, false, Glow.Steam));
+            DripsIn(Area.Between(44, 52, 92, 84), 9, 91, false);
         }
 
         // ------------------------------------------------------------------
-        // C. A Galeria dos Manometros
+        // C. O Sotao dos Manometros (Ala Alta)
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// O sotao, a oeste da Casa de Maquinas: uma sala baixa e comprida,
-        /// forrada de manometros. A valvula daqui liga uma coluna que sobe
-        /// direto dos Primeiros Canos — depois de girada, e o atalho do comeco
-        /// da fase ate ca em cima. E um buraco no chao cai na Galeria de Transicao.
+        /// A oeste do andar 1 da Casa de Maquinas: uma sala baixa e comprida,
+        /// forrada de manometros. E um desvio — os corrompidos guardam a
+        /// entrada; no fundo, em paz, o relatorio do Rei de Prata, um cofre e a
+        /// valvula que liga a coluna dos Primeiros Canos (o atalho de volta da
+        /// entrada ate aqui).
         /// </summary>
         private static void BuildGaugeAttic()
         {
             const string room = "C_GaugeAttic";
-            Room(room, 8, 50, 56, 62);
+            Room(room, 4, 62, 42, 72);
 
-            Carve(8, 50, 56, 62);
+            Carve(4, 62, 42, 72);
+            Solid(4, 70, 10, 72);
+            Solid(16, 62, 18, 63);
 
-            // O patamar leste, na altura da porta da Casa de Maquinas, e a
-            // escada que desce dele.
-            Solid(48, 50, 56, 57);
-            Solid(44, 50, 47, 55);
-            Solid(40, 50, 43, 53);
-            Solid(36, 50, 39, 51);
-            Carve(57, 58, 61, 61);
+            Valve(room, "Valve_Attic", 5, 64, 6, 62, "vent:Lift_ToAttic").Notice =
+                "Ao longe, o vapor volta a subir pelos Primeiros Canos, até o sótão.";
 
-            // A coluna que vem dos Primeiros Canos sai por um buraco no patamar.
-            Carve(53, 41, 55, 57);
-            Lift("Lift_ToAttic", 53, 55, 34, 59, false).StartsOff = true;
-            Valve(room, "Valve_Attic", 9, 52, 11, 50, "vent:Lift_ToAttic");
-
-            // O buraco que cai na Galeria de Transicao. So desce.
-            Carve(21, 15, 22, 49);
-
-            Enemy(EnemyKind.BrassWelder, "Welder_Attic", 24, 34, 50);
-            Enemy(EnemyKind.ValveSentry, "Sentry_Attic", 9, 9, 50, 1, 11);
-            Leech("Leech_Attic_1", 28, 62, 50, 24, 34);
-            Leech("Leech_Attic_2", 15, 62, 50, 10, 19);
-
-            Mark(room, "Secret_SilverFragment_Attic", 13, 50);
-
-            // No fundo do sotao: uma gema, e o relatorio que mostra quem mandou
-            // manter as caldeiras no limite.
-            Reward(room, RewardKind.Gem, "D2_Attic_Gem", 13, 50);
-            Tell(LoreKind.Page, room, "Lore_InspectionReport", "um relatório de inspeção", 20, 50,
+            Reward(room, RewardKind.ShardCache, "D2_Attic_Cache", 11, 62, 10);
+            Mark(room, "Secret_SilverFragment_Attic", 11, 62);
+            Tell(LoreKind.Page, room, "Lore_InspectionReport", "um relatório de inspeção", 8, 62,
                 "Um relatório com o selo dos 925, esquecido debaixo de um manômetro.",
                 "\"INSPEÇÃO DAS CALDEIRAS DO DISTRITO DE LATÃO. Pressão acima do limite em todas as linhas. Recomendo desligar metade das caldeiras.\"",
                 "Carimbado por cima, em vermelho: \"NEGADO. A CIDADE NÃO PODE ESCURECER. — O REI DE PRATA.\"",
-                "Na margem, a lápis: \"então que escureça aqui embaixo.\"");
+                "Na margem, a lápis: \"Então, que escureça aqui embaixo.\"");
+
+            Enemy(EnemyKind.BrassWelder, "Welder_Attic", 19, 34, 62, start: 28);
+            Enemy(EnemyKind.ValveSentry, "Sentry_Attic", 36, 36, 62, -1, 7);
+            Leech("Leech_Attic_1", 28, 72, 62, 19, 34);
+            Leech("Leech_Attic_2", 20, 72, 62, 19, 34);
 
             // A parede de manometros.
-            for (int x = 12; x <= 44; x += 6)
+            for (int x = 12; x <= 40; x += 5)
             {
-                Fix(FixtureKind.GaugeBig, $"Gauge_Attic_{x}", x, 56 + (x / 6) % 2 * 2);
+                Fix(FixtureKind.GaugeBig, $"Gauge_Attic_{x}", x, 66 + (x / 5) % 2 * 2);
             }
 
-            Furnace("Furnace_Attic", 30, 50);
-            Shine(20f, 58f, 8f, 0.6f, Glow.Steam);
-            Shine(40f, 58f, 8f, 0.6f, Glow.Steam);
+            Decor(FixtureKind.Shelf, 13, 62);
+            Decor(FixtureKind.Poster, 33, 67);
+            Furnace("Furnace_Attic", 30, 62);
+            Lamp(9, 69, 0.8f);
+            Lamp(26, 72, 0.6f);
+            Lamp(38, 72, 0.6f);
 
-            Plumb(Area.Between(8, 50, 47, 62), 1001, PipeLayer.Back, false, 0);
-            RunPipe(PipeLayer.Mid, true, (6, 54), (18, 54), (18, 51));
-            RunPipe(PipeLayer.Far, false, (4, 30), (28, 30));
-            Steam(room, Area.Between(8, 50, 56, 62), 0.09f);
-            DripsIn(Area.Between(8, 50, 47, 62), 8, 101, false);
+            Plumb(Area.Between(11, 62, 42, 72), 1001, PipeLayer.Back, false, 0);
+            RunPipe(PipeLayer.Mid, true, (2, 66), (14, 66), (14, 63));
+            Steam(room, Area.Between(4, 62, 42, 72), 0.09f);
+            DripsIn(Area.Between(11, 62, 42, 72), 8, 101, false);
         }
 
         // ------------------------------------------------------------------
-        // D. O Deposito
+        // D. O Deposito (Ala Baixa)
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// Embaixo do Labirinto de Valvulas. Cai-se aqui por um buraco do
-        /// corredor de baixo. O deposito e partido em dois por uma parede
-        /// rachada: so explodindo a caldeira do lado se chega a metade leste,
-        /// de onde sai a coluna de volta pro labirinto e a porta da Torre das
-        /// Valvulas. A oeste, um tunel vai dar no lago da Cadeia de Vapor.
+        /// Onde as mascaras ficavam. Entra-se por baixo de um patamar (o tunel
+        /// do Esgoto); a coluna do lado sobe ate ele, com a ficha da Coroa e um
+        /// cofre. Uma caldeira corrompida derruba a parede rachada pra metade
+        /// leste: prateleiras vazias, a ultima pagina do livro, a bancada da
+        /// ala e a porta da Torre.
         /// </summary>
         private static void BuildDepot()
         {
             const string room = "D_Depot";
-            Room(room, 206, 6, 238, 20);
+            Room(room, 141, 6, 182, 19);
 
-            Carve(206, 6, 238, 20);
+            Carve(141, 6, 182, 19);
 
-            // O buraco do labirinto.
-            Carve(219, 21, 220, 27);
-
-            // A parede que parte o deposito, com a passagem rachada embaixo.
-            Solid(222, 6, 223, 20);
-            Cracked("Wall_Depot", 222, 6, 223, 9);
-            PressureBoiler("Boiler_Depot", 215, 6, 220, 6, "Wall_Depot");
-
-            // Metade leste: a coluna de volta pro corredor do labirinto, e a porta da torre.
-            Carve(225, 21, 226, 27);
-            Lift("Lift_Depot_Up", 225, 226, 6, 29);
-            Carve(239, 6, 245, 9);
-
-            // Metade oeste: um patamar alto, a coluna que sobe ate ele, e o tunel
-            // que atravessa a rocha ate a plataforma rente ao lago.
-            Solid(206, 6, 209, 17);
-            Lift("Lift_Depot_West", 210, 212, 6, 19);
-            Carve(195, 18, 205, 21);
-
-            Enemy(EnemyKind.AcidBloater, "Bloater_Depot", 228, 236, 6);
-            Enemy(EnemyKind.BrassWelder, "Welder_Depot", 227, 237, 6);
-            Leech("Leech_Depot", 232, 20, 6, 228, 236);
-
-            Put(Crate(0), 213, 6);
-            Put(Crate(2), 214, 6);
-            Put(Crate(1), 214, 7);
-            Put(Crate(3), 236, 6);
-            Put(Crate(0), 237, 6);
-            Put(Crate(2), 237, 7);
-            Put(Crate(1), 238, 6);
-            Put(Debris(0), 230, 6);
-
-            Mark(room, "Secret_SilverFragment_Depot", 207, 18);
-
-            // No patamar alto: um cofre, e a ficha que conta o que o chefe de
-            // manutencao fez com as mascaras.
-            Reward(room, RewardKind.ShardCache, "D2_Depot_Cache", 207, 18, 50);
-            Tell(LoreKind.Page, room, "Lore_DepotSheet", "a ficha do depósito", 203, 18,
+            Solid(141, 10, 146, 14);
+            Lift("Lift_Depot_West", 147, 149, 6, 17);
+            Reward(room, RewardKind.ShardCache, "D2_Depot_Cache", 142, 15, 10);
+            Mark(room, "Secret_SilverFragment_Depot", 142, 15);
+            Tell(LoreKind.Page, room, "Lore_DepotSheet", "a ficha do depósito", 145, 15,
                 "Uma ficha de inventário, pregada na porta do depósito.",
                 "\"ORDEM DA COROA: recolher todas as máscaras de solda e enviá-las ao Distrito de Prata. Prioridade: Nobres.\"",
                 "Logo abaixo, à mão: \"Recolhidas: nenhuma. Não há máscaras neste depósito. — O chefe de manutenção.\"",
                 "Nas prateleiras atrás da ficha, só restam as marcas de caixas retiradas às pressas.");
 
-            Furnace("Furnace_Depot", 232, 6);
-            Fix(FixtureKind.GaugeBig, "Gauge_Depot", 228, 12);
+            Solid(160, 10, 161, 19);
+            Cracked("Wall_Depot", 160, 6, 161, 9);
+            PressureBoiler(room, "Boiler_Depot", 153, 6, 151, 6, "Wall_Depot");
 
-            Plumb(Area.Between(206, 6, 238, 20), 1101, PipeLayer.Back, true);
-            RunPipe(PipeLayer.Mid, false, (224, 18), (240, 18));
-            DripsIn(Area.Between(210, 6, 238, 20), 7, 111, false);
+            Logbook(room, 4, "última página do livro de turnos", 164, 6,
+                "LIVRO DE TURNOS DA CALDEIRA — a última página.",
+                "Está quase em branco. No meio dela, uma linha só:",
+                "\"As máscaras funcionam.\"");
+
+            Bench(room, "Workbench_Depot", 179, 6);
+            Carve(183, 6, 193, 9);
+
+            Enemy(EnemyKind.AcidBloater, "Bloater_Depot", 162, 177, 6, start: 173);
+            Enemy(EnemyKind.BrassWelder, "Welder_Depot", 162, 177, 6, start: 166);
+            Leech("Leech_Depot", 172, 19, 6, 162, 177);
+
+            // As prateleiras vazias, de onde as caixas sairam as pressas.
+            for (int x = 163; x <= 177; x += 3) Decor(FixtureKind.Shelf, x, 12);
+            Decor(FixtureKind.Shelf, 142, 16);
+            Decor(FixtureKind.Barrel, 150, 6);
+            Decor(FixtureKind.Barrel, 157, 6);
+            Decor(FixtureKind.Barrel, 158, 6);
+            Put(Crate(0), 177, 6);
+            Put(Debris(0), 166, 6);
+            Decor(FixtureKind.Sign, 152, 15);
+            Lamp(144, 19, 0.7f);
+            Lamp(156, 19);
+            Lamp(170, 19);
+            Lamp(180, 19, 0.9f);
+
+            Furnace("Furnace_Depot", 174, 6);
+            Fix(FixtureKind.GaugeBig, "Gauge_Depot", 166, 16);
+            RunPipe(PipeLayer.Back, true, (141, 18), (182, 18));
+            RunPipe(PipeLayer.Mid, false, (162, 17), (184, 17));
+            DripsIn(Area.Between(147, 6, 182, 19), 7, 111, false);
         }
 
         // ------------------------------------------------------------------
-        // E. A Torre das Valvulas
+        // E. A Torre das Valvulas (Ala Baixa)
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// A leste de tudo: um poco largo de quatro andares de grade. Cada
-        /// andar tem uma valvula que liga a coluna pro andar de cima, e um vao
-        /// no meio que so se cruza emendando dash numa nuvem de vapor.
-        ///
-        /// Entra-se por tres alturas: pela base (do Deposito), pelo meio (do
-        /// Labirinto) e pelo terceiro andar (do topo do elevador). Do alto sai
-        /// o tunel pra Galeria Alta. Descer e so se deixar cair pelos vaos.
+        /// O fim da Ala Baixa: um poco de quatro andares, a leste do Deposito.
+        /// Na base, a valvula da primeira coluna; no andar 1, a da segunda; no
+        /// andar 2, a placa da linha de vapor e a coluna que pulsa; no alto, o
+        /// diario do chefe de manutencao e a valvula da trava.
         /// </summary>
         private static void BuildValveTower()
         {
             const string room = "E_ValveTower";
-            Room(room, 246, 6, 284, 92);
+            Room(room, 194, 6, 213, 74);
 
-            Carve(246, 6, 284, 92);
+            Carve(194, 6, 213, 74);
 
-            // As tres entradas (a da base e a porta que o Deposito escavou).
-            Carve(238, 35, 245, 38);
+            // Base.
+            Valve(room, "Valve_Tower_1", 210, 8, 211, 6, "vent:Lift_Tower_1");
+            Lift("Lift_Tower_1", 195, 197, 6, 27).StartsOff = true;
+            Enemy(EnemyKind.AcidBloater, "Bloater_Tower", 183, 213, 6, start: 198);
+            Leech("Leech_Tower_1", 204, 24, 6, 183, 213);
 
-            // Base: uma poca de acido no meio.
-            Carve(260, 4, 270, 5);
-            Acid("Acid_Tower", 260, 4, 270, 5);
-            Fumes("Tower", Area.Between(260, 4, 270, 5), 0.14f);
+            // Andar 1.
+            Grate(200, 213, 25);
+            Rail(203, 213, 26);
+            Valve(room, "Valve_Tower_2", 211, 28, 212, 26, "vent:Lift_Tower_2");
+            Lift("Lift_Tower_2", 200, 202, 26, 47).StartsOff = true;
 
-            // Andar do meio (35).
-            Grate(246, 247, 34);
-            Grate(251, 262, 34);
-            Grate(270, 284, 34);
-            Cloud("Cloud_Tower_1", 265, 35, 267, 38);
+            // Andar 2.
+            Grate(194, 198, 45);
+            Grate(206, 213, 45);
+            Tell(LoreKind.Plaque, room, "Lore_TowerLine", "a placa da linha", 195, 46,
+                "Cada andar da torre tem uma placa com o bairro que a sua linha de vapor aquecia. Esta diz:",
+                "\"LINHA 3 — AVENIDA DAS FACETAS. PRIORIDADE: NOBRES.\"",
+                "Embaixo, a giz, a mesma pergunta em três letras diferentes: \"E a nossa?\"");
+            Vent pulsing = Lift("Lift_Tower_3", 207, 209, 46, 66);
+            pulsing.OnTime = 2.5f;
+            pulsing.OffTime = 1.2f;
+            Enemy(EnemyKind.ValveSentry, "Sentry_Tower_1", 213, 213, 46, -1, 6);
 
-            // Terceiro andar (56).
-            Grate(246, 258, 55);
-            Grate(266, 279, 55);
-            Grate(283, 284, 55);
-            Cloud("Cloud_Tower_2", 261, 56, 263, 59);
+            // O alto.
+            Grate(194, 205, 65);
+            Grate(211, 213, 65);
+            Rail(194, 205, 66);
 
-            // Quarto andar (76).
-            Grate(246, 247, 75);
-            Grate(251, 270, 75);
-            Grate(277, 284, 75);
-            Carve(227, 76, 245, 79);
+            Valve(room, "Valve_Tower_3", 194, 68, 195, 66, "gate:Trava_Baixa").Lock = true;
 
-            // Cada valvula liga a coluna que sai do andar dela.
-            Lift("Lift_Tower_1", 248, 250, 6, 37).StartsOff = true;
-            Valve(room, "Valve_Tower_1", 278, 8, 280, 6, "vent:Lift_Tower_1");
+            Enemy(EnemyKind.BrassWelder, "Welder_Tower", 194, 205, 66, start: 201);
+            Leech("Leech_Tower_3", 201, 74, 66, 194, 205);
 
-            Lift("Lift_Tower_2", 280, 282, 35, 58).StartsOff = true;
-            Valve(room, "Valve_Tower_2", 272, 37, 274, 35, "vent:Lift_Tower_2");
-
-            Lift("Lift_Tower_3", 248, 250, 56, 78).StartsOff = true;
-            Valve(room, "Valve_Tower_3", 254, 58, 256, 56, "vent:Lift_Tower_3");
-
-            Enemy(EnemyKind.AcidBloater, "Bloater_Tower", 272, 283, 6);
-            Enemy(EnemyKind.ValveSentry, "Sentry_Tower_1", 284, 284, 35, -1, 14);
-            Enemy(EnemyKind.ValveSentry, "Sentry_Tower_2", 246, 246, 56, 1, 12);
-            Enemy(EnemyKind.BrassWelder, "Welder_Tower", 252, 268, 76);
-            Leech("Leech_Tower_1", 256, 33, 6, 251, 259);
-            Leech("Leech_Tower_2", 276, 54, 35, 271, 279);
-            Leech("Leech_Tower_3", 260, 92, 76, 252, 268);
-
-            Mark(room, "Secret_SilverFragment_Tower", 281, 76);
-
-            // No alto da torre, de onde se ve a sala das caldeiras: um reforco
-            // de chassi e o diario de quem virou o Mestre das Caldeiras.
-            Reward(room, RewardKind.Chassis, "D2_Tower_Chassis", 281, 76);
-            Tell(LoreKind.Page, room, "Lore_ChiefDiary", "o diário do chefe de manutenção", 278, 76,
+            Tell(LoreKind.Page, room, "Lore_ChiefDiary", "o diário do chefe de manutenção", 211, 66,
                 "Um caderno de capa de couro, deixado no alto da torre, virado para a sala das caldeiras.",
                 "\"Se as caldeiras pararem, o vapor para. Sem vapor, os de baixo congelam antes de o Óxido chegar.\"",
                 "\"Vou ficar com elas. Alguém tem que manter a pressão. Tranquem a porta por fora e não a abram, ouçam o que ouvirem.\"",
                 "A última página tem só a marca de uma mão, queimada no papel.");
 
-            Boiler("Boiler_Tower_Base", 254, 6);
-            Boiler("Boiler_Tower_Top", 262, 76);
-            Fix(FixtureKind.GaugeBig, "Gauge_Tower_1", 264, 14);
-            Fix(FixtureKind.GaugeBig, "Gauge_Tower_2", 258, 44);
-            Fix(FixtureKind.GaugeBig, "Gauge_Tower_3", 272, 64);
-            Fix(FixtureKind.GaugeBig, "Gauge_Tower_4", 270, 84);
-            Furnace("Furnace_Tower", 274, 6);
+            Boiler("Boiler_Tower_Base", 205, 6);
+            Fix(FixtureKind.GaugeBig, "Gauge_Tower_1", 199, 14);
+            Fix(FixtureKind.GaugeBig, "Gauge_Tower_2", 204, 36);
+            Fix(FixtureKind.GaugeBig, "Gauge_Tower_3", 198, 56);
+            Decor(FixtureKind.Sign, 203, 30);
+            Lamp(208, 24, 0.7f);
+            Lamp(196, 44, 0.7f);
+            Lamp(212, 64, 0.7f);
+            Lamp(212, 74, 0.8f);
+            HangChain(196, 80, 7);
+            HangChain(212, 44, 5);
 
-            // Tubulacao em pe, de cima a baixo: e uma torre de canos.
-            for (int x = 252; x <= 282; x += 6)
+            for (int x = 199; x <= 211; x += 6)
             {
-                RunPipe(PipeLayer.Back, x % 12 == 0, (x, 4), (x, 94));
+                RunPipe(PipeLayer.Back, x % 12 == 3, (x, 4), (x, 76));
             }
 
-            RunPipe(PipeLayer.Back, false, (244, 46), (286, 46));
-            RunPipe(PipeLayer.Back, true, (244, 66), (286, 66));
-            RunPipe(PipeLayer.Back, false, (244, 86), (286, 86));
-            RunPipe(PipeLayer.Mid, true, (264, 20), (264, 96));
-            RunPipe(PipeLayer.Far, false, (132, 2), (132, 48));
-            RunPipe(PipeLayer.Far, true, (138, 2), (138, 48));
-
-            Hazes.Add(new Haze("Steam_Tower", 265f, 88f, 38f, 6f, 0.09f, 2f, false, Glow.Steam));
-            DripsIn(Area.Between(246, 6, 284, 33), 7, 121, true);
-            DripsIn(Area.Between(246, 76, 284, 92), 8, 122, false);
+            RunPipe(PipeLayer.Back, false, (192, 40), (215, 40));
+            RunPipe(PipeLayer.Back, true, (192, 60), (215, 60));
+            Hazes.Add(new Haze("Steam_Tower", 204f, 70f, 20f, 6f, 0.09f, 2f, false, Glow.Steam));
+            DripsIn(Area.Between(194, 6, 213, 24), 6, 121, false);
         }
 
         // ------------------------------------------------------------------
@@ -2483,65 +2591,193 @@ namespace EchoesOfCravejada.EditorTools
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// Por cima da Sala de Caldeiras: o desafio do distrito. Um corredor
-        /// largo que sai do alto da Torre das Valvulas e acaba num mirante, de
-        /// onde se ve a cidade la em cima pela primeira vez.
-        ///
-        /// Ate a purificacao, a entrada (o tunel da torre) fica tampada por uma
-        /// nevoa densa de Oxide. Depois dela, so se chega ao mirante com o que o
-        /// Mestre das Caldeiras deixa: os canos ficam longe e alto demais um do
-        /// outro sem o Salto de Pressao. No mirante, uma gema e a placa.
-        ///
-        /// Nao ha mais porta pro poco de fuga: a saida do distrito e so pela
-        /// sala do boss.
+        /// Por cima da Sala de Caldeiras: chega-se pela coluna do tunel, a
+        /// leste. Na chegada, a placa do cano-mestre. A oeste, o desafio do
+        /// Salto de Pressao: canos longe e alto demais um do outro ate o
+        /// mirante, de onde se ve a cidade la em cima, e um cofre. A leste, a
+        /// porta da subida pro elevador.
         /// </summary>
         private static void BuildHighGallery()
         {
             const string room = "F_HighGallery";
-            Room(room, 150, 76, 226, 90);
+            Room(room, 130, 78, 188, 92);
 
-            Carve(150, 76, 226, 90);
-            Voids.Add(Area.Between(150, 76, 226, 90));
+            Carve(130, 78, 188, 92);
+            Voids.Add(Area.Between(130, 78, 188, 92));
 
-            // O patamar oeste (o mirante) e tres canos que sobem ate ele, cada
-            // um 4 acima e longe do outro: so com o segundo pulo no ar.
-            Solid(150, 76, 160, 87);
-            PipeFloor(184, 187, 77);
-            PipeFloor(176, 179, 81);
-            PipeFloor(168, 171, 85);
+            Solid(130, 78, 140, 89);
+            PipeFloor(160, 163, 79);
+            PipeFloor(152, 155, 83);
+            PipeFloor(144, 147, 87);
 
-            // A nevoa que tampa o tunel da torre ate a purificacao.
-            Veil("Veil_HighGallery", 230, 76, 231, 79);
+            // A porta da subida, a leste.
+            Carve(189, 78, 189, 81);
 
-            Reward(room, RewardKind.Gem, "D2_Gallery_Gem", 153, 88);
-            Tell(LoreKind.Plaque, room, "Lore_GalleryView", "a placa do mirante", 157, 88,
+            Tell(LoreKind.Plaque, room, "Lore_MasterPipe", "a inscrição do cano-mestre", 178, 78,
+                "Um cano da grossura de uma casa, subindo até sumir na rocha. Está seco e corroído por dentro.",
+                "Na placa, em letra de fundição:",
+                "\"PARA A CIDADE DE PRATA.\"",
+                "Alguém riscou por cima, a prego: \"Nada mais sobe.\"");
+            RunPipe(PipeLayer.Far, true, (88, 39), (88, 47));
+            RunPipe(PipeLayer.Far, true, (89, 39), (89, 47));
+
+            Reward(room, RewardKind.ShardCache, "D2_Gallery_Cache", 133, 90, 20);
+            Mark(room, "Secret_SilverFragment_Gallery", 133, 90);
+            Tell(LoreKind.Plaque, room, "Lore_GalleryView", "a placa do mirante", 137, 90,
                 "Daqui, por uma fresta na rocha, dá para ver lá em cima pela primeira vez: os geodos de Cravejada, imensos e apagados.",
                 "Uma placa de latão, aparafusada na beirada: \"GALERIA ALTA — ACESSO RESTRITO AOS INSPETORES DA COROA.\"",
-                "Riscado embaixo, a prego: \"agora é de quem subir.\"");
+                "Riscado embaixo, a prego: \"Agora é de quem subir.\"");
 
-            Enemy(EnemyKind.BrassWelder, "Welder_Gallery_1", 190, 205, 76);
-            Enemy(EnemyKind.BrassWelder, "Welder_Gallery_2", 208, 224, 76);
-            Enemy(EnemyKind.ValveSentry, "Sentry_Gallery", 151, 151, 88, 1, 9);
-            Leech("Leech_Gallery_1", 196, 90, 76, 190, 205);
-            Leech("Leech_Gallery_2", 216, 90, 76, 208, 224);
+            Boiler("Boiler_Gallery", 166, 78);
+            Fix(FixtureKind.GaugeBig, "Gauge_Gallery_1", 172, 84);
+            Fix(FixtureKind.GaugeBig, "Gauge_Gallery_2", 148, 88);
+            Furnace("Furnace_Gallery_High", 174, 78);
+            Decor(FixtureKind.Sign, 134, 91);
+            Decor(FixtureKind.Poster, 156, 86);
+            Lamp(150, 92);
+            Lamp(170, 92);
+            Lamp(184, 92, 0.6f);
+            Rail(130, 140, 90);
 
-            Mark(room, "Secret_SilverFragment_Gallery", 153, 88);
+            RunPipe(PipeLayer.Mid, false, (128, 91), (190, 91));
+            RunPipe(PipeLayer.Mid, true, (164, 91), (164, 84), (160, 84));
 
-            Boiler("Boiler_Gallery", 198, 76);
-            Fix(FixtureKind.GaugeBig, "Gauge_Gallery_1", 212, 82);
-            Fix(FixtureKind.GaugeBig, "Gauge_Gallery_2", 168, 86);
-            Furnace("Furnace_Gallery_High", 220, 76);
+            Skylines.Add(new Skyline("Skyline_Gallery_Far", 75f, false, 3f, 0.25f));
+            Skylines.Add(new Skyline("Skyline_Gallery_Near", 74.5f, true, 2f, 0.5f));
 
-            RunPipe(PipeLayer.Mid, false, (148, 89), (228, 89));
-            RunPipe(PipeLayer.Mid, true, (190, 89), (190, 82), (184, 82));
-            RunPipe(PipeLayer.Far, false, (75, 42), (113, 42));
-            RunPipe(PipeLayer.Far, true, (100, 38), (100, 46));
+            Hazes.Add(new Haze("Steam_HighGallery", 159f, 88f, 58f, 5f, 0.08f, 3f, false, Glow.Steam));
+            DripsIn(Area.Between(142, 78, 188, 92), 9, 131, false);
+        }
 
-            Skylines.Add(new Skyline("Skyline_Gallery_Far", 73f, false, 3f, 0.25f));
-            Skylines.Add(new Skyline("Skyline_Gallery_Near", 72.5f, true, 2f, 0.5f));
+        // ------------------------------------------------------------------
+        // G. A Subida
+        // ------------------------------------------------------------------
 
-            Hazes.Add(new Haze("Steam_HighGallery", 188f, 86f, 76f, 5f, 0.08f, 3f, false, Glow.Steam));
-            DripsIn(Area.Between(162, 76, 226, 90), 9, 131, false);
+        /// <summary>
+        /// A direita da Galeria Alta: o acesso de servico ao elevador, ja que
+        /// a escadaria desabou. Um poco de passarelas, cada uma quatro tiles
+        /// acima da outra, alternando de lado — feito pro Salto de Pressao. E
+        /// a continuacao do poco da Torre das Valvulas, aberto embaixo: da
+        /// torre se ve a subida, mas nao se alcanca. No
+        /// alto, a passarela dos inspetores volta pra oeste, por cima da
+        /// galeria, ate a estacao.
+        /// </summary>
+        private static void BuildElevatorClimb()
+        {
+            const string room = "G_ElevatorClimb";
+            Room(room, 190, 78, 207, 103);
+
+            Carve(190, 78, 207, 103);
+
+            // O fundo e aberto pra Torre das Valvulas, logo embaixo: do alto
+            // dela se ve a subida, mas e alto demais pra chegar (ate com o
+            // Salto de Pressao). So sobra um patamar, na porta da galeria. De
+            // cima, da pra se deixar cair ate a torre.
+            Carve(194, 75, 207, 77);
+            Rail(190, 193, 78);
+
+            int[,] decks = { { 190, 197, 81 }, { 199, 207, 85 }, { 190, 197, 89 }, { 199, 207, 93 }, { 190, 197, 97 } };
+            for (int i = 0; i < decks.GetLength(0); i++)
+            {
+                Grate(decks[i, 0], decks[i, 1], decks[i, 2]);
+                Rail(decks[i, 0], decks[i, 1], decks[i, 2] + 1);
+            }
+
+            Tell(LoreKind.Graffiti, room, "Lore_ClimbArrow", "a seta de giz", 193, 78,
+                "Uma seta a giz, subindo pela parede, e uma palavra só: \"ELEVADOR\".",
+                "Embaixo, em outra letra: \"A escada caiu. Subam por aqui.\"");
+
+            Decor(FixtureKind.Sign, 200, 79);
+            Put(Crate(1), 190, 78);
+            Lamp(194, 88, 0.7f);
+            Lamp(203, 84, 0.7f);
+            Lamp(203, 92, 0.7f);
+            Lamp(198, 103, 0.8f);
+            HangChain(198, 103, 8);
+            HangChain(207, 103, 5);
+            Fix(FixtureKind.GaugeBig, "Gauge_Climb_1", 205, 88);
+            Fix(FixtureKind.GaugeBig, "Gauge_Climb_2", 191, 94);
+
+            RunPipe(PipeLayer.Back, false, (198, 76), (198, 105));
+            RunPipe(PipeLayer.Back, true, (204, 76), (204, 105));
+            RunPipe(PipeLayer.Mid, false, (188, 101), (209, 101));
+            Leaks.Add(new Leak(198.5f, 91f, 1f, 0f));
+            Steam(room, Area.Between(190, 96, 207, 103), 0.10f);
+            DripsIn(Area.Between(190, 78, 207, 103), 6, 151, false);
+        }
+
+        // ------------------------------------------------------------------
+        // H. A Estacao do Elevador
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// O topo do distrito: a passarela dos inspetores, por cima da Galeria
+        /// Alta, e a estacao, em cima do poco da Escadaria das Travas. A escada
+        /// que subia da antessala chega aqui quebrada — um buraco no piso, com
+        /// o guarda-corpo partido. Por ele se desce de volta. A cabine do
+        /// elevador fica bem em cima do poco: sobe ate o alto, onde o latao vira
+        /// cristal, e leva pro District 3.
+        /// </summary>
+        private static void BuildElevatorStation()
+        {
+            const string room = "H_ElevatorStation";
+            Room(room, 104, 100, 189, 110);
+
+            // A passarela dos inspetores.
+            Carve(133, 100, 189, 103);
+            Rail(133, 189, 100);
+            Decor(FixtureKind.Poster, 146, 102);
+            Decor(FixtureKind.Poster, 170, 102);
+            Lamp(140, 103, 0.6f);
+            Lamp(158, 103, 0.6f);
+            Lamp(176, 103, 0.6f);
+            RunPipe(PipeLayer.Back, false, (131, 102), (191, 102));
+
+            // A estacao.
+            Carve(104, 100, 132, 110);
+            Solid(104, 108, 108, 110);
+            Solid(128, 108, 132, 110);
+
+            // O buraco da escada quebrada, a oeste da cabine.
+            Carve(114, 99, 118, 99);
+            Rail(112, 113, 100);
+            Rail(119, 119, 100);
+            Put(Debris(0), 113, 100);
+
+            // A cabine e o poco dela, que sobe ate o alto do mapa.
+            Carve(120, 111, 122, ElevatorTopY + 4 < Height - 1 ? (int)ElevatorTopY + 4 : Height - 2);
+            Mark(room, "Exit_District3", District3Tile.X, District3Tile.Y);
+            Fixtures.Add(new Fixture(FixtureKind.ElevatorRail, "Elevator_Rails", 120, 100, (int)ElevatorTopY + 4 - 100));
+
+            // No alto do poco o latao acaba: e rocha azulada e cristal.
+            MaterialZones.Add((Area.Between(114, 120, 128, Height - 1), Material.Crystal));
+            Ore(Phase01Layout.BlueBand, 123, 124, PropLayer.Middle);
+            Ore(Phase01Layout.BlueBand, 118, 128, PropLayer.Middle);
+            Ore(Phase01Layout.BlueBand, 123, 132, PropLayer.Middle);
+            Shine(121.5f, 126f, 6f, 0.8f, Glow.Crystal);
+            Shine(121.5f, 134f, 6f, 1.0f, Glow.Crystal);
+
+            Tell(LoreKind.Plaque, room, "Lore_ElevatorSign", "a placa do elevador", 126, 100,
+                "Uma placa de latão ao lado da cabine: \"ELEVADOR DE SERVIÇO — DO DISTRITO DE LATÃO AO DISTRITO DE CRISTAL.\"",
+                "Abaixo, um aviso pregado às pressas: \"ESCADARIA INTERDITADA. USE O ACESSO DAS CALDEIRAS.\"",
+                "Alguém acrescentou, a giz: \"Que acesso?\"");
+
+            Decor(FixtureKind.Sign, 119, 107);
+            Fix(FixtureKind.GaugeBig, "Gauge_Station_1", 124, 104);
+            Fix(FixtureKind.GaugeBig, "Gauge_Station_2", 110, 104);
+            Decor(FixtureKind.Barrel, 128, 100);
+            Decor(FixtureKind.Barrel, 129, 100);
+            Put(Crate(0), 106, 100);
+            Put(Crate(2), 107, 100);
+            Put(Crate(1), 106, 101);
+            Lamp(112, 110);
+            Lamp(126, 110);
+            HangChain(110, 110, 3);
+            Furnace("Furnace_Station", 130, 100);
+
+            RunPipe(PipeLayer.Back, true, (102, 106), (134, 106));
+            RunPipe(PipeLayer.Back, false, (119, 99), (119, 112));
+            Steam(room, Area.Between(104, 100, 132, 110), 0.08f);
         }
 
         // ------------------------------------------------------------------
@@ -2630,8 +2866,13 @@ namespace EchoesOfCravejada.EditorTools
         /// caldeira que alcancar, e repete com o mapa mudado, ate nada mais
         /// mudar. Devolve o estado final e o alcance nele.
         /// </summary>
-        private static WorldState Play(out LevelMap.Reach reach, List<string> log, bool bossFalls = true)
+        private static WorldState Play(out LevelMap.Reach reach, List<string> log, bool bossFalls = true,
+            Func<string, bool> allowRoom = null, Action<WorldState, LevelMap.Reach, LevelMap.JumpRules> visit = null)
         {
+            // Com allowRoom, so se mexe nas valvulas e caldeiras das salas
+            // permitidas: e assim que se joga uma ala sem as outras.
+            bool Allowed(string room) => allowRoom == null || allowRoom(room);
+
             var world = new WorldState { Map = Map.Clone() };
 
             // No comeco, portoes e paredes rachadas estao fechados, e so o vapor
@@ -2664,11 +2905,13 @@ namespace EchoesOfCravejada.EditorTools
                 // Depois do boss o Scrap tem o Salto de Pressao.
                 LevelMap.JumpRules rules = world.BossDown ? RulesAfterBoss() : Rules();
                 reach = world.Map.Explore(SpawnTile, rules, world.Lifts(), world.Jets(), clouds);
+                visit?.Invoke(world, reach, rules);
                 bool changed = false;
 
                 foreach (ValveSpec valve in Valves)
                 {
                     if (world.TurnedValves.Contains(valve.Name)) continue;
+                    if (!Allowed(valve.Group)) continue;
                     if (!reach.CanStand(valve.StandX, valve.StandY)) continue;
 
                     world.TurnedValves.Add(valve.Name);
@@ -2706,6 +2949,7 @@ namespace EchoesOfCravejada.EditorTools
                 foreach (BoilerSpec boiler in PressureBoilers)
                 {
                     if (world.BurstBoilers.Contains(boiler.Name)) continue;
+                    if (!Allowed(boiler.Group)) continue;
                     if (!reach.CanStand(boiler.StandX, boiler.StandY)) continue;
 
                     world.BurstBoilers.Add(boiler.Name);
@@ -2731,12 +2975,9 @@ namespace EchoesOfCravejada.EditorTools
                     {
                         if (gate.Opener == GateOpener.Boss) Open(world.Map, gate.Area);
                     }
-                }
 
-                if (world.BossDown && !world.Purified && TouchesAny(reach, PurifyArea))
-                {
+                    // A queda dele purifica o distrito na hora.
                     world.Purified = true;
-                    changed = true;
                     log?.Add("purifica o distrito");
 
                     foreach (GateSpec gate in Gates)
@@ -2824,6 +3065,20 @@ namespace EchoesOfCravejada.EditorTools
                 {
                     problems.Add($"{vent.Name} comeca desligado e nenhuma valvula alcancavel o liga.");
                 }
+
+                if (!vent.StartsOff) continue;
+
+                // Uma coluna desligada tem que ter a valvula a vista: na mesma
+                // sala. Se a valvula fica longe, ela avisa no HUD o que ligou.
+                string ventRoom = RoomAt(vent.Zone.X, vent.Zone.Y);
+
+                foreach (ValveSpec valve in Valves)
+                {
+                    if (Array.IndexOf(valve.Vents, vent.Name) < 0) continue;
+                    if (valve.Group == ventRoom || !string.IsNullOrEmpty(valve.Notice)) continue;
+
+                    problems.Add($"{vent.Name} ({ventRoom}) so liga pela {valve.Name}, em {valve.Group}, longe e sem aviso.");
+                }
             }
 
             foreach (GateSpec gate in Gates)
@@ -2848,29 +3103,38 @@ namespace EchoesOfCravejada.EditorTools
             }
 
             if (!world.BossDown) problems.Add("Nao da pra chegar no Boiler Master.");
-            if (!world.Purified) problems.Add("Nao da pra chegar no topo do poco de fuga: o distrito nunca e purificado.");
 
             // A saida e so pela sala do boss: sem derrota-lo, nada da fase
-            // (nem caminho alternativo) chega no poco de fuga ou na saida.
+            // (nem caminho alternativo) chega no tunel da saida.
             Play(out LevelMap.Reach withoutBoss, null, bossFalls: false);
             if (withoutBoss.CanStand(District3Tile.X, District3Tile.Y))
             {
                 problems.Add("Da pra chegar na saida pros Silent Geodes sem passar pelo Boiler Master.");
             }
 
-            if (TouchesAny(withoutBoss, PurifyArea))
+            CheckArena(world, problems);
+            CheckQuietSpots(reach, problems);
+            CheckEveryRoomPays(problems);
+            CheckPools(problems);
+            CheckNoTraps(problems);
+            CheckWings(problems);
+            CheckReturnAfterBoss(world, problems);
+            CheckBrokenStairway(world, problems);
+
+            int gems = Rewards.FindAll(reward => reward.Kind == RewardKind.Gem).Count;
+            foreach (LoreSpec spec in Lore)
             {
-                problems.Add("Da pra chegar no topo do poco de fuga sem passar pelo Boiler Master.");
+                if (spec.Quest != null) gems += spec.Quest.GemReward;
             }
 
-            CheckArena(world, problems);
+            if (gems != 2) problems.Add($"A fase tem {gems} gemas; tem que ter exatamente 2. Gema e rara.");
 
             // O mirante da Galeria Alta e o desafio de depois do boss: sem o
             // Salto de Pressao, nao se chega nele.
             LevelMap.Reach withoutJump = world.Map.Explore(SpawnTile, Rules(), world.Lifts(), world.Jets(), CloudAreas());
             foreach (RewardSpec reward in Rewards)
             {
-                if (reward.Id == "D2_Gallery_Gem" && withoutJump.CanStand(reward.X, reward.Y))
+                if (reward.Id == "D2_Gallery_Cache" && withoutJump.CanStand(reward.X, reward.Y))
                 {
                     problems.Add("Da pra chegar no mirante da Galeria Alta sem o Salto de Pressao: o desafio nao cobra nada.");
                 }
@@ -2937,6 +3201,28 @@ namespace EchoesOfCravejada.EditorTools
                 {
                     problems.Add($"{fixture.Name} esta fora do mapa, em ({fixture.X}, {fixture.Y}).");
                 }
+
+                // Decoracao nao flutua: lampiao pende de algo, e o que fica no
+                // chao esta apoiado nele.
+                switch (fixture.Kind)
+                {
+                    case FixtureKind.Lamp:
+                        if (!Map.IsSolid(fixture.X, fixture.Y + 2) || Map.IsRock(fixture.X, fixture.Y))
+                        {
+                            problems.Add($"{fixture.Name} ({fixture.X}, {fixture.Y}) nao esta pendurado em nada.");
+                        }
+                        break;
+
+                    case FixtureKind.Locker:
+                    case FixtureKind.Barrel:
+                    case FixtureKind.Boiler:
+                    case FixtureKind.Furnace:
+                        if (!Map.IsSolid(fixture.X, fixture.Y - 1) || Map.IsRock(fixture.X, fixture.Y))
+                        {
+                            problems.Add($"{fixture.Name} ({fixture.X}, {fixture.Y}) nao esta apoiado no chao.");
+                        }
+                        break;
+                }
             }
 
             return problems;
@@ -2961,8 +3247,7 @@ namespace EchoesOfCravejada.EditorTools
             }
 
             LevelMap.Reach inFight = fight.Explore(BossTile, Rules());
-            // Da grade da saida (x 150) ao selo da entrada (x 199), por dentro.
-            Area arena = Area.Between(151, BossTile.Y, 198, 71);
+            Area arena = ArenaInside;
 
             for (int y = 0; y < Height; y++)
             {
@@ -3000,6 +3285,329 @@ namespace EchoesOfCravejada.EditorTools
                 for (int x = perch.X; x <= perch.Right && !reached; x++) reached = inFight.CanStand(x, perch.Y);
 
                 if (!reached) problems.Add($"A plataforma da arena em {perch} nao se alcanca do chao durante a luta.");
+            }
+        }
+
+        /// <summary>
+        /// Os lugares onde o Scrap para pra fazer alguma coisa: raspar uma
+        /// valvula, ler uma lore, falar com alguem, pegar uma recompensa,
+        /// sentar na bancada. Nenhum desses pode ficar na linha de tiro de uma
+        /// sentinela — ninguem le uma carta levando jato de vapor nas costas.
+        /// Quem anda pode passar por eles (todos morrem); so as bancadas e o
+        /// Crisol ficam fora do caminho.
+        /// </summary>
+        private static List<(string Name, int X, int Y)> QuietSpots()
+        {
+            var spots = new List<(string, int, int)>();
+
+            foreach (ValveSpec valve in Valves)
+            {
+                // As da arena sao raspadas no meio da luta, de proposito.
+                if (!valve.Arena) spots.Add((valve.Name, valve.StandX, valve.StandY));
+            }
+
+            // Quem so aparece depois da purificacao nao conta: os corrompidos
+            // somem com ela.
+            foreach (LoreSpec spec in Lore)
+            {
+                if (!spec.AfterPurification) spots.Add((spec.Name, spec.X, spec.Y));
+            }
+            foreach (RewardSpec spec in Rewards) spots.Add((spec.Id, spec.X, spec.Y));
+            foreach ((string name, int x, int y) in Workbenches) spots.Add((name, x + 1, y));
+            spots.Add(("Crisol", CrisolTile.X, CrisolTile.Y));
+            return spots;
+        }
+
+        /// <summary>Se o lugar calmo e de descanso (bancada ou Crisol), e nao so de parar.</summary>
+        private static bool RestSpot(string name)
+        {
+            if (name == "Crisol") return true;
+            foreach (var (bench, _, _) in Workbenches)
+            {
+                if (bench == name) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Confere os lugares calmos (ver <see cref="QuietSpots"/>) e que toda
+        /// sentinela pode ser morta: tem chao do lado dela onde o Scrap alcanca.
+        /// </summary>
+        private static void CheckQuietSpots(LevelMap.Reach reach, List<string> problems)
+        {
+            const int margin = 2;
+
+            foreach ((string name, int x, int y) in QuietSpots())
+            {
+                foreach (EnemySpec enemy in Enemies)
+                {
+                    if (enemy.Kind == EnemyKind.ValveSentry)
+                    {
+                        // O jato sai na altura do peito: pega quem esta no
+                        // mesmo chao, ou um degrau abaixo. Para na rocha.
+                        if (y != enemy.Y && y != enemy.Y - 1) continue;
+
+                        int step = enemy.Direction > 0 ? 1 : -1;
+                        bool hit = Math.Abs(x - enemy.X0) <= 1;
+
+                        for (int i = 1; i <= enemy.Range && !hit; i++)
+                        {
+                            int cx = enemy.X0 + step * i;
+                            if (Map.IsRock(cx, enemy.Y)) break;
+                            if (cx == x) hit = true;
+                        }
+
+                        if (hit) problems.Add($"{name} ({x}, {y}) fica na linha de tiro de {enemy.Name}.");
+                        continue;
+                    }
+
+                    // Quem anda (ou cai do teto e anda) usa o chao inteiro: todos
+                    // morrem, entao podem passar por valvula, lore e recompensa.
+                    // So as bancadas e o Crisol ficam fora: ali o Scrap descansa e compra.
+                    if (!RestSpot(name)) continue;
+                    if (y == enemy.Y && x >= enemy.X0 - margin && x <= enemy.X1 + margin)
+                    {
+                        problems.Add($"{name} ({x}, {y}) fica no caminho de {enemy.Name}.");
+                    }
+                }
+            }
+
+            // E quem anda nao atravessa sentinela, caldeira de pressao, portao
+            // nem parede rachada, e comeca dentro do proprio trecho.
+            foreach (EnemySpec enemy in Enemies)
+            {
+                if (enemy.Kind == EnemyKind.ValveSentry) continue;
+
+                if (enemy.StartX >= 0 && (enemy.StartX < enemy.X0 || enemy.StartX > enemy.X1))
+                {
+                    problems.Add($"{enemy.Name} comeca em {enemy.StartX}, fora do trecho dele ({enemy.X0} a {enemy.X1}).");
+                }
+
+                foreach (EnemySpec sentry in Enemies)
+                {
+                    if (sentry.Kind != EnemyKind.ValveSentry || sentry.Y != enemy.Y) continue;
+                    if (sentry.X0 >= enemy.X0 - 1 && sentry.X0 <= enemy.X1 + 1)
+                    {
+                        problems.Add($"{enemy.Name} anda por cima de {sentry.Name}.");
+                    }
+                }
+
+                foreach (BoilerSpec boiler in PressureBoilers)
+                {
+                    bool level = enemy.Y >= boiler.Y && enemy.Y < boiler.Y + 6;
+                    if (level && boiler.X <= enemy.X1 && boiler.X + 3 >= enemy.X0)
+                    {
+                        problems.Add($"{enemy.Name} atravessa a caldeira {boiler.Name}.");
+                    }
+                }
+
+                var closed = new List<(string Name, Area Area)>(BreakableWalls);
+                foreach (GateSpec gate in Gates) closed.Add((gate.Name, gate.Area));
+                foreach ((string closedName, Area area) in closed)
+                {
+                    bool level = enemy.Y >= area.Y - 1 && enemy.Y <= area.Top;
+                    if (level && area.X <= enemy.X1 && area.Right >= enemy.X0)
+                    {
+                        problems.Add($"{enemy.Name} atravessa {closedName}.");
+                    }
+                }
+            }
+
+            foreach (EnemySpec enemy in Enemies)
+            {
+                if (enemy.Kind != EnemyKind.ValveSentry) continue;
+
+                bool killable = reach.CanStand(enemy.X0 - 1, enemy.Y) || reach.CanStand(enemy.X0 + 1, enemy.Y);
+
+                if (!killable) problems.Add($"{enemy.Name} ({enemy.X0}, {enemy.Y}) nao tem onde o Scrap pare do lado pra bater nela.");
+            }
+        }
+
+        /// <summary>
+        /// Toda poca de acido tem que estar encaixada: so acido por dentro (o
+        /// objeto da poca desenha e queima o retangulo inteiro), parede dos
+        /// dois lados e chao embaixo. Senao o acido aparece — e machuca — em
+        /// cima de onde se pisa, ou fica pendurado no ar.
+        /// </summary>
+        private static void CheckPools(List<string> problems)
+        {
+            foreach ((string name, Area area) in AcidPools)
+            {
+                bool full = true;
+                bool sides = true;
+                bool floor = true;
+
+                for (int y = area.Y; y <= area.Top; y++)
+                {
+                    for (int x = area.X; x <= area.Right; x++)
+                    {
+                        if (!Map.IsAcid(x, y)) full = false;
+                    }
+
+                    if (!Map.IsSolid(area.X - 1, y) || !Map.IsSolid(area.Right + 1, y)) sides = false;
+                }
+
+                for (int x = area.X; x <= area.Right; x++)
+                {
+                    if (!Map.IsSolid(x, area.Y - 1)) floor = false;
+                }
+
+                if (!full) problems.Add($"{name}: o retangulo da poca tem terreno dentro; o acido vai aparecer por cima dele.");
+                if (!sides) problems.Add($"{name}: falta parede de um dos lados da poca.");
+                if (!floor) problems.Add($"{name}: falta chao embaixo da poca.");
+            }
+        }
+
+        /// <summary>
+        /// Nenhuma armadilha: em cada momento da fase (a cada valvula girada),
+        /// de todo chao alcancavel da pra voltar ate Crisol sem girar mais nada.
+        /// Coluna que so sobe, alcapao que so desce e portao que so abre no fim
+        /// nao podem prender ninguem. So a arena fica de fora: durante a luta ela
+        /// tranca de proposito (ver CheckArena).
+        /// </summary>
+        private static void CheckNoTraps(List<string> problems)
+        {
+            Area[] exempt =
+            {
+                ArenaInside,
+            };
+
+            var reported = new HashSet<string>();
+
+            Play(out _, null, true, null, (world, reach, rules) =>
+            {
+                // Antes de chegar no centro, nao ha pra onde voltar ainda.
+                if (!reach.CanStand(CrisolTile.X, CrisolTile.Y)) return;
+
+                LevelMap.Lift[] lifts = world.Lifts();
+                LevelMap.Jet[] jets = world.Jets();
+                LevelMap.Lift[] clouds = CloudAreas();
+
+                foreach (LevelMap.Perch perch in world.Map.FindPerches())
+                {
+                    int x = -1;
+                    for (int cx = perch.X; cx <= perch.Right; cx++)
+                    {
+                        if (reach.CanStand(cx, perch.Y)) { x = cx; break; }
+                    }
+
+                    if (x < 0) continue;
+
+                    bool skip = false;
+                    foreach (Area area in exempt) skip |= area.Contains(x, perch.Y);
+                    if (skip) continue;
+
+                    string room = RoomAt(x, perch.Y) ?? "fora das salas";
+                    string key = $"{room}:{perch}";
+                    if (reported.Contains(key)) continue;
+
+                    LevelMap.Reach back = world.Map.Explore((x, perch.Y), rules, lifts, jets, clouds);
+                    if (back.CanStand(CrisolTile.X, CrisolTile.Y)) continue;
+
+                    reported.Add(key);
+                    problems.Add($"Armadilha em {room}, {perch}: dali nao da pra voltar pra Cisterna sem girar mais nada.");
+                }
+            });
+        }
+
+        /// <summary>
+        /// Salas de passagem: so se atravessam, sem nada a achar. Todas as
+        /// outras tem que ter pelo menos uma lore, um NPC ou uma recompensa.
+        /// </summary>
+        private static readonly string[] PassageRooms =
+        {
+            "01_Gallery", "02_FirstPipes", "09_BoilerRoom",
+        };
+
+        /// <summary>Toda sala que pede esforco paga: lore, alguem pra ouvir, ou recompensa.</summary>
+        private static void CheckEveryRoomPays(List<string> problems)
+        {
+            foreach ((string name, Area area) in Rooms)
+            {
+                if (Array.IndexOf(PassageRooms, name) >= 0) continue;
+
+                bool pays = Lore.Exists(spec => area.Contains(spec.X, spec.Y))
+                    || Rewards.Exists(spec => area.Contains(spec.X, spec.Y))
+                    || area.Contains(CrisolTile.X, CrisolTile.Y);
+
+                if (!pays) problems.Add($"A sala {name} nao tem nada pra achar: nem lore, nem NPC, nem recompensa.");
+            }
+        }
+
+        /// <summary>
+        /// A ordem livre das alas: cada uma se completa partindo do centro sem
+        /// nada das outras duas, e o boss nao se alcanca se faltar qualquer uma.
+        /// </summary>
+        private static void CheckWings(List<string> problems)
+        {
+            foreach ((string wing, string[] _) in Wings)
+            {
+                List<ValveSpec> locks = Valves.FindAll(valve => valve.Lock && WingOf(valve.Group) == wing);
+                if (locks.Count != 1) problems.Add($"A ala {wing} tem {locks.Count} valvulas de trava; tem que ter uma.");
+
+                // Sozinha: so a entrada, o centro e esta ala.
+                WorldState alone = Play(out _, null, false, room => WingOf(room) == null || WingOf(room) == wing);
+
+                foreach (ValveSpec valve in Valves)
+                {
+                    if (WingOf(valve.Group) == wing && !alone.TurnedValves.Contains(valve.Name))
+                    {
+                        problems.Add($"Ala {wing} feita sozinha: {valve.Name} nao se alcanca sem outra ala.");
+                    }
+                }
+
+                foreach (BoilerSpec boiler in PressureBoilers)
+                {
+                    if (WingOf(boiler.Group) == wing && !alone.BurstBoilers.Contains(boiler.Name))
+                    {
+                        problems.Add($"Ala {wing} feita sozinha: {boiler.Name} nao se alcanca sem outra ala.");
+                    }
+                }
+
+                // Sem ela: o boss tem que ficar fora de alcance.
+                WorldState without = Play(out _, null, true, room => WingOf(room) != wing);
+                if (without.BossDown) problems.Add($"Da pra chegar no Boiler Master sem fazer a ala {wing}.");
+            }
+
+            int lockCount = Valves.FindAll(valve => valve.Lock).Count;
+            if (lockCount != Wings.Length) problems.Add($"Ha {lockCount} valvulas de trava; tem que haver {Wings.Length}.");
+        }
+
+        /// <summary>
+        /// Depois do boss, da saida (e da Galeria Alta, por cima dela) tem que
+        /// dar pra voltar pra Praca e pra Cisterna: a Solda e as falas novas
+        /// ficam la.
+        /// </summary>
+        private static void CheckReturnAfterBoss(WorldState world, List<string> problems)
+        {
+            LevelMap.Reach back = world.Map.Explore(District3Tile, RulesAfterBoss(), world.Lifts(), world.Jets(), CloudAreas());
+
+            LoreSpec solda = Lore.Find(spec => spec.Name == "Npc_Solda");
+            if (solda != null && !back.CanStand(solda.X, solda.Y))
+            {
+                problems.Add("Da saida, depois do boss, nao da pra voltar ate a Solda na Praca.");
+            }
+
+            if (!back.CanStand(CrisolTile.X, CrisolTile.Y))
+            {
+                problems.Add("Da saida, depois do boss, nao da pra voltar ate Crisol.");
+            }
+        }
+
+        /// <summary>
+        /// A escadaria quebrada nao pode servir de caminho: com a porta da
+        /// subida tampada, nem com o Salto de Pressao se chega no elevador.
+        /// </summary>
+        private static void CheckBrokenStairway(WorldState world, List<string> problems)
+        {
+            LevelMap blocked = world.Map.Clone();
+            blocked.Fill(189, 78, 189, 81, LevelMap.Rock);
+
+            LevelMap.Reach reach = blocked.Explore(SpawnTile, RulesAfterBoss(), world.Lifts(), world.Jets(), CloudAreas());
+            if (reach.CanStand(District3Tile.X, District3Tile.Y))
+            {
+                problems.Add("Da pra chegar no elevador sem a subida da direita: a escadaria quebrada esta servindo de caminho.");
             }
         }
 

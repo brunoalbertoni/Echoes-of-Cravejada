@@ -1,0 +1,793 @@
+fileFormatVersion: 2
+guid: 2f19aa07d262f134a8b87e0f96dcdf7e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5719198803260155786
+    second: d2_welder_sheet_0
+  - first:
+      213: -2802710259783180241
+    second: d2_welder_sheet_1
+  - first:
+      213: -4955739024961334092
+    second: d2_welder_sheet_2
+  - first:
+      213: 7692226223324398780
+    second: d2_welder_sheet_3
+  - first:
+      213: 1595224296697501691
+    second: d2_welder_sheet_4
+  - first:
+      213: -5708607961138557989
+    second: d2_welder_sheet_5
+  - first:
+      213: 7398726064780803962
+    second: d2_welder_sheet_6
+  - first:
+      213: 4459531765838316186
+    second: d2_welder_sheet_7
+  - first:
+      213: 4839278181233253633
+    second: d2_welder_sheet_8
+  - first:
+      213: -6538993334490529872
+    second: d2_welder_sheet_9
+  - first:
+      213: -2611264759986660438
+    second: d2_welder_sheet_10
+  - first:
+      213: -7269756525194521450
+    second: d2_welder_sheet_11
+  - first:
+      213: 4898543399239088103
+    second: d2_welder_sheet_12
+  - first:
+      213: -142556362592893728
+    second: d2_welder_sheet_13
+  - first:
+      213: -8262516638711217543
+    second: d2_welder_sheet_14
+  - first:
+      213: -2597381171716795221
+    second: d2_welder_sheet_15
+  - first:
+      213: -1962721067973627559
+    second: d2_welder_sheet_16
+  - first:
+      213: -2639687833489806519
+    second: d2_welder_sheet_17
+  - first:
+      213: 4512635205762906030
+    second: d2_welder_sheet_18
+  - first:
+      213: -3369235132011667730
+    second: d2_welder_sheet_19
+  - first:
+      213: 5441650927220321143
+    second: d2_welder_sheet_20
+  - first:
+      213: -5166082061510360124
+    second: d2_welder_sheet_21
+  - first:
+      213: -7686076203812784444
+    second: d2_welder_sheet_22
+  - first:
+      213: -4365534434448065064
+    second: d2_welder_sheet_23
+  - first:
+      213: -2003839116056760395
+    second: d2_welder_sheet_24
+  - first:
+      213: 5602516245753381402
+    second: d2_welder_sheet_25
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: d2_welder_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 112
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aabdf7e298ce2cbd0800000000000000
+      internalID: -2611264759986660438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 112
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 694d33805f2ac1b90800000000000000
+      internalID: -7269756525194521450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 112
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e7fa7c944f1bf340800000000000000
+      internalID: 4898543399239088103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 112
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e4cd275eb9850ef0800000000000000
+      internalID: -142556362592893728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 112
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9720ddec4e4a55d80800000000000000
+      internalID: -8262516638711217543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 112
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba45889f59f34fbd0800000000000000
+      internalID: -2597381171716795221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 56
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 951b14e669303c4e0800000000000000
+      internalID: -1962721067973627559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 56
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94b6beea6e1fd5bd0800000000000000
+      internalID: -2639687833489806519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 56
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea77b688fc910ae30800000000000000
+      internalID: 4512635205762906030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 56
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eee9da79f721e31d0800000000000000
+      internalID: -3369235132011667730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_20
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 56
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77b64acefa0a48b40800000000000000
+      internalID: 5441650927220321143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_21
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 56
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c348237cb36e48b0800000000000000
+      internalID: -5166082061510360124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_22
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 56
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c6f72b4a62955590800000000000000
+      internalID: -7686076203812784444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_23
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 56
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ddbcfbbf818a63c0800000000000000
+      internalID: -4365534434448065064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5bf6764d0fee034e0800000000000000
+      internalID: -2003839116056760395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_25
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 0
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a124c7497d220cd40800000000000000
+      internalID: 5602516245753381402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 168
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d193268ca855054ab4abedcf7a12db7
+      internalID: 648238748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 168
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f75d847d30f39a45b6d5d8e1a99a62f
+      internalID: -1154584146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 168
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73a09892d4efe174abe4bd6900888dce
+      internalID: -1654750620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 168
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b961eedb7d7b8ca4c93e86526cc0a069
+      internalID: 413989666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 168
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5950f8d0442965949a54a288bb045dc2
+      internalID: 1151691427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 168
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2df848c514568774fbd02215a7e5435f
+      internalID: -1022491414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 168
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af5598a4fc98267449ea6058b649f3b2
+      internalID: -117330174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 168
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcc457acf70739043877ddf4cb68e4b1
+      internalID: -1323112379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48a529771677fc741bc347328598c9ef
+      internalID: -1260197064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_welder_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 112
+        width: 80
+        height: 56
+      alignment: 9
+      pivot: {x: 0.3, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5dba9eeeb0b9bf4283108b74fa90530
+      internalID: 769616060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f180814dad4759d48a4c68362e0f89a2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      d2_welder_sheet_00: 648238748
+      d2_welder_sheet_01: -1154584146
+      d2_welder_sheet_02: -1654750620
+      d2_welder_sheet_03: 413989666
+      d2_welder_sheet_04: 1151691427
+      d2_welder_sheet_05: -1022491414
+      d2_welder_sheet_06: -117330174
+      d2_welder_sheet_07: -1323112379
+      d2_welder_sheet_08: -1260197064
+      d2_welder_sheet_09: 769616060
+      d2_welder_sheet_10: -2611264759986660438
+      d2_welder_sheet_11: -7269756525194521450
+      d2_welder_sheet_12: 4898543399239088103
+      d2_welder_sheet_13: -142556362592893728
+      d2_welder_sheet_14: -8262516638711217543
+      d2_welder_sheet_15: -2597381171716795221
+      d2_welder_sheet_16: -1962721067973627559
+      d2_welder_sheet_17: -2639687833489806519
+      d2_welder_sheet_18: 4512635205762906030
+      d2_welder_sheet_19: -3369235132011667730
+      d2_welder_sheet_20: 5441650927220321143
+      d2_welder_sheet_21: -5166082061510360124
+      d2_welder_sheet_22: -7686076203812784444
+      d2_welder_sheet_23: -4365534434448065064
+      d2_welder_sheet_24: -2003839116056760395
+      d2_welder_sheet_25: 5602516245753381402
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

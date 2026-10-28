@@ -60,6 +60,7 @@ namespace EchoesOfCravejada
             if (_unlocked) return;
             _unlocked = true;
             UnlockTime = Time.time;
+            AbilityCard.Show(ScrapMove.SteamDash);
         }
 
         [SerializeField] private bool unlockedFromStart;

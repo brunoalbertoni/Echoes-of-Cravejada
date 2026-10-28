@@ -37,6 +37,7 @@ namespace EchoesOfCravejada.EditorTools
         private const string GeodeDrill = "geode_drill";
         private const string Sapphire = "sapphire_raw";
         private const string Barrier = "crystal_barrier";
+        private const string Rubble = "elevator_rubble";
 
         private static string ClusterName(int size, int hue) => $"crystal_cluster_{size}_{hue}";
         private static string EngravingName(int scene) => "engraving_" + scene;
@@ -73,7 +74,8 @@ namespace EchoesOfCravejada.EditorTools
 
         // O que uma parte da montagem deixa pra outra.
         private static readonly List<Transform> SlabRoots = new List<Transform>();
-        private static readonly List<ResonantCrystal> DoorCrystals = new List<ResonantCrystal>();
+        private static readonly Dictionary<string, List<ResonantCrystal>> DoorCrystals =
+            new Dictionary<string, List<ResonantCrystal>>();
         private static readonly List<ResonantCrystal> Pillars = new List<ResonantCrystal>();
         private static readonly List<Light2D> OxideLights = new List<Light2D>();
 
@@ -172,11 +174,8 @@ namespace EchoesOfCravejada.EditorTools
             var travel = new GameObject("Travel");
             SceneKit.CreateSpawnPoint(travel.transform, Phase03Layout.FromDistrict2SpawnId, Phase03Layout.SpawnTile);
 
-            // No fundo da saida, depois da barreira de cristal: o District 4. Nao ha volta.
-            (int X, int Y, int Width, int Height) exit = Phase03Layout.District4Exit;
-            SceneKit.CreateSceneExit(travel.transform, "Exit_District4",
-                new RectInt(exit.X, exit.Y, exit.Width, exit.Height),
-                Phase04Layout.SceneName, Phase04Layout.FromDistrict3SpawnId);
+            // A saida pro District 4 e o proprio elevador da chegada (BuildElevator),
+            // depois que os escombros do poco caem.
 
             Transform scrap = Phase01Generator.BuildScrap(scrapSprite, polishedSprite, _groundLayer, Phase03Layout.SpawnTile);
             Phase01Generator.BuildCamera(scrap, Phase03Layout.Width, Phase03Layout.Height, Void);
@@ -215,6 +214,9 @@ namespace EchoesOfCravejada.EditorTools
             BuildResonants(Child(root, "ResonantCrystals"));
             BuildDoors(Child(root, "Gates"));
             BuildBarriers(Child(root, "CrystalBarriers"));
+            BuildElevator(Child(root, "Elevator"));
+            BuildRewards(Child(root, "Rewards"));
+            BuildDecor(Child(root, "Decor"));
 
             Transform enemies = Child(root, "Enemies");
             BuildFoes(enemies);
@@ -291,6 +293,9 @@ namespace EchoesOfCravejada.EditorTools
             Phase02Assets.WriteSprite(GeodeDrill, CrystalArt.GeodeDrill(), feet);
             Phase02Assets.WriteSprite(Sapphire, CrystalArt.Sapphire(), middle);
             Phase02Assets.WriteSprite(Barrier, CrystalArt.Barrier(), Vector2.zero, true);
+
+            (int _, int _, int rubbleWidth, int rubbleHeight) = Phase03Layout.ElevatorRubble;
+            Phase02Assets.WriteSprite(Rubble, RubbleArt.ElevatorRubble(rubbleWidth, rubbleHeight), Vector2.zero);
         }
 
         // ------------------------------------------------------------------
@@ -607,7 +612,16 @@ namespace EchoesOfCravejada.EditorTools
 
                 (int X0, int X1) arena = Phase03Layout.BossRange;
 
-                if (spot.Note > 0) DoorCrystals.Add(resonant);
+                if (spot.Note > 0 && !string.IsNullOrEmpty(spot.Door))
+                {
+                    if (!DoorCrystals.TryGetValue(spot.Door, out List<ResonantCrystal> group))
+                    {
+                        group = new List<ResonantCrystal>();
+                        DoorCrystals[spot.Door] = group;
+                    }
+
+                    group.Add(resonant);
+                }
                 else if (spot.X >= arena.X0 && spot.X <= arena.X1 && spot.Y <= Phase03Layout.BossFloors[0]) Pillars.Add(resonant);
             }
         }
@@ -663,79 +677,165 @@ namespace EchoesOfCravejada.EditorTools
                     (x + 0.5f, y + height * 0.5f), HueGlow[1], 0.35f, 3.5f);
             }
 
-            // O que a barreira da Fronteira esconde: um reforco de chassi.
-            (int X, int Y) secret = Phase03Layout.SecretChassisTile;
-
-            var pickup = new GameObject("Secret_Chassis");
-            pickup.transform.SetParent(parent, false);
-            pickup.transform.position = new Vector3(secret.X + 0.5f, secret.Y + 1f, 0f);
-
-            SpriteRenderer module = Sprite(pickup, Phase02Assets.DashModule, Phase01Assets.SortingActors, -1);
-            module.color = new Color(1f, 0.85f, 0.45f);
-
-            var trigger = pickup.AddComponent<CircleCollider2D>();
-            trigger.isTrigger = true;
-            trigger.radius = 0.7f;
-
-            pickup.AddComponent<RewardPickup>().Configure(RewardPickup.Kind.Chassis, "D3_Secret_Chassis");
-
-            Phase01Generator.CreatePointLight(pickup.transform, "Glow",
-                (secret.X + 0.5f, secret.Y + 1f), LampGlow, 0.5f, 3f);
         }
 
-        private static Gate BuildGate(Transform parent, string name, (int X, int Y, int Height) cells, Color tint)
+        /// <summary>
+        /// O fio da fase: a cabine que veio do District 2 e os escombros que
+        /// entopem o poco logo acima dela. Os escombros sao uma barreira como
+        /// as de cristal (so o Resonance Strike os quebra); enquanto existem,
+        /// a cabine so mostra o aviso. Sem eles, ela sobe ate o District 4.
+        /// </summary>
+        private static void BuildElevator(Transform parent)
         {
-            var gateObject = new GameObject(name) { layer = _groundLayer };
+            (int rx, int ry, int rw, int rh) = Phase03Layout.ElevatorRubble;
+
+            var rubbleObject = new GameObject("ElevatorRubble") { layer = _groundLayer };
+            rubbleObject.transform.SetParent(parent, false);
+            rubbleObject.transform.position = new Vector3(rx, ry, 0f);
+            Sprite(rubbleObject, Rubble, Phase01Assets.SortingTerrain, 15);
+
+            var rubbleBody = rubbleObject.AddComponent<BoxCollider2D>();
+            rubbleBody.size = new Vector2(rw, rh);
+            rubbleBody.offset = new Vector2(rw * 0.5f, rh * 0.5f);
+            rubbleObject.AddComponent<CrystalBarrier>().Configure("D3_ElevatorRubble");
+
+            // Uma luz fraca e fria em cima dos escombros: e a primeira coisa que se ve.
+            Phase01Generator.CreatePointLight(rubbleObject.transform, "Glow",
+                (rx + rw * 0.5f, ry + 1.5f), HueGlow[1], 0.3f, 4f);
+
+            (int carX, int carY, int carWidth) = Phase03Layout.ElevatorCar;
+            float plate = 4f / Phase01Assets.PixelsPerUnit;
+
+            var car = new GameObject("ElevatorCar");
+            car.transform.SetParent(parent, false);
+            car.transform.position = new Vector3(carX, carY - plate, 0f);
+            Sprite(car, Phase02Assets.ElevatorCage, Phase01Assets.SortingActors, -4);
+
+            var trigger = car.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+            trigger.size = new Vector2(carWidth, 2f);
+            trigger.offset = new Vector2(carWidth * 0.5f, plate + 1f);
+
+            var ride = car.AddComponent<ElevatorRide>();
+            ride.Configure(Phase03Layout.ElevatorTopY, Phase04Layout.SceneName, Phase04Layout.FromDistrict3SpawnId);
+            ride.ConfigureBlocker(rubbleObject, Phase03Layout.ElevatorBlockedNotice);
+        }
+
+        private static Gate BuildGate(Transform parent, Phase03Layout.GateSpec spec, Color tint)
+        {
+            var gateObject = new GameObject(spec.Name) { layer = _groundLayer };
             gateObject.transform.SetParent(parent, false);
-            gateObject.transform.position = new Vector3(cells.X, cells.Y, 0f);
+            gateObject.transform.position = new Vector3(spec.X, spec.Y, 0f);
 
             SpriteRenderer bars = Sprite(gateObject, Phase02Assets.GateBars, Phase01Assets.SortingTerrain, 15);
             bars.drawMode = SpriteDrawMode.Tiled;
-            bars.size = new Vector2(1f, cells.Height);
+            bars.size = new Vector2(spec.Width, spec.Height);
             bars.color = tint;
 
             var wall = gateObject.AddComponent<BoxCollider2D>();
-            wall.size = new Vector2(1f, cells.Height);
-            wall.offset = new Vector2(0.5f, cells.Height * 0.5f);
+            wall.size = new Vector2(spec.Width, spec.Height);
+            wall.offset = new Vector2(spec.Width * 0.5f, spec.Height * 0.5f);
+
+            // Corre o proprio tamanho e mais um tile, pra sumir dentro da rocha.
+            float travel = (spec.MoveX != 0 ? spec.Width : spec.Height) + 1f;
 
             var gate = gateObject.AddComponent<Gate>();
-            gate.Configure(cells.Height + 1f, Vector2.up);
+            gate.Configure(travel, new Vector2(spec.MoveX, spec.MoveY));
             return gate;
         }
 
+        /// <summary>
+        /// Os quebra-cabecas de notas: cada porta escuta os cristais dela, toca a
+        /// sequencia quando o Scrap entra na area de previa e abre o seu portao.
+        /// As gemas da sequencia ficam gravadas na parede, com luz propria: sao
+        /// a dica pra quem perdeu a previa.
+        /// </summary>
         private static void BuildDoors(Transform parent)
         {
-            Gate door = BuildGate(parent, "Gate_HarmonicDoor", Phase03Layout.HarmonicDoor, new Color(0.80f, 0.70f, 1f));
-
-            (int X, int Y, int Width, int Height) preview = Phase03Layout.DoorPreview;
-
-            var doorObject = new GameObject("HarmonicDoor");
-            doorObject.transform.SetParent(parent, false);
-            doorObject.transform.position = new Vector3(preview.X + preview.Width * 0.5f, preview.Y + preview.Height * 0.5f, 0f);
-
-            var trigger = doorObject.AddComponent<BoxCollider2D>();
-            trigger.isTrigger = true;
-            trigger.size = new Vector2(preview.Width, preview.Height);
-
-            // As gemas da sequencia, gravadas na parede ao lado da porta, na
-            // ordem em que as notas precisam soar. Tem luz propria: sao a dica.
-            int[] sequence = Phase03Layout.DoorSequence;
-            var glyphs = new SpriteRenderer[sequence.Length];
-
-            for (int i = 0; i < sequence.Length; i++)
+            var gates = new Dictionary<string, Gate>();
+            foreach (Phase03Layout.GateSpec spec in Phase03Layout.Gates)
             {
-                var glyphObject = new GameObject($"Glyph_{i + 1}");
-                glyphObject.transform.SetParent(doorObject.transform, false);
-                glyphObject.transform.position = new Vector3(
-                    Phase03Layout.HarmonicDoor.X + 2f + i * 1.25f,
-                    Phase03Layout.HarmonicDoor.Y + Phase03Layout.HarmonicDoor.Height + 1.5f, 0f);
-
-                glyphs[i] = Sprite(glyphObject, Glyph, Phase01Assets.SortingTerrain, 6);
-                glyphs[i].color = NoteColors[Mathf.Clamp(sequence[i], 0, NoteColors.Length - 1)];
-                if (_unlit != null) glyphs[i].sharedMaterial = _unlit;
+                gates[spec.Name] = BuildGate(parent, spec, new Color(0.80f, 0.70f, 1f));
             }
 
-            doorObject.AddComponent<HarmonicDoor>().Configure(DoorCrystals.ToArray(), sequence, door, glyphs);
+            foreach (Phase03Layout.DoorSpec spec in Phase03Layout.Doors)
+            {
+                (int X, int Y, int Width, int Height) preview = spec.Preview;
+
+                var doorObject = new GameObject(spec.Name);
+                doorObject.transform.SetParent(parent, false);
+                doorObject.transform.position = new Vector3(preview.X + preview.Width * 0.5f, preview.Y + preview.Height * 0.5f, 0f);
+
+                var trigger = doorObject.AddComponent<BoxCollider2D>();
+                trigger.isTrigger = true;
+                trigger.size = new Vector2(preview.Width, preview.Height);
+
+                int[] sequence = spec.Sequence;
+                var glyphs = new SpriteRenderer[sequence.Length];
+
+                for (int i = 0; i < sequence.Length; i++)
+                {
+                    var glyphObject = new GameObject($"Glyph_{i + 1}");
+                    glyphObject.transform.SetParent(doorObject.transform, false);
+                    glyphObject.transform.position = new Vector3(spec.Glyphs.X + i * 1.25f, spec.Glyphs.Y, 0f);
+
+                    glyphs[i] = Sprite(glyphObject, Glyph, Phase01Assets.SortingTerrain, 6);
+                    glyphs[i].color = NoteColors[Mathf.Clamp(sequence[i], 0, NoteColors.Length - 1)];
+                    if (_unlit != null) glyphs[i].sharedMaterial = _unlit;
+                }
+
+                DoorCrystals.TryGetValue(spec.Name, out List<ResonantCrystal> crystals);
+                gates.TryGetValue(spec.Gate, out Gate gate);
+
+                doorObject.AddComponent<HarmonicDoor>().Configure(
+                    crystals != null ? crystals.ToArray() : new ResonantCrystal[0], sequence, gate, glyphs);
+            }
+        }
+
+        // ------------------------------------------------------------------
+        // Bolsas e enfeites
+        // ------------------------------------------------------------------
+
+        /// <summary>Os sacos de fragmentos escondidos.</summary>
+        private static void BuildRewards(Transform parent)
+        {
+            foreach (Phase03Layout.RewardSpot spot in Phase03Layout.Rewards)
+            {
+                var pickup = new GameObject(spot.Id);
+                pickup.transform.SetParent(parent, false);
+                pickup.transform.position = new Vector3(spot.X + 0.5f, spot.Y + 0.8f, 0f);
+
+                var trigger = pickup.AddComponent<CircleCollider2D>();
+                trigger.isTrigger = true;
+                trigger.radius = 0.7f;
+
+                Sprite(pickup, Phase02Assets.ShardCache, Phase01Assets.SortingActors, -1);
+                pickup.AddComponent<RewardPickup>().Configure(RewardPickup.Kind.ShardCache, spot.Id, spot.Amount);
+
+                Phase01Generator.CreatePointLight(pickup.transform, "Glow",
+                    (spot.X + 0.5f, spot.Y + 0.8f), new Color(0.95f, 0.85f, 0.6f), 0.45f, 3f);
+            }
+        }
+
+        /// <summary>Os enfeites: a cabine do elevador da chegada, tambores, placas, correntes.</summary>
+        private static void BuildDecor(Transform parent)
+        {
+            int index = 0;
+
+            foreach (Phase03Layout.DecorSpot spot in Phase03Layout.Decor)
+            {
+                var decorObject = new GameObject($"{spot.Sprite}_{index++}");
+                decorObject.transform.SetParent(parent, false);
+                decorObject.transform.position = new Vector3(spot.X, spot.Y, 0f);
+
+                SpriteRenderer renderer = Sprite(decorObject, spot.Sprite, Phase01Assets.SortingTerrain, spot.Order);
+
+                if (spot.Tiled)
+                {
+                    renderer.drawMode = SpriteDrawMode.Tiled;
+                    renderer.size = new Vector2(spot.Width, spot.Height);
+                }
+            }
         }
 
         // ------------------------------------------------------------------

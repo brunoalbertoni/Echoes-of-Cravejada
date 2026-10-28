@@ -71,6 +71,11 @@ namespace EchoesOfCravejada
                 Fill(new Rect(0f, Screen.height - height, Screen.width, height), Color.black);
             }
 
+            if (Cinematic.Flash > 0f)
+            {
+                Fill(new Rect(0f, 0f, Screen.width, Screen.height), new Color(1f, 0.97f, 0.88f, Mathf.Clamp01(Cinematic.Flash)));
+            }
+
             if (Cinematic.Fade > 0f)
             {
                 Fill(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, Mathf.Clamp01(Cinematic.Fade)));
@@ -153,10 +158,8 @@ namespace EchoesOfCravejada
             if (Time.time - Workbench.LastRestTime < 2.5f) _notices.Add("Bancada: progresso salvo");
             if (Time.time - AreaPurifier.PurifiedTime < 5f) _notices.Add("Área purificada");
 
-            if (Time.time - ScrapDash.UnlockTime < 5f)
-            {
-                _notices.Add("Sobrecarga de Velocidade conquistada: Shift esquerdo");
-            }
+            // As habilidades novas (dash, pulo duplo, golpe ressonante) nao
+            // viram aviso aqui: quem mostra e o AbilityCard, na tela inteira.
 
             if (Time.time - RewardPickup.ChassisTime < 5f) _notices.Add("Reforço de chassi encontrado: +1 de vida");
         }
@@ -180,7 +183,6 @@ namespace EchoesOfCravejada
 
             if (Time.time - ScrapGems.RubyGivenTime < 6f) _notices.Add("Rubi bruto recebido: crave-o numa Bancada de Ourives");
             if (Time.time - ScrapGems.RubySocketedTime < 6f) _notices.Add("Rubi cravado: o cinzel bate mais forte");
-            if (Time.time - ScrapController.PressureJumpTime < 6f) _notices.Add("Salto de Pressão conquistado: pule de novo no ar");
             if (Time.time - RisingAcidTrigger.StartTime < 5f) _notices.Add("O ácido está subindo. Suba!");
         }
 
@@ -202,7 +204,6 @@ namespace EchoesOfCravejada
 
             if (Time.time - ScrapGems.SapphireGivenTime < 6f) _notices.Add("Safira bruta recebida: crave-a numa Bancada de Ourives");
             if (Time.time - ScrapGems.SapphireSocketedTime < 6f) _notices.Add("Safira cravada: passos e quedas fazem menos ruído");
-            if (Time.time - ScrapChisel.ResonanceTime < 8f) _notices.Add("Golpe Ressonante conquistado: segure o golpe e solte");
             if (Time.time < ScrapController.SlowedUntil) _notices.Add("Mercúrio grudado no corpo: você está lento");
 
             // O medidor de ruido: sobe na hora do som e desce em um segundo.
@@ -394,6 +395,10 @@ namespace EchoesOfCravejada
             float x = (Screen.width - width) * 0.5f;
             float y = Screen.height - height - 70f;
 
+            // O que se le aparece grande, no meio da tela, em cima da caixa.
+            Sprite document = talking.Document;
+            if (document != null) DrawDocument(document, new Rect(40f, 24f, Screen.width - 80f, y - 24f - 20f));
+
             DrawBox(new Rect(x, y, width, height));
 
             // O texto comeca depois do retrato, quando ha retrato.
@@ -412,6 +417,36 @@ namespace EchoesOfCravejada
 
             GUI.Label(new Rect(textX, y + 42f, textWidth, height - 72f), line, _speech);
             GUI.Label(new Rect(x + width - 150f, y + height - 32f, 140f, 26f), "E: continuar", _label);
+        }
+
+        /// <summary>
+        /// O desenho do que se le (a carta, a placa, o muro): escurece o jogo
+        /// atras e mostra a arte o maior possivel dentro da area, em passos
+        /// inteiros quando cabe pelo menos o dobro, pra o pixel art nao borrar.
+        /// </summary>
+        private static void DrawDocument(Sprite sprite, Rect area)
+        {
+            if (sprite.texture == null || area.width <= 0f || area.height <= 0f) return;
+
+            Fill(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.6f));
+
+            Rect pixels = sprite.rect;
+            float fit = Mathf.Min(area.width / pixels.width, area.height / pixels.height);
+            float scale = fit >= 2f ? Mathf.Floor(fit) : fit;
+
+            float drawWidth = pixels.width * scale;
+            float drawHeight = pixels.height * scale;
+            var target = new Rect(
+                area.x + (area.width - drawWidth) * 0.5f,
+                area.y + (area.height - drawHeight) * 0.5f,
+                drawWidth, drawHeight);
+
+            Texture texture = sprite.texture;
+            var uv = new Rect(
+                pixels.x / texture.width, pixels.y / texture.height,
+                pixels.width / texture.width, pixels.height / texture.height);
+
+            GUI.DrawTextureWithTexCoords(target, texture, uv);
         }
 
         /// <summary>

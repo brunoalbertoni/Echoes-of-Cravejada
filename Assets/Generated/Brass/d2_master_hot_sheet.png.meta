@@ -1,0 +1,1797 @@
+fileFormatVersion: 2
+guid: ab219491e90094d4cada48127899654c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1695744554442648551
+    second: d2_master_hot_sheet_0
+  - first:
+      213: -8013879745949762399
+    second: d2_master_hot_sheet_1
+  - first:
+      213: -3614632944667526098
+    second: d2_master_hot_sheet_2
+  - first:
+      213: -6833143432139315572
+    second: d2_master_hot_sheet_3
+  - first:
+      213: 3499908987757788987
+    second: d2_master_hot_sheet_4
+  - first:
+      213: -4724882975215732328
+    second: d2_master_hot_sheet_5
+  - first:
+      213: 3367533258597196962
+    second: d2_master_hot_sheet_6
+  - first:
+      213: 4886893283683120069
+    second: d2_master_hot_sheet_7
+  - first:
+      213: -2266602950613079426
+    second: d2_master_hot_sheet_8
+  - first:
+      213: 5709214343267659683
+    second: d2_master_hot_sheet_9
+  - first:
+      213: -5289016169290887760
+    second: d2_master_hot_sheet_10
+  - first:
+      213: 2107962847805126676
+    second: d2_master_hot_sheet_11
+  - first:
+      213: 5924547768338847689
+    second: d2_master_hot_sheet_12
+  - first:
+      213: -2653565810863132716
+    second: d2_master_hot_sheet_13
+  - first:
+      213: 3448240750036986870
+    second: d2_master_hot_sheet_14
+  - first:
+      213: -1918938372121443456
+    second: d2_master_hot_sheet_15
+  - first:
+      213: 4673187381365185228
+    second: d2_master_hot_sheet_16
+  - first:
+      213: 7944890913426793633
+    second: d2_master_hot_sheet_17
+  - first:
+      213: 7645049727133527626
+    second: d2_master_hot_sheet_18
+  - first:
+      213: -2822848812886043390
+    second: d2_master_hot_sheet_19
+  - first:
+      213: 4211786205649729995
+    second: d2_master_hot_sheet_20
+  - first:
+      213: 2252372318465841133
+    second: d2_master_hot_sheet_21
+  - first:
+      213: -4283904521724439244
+    second: d2_master_hot_sheet_22
+  - first:
+      213: 2265655054624605414
+    second: d2_master_hot_sheet_23
+  - first:
+      213: -3155108911600173050
+    second: d2_master_hot_sheet_24
+  - first:
+      213: 6275027574073011490
+    second: d2_master_hot_sheet_25
+  - first:
+      213: -583858632799277048
+    second: d2_master_hot_sheet_26
+  - first:
+      213: 621583957123437970
+    second: d2_master_hot_sheet_27
+  - first:
+      213: -2276419957369428184
+    second: d2_master_hot_sheet_28
+  - first:
+      213: 6418471121839056340
+    second: d2_master_hot_sheet_29
+  - first:
+      213: -7645018313118562452
+    second: d2_master_hot_sheet_30
+  - first:
+      213: 6141305316428280609
+    second: d2_master_hot_sheet_31
+  - first:
+      213: -1310961915902309464
+    second: d2_master_hot_sheet_32
+  - first:
+      213: 591768864721893850
+    second: d2_master_hot_sheet_33
+  - first:
+      213: 1840201812669705571
+    second: d2_master_hot_sheet_34
+  - first:
+      213: -4653114179547241960
+    second: d2_master_hot_sheet_35
+  - first:
+      213: 8158741812851063530
+    second: d2_master_hot_sheet_36
+  - first:
+      213: 3930809603012470833
+    second: d2_master_hot_sheet_37
+  - first:
+      213: -1170791461530221427
+    second: d2_master_hot_sheet_38
+  - first:
+      213: 1113267602563844636
+    second: d2_master_hot_sheet_39
+  - first:
+      213: -410886730693080918
+    second: d2_master_hot_sheet_40
+  - first:
+      213: -5047107236667182064
+    second: d2_master_hot_sheet_41
+  - first:
+      213: 425915388599169634
+    second: d2_master_hot_sheet_42
+  - first:
+      213: 699812176949505494
+    second: d2_master_hot_sheet_43
+  - first:
+      213: -7478812875036854559
+    second: d2_master_hot_sheet_44
+  - first:
+      213: -3608165689715606579
+    second: d2_master_hot_sheet_45
+  - first:
+      213: 9189583791205271745
+    second: d2_master_hot_sheet_46
+  - first:
+      213: 3709752340442015996
+    second: d2_master_hot_sheet_47
+  - first:
+      213: 6555072910611448553
+    second: d2_master_hot_sheet_48
+  - first:
+      213: -8253379950122411720
+    second: d2_master_hot_sheet_49
+  - first:
+      213: 7449227787327950461
+    second: d2_master_hot_sheet_50
+  - first:
+      213: -8264127388760735128
+    second: d2_master_hot_sheet_51
+  - first:
+      213: 7541962491106984330
+    second: d2_master_hot_sheet_52
+  - first:
+      213: 8346652638194367672
+    second: d2_master_hot_sheet_53
+  - first:
+      213: -342447248400201722
+    second: d2_master_hot_sheet_54
+  - first:
+      213: 2933853448354931266
+    second: d2_master_hot_sheet_55
+  - first:
+      213: -3877853005792789497
+    second: d2_master_hot_sheet_56
+  - first:
+      213: 7851158701742784310
+    second: d2_master_hot_sheet_57
+  - first:
+      213: 3727911233674870737
+    second: d2_master_hot_sheet_58
+  - first:
+      213: -6995479399998864354
+    second: d2_master_hot_sheet_59
+  - first:
+      213: -3067646447596565748
+    second: d2_master_hot_sheet_60
+  - first:
+      213: 3427844827396020432
+    second: d2_master_hot_sheet_61
+  - first:
+      213: 3458274590949589780
+    second: d2_master_hot_sheet_62
+  - first:
+      213: -4685409822845329596
+    second: d2_master_hot_sheet_63
+  - first:
+      213: -8909796671135416653
+    second: d2_master_hot_sheet_64
+  - first:
+      213: 7756126497198940308
+    second: d2_master_hot_sheet_65
+  - first:
+      213: -5038521614236906180
+    second: d2_master_hot_sheet_66
+  - first:
+      213: 7487330439782610237
+    second: d2_master_hot_sheet_67
+  - first:
+      213: 7394892673021340578
+    second: d2_master_hot_sheet_68
+  - first:
+      213: -954440452922587292
+    second: d2_master_hot_sheet_69
+  - first:
+      213: -6384813330050280519
+    second: d2_master_hot_sheet_70
+  - first:
+      213: 1182288924821551475
+    second: d2_master_hot_sheet_71
+  - first:
+      213: -6468719139905697612
+    second: d2_master_hot_sheet_72
+  - first:
+      213: -4451985019221893025
+    second: d2_master_hot_sheet_73
+  - first:
+      213: 1145997772079994612
+    second: d2_master_hot_sheet_74
+  - first:
+      213: -8293371868970531599
+    second: d2_master_hot_sheet_75
+  - first:
+      213: 8690358822025655344
+    second: d2_master_hot_sheet_76
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 768
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bd8e1201d3a996b0800000000000000
+      internalID: -5289016169290887760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 768
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4183527aa0df04d10800000000000000
+      internalID: 2107962847805126676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 768
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c79ba24ec8383250800000000000000
+      internalID: 5924547768338847689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 768
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dfa16744f3ac2bd0800000000000000
+      internalID: -2653565810863132716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 768
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fb2bfd41bc9adf20800000000000000
+      internalID: 3448240750036986870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 768
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 083c5dfa7bf8e55e0800000000000000
+      internalID: -1918938372121443456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 640
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cca1c1be92f7ad040800000000000000
+      internalID: 4673187381365185228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 640
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a46802213ce14e60800000000000000
+      internalID: 7944890913426793633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 640
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4eadfbb83ca81a60800000000000000
+      internalID: 7645049727133527626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 640
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2055b45f5f933d8d0800000000000000
+      internalID: -2822848812886043390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_20
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 640
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc974a13d35437a30800000000000000
+      internalID: 4211786205649729995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_21
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 640
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de75418a0b8024f10800000000000000
+      internalID: 2252372318465841133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_22
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 640
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 435dcead8838c84c0800000000000000
+      internalID: -4283904521724439244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_23
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 640
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e4c77aa449317f10800000000000000
+      internalID: 2265655054624605414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6000760592dc634d0800000000000000
+      internalID: -3155108911600173050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_25
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 512
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22d27640550651750800000000000000
+      internalID: 6275027574073011490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_26
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 512
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80034f8baa7b5e7f0800000000000000
+      internalID: -583858632799277048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_27
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 512
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2959c62d05f40a800800000000000000
+      internalID: 621583957123437970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_28
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 512
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 827a2691c188860e0800000000000000
+      internalID: -2276419957369428184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_29
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 512
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d5e1529a7df21950800000000000000
+      internalID: 6418471121839056340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_30
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 512
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c674639695077e590800000000000000
+      internalID: -7645018313118562452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_31
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 512
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 123fce2b5ac4a3550800000000000000
+      internalID: 6141305316428280609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 384
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8abc39055178ecde0800000000000000
+      internalID: -1310961915902309464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_33
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 384
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad972eaa5a2663800800000000000000
+      internalID: 591768864721893850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_34
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 384
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36d253f7cc5b98910800000000000000
+      internalID: 1840201812669705571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_35
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 384
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 812e0c49e41dc6fb0800000000000000
+      internalID: -4653114179547241960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_36
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 384
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aea3d11b37ca93170800000000000000
+      internalID: 8158741812851063530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_37
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 384
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 138a043f18a0d8630800000000000000
+      internalID: 3930809603012470833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_38
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 384
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d844e6d6e5380cfe0800000000000000
+      internalID: -1170791461530221427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_39
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 384
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1ac4c67cfe137f00800000000000000
+      internalID: 1113267602563844636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa80e1602bc3c4af0800000000000000
+      internalID: -410886730693080918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_41
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 256
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 014362f75b215f9b0800000000000000
+      internalID: -5047107236667182064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_42
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 256
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26273d11ac729e500800000000000000
+      internalID: 425915388599169634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_43
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 256
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6dd6198977b36b900800000000000000
+      internalID: 699812176949505494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_44
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 256
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e67fc9805be53890800000000000000
+      internalID: -7478812875036854559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_45
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 256
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dcbbfbd0c683dedc0800000000000000
+      internalID: -3608165689715606579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_46
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 256
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c84a7405c5f78f70800000000000000
+      internalID: 9189583791205271745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_47
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 256
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf868b83910bb7330800000000000000
+      internalID: 3709752340442015996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e208c9f41c48fa50800000000000000
+      internalID: 6555072910611448553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_49
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 128
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8395f94e9aa167d80800000000000000
+      internalID: -8253379950122411720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_50
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 128
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7ec6a27439f06760800000000000000
+      internalID: 7449227787327950461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_51
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 128
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8620756dcebef4d80800000000000000
+      internalID: -8264127388760735128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_52
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 128
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8180c73dee6aa860800000000000000
+      internalID: 7541962491106984330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_53
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 128
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bcf62b1a5445d370800000000000000
+      internalID: 8346652638194367672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_54
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 128
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 608cbccba026f3bf0800000000000000
+      internalID: -342447248400201722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_55
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 128
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2422044ca2427b820800000000000000
+      internalID: 2933853448354931266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70c3a8aac391f2ac0800000000000000
+      internalID: -3877853005792789497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_57
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63f7894fd3be4fc60800000000000000
+      internalID: 7851158701742784310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_58
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dff06504833cb330800000000000000
+      internalID: 3727911233674870737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_59
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e144181ac801bee90800000000000000
+      internalID: -6995479399998864354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_60
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0b848a1fc78d65d0800000000000000
+      internalID: -3067646447596565748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_61
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 0
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d8991285b6229f20800000000000000
+      internalID: 3427844827396020432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_62
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4134f41fa624eff20800000000000000
+      internalID: 3458274590949589780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 896
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 705e47769167d78409a36cf8ab152681
+      internalID: -1661561736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 896
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d98577a885e116446838ea57eef17838
+      internalID: -56452159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 896
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64c3fcab227e5394b88e6a924e2310cb
+      internalID: 38466735
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 896
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c841e97dfcacdb24880520a16a805cdc
+      internalID: 1099393685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 896
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 693f20944f4d90a4181abec211a6544d
+      internalID: -1845460970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 896
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a3b2b9591f6b9749b402ec54be7bcb5
+      internalID: -1211062880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 896
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19827abebc6f1b645952950a74752962
+      internalID: -1060317240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 896
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac6c1a8a5dcfbbb4484b60aa8ee53e5d
+      internalID: 1450710667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 768
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1433029d530ce948abf69b8dd46f208
+      internalID: 1553111057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_hot_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 768
+        width: 160
+        height: 128
+      alignment: 9
+      pivot: {x: 0.425, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 225d6719750bee345aa27594118a17bd
+      internalID: 1543892525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: db3bb48a2124d47448955458f6afcb08
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      d2_master_hot_sheet_00: -1661561736
+      d2_master_hot_sheet_01: -56452159
+      d2_master_hot_sheet_02: 38466735
+      d2_master_hot_sheet_03: 1099393685
+      d2_master_hot_sheet_04: -1845460970
+      d2_master_hot_sheet_05: -1211062880
+      d2_master_hot_sheet_06: -1060317240
+      d2_master_hot_sheet_07: 1450710667
+      d2_master_hot_sheet_08: 1553111057
+      d2_master_hot_sheet_09: 1543892525
+      d2_master_hot_sheet_10: -5289016169290887760
+      d2_master_hot_sheet_11: 2107962847805126676
+      d2_master_hot_sheet_12: 5924547768338847689
+      d2_master_hot_sheet_13: -2653565810863132716
+      d2_master_hot_sheet_14: 3448240750036986870
+      d2_master_hot_sheet_15: -1918938372121443456
+      d2_master_hot_sheet_16: 4673187381365185228
+      d2_master_hot_sheet_17: 7944890913426793633
+      d2_master_hot_sheet_18: 7645049727133527626
+      d2_master_hot_sheet_19: -2822848812886043390
+      d2_master_hot_sheet_20: 4211786205649729995
+      d2_master_hot_sheet_21: 2252372318465841133
+      d2_master_hot_sheet_22: -4283904521724439244
+      d2_master_hot_sheet_23: 2265655054624605414
+      d2_master_hot_sheet_24: -3155108911600173050
+      d2_master_hot_sheet_25: 6275027574073011490
+      d2_master_hot_sheet_26: -583858632799277048
+      d2_master_hot_sheet_27: 621583957123437970
+      d2_master_hot_sheet_28: -2276419957369428184
+      d2_master_hot_sheet_29: 6418471121839056340
+      d2_master_hot_sheet_30: -7645018313118562452
+      d2_master_hot_sheet_31: 6141305316428280609
+      d2_master_hot_sheet_32: -1310961915902309464
+      d2_master_hot_sheet_33: 591768864721893850
+      d2_master_hot_sheet_34: 1840201812669705571
+      d2_master_hot_sheet_35: -4653114179547241960
+      d2_master_hot_sheet_36: 8158741812851063530
+      d2_master_hot_sheet_37: 3930809603012470833
+      d2_master_hot_sheet_38: -1170791461530221427
+      d2_master_hot_sheet_39: 1113267602563844636
+      d2_master_hot_sheet_40: -410886730693080918
+      d2_master_hot_sheet_41: -5047107236667182064
+      d2_master_hot_sheet_42: 425915388599169634
+      d2_master_hot_sheet_43: 699812176949505494
+      d2_master_hot_sheet_44: -7478812875036854559
+      d2_master_hot_sheet_45: -3608165689715606579
+      d2_master_hot_sheet_46: 9189583791205271745
+      d2_master_hot_sheet_47: 3709752340442015996
+      d2_master_hot_sheet_48: 6555072910611448553
+      d2_master_hot_sheet_49: -8253379950122411720
+      d2_master_hot_sheet_50: 7449227787327950461
+      d2_master_hot_sheet_51: -8264127388760735128
+      d2_master_hot_sheet_52: 7541962491106984330
+      d2_master_hot_sheet_53: 8346652638194367672
+      d2_master_hot_sheet_54: -342447248400201722
+      d2_master_hot_sheet_55: 2933853448354931266
+      d2_master_hot_sheet_56: -3877853005792789497
+      d2_master_hot_sheet_57: 7851158701742784310
+      d2_master_hot_sheet_58: 3727911233674870737
+      d2_master_hot_sheet_59: -6995479399998864354
+      d2_master_hot_sheet_60: -3067646447596565748
+      d2_master_hot_sheet_61: 3427844827396020432
+      d2_master_hot_sheet_62: 3458274590949589780
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

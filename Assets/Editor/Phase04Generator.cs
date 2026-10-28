@@ -404,7 +404,20 @@ namespace EchoesOfCravejada.EditorTools
                 decorObject.transform.SetParent(root.transform, false);
                 decorObject.transform.position = new Vector3(x + 1f, y, 0f);
 
-                if (kind == "tank")
+                if (kind == "elevator")
+                {
+                    // A cabine do elevador do District 3, com os trilhos subindo ate o teto.
+                    decorObject.transform.position = new Vector3(x, y - 4f / Phase01Assets.PixelsPerUnit, 0f);
+                    Sprite(decorObject, Phase02Assets.ElevatorCage, Phase01Assets.SortingActors, -4);
+
+                    var rails = new GameObject("Rails");
+                    rails.transform.SetParent(decorObject.transform, false);
+                    rails.transform.localPosition = new Vector3(0f, 3f, 0f);
+                    SpriteRenderer rail = Sprite(rails, Phase02Assets.ElevatorRail, Phase01Assets.SortingTerrain, 4);
+                    rail.drawMode = SpriteDrawMode.Tiled;
+                    rail.size = new Vector2(3f, 8f);
+                }
+                else if (kind == "tank")
                 {
                     Sprite(decorObject, Tank, Phase01Assets.SortingTerrain, 6);
                 }

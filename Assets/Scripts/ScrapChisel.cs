@@ -89,6 +89,7 @@ namespace EchoesOfCravejada
 
             _resonance = true;
             ResonanceTime = Time.time;
+            AbilityCard.Show(ScrapMove.ResonanceStrike);
         }
 
         /// <summary>Verdadeiro enquanto o cinzel esta carregado, esperando soltar.</summary>
@@ -99,6 +100,17 @@ namespace EchoesOfCravejada
 
         /// <summary>Verdadeiro enquanto o golpe esta acertando.</summary>
         public bool IsStriking { get; private set; }
+
+        /// <summary>Pra onde foi o ultimo golpe: o lado, cima ou baixo. O ScrapAnimator escolhe os quadros por ela.</summary>
+        public Vector2 StrikeDirection { get; private set; } = Vector2.right;
+
+        /// <summary>Quando comecaram o preparo e o golpe, e quando o golpe acabou. Sao o relogio da animacao.</summary>
+        public float WindupStartTime { get; private set; } = -100f;
+        public float StrikeStartTime { get; private set; } = -100f;
+        public float StrikeEndTime { get; private set; } = -100f;
+
+        public float WindupDuration => windup;
+        public float StrikeDuration => swingTime;
 
         private readonly Collider2D[] _hits = new Collider2D[16];
 
@@ -195,8 +207,10 @@ namespace EchoesOfCravejada
         {
             _busy = true;
             IsStriking = true;
+            StrikeDirection = new Vector2(_controller.Facing, 0f);
+            StrikeStartTime = Time.time;
 
-            Vector2 center = (Vector2)transform.position + Vector2.up * 0.7f;
+            Vector2 center = (Vector2)transform.position + Vector2.up * 0.6f;
 
             NoiseSystem.Emit(center, 22f, 1f);
 
@@ -222,6 +236,7 @@ namespace EchoesOfCravejada
 
             yield return new WaitForSeconds(swingTime);
             IsStriking = false;
+            StrikeEndTime = Time.time;
 
             yield return new WaitForSeconds(recovery);
             _busy = false;
@@ -268,10 +283,13 @@ namespace EchoesOfCravejada
         private IEnumerator Swing(Vector2 direction)
         {
             _busy = true;
+            StrikeDirection = direction;
             IsWindingUp = true;
+            WindupStartTime = Time.time;
             yield return new WaitForSeconds(windup);
             IsWindingUp = false;
             IsStriking = true;
+            StrikeStartTime = Time.time;
 
             // A caixa do golpe, medida a partir dos pes.
             Vector2 center;
@@ -317,6 +335,7 @@ namespace EchoesOfCravejada
             yield return new WaitForSeconds(swingTime);
             if (slash != null) slash.enabled = false;
             IsStriking = false;
+            StrikeEndTime = Time.time;
 
             yield return new WaitForSeconds(recovery);
             _busy = false;

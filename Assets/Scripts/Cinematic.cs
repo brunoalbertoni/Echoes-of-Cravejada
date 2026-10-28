@@ -17,6 +17,9 @@ namespace EchoesOfCravejada
         /// <summary>Quanto a tela esta tampada de preto: 0 limpa, 1 toda preta.</summary>
         public static float Fade { get; set; }
 
+        /// <summary>Um clarao branco por cima de tudo: 0 nada, 1 tela toda branca. Quem acende apaga.</summary>
+        public static float Flash { get; set; }
+
         /// <summary>Quando a cena comecou e quando acabou. O HUD usa pra deslizar as faixas.</summary>
         public static float StartTime { get; private set; } = -100f;
         public static float EndTime { get; private set; } = -100f;
@@ -28,6 +31,7 @@ namespace EchoesOfCravejada
         {
             Active = false;
             Fade = 0f;
+            Flash = 0f;
             StartTime = -100f;
             EndTime = -100f;
         }
@@ -42,6 +46,7 @@ namespace EchoesOfCravejada
         {
             Active = false;
             Fade = 0f;
+            Flash = 0f;
             EndTime = Time.time;
         }
 

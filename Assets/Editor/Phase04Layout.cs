@@ -390,6 +390,9 @@ namespace EchoesOfCravejada.EditorTools
             Decor.Add(("window0", 20, 43));
             Decor.Add(("window1", 26, 43));
 
+            // A cabine que subiu do District 3, parada onde o Scrap desce dela.
+            Decor.Add(("elevator", SpawnTile.X - 1, SpawnTile.Y));
+
             Lamp(14f, 45f, 9f);
             Lamp(24f, 45f, 9f);
         }

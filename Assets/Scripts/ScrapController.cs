@@ -159,6 +159,7 @@ namespace EchoesOfCravejada
 
             _pressureJump = true;
             PressureJumpTime = Time.time;
+            AbilityCard.Show(ScrapMove.PressureJump);
         }
 
         /// <summary>Verdadeiro enquanto o GroundCheck encosta em algo da layer de chao.</summary>

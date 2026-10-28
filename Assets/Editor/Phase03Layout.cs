@@ -8,32 +8,45 @@ namespace EchoesOfCravejada.EditorTools
     ///
     /// Tuneis escavados dentro de cristais colossais, no escuro. Aqui quase
     /// nao ha luz fixa: o que se ve e o que o proprio barulho do Scrap acende.
-    /// E o mesmo barulho acorda o que mora ali.
+    /// E o mesmo barulho acorda o que mora ali. O dash e o golpe sao altos; o
+    /// distrito pede, o tempo todo, que se ande leve.
     ///
-    /// Sao dois andares. O de baixo vai de oeste pra leste; o de cima volta de
-    /// leste pra oeste e termina na arena da broca:
+    /// Como o District 2, e uma subida, organizada em volta de um centro:
     ///
-    ///   embaixo   1 Fronteira de Cristal   2 Tunel Escuro      3 Primeiro Cacador
-    ///             4 Ponte Fragil           5 Gruta de Crisol   6 Galeria das Gravuras
+    /// A ENTRADA (no fundo, linear). 1 a Estacao de Chegada, onde o elevador
+    /// do District 2 para; 2 o Tunel Escuro (o som acende o caminho); 3 o
+    /// Primeiro Cacador (passar sem barulho, ou com uma isca); 4 o Poco Fragil
+    /// (subir em cristal fino, sem dash).
     ///
-    ///   em cima   9 Poco da Broca          7 Porta Harmonica   8 Camara do Ressonante
-    ///             10 Workbench pre-boss    11 Camara de Perfuracao   12 Saida
+    /// O CENTRO: 5 a Gruta de Crisol — bancada, Crisol e a loja.
     ///
-    /// Sobe-se de um andar pro outro por dois lugares: o poco no fim da galeria
-    /// (o caminho normal) ou a chamine da Gruta de Crisol (o atalho).
+    /// O CAMINHO, pra cima: a chamine da gruta leva a 10 Abobada Fragil
+    /// (subir no escuro sem quebrar as laminas) e ao 11 Campanario, cujo
+    /// quebra-cabeca de notas abre a porta da 12 antessala da broca.
     ///
-    /// A arena da broca tem tres camadas, uma embaixo da outra. As duas de
-    /// cima tem chao que desaba durante a luta; a saida pros Alchemical
-    /// Ateliers fica na de baixo, atras de uma barreira de cristal que so o
-    /// Resonance Strike (a recompensa do boss) quebra.
+    /// OS DESVIOS, opcionais, cada um terminando num quebra-cabeca de notas
+    /// que abre alguma coisa ali mesmo:
+    ///   Oeste (6 Galeria das Gravuras, 7 Camara do Eco)   a historia da escavacao, e um nicho
+    ///   Leste (8 Galeria dos Cacadores, 9 Camara do Ressonante)   o elite e a safira
+    ///
+    /// O FIO DA FASE: o elevador. Ele veio do District 2 e seguia subindo ate
+    /// os Alchemical Ateliers, mas o poco desabou logo acima da cabine. Os
+    /// escombros ficam a vista desde o primeiro segundo, e nada do que o Scrap
+    /// tem os tira dali: so o Resonance Strike, que a broca deixa ao cair. O
+    /// distrito inteiro e o desvio pra buscar essa onda e voltar.
+    ///
+    /// O BOSS E DEPOIS: a 13 Camara de Perfuracao, em tres camadas que
+    /// desabam durante a luta. Da antessala, um poco largo cai direto na gruta:
+    /// e o atalho de volta (pra cima, por ele, nao se sobe). Da gruta se desce
+    /// ate a estacao, os escombros cedem a onda, e o elevador sobe.
     ///
     /// Aqui o Scrap ja tem o Steam Dash e o Pressure Jump, e o mapa conta com
     /// os dois. Como os outros layouts, este arquivo nao depende de UnityEngine.
     /// </summary>
     public static class Phase03Layout
     {
-        public const int Width = 276;
-        public const int Height = 92;
+        public const int Width = 210;
+        public const int Height = 124;
 
         public const string SceneName = "Phase03_SilentGeodes";
         public const string FromDistrict2SpawnId = "FromDistrict2";
@@ -61,7 +74,10 @@ namespace EchoesOfCravejada.EditorTools
             }
         }
 
-        /// <summary>Um cristal ressonante. Note 0 e so isca; de 1 pra cima sao as notas da porta.</summary>
+        /// <summary>
+        /// Um cristal ressonante. Note 0 e so isca (ou pilar da arena); de 1
+        /// pra cima sao as notas de uma porta — a de nome Door.
+        /// </summary>
         public sealed class ResonantSpot
         {
             public string Name;
@@ -69,6 +85,7 @@ namespace EchoesOfCravejada.EditorTools
             public int Y;
             public int Note;
             public bool Corrupted;
+            public string Door;
 
             /// <summary>Onde o Scrap para pra golpear (ou raspar).</summary>
             public int StandX;
@@ -100,8 +117,8 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>
         /// Algo pra ler com E. Kind diz o desenho: "sign" e uma placa, "page"
         /// uma pagina, "engraving0".."engraving3" as gravuras, "edge" nada
-        /// (so a beirada do poco), "miner" um mineiro Tarnished e "crisol" o
-        /// proprio Crisol — esses dois so nas listas do distrito purificado.
+        /// (so a beirada), "miner" um mineiro Tarnished e "crisol" o proprio
+        /// Crisol — esses dois so nas listas do distrito purificado.
         /// </summary>
         public sealed class LoreSpot
         {
@@ -131,6 +148,68 @@ namespace EchoesOfCravejada.EditorTools
             }
         }
 
+        /// <summary>Um portao de grade: as celulas que fecha e pra onde corre ao abrir.</summary>
+        public sealed class GateSpec
+        {
+            public string Name;
+            public int X;
+            public int Y;
+            public int Width;
+            public int Height;
+            public int MoveX;
+            public int MoveY = 1;
+        }
+
+        /// <summary>
+        /// Um quebra-cabeca de notas: os cristais com Door igual a Name, a
+        /// sequencia, o portao que abre, a area que faz a porta tocar a
+        /// sequencia e onde ficam as gemas gravadas (uma por nota).
+        /// </summary>
+        public sealed class DoorSpec
+        {
+            public string Name;
+            public string Gate;
+            public int[] Sequence;
+            public (int X, int Y, int Width, int Height) Preview;
+            public (float X, float Y) Glyphs;
+        }
+
+        /// <summary>Um saco de fragmentos escondido.</summary>
+        public sealed class RewardSpot
+        {
+            public string Id;
+            public int X;
+            public int Y;
+            public int Amount;
+        }
+
+        /// <summary>
+        /// Um sprite de enfeite (da arte de latao: tambor, corrente, placa,
+        /// prateleira, a cabine do elevador...). X e Y sao o canto de baixo;
+        /// com Tiled, ele se repete ate Width x Height tiles.
+        /// </summary>
+        public readonly struct DecorSpot
+        {
+            public readonly string Sprite;
+            public readonly float X;
+            public readonly float Y;
+            public readonly int Order;
+            public readonly float Width;
+            public readonly float Height;
+
+            public DecorSpot(string sprite, float x, float y, int order, float width = 0f, float height = 0f)
+            {
+                Sprite = sprite;
+                X = x;
+                Y = y;
+                Order = order;
+                Width = width;
+                Height = height;
+            }
+
+            public bool Tiled => Width > 0f && Height > 0f;
+        }
+
         // ------------------------------------------------------------------
         // O que o gerador le
         // ------------------------------------------------------------------
@@ -145,6 +224,10 @@ namespace EchoesOfCravejada.EditorTools
         public static readonly List<FoeSpot> Foes = new List<FoeSpot>();
         public static readonly List<LoreSpot> Lore = new List<LoreSpot>();
         public static readonly List<Marker> Markers = new List<Marker>();
+        public static readonly List<GateSpec> Gates = new List<GateSpec>();
+        public static readonly List<DoorSpec> Doors = new List<DoorSpec>();
+        public static readonly List<RewardSpot> Rewards = new List<RewardSpot>();
+        public static readonly List<DecorSpot> Decor = new List<DecorSpot>();
 
         /// <summary>As plataformas frageis: cada uma e um trecho deitado de celulas.</summary>
         public static readonly List<(int X0, int X1, int Y)> Fragiles = new List<(int, int, int)>();
@@ -167,7 +250,7 @@ namespace EchoesOfCravejada.EditorTools
         public static readonly List<(string Name, int X, int Y, int Height)> Barriers =
             new List<(string, int, int, int)>();
 
-        /// <summary>O brilho verde do Oxide no fundo da arena: perto do Heart of Quartz.</summary>
+        /// <summary>O brilho verde do Oxide: no fundo da arena e no fundo da fenda da galeria.</summary>
         public static readonly List<(float X, float Y, float Radius)> OxideGlows = new List<(float, float, float)>();
 
         /// <summary>Quem aparece depois da purificacao: os mineiros e Crisol, no salao de concertos.</summary>
@@ -176,47 +259,54 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>As celulas que sao objeto, e nao tile: plataformas frageis e chaos que desabam.</summary>
         private static readonly HashSet<(int, int)> FragileCells = new HashSet<(int, int)>();
 
-        public static (int X, int Y) SpawnTile => (9, 40);
+        /// <summary>A porta do Campanario: e ela que abre o caminho pra broca.</summary>
+        public const string MainDoor = "Door_High";
 
-        public static (int X, int Y) CrisolTile => (182, 40);
+        /// <summary>Onde o Scrap aparece: dentro da cabine do elevador que veio do District 2.</summary>
+        public static (int X, int Y) SpawnTile => (8, 11);
+
+        /// <summary>A cabine do elevador: canto de baixo, a esquerda, e largura (3x3 tiles).</summary>
+        public static (int X, int Y, int Width) ElevatorCar => (6, 11, 3);
+
+        /// <summary>Ate onde a cabine sobe no poco antes de a tela escurecer e o District 4 carregar.</summary>
+        public const float ElevatorTopY = 38f;
+
+        /// <summary>
+        /// Os escombros que entopem o poco logo acima da cabine. Pro mapa sao
+        /// rocha ate a broca cair (como as barreiras); quem os desenha e os
+        /// quebra e o objeto deles, com o Resonance Strike.
+        /// </summary>
+        public static (int X, int Y, int Width, int Height) ElevatorRubble => (5, 14, 5, 8);
+
+        /// <summary>O que aparece ao tentar subir com os escombros no lugar.</summary>
+        public const string ElevatorBlockedNotice = "O poço está entupido de escombros. Nada que você tem os move.";
+
+        public static (int X, int Y) CrisolTile => (140, 44);
 
         public static readonly string[] CrisolLines =
         {
             "Scrap. Você chegou até aqui. Admito que não apostei nisso.",
-            "Olhe em volta. Ametista, quartzo leitoso, cristal fumê... isto aqui é o meu ofício. Aqui eu sei o nome de tudo.",
+            "Olhe em volta. Ametista, quartzo leitoso, cristal fumê... Isto aqui é o meu ofício. Aqui eu sei o nome de tudo.",
             "Você reparou que eles só acendem com barulho? Era assim que os mineiros enxergavam: batiam na pedra e andavam enquanto ela brilhava.",
             "Eu trabalhei para os 925 Nobres. Eu estava lá quando resolveram furar até o Coração de Quartzo. Eu VI a escavação.",
             "Eu disse que era um erro. Disse na frente de todos. Sabe o que fazem com prata que fala demais? Riscam.",
             "É por isso que sou arranhado assim, Scrap. Não foi o tempo. Foi de propósito. Riscaram-me e jogaram-me no Poço de Sucata.",
+            "O elevador que trouxe você? Ele seguia subindo, até os Ateliês dos Nobres. O poço desabou no dia em que a broca furou fundo demais.",
+            "Pedra assim não cede a cinzel. Cede a uma nota, a nota certa. E quem ainda canta essa nota é aquela máquina, lá em cima, na câmara de perfuração.",
             "...Chega. O seu polimento está decente, aliás. Não conte a ninguém que eu disse isso.",
         };
 
-        /// <summary>A sequencia da Porta Harmonica: as notas, na ordem em que precisam soar.</summary>
-        public static readonly int[] DoorSequence = { 3, 1, 4, 2 };
-
-        /// <summary>A coluna de celulas que a Porta Harmonica fecha.</summary>
-        public static (int X, int Y, int Height) HarmonicDoor => (149, 56, 5);
-
-        /// <summary>Chegar perto da porta, nesta area, faz ela tocar a sequencia.</summary>
-        public static (int X, int Y, int Width, int Height) DoorPreview => (150, 56, 12, 6);
-
         // The Resonant: onde ele espera, ate onde anda e a area que o acorda.
-        public static (int X, int Y) EliteTile => (123, 56);
-        public static (int X0, int X1) EliteRange => (106, 141);
-        public static (int X, int Y, int Width, int Height) EliteWake => (108, 56, 32, 14);
+        public static (int X, int Y) EliteTile => (182, 60);
+        public static (int X0, int X1) EliteRange => (167, 197);
+        public static (int X, int Y, int Width, int Height) EliteWake => (169, 60, 27, 12);
 
         // The Geode Drill: onde aparece, ate onde corre, a area que a acorda e
         // a altura do chao de cada uma das tres camadas da arena.
-        public static (int X, int Y) BossTile => (55, 56);
+        public static (int X, int Y) BossTile => (55, 92);
         public static (int X0, int X1) BossRange => (36, 74);
-        public static (int X, int Y, int Width, int Height) BossWake => (42, 56, 28, 14);
-        public static readonly int[] BossFloors = { 56, 44, 32 };
-
-        /// <summary>A area, no fundo da sala de saida, que leva ao District 4.</summary>
-        public static (int X, int Y, int Width, int Height) District4Exit => (8, 32, 2, 5);
-
-        /// <summary>O reforco de chassi escondido atras da barreira da Fronteira.</summary>
-        public static (int X, int Y) SecretChassisTile => (2, 40);
+        public static (int X, int Y, int Width, int Height) BossWake => (42, 92, 28, 14);
+        public static readonly int[] BossFloors = { 92, 80, 68 };
 
         /// <summary>A placa gravada no chassi da broca, que so aparece quando ela para.</summary>
         public static readonly string[] DrillPlaqueLines =
@@ -227,8 +317,11 @@ namespace EchoesOfCravejada.EditorTools
             "Então foi ele. Não foi acidente nem praga: foi uma ordem.",
         };
 
-        /// <summary>O brilho verde no fundo do Poco da Broca.</summary>
-        public static (float X, float Y) HeartGlow => (257.5f, 10f);
+        /// <summary>O brilho verde no fundo da fenda da Galeria das Gravuras.</summary>
+        public static (float X, float Y) HeartGlow => (58.5f, 31f);
+
+        /// <summary>A fenda da galeria: sem parede de fundo, pra parecer funda.</summary>
+        private static bool IsRift(int x, int y) => x >= 56 && x <= 61 && y >= 30 && y <= 43;
 
         // ------------------------------------------------------------------
         // Ferramentas de construcao
@@ -236,18 +329,22 @@ namespace EchoesOfCravejada.EditorTools
 
         static Phase03Layout()
         {
-            BuildFrontier();
+            BuildArrival();
             BuildDarkTunnel();
             BuildFirstHunter();
-            BuildFragileBridge();
+            BuildFragileShaft();
             BuildGrotto();
+            BuildNoteShaft();
+
             BuildEngravingGallery();
-            BuildDrillShaft();
-            BuildHarmonicDoor();
+            BuildEchoChamber();
+            BuildHunterGallery();
             BuildResonantChamber();
+            BuildFragileVault();
+            BuildBelfry();
+
             BuildPreBoss();
             BuildDrillChamber();
-            BuildExit();
         }
 
         private static void Carve(int x0, int y0, int x1, int y1) => Map.Fill(x0, y0, x1, y1, LevelMap.Air);
@@ -300,12 +397,13 @@ namespace EchoesOfCravejada.EditorTools
             Markers.Add(new Marker(group, name, x, y, mustReach));
         }
 
-        private static void Resonant(string group, string name, int x, int y, int note, bool corrupted = false, int slab = -1)
+        private static void Resonant(string group, string name, int x, int y, int note, bool corrupted = false,
+            int slab = -1, string door = null)
         {
             // Golpeia-se de lado: ele para na celula a esquerda do cristal.
             Resonants.Add(new ResonantSpot
             {
-                Name = name, X = x, Y = y, Note = note, Corrupted = corrupted, StandX = x - 1, Slab = slab,
+                Name = name, X = x, Y = y, Note = note, Corrupted = corrupted, StandX = x - 1, Slab = slab, Door = door,
             });
             Mark(group, name + "_Stand", x - 1, y);
         }
@@ -327,6 +425,37 @@ namespace EchoesOfCravejada.EditorTools
         {
             Lore.Add(new LoreSpot { Kind = kind, Name = name, Title = title, X = x, Y = y, Lines = lines });
             Mark(group, name, x, y);
+        }
+
+        private static void Gate(string name, int x, int y, int width, int height, int moveX = 0, int moveY = 1)
+        {
+            Gates.Add(new GateSpec { Name = name, X = x, Y = y, Width = width, Height = height, MoveX = moveX, MoveY = moveY });
+        }
+
+        private static void Reward(string group, string id, int x, int y, int amount)
+        {
+            Rewards.Add(new RewardSpot { Id = id, X = x, Y = y, Amount = amount });
+            Mark(group, id, x, y);
+        }
+
+        private static void Bench(string group, string name, int x, int y)
+        {
+            Workbenches.Add((name, x, y));
+            Mark(group, name + "_Rest", x + 1, y);
+        }
+
+        private static void Put(string sprite, float x, float y, int order = 5) => Decor.Add(new DecorSpot(sprite, x, y, order));
+
+        private static void Barrel(int x, int y) => Put("decor_barrel", x, y, 6);
+
+        private static void Sign(int x, int y) => Put("decor_sign", x, y, 5);
+
+        private static void Shelf(int x, int y) => Put("decor_shelf", x, y, 5);
+
+        /// <summary>Corrente pendurada do teto, de topAir pra baixo.</summary>
+        private static void HangChain(int x, int topAir, int length)
+        {
+            Decor.Add(new DecorSpot("decor_chain", x, topAir - length + 1, 5, 1f, length));
         }
 
         /// <summary>
@@ -386,8 +515,8 @@ namespace EchoesOfCravejada.EditorTools
             return -1;
         }
 
-        /// <summary>A fronteira ainda e latao: so as primeiras colunas da primeira sala.</summary>
-        private static bool IsBrass(int x, int y) => x <= 15 && y >= 34 && y <= 56;
+        /// <summary>A estacao de chegada ainda e latao: o elevador veio de la.</summary>
+        private static bool IsBrass(int x, int y) => x <= 17 && y >= 8 && y <= 24;
 
         /// <summary>O tile de terreno de uma celula, ou null se e ar, espinho ou plataforma fragil.</summary>
         public static string GroundTileName(int x, int y)
@@ -410,10 +539,10 @@ namespace EchoesOfCravejada.EditorTools
             return Phase01Layout.TileName(pick.Column, Phase01Layout.BlueBand + pick.Row);
         }
 
-        /// <summary>A parede do fundo, ou null atras de rocha macica e no vao do poco da broca.</summary>
+        /// <summary>A parede do fundo, ou null atras de rocha macica e na fenda da galeria.</summary>
         public static string BackgroundTileName(int x, int y)
         {
-            if (x >= 247 && x <= 268 && y >= 6 && y <= 80) return null;
+            if (IsRift(x, y)) return null;
 
             for (int dy = -1; dy <= 1; dy++)
             {
@@ -430,31 +559,52 @@ namespace EchoesOfCravejada.EditorTools
         public static string SpikeTileName(int x, int y) => $"misc_c{3 + LevelMap.Pick(x, y, 2) * 2}_r2";
 
         // ------------------------------------------------------------------
-        // 1. A Fronteira de Cristal
+        // 1. A Estacao de Chegada
         // ------------------------------------------------------------------
 
-        private static void BuildFrontier()
+        /// <summary>
+        /// Onde o elevador do District 2 para: a ultima chapa de latao, uma
+        /// lanterna e o aviso dos mineiros. O poco segue pra cima, ate os
+        /// Ateliers, mas desabou logo acima da cabine: os escombros sao a
+        /// primeira coisa que se ve, e o que a fase inteira vai buscar. Logo
+        /// atras da cabine, um nicho fechado por cristal macico — tambem so
+        /// abre com o que a broca deixa.
+        /// </summary>
+        private static void BuildArrival()
         {
-            const string room = "01_Frontier";
-            Room(room, 6, 40, 40, 50);
+            const string room = "01_Arrival";
+            Room(room, 5, 11, 28, 21);
 
-            Carve(6, 40, 40, 50);
+            Carve(5, 11, 28, 21);
+            Solid(16, 19, 22, 21);
 
-            // Um degrau de teto, pra a sala nao ser um caixote.
-            Solid(20, 48, 30, 50);
+            // O poco, subindo acima da cabine ate onde a tela escurece. Os
+            // trilhos vao ate o alto; a cabine em si e o objeto do elevador.
+            (int carX, int carY, int carWidth) = ElevatorCar;
+            Carve(carX, 22, carX + carWidth - 1, (int)ElevatorTopY + 4);
+            Decor.Add(new DecorSpot("elevator_rail", carX, carY + 3, 4, carWidth, ElevatorTopY + 5 - (carY + 3)));
+            Sign(10, 16);
+            Barrel(12, 11);
 
-            // Logo atras de onde ele chega: um nicho fechado por cristal macico.
-            // Da pra ver desde o primeiro minuto, e so abre depois do boss.
-            Carve(1, 40, 5, 43);
-            Barrier("Barrier_Secret", 5, 40, 4);
-            Mark(room, "Secret_Chassis", SecretChassisTile.X, SecretChassisTile.Y);
+            Tell("sign", room, "Lore_ElevatorShaft", "o aviso do elevador", 11, 11,
+                "Uma chapa de latão aparafusada ao lado da cabine: \"ELEVADOR DE SERVIÇO — SEGUE ATÉ OS ATELIÊS ALQUÍMICOS.\"",
+                "Por cima, pintado às pressas: \"INTERDITADO. O POÇO DESABOU COM A BROCA.\"",
+                "E, a giz, numa letra miúda: \"Pá não resolve. Já tentamos. A pedra só ouve a máquina.\"");
 
-            Tell("sign", room, "Lore_Frontier", "o aviso dos mineiros", 14, 40,
+            // O nicho do segredo.
+            Carve(1, 11, 3, 14);
+            Barrier("Barrier_Secret", 4, 11, 4);
+            Reward(room, "D3_Secret_Cache", 2, 11, 20);
+
+            Tell("sign", room, "Lore_Frontier", "o aviso dos mineiros", 15, 11,
                 "Uma tábua pregada na última chapa de latão. A tinta descascou, mas dá para ler:",
                 "\"DAQUI PARA A FRENTE NÃO HÁ LAMPIÃO. A PEDRA ACENDE COM BARULHO.\"",
-                "E, mais embaixo, em letra menor: \"...e o barulho acorda os que ficaram.\"");
+                "E, mais embaixo, em letra menor: \"...E o barulho acorda os que ficaram.\"");
 
-            Scatter(16, 40, 40, 50, 4, 11);
+            Lamps.Add((9f, 15f, 7f));
+            Lamps.Add((15.5f, 15f, 6f));
+
+            Scatter(18, 11, 28, 21, 4, 11);
         }
 
         // ------------------------------------------------------------------
@@ -463,28 +613,29 @@ namespace EchoesOfCravejada.EditorTools
 
         /// <summary>
         /// Escuridao total e tres fossos de espinhos. Nao ha inimigo: e a sala
-        /// que ensina a fazer barulho de proposito pra enxergar onde pisar.
+        /// que ensina a fazer barulho de proposito pra enxergar onde pisar. O
+        /// primeiro fosso e largo: pede o segundo pulo, que e silencioso.
         /// </summary>
         private static void BuildDarkTunnel()
         {
             const string room = "02_DarkTunnel";
-            Room(room, 41, 34, 90, 50);
+            Room(room, 29, 6, 78, 21);
 
-            Carve(41, 35, 90, 50);
+            Carve(29, 6, 78, 21);
 
-            Solid(41, 35, 48, 39);
-            Spikes(49, 54, 35);
-            Solid(55, 35, 62, 37);
-            Spikes(63, 67, 35);
-            Solid(68, 35, 76, 36);
-            Spikes(77, 80, 35);
-            Solid(81, 35, 90, 39);
+            Solid(29, 6, 36, 10);
+            Spikes(37, 42, 6);
+            Solid(43, 6, 50, 8);
+            Spikes(51, 55, 6);
+            Solid(56, 6, 64, 7);
+            Spikes(65, 68, 6);
+            Solid(69, 6, 78, 10);
 
             // Teto irregular.
-            Solid(52, 47, 60, 50);
-            Solid(70, 45, 74, 50);
+            Solid(40, 18, 48, 21);
+            Solid(58, 16, 62, 21);
 
-            Scatter(41, 35, 90, 50, 5, 21);
+            Scatter(29, 6, 78, 21, 5, 21);
         }
 
         // ------------------------------------------------------------------
@@ -494,221 +645,303 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>
         /// Um Echo Hunter parado no meio do corredor. Passa-se por ele so
         /// andando, ou manda-se ele pra uma ponta golpeando o cristal de la.
-        /// Ha tambem uma passarela por cima.
+        /// Ha tambem uma passarela por cima, e nela o capacete de quem correu.
         /// </summary>
         private static void BuildFirstHunter()
         {
             const string room = "03_FirstHunter";
-            Room(room, 91, 40, 130, 49);
+            Room(room, 79, 11, 108, 20);
 
-            Carve(91, 40, 130, 49);
+            Carve(79, 11, 108, 20);
 
-            Ledge(100, 106, 43);
-            Ledge(110, 116, 43);
-            Ledge(120, 126, 43);
+            Ledge(85, 90, 14);
+            Ledge(93, 98, 14);
+            Ledge(101, 105, 14);
 
-            Foe(FoeKind.EchoHunter, "EchoHunter_First", 93, 128, 40, 111);
+            Foe(FoeKind.EchoHunter, "EchoHunter_First", 80, 107, 11, 95);
 
-            // Uma isca em cada ponta do corredor.
-            Resonant(room, "Resonant_Hunter_West", 95, 40, 0);
-            Resonant(room, "Resonant_Hunter_East", 127, 40, 0);
+            Resonant(room, "Resonant_Hunter_West", 82, 11, 0);
+            Resonant(room, "Resonant_Hunter_East", 107, 11, 0);
 
-            Scatter(91, 40, 130, 49, 5, 31);
+            Tell("page", room, "Lore_Helmet", "um capacete amassado", 87, 15,
+                "Um capacete de mineiro, amassado, esquecido em cima da passarela.",
+                "Por dentro, riscado a prego: \"NÃO CORRA. ELES ESCUTAM.\"");
+
+            Scatter(79, 11, 108, 20, 5, 31);
         }
 
         // ------------------------------------------------------------------
-        // 4. A Ponte Fragil
+        // 4. O Poco Fragil
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// Um abismo de espinhos cruzado por laminas de cristal fino. Andando e
-        /// pulando baixo elas aguentam; dash, golpe ou queda alta as quebram.
+        /// O caminho pro centro e pra cima, por laminas de cristal fino
+        /// penduradas sobre espinhos. Pular e silencioso e elas aguentam; o
+        /// dash, o golpe e o tombo as quebram. Dois patamares de rocha firme
+        /// no meio, pra respirar.
         /// </summary>
-        private static void BuildFragileBridge()
+        private static void BuildFragileShaft()
         {
-            const string room = "04_FragileBridge";
-            Room(room, 131, 26, 170, 48);
+            const string room = "04_FragileShaft";
+            Room(room, 109, 7, 120, 43);
 
-            Carve(131, 27, 170, 48);
-            Solid(131, 27, 136, 39);
-            Solid(165, 27, 170, 39);
-            Spikes(137, 164, 27);
+            Carve(109, 7, 120, 38);
+            Carve(116, 39, 120, 43);
 
-            Fragile(138, 141, 39);
-            Fragile(144, 147, 39);
-            Fragile(150, 153, 39);
-            Fragile(156, 159, 39);
-            Fragile(162, 164, 39);
+            // A entrada, na altura do corredor do cacador, e os espinhos do fundo.
+            Solid(109, 7, 111, 10);
+            Spikes(112, 120, 7);
 
-            Scatter(131, 27, 170, 48, 5, 41);
+            Fragile(114, 117, 13);
+            Fragile(118, 120, 17);
+            Fragile(113, 116, 21);
+            Solid(109, 23, 111, 25);
+            Fragile(114, 117, 29);
+            Fragile(118, 120, 33);
+            Fragile(113, 116, 37);
+            Fragile(117, 120, 41);
+
+            Scatter(109, 8, 120, 43, 4, 41);
         }
 
         // ------------------------------------------------------------------
         // 5. A Gruta de Crisol
         // ------------------------------------------------------------------
 
+        /// <summary>
+        /// O centro do distrito, e a unica luz parada dele. A oeste, o patamar
+        /// do Poco Fragil e a porta da Galeria das Gravuras; a leste, a
+        /// Galeria dos Cacadores; no teto, a chamine da Abobada Fragil e o Poco
+        /// das Notas, que sobe pra broca.
+        /// </summary>
         private static void BuildGrotto()
         {
             const string room = "05_Grotto";
-            Room(room, 171, 40, 190, 47);
+            Room(room, 109, 44, 152, 54);
 
-            Carve(171, 40, 190, 47);
+            // O patamar do poco e a gruta.
+            Carve(109, 44, 121, 48);
+            Carve(122, 44, 152, 54);
+            Solid(147, 52, 152, 54);
 
-            // A chamine: o atalho pra sala da Porta Harmonica, la em cima.
-            Carve(186, 48, 189, 55);
+            Bench(room, "Workbench_Grotto", 124, 44);
+            Mark(room, "Crisol", CrisolTile.X, CrisolTile.Y);
 
-            Workbenches.Add(("Workbench_Grotto", 173, 40));
-            Mark(room, "Workbench_Grotto_Rest", 174, 40);
-            Mark(room, "Crisol", 182, 40);
+            Lamps.Add((126f, 49f, 7f));
+            Lamps.Add((140.5f, 49f, 7f));
+            Lamps.Add((115f, 47f, 5f));
 
-            Lamps.Add((175f, 44f, 7f));
-            Lamps.Add((182.5f, 44f, 6f));
+            Barrel(144, 44);
+            Barrel(145, 44);
+            Shelf(141, 48);
+            Sign(113, 46);
 
-            Scatter(171, 40, 185, 47, 5, 51);
+            // A porta da Galeria dos Cacadores.
+            Carve(153, 44, 153, 48);
+
+            Scatter(122, 44, 152, 54, 6, 51);
+        }
+
+        /// <summary>
+        /// O atalho de volta: um poco largo, liso, que cai da antessala da
+        /// broca direto no teto da gruta. Largo demais pra subir quicando nas
+        /// paredes, e sem ressalto nenhum — so serve pra descer.
+        /// </summary>
+        private static void BuildNoteShaft()
+        {
+            Carve(128, 55, 134, 91);
+            HangChain(131, 91, 6);
+            HangChain(129, 80, 4);
+            Scatter(128, 55, 134, 91, 3, 55);
         }
 
         // ------------------------------------------------------------------
-        // 6. A Galeria das Gravuras
+        // 6. A Galeria das Gravuras (Ala Oeste)
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// Quatro gravuras enormes contam a escavacao. So da pra ve-las com
-        /// barulho — e ha uma Shard Sentinel no meio da sala e Crystal Mites
-        /// dormindo no chao. Ler a historia custa.
+        /// Quatro gravuras enormes contam a escavacao, de leste pra oeste. So
+        /// da pra ve-las com barulho — e uma Shard Sentinel, no meio, atira no
+        /// barulho. Os Crystal Mites dormem entre as gravuras. No meio do chao,
+        /// a fenda: la no fundo, o verde do Coracao de Quartzo.
         /// </summary>
         private static void BuildEngravingGallery()
         {
             const string room = "06_EngravingGallery";
-            Room(room, 191, 40, 240, 52);
+            Room(room, 36, 44, 108, 56);
 
-            Carve(191, 40, 234, 52);
+            Carve(36, 44, 108, 56);
+            Solid(36, 54, 44, 56);
+            Solid(70, 44, 74, 46);
 
-            // O poco que sobe pro andar de cima, com tres degraus.
-            Carve(235, 40, 240, 60);
-            Ledge(235, 237, 43);
-            Ledge(238, 240, 47);
-            Ledge(235, 237, 51);
+            // A fenda.
+            Carve(56, 30, 61, 43);
+            Spikes(56, 61, 30);
+            OxideGlows.Add((58.5f, 31f, 6f));
 
-            Tell("engraving0", room, "Lore_Engraving_1", "a primeira gravura", 198, 40,
+            Tell("edge", room, "Lore_Rift", "a beirada da fenda", 54, 44,
+                "O chão se abre aqui. A fenda é estreita, lisa e funda demais para ter sido feita à mão.",
+                "Lá no fundo, muito longe, alguma coisa verde pulsa. Devagar. Como se respirasse.",
+                "Não há como descer. Ainda.");
+
+            Tell("engraving0", room, "Lore_Engraving_1", "a primeira gravura", 100, 44,
                 "Riscada na pedra, do tamanho de uma parede: uma fila de mineiros de picareta no ombro.",
                 "Estão descendo. Todos olham para baixo.");
 
-            Tell("engraving1", room, "Lore_Engraving_2", "a segunda gravura", 208, 40,
-                "Uma figura maior que as outras, de coroa. O Rei de Prata.",
+            Tell("engraving1", room, "Lore_Engraving_2", "a segunda gravura", 86, 44,
+                "Uma figura maior que as outras, de coroa: o Rei de Prata.",
                 "Ele não segura ferramenta nenhuma. Só aponta. Para baixo.");
 
-            Tell("engraving2", room, "Lore_Engraving_3", "a terceira gravura", 220, 40,
+            Tell("engraving2", room, "Lore_Engraving_3", "a terceira gravura", 64, 44,
                 "Uma broca em espiral, descendo pela rocha. Em volta dela, riscos de impacto.",
                 "Os mineiros agora são menores. Estão atrás dela, não na frente.");
 
-            Tell("engraving3", room, "Lore_Engraving_4", "a última gravura", 230, 40,
+            Tell("engraving3", room, "Lore_Engraving_4", "a última gravura", 47, 44,
                 "Um losango enorme no fundo da terra: o Coração de Quartzo.",
                 "Há uma fenda nele, de cima a baixo. Quem gravou pintou a fenda de verde.",
                 "Depois desta, a parede está lisa. Ninguém voltou para gravar o resto.");
 
-            Foe(FoeKind.ShardSentinel, "Sentinel_Gallery", 214, 214, 40);
-            Foe(FoeKind.CrystalMite, "Mite_Gallery_1", 200, 206, 40, 201);
-            Foe(FoeKind.CrystalMite, "Mite_Gallery_2", 200, 206, 40, 203);
-            Foe(FoeKind.CrystalMite, "Mite_Gallery_3", 200, 206, 40, 205);
-            Foe(FoeKind.CrystalMite, "Mite_Gallery_4", 222, 227, 40, 223);
-            Foe(FoeKind.CrystalMite, "Mite_Gallery_5", 222, 227, 40, 226);
+            // A sentinela fica num pedestal no meio, e os mites entre as gravuras.
+            Foe(FoeKind.ShardSentinel, "Sentinel_Gallery", 72, 72, 47);
+            Foe(FoeKind.CrystalMite, "Mite_Gallery_1", 91, 96, 44, 93);
+            Foe(FoeKind.CrystalMite, "Mite_Gallery_2", 91, 96, 44, 95);
+            Foe(FoeKind.CrystalMite, "Mite_Gallery_3", 76, 81, 44, 78);
+            Foe(FoeKind.CrystalMite, "Mite_Gallery_4", 76, 81, 44, 80);
 
-            Scatter(191, 40, 240, 52, 5, 61);
+            // No fundo da galeria, depois da ultima gravura.
+            Reward(room, "D3_Gallery_Cache", 38, 44, 10);
+
+            Scatter(36, 44, 108, 56, 5, 61);
         }
 
         // ------------------------------------------------------------------
-        // 9. O Poco da Broca
+        // 7. A Camara do Eco (fim da Ala Oeste)
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// Um poco gigante, escavado pela broca rumo ao Heart of Quartz. La no
-        /// fundo, muito longe, um brilho verde pulsa — a unica luz do distrito
-        /// que nao depende de som. Nao se desce: so se ve.
+        /// O quebra-cabeca da Ala Oeste: tres cristais em tres alturas e um
+        /// cacador que corre pra cada nota tocada. Toca-se, sai-se de perto, e
+        /// toca-se a proxima. A sequencia certa abre o nicho da parede oeste.
         /// </summary>
-        private static void BuildDrillShaft()
+        private static void BuildEchoChamber()
         {
-            const string room = "09_DrillShaft";
-            Room(room, 241, 6, 268, 80);
+            const string room = "07_EchoChamber";
+            Room(room, 4, 44, 35, 60);
 
-            Carve(241, 56, 246, 66);
-            Carve(247, 6, 268, 80);
-            Spikes(247, 268, 6);
+            Carve(8, 44, 35, 60);
 
-            Tell("edge", room, "Lore_DrillShaft", "a beirada do poço", 245, 56,
-                "O chão acaba aqui. O poço é redondo, liso e largo demais para ter sido feito à mão.",
-                "Lá no fundo, muito longe, alguma coisa verde pulsa. Devagar. Como se respirasse.",
-                "Não há como descer. Ainda.");
+            // O nicho que a sequencia abre, na parede oeste.
+            Carve(4, 44, 7, 47);
+            Gate("Porta_Eco", 7, 44, 1, 4);
+            Reward(room, "D3_Echo_Cache", 5, 44, 20);
+            Ledge(17, 22, 47);
+            Ledge(25, 30, 51);
 
-            Echoes.Add(new EchoSpot(243, 56, 1, 0, false));
+            Resonant(room, "Resonant_West_1", 12, 44, 1, false, -1, "Door_West");
+            Resonant(room, "Resonant_West_2", 21, 48, 2, false, -1, "Door_West");
+            Resonant(room, "Resonant_West_3", 29, 52, 3, false, -1, "Door_West");
+
+            Doors.Add(new DoorSpec
+            {
+                Name = "Door_West", Gate = "Porta_Eco", Sequence = new[] { 2, 3, 1 },
+                Preview = (31, 44, 5, 5), Glyphs = (31f, 51f),
+            });
+
+            Foe(FoeKind.EchoHunter, "EchoHunter_Echo", 9, 34, 44, 17);
+
+            Tell("sign", room, "Lore_EchoChamber", "a placa de afinação", 33, 44,
+                "Uma placa de prata, pregada na entrada: \"CÂMARA DE AFINAÇÃO.\"",
+                "Embaixo, à mão: \"Toque as notas na ordem das gemas. E depois corra — devagar.\"");
+
+            Scatter(8, 44, 35, 60, 5, 71);
         }
 
         // ------------------------------------------------------------------
-        // 7. A Porta Harmonica
+        // 8. A Galeria dos Cacadores (Ala Leste)
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// Quatro cristais ressonantes espalhados pela sala, dois deles com
-        /// veio de Oxide, e dois Echo Hunters. A porta, a oeste, so abre com as
-        /// quatro notas na ordem — e cada nota e um barulho que chama os dois.
+        /// Um corredor longo com tres cacadores dormindo no chao e uma
+        /// passarela de cristal fino por cima. Por baixo, o silencio; por cima,
+        /// o peso. As notas da trava estao espalhadas pelo corredor: cada uma
+        /// tocada chama quem estiver perto. Uma delas tem veio de Oxide e
+        /// precisa ser raspada antes — de costas pros cacadores. A sequencia
+        /// certa abre a grade do teto, no fim do corredor, que leva ao elite.
         /// </summary>
-        private static void BuildHarmonicDoor()
+        private static void BuildHunterGallery()
         {
-            const string room = "07_HarmonicDoor";
-            Room(room, 150, 56, 234, 74);
+            const string room = "08_HunterGallery";
+            Room(room, 154, 44, 202, 56);
 
-            Carve(150, 56, 234, 74);
+            Carve(154, 44, 202, 56);
 
-            // Dois blocos e uma passarela, pra as notas ficarem em alturas diferentes.
-            Solid(190, 56, 194, 59);
-            Ledge(196, 202, 63);
-            Solid(204, 56, 212, 59);
+            Fragile(160, 165, 47);
+            Fragile(169, 174, 47);
+            Fragile(178, 183, 47);
+            Fragile(187, 191, 47);
 
-            Resonant(room, "Resonant_Door_1", 228, 56, 1);
-            Resonant(room, "Resonant_Door_2", 209, 60, 2, true);
-            Resonant(room, "Resonant_Door_3", 200, 64, 3);
-            Resonant(room, "Resonant_Door_4", 162, 56, 4, true);
+            Foe(FoeKind.EchoHunter, "EchoHunter_Gallery_1", 155, 175, 44, 163);
+            Foe(FoeKind.EchoHunter, "EchoHunter_Gallery_2", 168, 190, 44, 180);
+            Foe(FoeKind.EchoHunter, "EchoHunter_Gallery_3", 183, 201, 44, 195);
 
-            Foe(FoeKind.EchoHunter, "EchoHunter_Door_East", 213, 232, 56, 220);
-            Foe(FoeKind.EchoHunter, "EchoHunter_Door_West", 152, 185, 56, 172);
+            Resonant(room, "Resonant_East_1", 158, 44, 1, false, -1, "Door_East");
+            Resonant(room, "Resonant_East_2", 188, 44, 2, true, -1, "Door_East");
+            Resonant(room, "Resonant_East_3", 172, 44, 3, false, -1, "Door_East");
 
-            // O corredor atras da porta.
-            Carve(144, 56, 149, 60);
+            Doors.Add(new DoorSpec
+            {
+                Name = "Door_East", Gate = "Porta_Ressonante", Sequence = new[] { 3, 1, 2 },
+                Preview = (154, 44, 4, 5), Glyphs = (155f, 53f),
+            });
 
-            Mark(room, "HarmonicDoor", 153, 56);
+            Tell("sign", room, "Lore_HunterRoster", "a lista de turno", 156, 44,
+                "Uma lista de turno pregada na rocha: doze nomes.",
+                "Ao lado de nove deles, alguém desenhou um pequeno cristal.",
+                "Os outros três foram riscados com tanta força que a tábua rachou.");
 
-            Scatter(150, 56, 234, 74, 6, 71);
+            // A subida pra Camara do Ressonante, no fim do corredor: um vao
+            // estreito no teto, fechado pela grade que a sequencia abre.
+            Ledge(194, 196, 51);
+            Ledge(197, 200, 52);
+            Carve(197, 57, 200, 59);
+            Gate("Porta_Ressonante", 197, 57, 4, 1, 1, 0);
+
+            Reward(room, "D3_Hunter_Cache", 189, 48, 10);
+
+            Scatter(154, 44, 202, 56, 5, 81);
         }
 
         // ------------------------------------------------------------------
-        // 8. A Camara do Ressonante
+        // 9. A Camara do Ressonante (Ala Leste)
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// Uma camara larga e alta, onde mora The Resonant, o elite que guarda a
-        /// safira. A luta e opcional: da pra atravessar correndo. Os Crystal
-        /// Mites espalhados pelo chao acordam a cada batida do diapasao.
-        ///
-        /// Depois da purificacao vira o salao de concertos dos mineiros.
+        /// Em cima da Galeria dos Cacadores: a camara larga e alta onde mora
+        /// The Resonant, o elite que guarda a safira. A luta e opcional. Depois
+        /// da purificacao vira o salao de concertos dos mineiros. Na entrada, a
+        /// bancada da ala.
         /// </summary>
         private static void BuildResonantChamber()
         {
-            const string room = "08_ResonantChamber";
-            Room(room, 104, 56, 143, 72);
+            const string room = "09_ResonantChamber";
+            Room(room, 164, 60, 202, 74);
 
-            Carve(104, 56, 143, 72);
-            Ledge(112, 118, 59);
-            Ledge(128, 134, 59);
+            Carve(164, 60, 202, 74);
+            Ledge(172, 177, 63);
+            Ledge(187, 192, 63);
+
+            Bench(room, "Workbench_Chamber", 193, 60);
+            Lamps.Add((194.5f, 64f, 6f));
 
             Mark(room, "Elite_TheResonant", EliteTile.X, EliteTile.Y);
 
-            Foe(FoeKind.CrystalMite, "Mite_Chamber_1", 106, 116, 56, 108);
-            Foe(FoeKind.CrystalMite, "Mite_Chamber_2", 106, 116, 56, 112);
-            Foe(FoeKind.CrystalMite, "Mite_Chamber_3", 130, 141, 56, 136);
-            Foe(FoeKind.CrystalMite, "Mite_Chamber_4", 130, 141, 56, 132);
+            Foe(FoeKind.CrystalMite, "Mite_Chamber_1", 166, 175, 60, 168);
+            Foe(FoeKind.CrystalMite, "Mite_Chamber_2", 166, 175, 60, 172);
+            Foe(FoeKind.CrystalMite, "Mite_Chamber_3", 184, 190, 60, 187);
 
             Purified.Add(new LoreSpot
             {
-                Kind = "miner", Name = "Tarnished_Miner_1", Title = "Mineiro", X = 110, Y = 56,
+                Kind = "miner", Name = "Tarnished_Miner_1", Title = "Mineiro", X = 170, Y = 60,
                 Lines = new[]
                 {
                     "Escute. ...Ouviu? Ela afinou. A pedra inteira afinou.",
@@ -719,7 +952,7 @@ namespace EchoesOfCravejada.EditorTools
 
             Purified.Add(new LoreSpot
             {
-                Kind = "miner", Name = "Tarnished_Miner_2", Title = "Mineira", X = 136, Y = 56,
+                Kind = "miner", Name = "Tarnished_Miner_2", Title = "Mineira", X = 190, Y = 60,
                 Lines = new[]
                 {
                     "Café? É de borra de caldeira, mas está quente.",
@@ -730,131 +963,203 @@ namespace EchoesOfCravejada.EditorTools
 
             Purified.Add(new LoreSpot
             {
-                Kind = "crisol", Name = "Npc_Crisol_Purified", Title = "Crisol", X = 121, Y = 56,
+                Kind = "crisol", Name = "Npc_Crisol_Purified", Title = "Crisol", X = 180, Y = 60,
                 Lines = new[]
                 {
                     "Você viu a placa. Então agora você sabe o que eu sabia.",
                     "Eu avisei, e riscaram-me. Você desceu lá, com esse corpo de sucata, e fez a máquina parar.",
                     "...Obrigado, Scrap.",
                     "Talvez você não seja só sucata, afinal. Não me faça repetir.",
+                    "E agora essa onda é sua. Volte à estação: os escombros do elevador não vão resistir a ela. Lá em cima ficam os Ateliês.",
                 },
             });
 
-            Scatter(104, 56, 143, 72, 5, 81);
+            Scatter(164, 60, 202, 74, 5, 91);
         }
 
         // ------------------------------------------------------------------
-        // 10. A Workbench antes do boss
+        // 10. A Abobada Fragil (Ala Alta)
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// Em cima da gruta, pela chamine: uma abobada alta, escura, de laminas
+        /// finas sobre espinhos. Pra enxergar e preciso barulho; o barulho
+        /// quebra as laminas. Os cristais ressonantes nos patamares de rocha
+        /// firme sao a resposta: golpeia-se um de la, a abobada inteira acende,
+        /// e sobe-se no escuro que vem depois, lembrando o caminho.
+        /// </summary>
+        private static void BuildFragileVault()
+        {
+            const string room = "10_FragileVault";
+            Room(room, 137, 58, 162, 99);
+
+            // A chamine, da gruta pra abobada.
+            Carve(143, 55, 146, 59);
+            Ledge(141, 143, 47);
+            Ledge(145, 146, 51);
+
+            Carve(138, 60, 162, 97);
+            Solid(137, 58, 152, 59);
+            Carve(143, 58, 146, 59);
+            Spikes(147, 162, 60);
+
+            // A subida: um patamar firme e tres laminas, repetido.
+            Solid(137, 60, 142, 62);
+            Fragile(147, 151, 66);
+            Fragile(154, 158, 70);
+            Fragile(147, 151, 74);
+            Solid(137, 75, 142, 77);
+            Fragile(147, 151, 81);
+            Fragile(154, 158, 85);
+            Fragile(147, 151, 89);
+            Solid(137, 90, 142, 92);
+            Fragile(147, 151, 95);
+
+            // As lanternas de som: um cristal em cada patamar firme.
+            Resonant(room, "Resonant_Vault_1", 141, 63, 0);
+            Resonant(room, "Resonant_Vault_2", 141, 78, 0);
+            Resonant(room, "Resonant_Vault_3", 141, 93, 0);
+
+            Tell("page", room, "Lore_VaultPage", "uma folha dobrada", 138, 78,
+                "Uma folha dobrada, presa numa fresta da rocha:",
+                "\"A abóbada canta quando a gente pisa errado. Aprendemos a pisar como quem reza.\"");
+
+            Foe(FoeKind.CrystalMite, "Mite_Vault_1", 137, 140, 93, 138);
+
+            Scatter(137, 60, 162, 99, 4, 101);
+        }
+
+        // ------------------------------------------------------------------
+        // 11. O Campanario (fim da Ala Alta)
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// No alto da abobada: quatro cristais pendurados em alturas
+        /// diferentes, como sinos. A sequencia mais longa do distrito abre a
+        /// porta oeste, que da na antessala da broca. Um saco de fragmentos,
+        /// pra quem sobe ate o ultimo ressalto.
+        /// </summary>
+        private static void BuildBelfry()
+        {
+            const string room = "11_Belfry";
+            Room(room, 137, 100, 166, 112);
+
+            Carve(137, 100, 166, 112);
+            Carve(147, 98, 151, 99);
+            Ledge(146, 150, 103);
+            Ledge(154, 158, 107);
+            Ledge(161, 165, 103);
+
+            Bench(room, "Workbench_Belfry", 138, 100);
+            Lamps.Add((139.5f, 104f, 5f));
+
+            Resonant(room, "Resonant_High_1", 144, 100, 1, false, -1, "Door_High");
+            Resonant(room, "Resonant_High_2", 149, 104, 2, false, -1, "Door_High");
+            Resonant(room, "Resonant_High_3", 157, 108, 3, false, -1, "Door_High");
+            Resonant(room, "Resonant_High_4", 165, 100, 4, true, -1, "Door_High");
+
+            Doors.Add(new DoorSpec
+            {
+                Name = "Door_High", Gate = "Porta_Campanario", Sequence = new[] { 4, 2, 1, 3 },
+                Preview = (137, 100, 6, 4), Glyphs = (142f, 103f),
+            });
+
+            Reward(room, "D3_Belfry_Cache", 163, 104, 20);
+
+            // A porta, na parede oeste: atras dela, um poco curto que cai na
+            // antessala da broca.
+            Carve(135, 92, 136, 103);
+            Gate("Porta_Campanario", 136, 100, 1, 4);
+
+            Foe(FoeKind.CrystalMite, "Mite_Belfry_1", 152, 160, 100, 156);
+
+            Scatter(137, 100, 166, 112, 5, 111);
+        }
+
+        // ------------------------------------------------------------------
+        // 12. A antessala da broca
         // ------------------------------------------------------------------
 
         private static void BuildPreBoss()
         {
-            const string room = "10_PreBoss";
-            Room(room, 80, 56, 100, 64);
+            const string room = "12_PreBoss";
+            Room(room, 80, 92, 134, 98);
 
-            Carve(101, 56, 103, 60);
-            Carve(80, 56, 100, 64);
+            Carve(80, 92, 134, 98);
 
-            Workbenches.Add(("Workbench_PreBoss", 84, 56));
-            Mark(room, "Workbench_PreBoss_Rest", 85, 56);
-            Lamps.Add((86f, 60f, 7f));
+            Bench(room, "Workbench_PreBoss", 84, 92);
+            Lamps.Add((86f, 96f, 7f));
 
-            Tell("page", room, "Lore_MinerNote", "um bilhete de mineiro", 94, 56,
+            Tell("page", room, "Lore_MinerNote", "um bilhete de mineiro", 96, 92,
                 "Um papel dobrado, preso debaixo de um capacete.",
                 "\"Ela não para mais. Desligamos a chave, e ela não parou. Não há mais ninguém lá dentro, e ela não parou.\"",
                 "\"Se você está lendo isto: não faça barulho perto dela. Ela não enxerga. Ela escuta.\"");
 
-            Scatter(90, 56, 100, 64, 5, 91);
+            Barrel(90, 92);
+            Barrel(91, 92);
+            Shelf(104, 95);
+            Sign(110, 95);
+
+            Scatter(92, 92, 126, 98, 5, 121);
         }
 
         // ------------------------------------------------------------------
-        // 11. A Camara de Perfuracao
+        // 13. A Camara de Perfuracao
         // ------------------------------------------------------------------
 
         /// <summary>
         /// A arena do Geode Drill, em tres camadas empilhadas. A luta comeca na
         /// de cima; a cada terco de vida a broca fura o chao e tudo desce uma.
         ///
-        ///   camada 1 (chao 56)   quatro pilares ressonantes
-        ///   camada 2 (chao 44)   dois
-        ///   camada 3 (chao 32)   um so, e o brilho verde logo embaixo
+        ///   camada 1 (chao 92)   quatro pilares ressonantes
+        ///   camada 2 (chao 80)   dois
+        ///   camada 3 (chao 68)   um so, e o brilho verde logo embaixo
         ///
         /// Na parede leste ha prateleiras em zigue-zague: e por onde se sobe de
-        /// volta depois que o chao se foi.
+        /// volta depois que o chao se foi — e dali, pelo atalho, ate a gruta e
+        /// a estacao, onde a onda que a broca deixa abre o elevador.
         /// </summary>
         private static void BuildDrillChamber()
         {
-            const string room = "11_DrillChamber";
-            Room(room, 34, 32, 76, 76);
+            const string room = "13_DrillChamber";
+            Room(room, 34, 68, 76, 112);
 
-            Carve(77, 56, 79, 60);
-            Carve(34, 32, 76, 76);
+            Carve(77, 92, 79, 96);
+            Carve(34, 68, 76, 112);
 
-            // Cantos de cima chanfrados.
-            Solid(34, 73, 38, 76);
-            Solid(72, 73, 76, 76);
+            Solid(34, 109, 38, 112);
+            Solid(72, 109, 76, 112);
 
-            int top = Slab("Slab_Drill_1", 34, 76, 54, 55);
+            int top = Slab("Slab_Drill_1", 34, 76, 90, 91);
 
-            // Na camada 2 a ponta leste e rocha de verdade: faz parte da subida.
-            Solid(73, 42, 76, 43);
-            int middle = Slab("Slab_Drill_2", 34, 72, 42, 43);
+            Solid(73, 78, 76, 79);
+            int middle = Slab("Slab_Drill_2", 34, 72, 78, 79);
 
-            // A subida: 32 -> 36 -> 40 -> 44 -> 48 -> 52 -> o corredor de entrada.
-            Ledge(73, 76, 35);
-            Ledge(66, 69, 39);
-            Ledge(66, 69, 47);
-            Ledge(72, 75, 51);
+            Ledge(73, 76, 71);
+            Ledge(66, 69, 75);
+            Ledge(66, 69, 83);
+            Ledge(72, 75, 87);
 
-            Resonant(room, "Resonant_Pillar_1", 44, 56, 0, false, top);
-            Resonant(room, "Resonant_Pillar_2", 52, 56, 0, false, top);
-            Resonant(room, "Resonant_Pillar_3", 60, 56, 0, false, top);
-            Resonant(room, "Resonant_Pillar_4", 68, 56, 0, false, top);
-            Resonant(room, "Resonant_Pillar_5", 48, 44, 0, false, middle);
-            Resonant(room, "Resonant_Pillar_6", 62, 44, 0, false, middle);
-            Resonant(room, "Resonant_Pillar_7", 55, 32, 0);
+            Resonant(room, "Resonant_Pillar_1", 44, 92, 0, false, top);
+            Resonant(room, "Resonant_Pillar_2", 52, 92, 0, false, top);
+            Resonant(room, "Resonant_Pillar_3", 60, 92, 0, false, top);
+            Resonant(room, "Resonant_Pillar_4", 68, 92, 0, false, top);
+            Resonant(room, "Resonant_Pillar_5", 48, 80, 0, false, middle);
+            Resonant(room, "Resonant_Pillar_6", 62, 80, 0, false, middle);
+            Resonant(room, "Resonant_Pillar_7", 55, 68, 0);
 
             Mark(room, "BossSpawn_GeodeDrill", BossTile.X, BossTile.Y);
 
-            OxideGlows.Add((42f, 32.5f, 8f));
-            OxideGlows.Add((55f, 32.5f, 9f));
-            OxideGlows.Add((68f, 32.5f, 8f));
+            OxideGlows.Add((42f, 68.5f, 8f));
+            OxideGlows.Add((55f, 68.5f, 9f));
+            OxideGlows.Add((68f, 68.5f, 8f));
 
-            Scatter(34, 56, 76, 76, 6, 101);
-            Scatter(34, 44, 72, 53, 7, 102);
-            Scatter(34, 32, 72, 41, 7, 103);
+            Scatter(34, 92, 76, 112, 6, 131);
+            Scatter(34, 80, 72, 89, 7, 132);
+            Scatter(34, 68, 72, 77, 7, 133);
         }
 
         // ------------------------------------------------------------------
-        // 12. A saida pros Alchemical Ateliers
-        // ------------------------------------------------------------------
-
-        /// <summary>
-        /// No fundo da arena, a oeste. A barreira de cristal ensina a usar o
-        /// Resonance Strike: e a primeira coisa que ele abre.
-        /// </summary>
-        private static void BuildExit()
-        {
-            const string room = "12_Exit";
-            Room(room, 8, 32, 33, 37);
-
-            Carve(27, 32, 33, 36);
-            Carve(8, 32, 26, 37);
-
-            Barrier("Barrier_Exit", 33, 32, 5);
-
-            Tell("edge", room, "Lore_Exit", "o fim do cristal", 11, 32,
-                "O cristal acaba aqui. Daqui para a frente, a parede é de mármore branco, lisa, com veios de ouro.",
-                "Há vidro quebrado no chão e um cheiro doce, de laboratório. Os Ateliês Alquímicos.",
-                "Depois de entrar, não há como voltar.");
-
-            Lamps.Add((14f, 35f, 6f));
-
-            Scatter(14, 32, 26, 37, 5, 111);
-        }
-
-        // ------------------------------------------------------------------
-        // Validacao        // ------------------------------------------------------------------
         // Validacao
         // ------------------------------------------------------------------
 
@@ -872,20 +1177,44 @@ namespace EchoesOfCravejada.EditorTools
             return rules;
         }
 
-        private static void Close(LevelMap world, (int X, int Y, int Height) column)
+        /// <summary>A sala que contem a celula, ou null.</summary>
+        public static string RoomAt(int x, int y)
         {
-            world.Fill(column.X, column.Y, column.X, column.Y + column.Height - 1, LevelMap.Rock);
+            foreach ((string name, int x0, int y0, int x1, int y1) in Rooms)
+            {
+                if (x >= x0 && x <= x1 && y >= y0 && y <= y1) return name;
+            }
+
+            return null;
         }
 
-        private static void CloseBarriers(LevelMap world)
+        private sealed class WorldState
         {
-            foreach ((string _, int x, int y, int height) in Barriers) Close(world, (x, y, height));
+            public LevelMap Map;
+            public readonly HashSet<string> OpenDoors = new HashSet<string>();
+            public bool BossDown;
+        }
+
+        private static void Fill(LevelMap world, GateSpec gate, char cell)
+        {
+            world.Fill(gate.X, gate.Y, gate.X + gate.Width - 1, gate.Y + gate.Height - 1, cell);
+        }
+
+        /// <summary>Fecha as barreiras de cristal e os escombros do elevador: o que so a onda abre.</summary>
+        private static void CloseBarriers(LevelMap world) => SetBarriers(world, LevelMap.Rock);
+
+        private static void SetBarriers(LevelMap world, char cell)
+        {
+            foreach ((string _, int x, int y, int height) in Barriers) world.Fill(x, y, x, y + height - 1, cell);
+
+            (int rx, int ry, int rw, int rh) = ElevatorRubble;
+            world.Fill(rx, ry, rx + rw - 1, ry + rh - 1, cell);
         }
 
         /// <summary>O mapa com os primeiros chaos da arena ja desabados.</summary>
-        private static LevelMap Collapsed(int slabsGone)
+        private static LevelMap Collapsed(LevelMap source, int slabsGone)
         {
-            LevelMap world = Map.Clone();
+            LevelMap world = source.Clone();
 
             for (int i = 0; i < slabsGone && i < Slabs.Count; i++)
             {
@@ -897,14 +1226,64 @@ namespace EchoesOfCravejada.EditorTools
         }
 
         /// <summary>
-        /// Confere se a fase e jogavel de verdade, sem precisar jogar.
-        ///
-        /// Comeca com a Porta Harmonica e as barreiras de cristal fechadas. Com
-        /// a porta fechada tem que dar pra alcancar os quatro cristais dela; so
-        /// entao ela abre. Depois confere a arena em cada estagio do desabamento
-        /// e, com o chao todo no fundo, a subida de volta e a saida.
-        ///
-        /// Devolve a lista de problemas. Vazia quer dizer que esta tudo certo.
+        /// Joga a fase na cabeca: portoes e barreiras fechados; abre cada porta
+        /// cujos cristais todos se alcancam; derruba a broca quando se chega
+        /// nela (a arena desaba inteira e a barreira quebra com o Resonance
+        /// Strike). Repete ate nada mais mudar.
+        /// </summary>
+        private static WorldState Play(out LevelMap.Reach reach, bool bossFalls = true, Func<string, bool> allowDoor = null,
+            Action<WorldState, LevelMap.Reach> visit = null)
+        {
+            var world = new WorldState { Map = Map.Clone() };
+            foreach (GateSpec gate in Gates) Fill(world.Map, gate, LevelMap.Rock);
+            CloseBarriers(world.Map);
+
+            LevelMap.JumpRules rules = Rules();
+
+            while (true)
+            {
+                reach = world.Map.Explore(SpawnTile, rules);
+                visit?.Invoke(world, reach);
+                bool changed = false;
+
+                foreach (DoorSpec door in Doors)
+                {
+                    if (world.OpenDoors.Contains(door.Name)) continue;
+                    if (allowDoor != null && !allowDoor(door.Name)) continue;
+
+                    bool all = true;
+                    foreach (ResonantSpot spot in Resonants)
+                    {
+                        if (spot.Door == door.Name && !reach.CanStand(spot.StandX, spot.Y)) all = false;
+                    }
+
+                    if (!all) continue;
+
+                    world.OpenDoors.Add(door.Name);
+                    changed = true;
+
+                    foreach (GateSpec gate in Gates)
+                    {
+                        if (gate.Name == door.Gate) Fill(world.Map, gate, LevelMap.Air);
+                    }
+                }
+
+                if (bossFalls && !world.BossDown && reach.CanStand(BossTile.X, BossTile.Y))
+                {
+                    world.BossDown = true;
+                    changed = true;
+
+                    world.Map = Collapsed(world.Map, Slabs.Count);
+                    SetBarriers(world.Map, LevelMap.Air);
+                }
+
+                if (!changed) return world;
+            }
+        }
+
+        /// <summary>
+        /// Confere se a fase e jogavel de verdade, sem precisar jogar. Devolve a
+        /// lista de problemas. Vazia quer dizer que esta tudo certo.
         /// </summary>
         public static List<string> Validate()
         {
@@ -927,86 +1306,48 @@ namespace EchoesOfCravejada.EditorTools
             }
 
             LevelMap.JumpRules rules = Rules();
+            WorldState world = Play(out LevelMap.Reach reach);
 
-            // 1. Porta e barreiras fechadas: as notas tem que estar ao alcance.
-            LevelMap closed = Map.Clone();
-            Close(closed, HarmonicDoor);
-            CloseBarriers(closed);
-
-            LevelMap.Reach locked = closed.Explore(SpawnTile, rules);
-
-            bool canPlay = true;
-            foreach (ResonantSpot spot in Resonants)
+            foreach (DoorSpec door in Doors)
             {
-                if (spot.Note == 0) continue;
+                if (!world.OpenDoors.Contains(door.Name)) problems.Add($"{door.Name}: os cristais dela nao se alcancam todos.");
+                if (!Gates.Exists(gate => gate.Name == door.Gate)) problems.Add($"{door.Name} abre '{door.Gate}', que nao existe.");
 
-                if (!locked.CanStand(spot.StandX, spot.Y))
+                foreach (int note in door.Sequence)
                 {
-                    problems.Add($"{spot.Name}: com a porta fechada nao da pra chegar em ({spot.StandX}, {spot.Y}) pra toca-lo.");
-                    canPlay = false;
+                    if (!Resonants.Exists(spot => spot.Door == door.Name && spot.Note == note))
+                    {
+                        problems.Add($"{door.Name} pede a nota {note}, e nenhum cristal dela a toca.");
+                    }
                 }
             }
 
-            foreach (int note in DoorSequence)
-            {
-                if (!Resonants.Exists(spot => spot.Note == note)) problems.Add($"A porta pede a nota {note}, e nenhum cristal a toca.");
-            }
+            if (!world.BossDown) problems.Add("Nao da pra chegar na broca.");
 
-            if (locked.CanStand(146, 56)) problems.Add("Da pra passar pela Porta Harmonica sem abri-la.");
-            if (!canPlay) return problems;
-
-            // 2. Porta aberta, barreiras fechadas, em cada estagio do desabamento.
-            var stages = new List<LevelMap.Reach>();
-
-            for (int gone = 0; gone <= Slabs.Count; gone++)
-            {
-                LevelMap world = Collapsed(gone);
-                CloseBarriers(world);
-                stages.Add(world.Explore(SpawnTile, rules));
-            }
+            Play(out LevelMap.Reach withoutBoss, false);
 
             foreach ((string name, int x, int y, int height) in Barriers)
             {
-                // O que cada barreira guarda fica logo a oeste dela.
-                foreach (LevelMap.Reach stage in stages)
-                {
-                    if (stage.CanStand(x - 2, y)) problems.Add($"Da pra passar pela {name} sem quebra-la.");
-                }
+                if (withoutBoss.CanStand(x - 2, y)) problems.Add($"Da pra passar pela {name} sem quebra-la.");
             }
 
-            // Cada pilar tem que estar ao alcance na camada dele.
-            foreach (ResonantSpot spot in Resonants)
-            {
-                if (spot.Note != 0) continue;
+            CheckElevator(world, withoutBoss, problems);
 
-                int stage = 0;
-                for (int i = 0; i < BossFloors.Length; i++)
-                {
-                    if (BossFloors[i] == spot.Y && spot.X >= 34 && spot.X <= 76) stage = i;
-                }
+            CheckArena(problems);
 
-                if (!stages[stage].CanStand(spot.StandX, spot.Y)) problems.Add($"{spot.Name}: nao da pra chegar em ({spot.StandX}, {spot.Y}).");
-            }
-
-            // 3. Chao todo desabado: do fundo tem que dar pra subir de volta.
-            LevelMap bottom = Collapsed(Slabs.Count);
-            CloseBarriers(bottom);
-
-            int deepest = BossFloors[BossFloors.Length - 1];
-            LevelMap.Reach climb = bottom.Explore((BossTile.X, deepest), rules);
-
-            if (!climb.CanStand(78, 56)) problems.Add("Do fundo da arena nao da pra subir de volta ao corredor de entrada.");
-
-            // 4. Tudo aberto: o resto do mapa.
-            LevelMap.Reach before = Map.Explore(SpawnTile, rules);
-            LevelMap.Reach reach = Collapsed(Slabs.Count).Explore(SpawnTile, rules);
+            // O caminho: sem a porta do Campanario, a broca fica fora de alcance.
+            WorldState withoutBelfry = Play(out _, true, name => name != MainDoor);
+            if (withoutBelfry.BossDown) problems.Add("Da pra chegar na broca sem o quebra-cabeca do Campanario.");
+            CheckQuietSpots(problems);
+            CheckEveryRoomPays(problems);
+            CheckNoTraps(problems);
 
             foreach (Marker marker in Markers)
             {
                 if (!marker.MustReach) continue;
+                if (marker.Group == "13_DrillChamber") continue;
 
-                bool reached = before.CanStand(marker.X, marker.Y) || reach.CanStand(marker.X, marker.Y);
-                for (int i = 0; i < stages.Count && !reached; i++) reached = stages[i].CanStand(marker.X, marker.Y);
+                bool reached = reach.CanStand(marker.X, marker.Y) || withoutBoss.CanStand(marker.X, marker.Y);
 
                 if (!Map.IsStandable(marker.X, marker.Y)) problems.Add($"{marker.Group}/{marker.Name} ({marker.X}, {marker.Y}) nao e um lugar onde da pra ficar em pe.");
                 else if (!reached) problems.Add($"{marker.Group}/{marker.Name} ({marker.X}, {marker.Y}) esta fora de alcance.");
@@ -1014,30 +1355,23 @@ namespace EchoesOfCravejada.EditorTools
 
             foreach (LoreSpot spot in Purified)
             {
-                if (!before.CanStand(spot.X, spot.Y)) problems.Add($"{spot.Name} ({spot.X}, {spot.Y}) esta fora de alcance.");
+                if (!reach.CanStand(spot.X, spot.Y)) problems.Add($"{spot.Name} ({spot.X}, {spot.Y}) esta fora de alcance.");
             }
 
-            if (!reach.CanStand(CrisolTile.X, CrisolTile.Y)) problems.Add("Nao da pra chegar em Crisol.");
+            if (!withoutBoss.CanStand(CrisolTile.X, CrisolTile.Y)) problems.Add("Nao da pra chegar em Crisol.");
 
             foreach (FoeSpot foe in Foes)
             {
-                int from = foe.Kind == FoeKind.ShardSentinel ? foe.X0 : foe.X0;
                 int to = foe.Kind == FoeKind.ShardSentinel ? foe.X0 : foe.X1;
 
-                for (int x = from; x <= to; x++)
+                for (int x = foe.X0; x <= to; x++)
                 {
-                    if (!Map.IsStandable(x, foe.Y) && !Map.IsSolid(x, foe.Y))
-                    {
-                        // Passarela e degrau no meio do trecho nao atrapalham
-                        // quem anda no chao; buraco, sim.
-                        if (!Map.IsSolid(x, foe.Y - 1)) problems.Add($"{foe.Name} anda por ({x}, {foe.Y}), que nao tem chao.");
-                    }
+                    if (!Map.IsSolid(x, foe.Y - 1)) problems.Add($"{foe.Name} anda por ({x}, {foe.Y}), que nao tem chao.");
                 }
             }
 
             foreach ((int x0, int x1, int y) in Fragiles)
             {
-                // Uma ponte fragil precisa de ar em cima, senao ninguem pisa nela.
                 for (int x = x0; x <= x1; x++)
                 {
                     if (Map.IsSolid(x, y + 1)) problems.Add($"A plataforma fragil em ({x}, {y}) tem terreno em cima.");
@@ -1047,15 +1381,171 @@ namespace EchoesOfCravejada.EditorTools
             return problems;
         }
 
-        /// <summary>Os trechos de chao onde nao da pra chegar nem com tudo aberto e a arena desabada.</summary>
+        /// <summary>
+        /// O fio da fase: a cabine se alcanca desde a chegada; os escombros
+        /// fecham o poco inteiro (nao se passa por eles, nem por cima); o
+        /// Scrap, de pe na cabine ou ao lado dela, fica ao alcance da onda; e
+        /// do fundo da arena, com a broca no chao, da pra voltar ate a cabine.
+        /// </summary>
+        private static void CheckElevator(WorldState world, LevelMap.Reach withoutBoss, List<string> problems)
+        {
+            (int carX, int carY, int carWidth) = ElevatorCar;
+            (int rx, int ry, int rw, int rh) = ElevatorRubble;
+
+            if (!withoutBoss.CanStand(carX + 1, carY)) problems.Add("Nao da pra entrar na cabine do elevador.");
+
+            // Os escombros cobrem a largura toda do poco, de parede a parede.
+            for (int x = carX; x < carX + carWidth; x++)
+            {
+                if (x < rx || x > rx + rw - 1) problems.Add($"Os escombros nao tampam a coluna {x} do poco.");
+            }
+
+            for (int y = ry + rh; y <= ElevatorTopY + 4; y++)
+            {
+                for (int x = carX; x < carX + carWidth; x++)
+                {
+                    if (withoutBoss.CanStand(x, y)) problems.Add($"Da pra entrar no poco do elevador ({x}, {y}) sem tirar os escombros.");
+                }
+            }
+
+            // A onda do Resonance Strike alcanca uns 3,5 tiles a partir do peito do Scrap.
+            const float radius = 3.5f;
+            float chestY = carY + 0.75f;
+            float nearestX = Math.Max(rx, Math.Min(carX + 1.5f, rx + rw));
+            float distance = (float)Math.Sqrt(Math.Pow(nearestX - (carX + 1.5f), 2) + Math.Pow(ry - chestY, 2));
+            if (distance > radius - 0.5f) problems.Add($"De dentro da cabine, a onda nao chega nos escombros ({distance:0.0} tiles).");
+
+            // Depois da luta: do fundo da arena desabada ate a cabine.
+            LevelMap.Reach afterFight = world.Map.Explore((BossTile.X, BossFloors[BossFloors.Length - 1]), Rules());
+            if (!afterFight.CanStand(carX + 1, carY)) problems.Add("Do fundo da arena, depois da broca, nao da pra voltar ate o elevador.");
+        }
+
+        /// <summary>
+        /// A arena: com o chao inteiro, cada pilar se alcanca na camada dele;
+        /// e, com tudo desabado, do fundo se sobe de volta ao corredor.
+        /// </summary>
+        private static void CheckArena(List<string> problems)
+        {
+            LevelMap.JumpRules rules = Rules();
+
+            for (int gone = 0; gone < BossFloors.Length; gone++)
+            {
+                LevelMap world = Collapsed(Map, gone);
+                foreach (GateSpec gate in Gates) Fill(world, gate, LevelMap.Air);
+                CloseBarriers(world);
+
+                LevelMap.Reach stage = world.Explore((BossTile.X, BossFloors[gone]), rules);
+
+                foreach (ResonantSpot spot in Resonants)
+                {
+                    if (spot.Note != 0 || spot.Y != BossFloors[gone] || spot.X < BossRange.X0 || spot.X > BossRange.X1) continue;
+                    if (!stage.CanStand(spot.StandX, spot.Y)) problems.Add($"{spot.Name}: nao da pra chegar em ({spot.StandX}, {spot.Y}) na camada dele.");
+                }
+            }
+
+            LevelMap bottom = Collapsed(Map, Slabs.Count);
+            CloseBarriers(bottom);
+            LevelMap.Reach climb = bottom.Explore((BossTile.X, BossFloors[BossFloors.Length - 1]), rules);
+            if (!climb.CanStand(78, 92)) problems.Add("Do fundo da arena nao da pra subir de volta ao corredor de entrada.");
+        }
+
+        /// <summary>
+        /// Os lugares onde se para pra ler, sentar na bancada, falar com Crisol
+        /// ou pegar recompensa nao ficam no ninho de ninguem: longe da casa de
+        /// cacadores, do trecho dos mites e do pedestal das sentinelas.
+        /// </summary>
+        private static void CheckQuietSpots(List<string> problems)
+        {
+            var spots = new List<(string, int, int)>();
+            foreach (LoreSpot spot in Lore) spots.Add((spot.Name, spot.X, spot.Y));
+            foreach (RewardSpot spot in Rewards) spots.Add((spot.Id, spot.X, spot.Y));
+            foreach ((string name, int x, int y) in Workbenches) spots.Add((name, x + 1, y));
+            spots.Add(("Crisol", CrisolTile.X, CrisolTile.Y));
+
+            foreach ((string name, int x, int y) in spots)
+            {
+                foreach (FoeSpot foe in Foes)
+                {
+                    if (foe.Y != y) continue;
+
+                    bool near;
+                    switch (foe.Kind)
+                    {
+                        case FoeKind.EchoHunter: near = Math.Abs(x - foe.HomeX) <= 3; break;
+                        case FoeKind.ShardSentinel: near = Math.Abs(x - foe.X0) <= 2; break;
+                        default: near = x >= foe.X0 - 2 && x <= foe.X1 + 2; break;
+                    }
+
+                    if (near) problems.Add($"{name} ({x}, {y}) fica no ninho de {foe.Name}.");
+                }
+            }
+        }
+
+        private static readonly string[] PassageRooms = { "02_DarkTunnel", "04_FragileShaft", "13_DrillChamber" };
+
+        private static void CheckEveryRoomPays(List<string> problems)
+        {
+            foreach ((string name, int x0, int y0, int x1, int y1) in Rooms)
+            {
+                if (Array.IndexOf(PassageRooms, name) >= 0) continue;
+
+                bool Inside(int x, int y) => x >= x0 && x <= x1 && y >= y0 && y <= y1;
+
+                bool pays = Lore.Exists(spot => Inside(spot.X, spot.Y))
+                    || Rewards.Exists(spot => Inside(spot.X, spot.Y))
+                    || Inside(CrisolTile.X, CrisolTile.Y)
+                    || Inside(EliteTile.X, EliteTile.Y)
+                    || Doors.Exists(door => Inside(door.Preview.X, door.Preview.Y));
+
+                if (!pays) problems.Add($"A sala {name} nao tem nada pra achar.");
+            }
+        }
+
+        /// <summary>
+        /// Nenhuma armadilha: depois de chegar na gruta, de todo chao alcancavel
+        /// da pra voltar pra ela. A arena fica de fora (tranca na luta).
+        /// </summary>
+        private static void CheckNoTraps(List<string> problems)
+        {
+            LevelMap.JumpRules rules = Rules();
+            var reported = new HashSet<string>();
+
+            Play(out _, true, null, (world, reach) =>
+            {
+                if (!reach.CanStand(CrisolTile.X, CrisolTile.Y)) return;
+
+                foreach (LevelMap.Perch perch in world.Map.FindPerches())
+                {
+                    int x = -1;
+                    for (int cx = perch.X; cx <= perch.Right; cx++)
+                    {
+                        if (reach.CanStand(cx, perch.Y)) { x = cx; break; }
+                    }
+
+                    if (x < 0) continue;
+
+                    string room = RoomAt(x, perch.Y) ?? "fora das salas";
+                    if (room == "13_DrillChamber") continue;
+
+                    string key = $"{room}:{perch}";
+                    if (reported.Contains(key)) continue;
+
+                    LevelMap.Reach back = world.Map.Explore((x, perch.Y), rules);
+                    if (back.CanStand(CrisolTile.X, CrisolTile.Y)) continue;
+
+                    reported.Add(key);
+                    problems.Add($"Armadilha em {room}, {perch}: dali nao da pra voltar pra gruta.");
+                }
+            });
+        }
+
+        /// <summary>Os trechos de chao onde nao da pra chegar nem com tudo aberto.</summary>
         public static List<string> UnreachableFloors()
         {
-            LevelMap world = Collapsed(Slabs.Count);
-
-            LevelMap.Reach reach = world.Explore(SpawnTile, Rules());
+            WorldState world = Play(out LevelMap.Reach reach);
             var floors = new List<string>();
 
-            foreach (LevelMap.Perch perch in world.FindPerches())
+            foreach (LevelMap.Perch perch in world.Map.FindPerches())
             {
                 if (perch.Length < 2) continue;
 

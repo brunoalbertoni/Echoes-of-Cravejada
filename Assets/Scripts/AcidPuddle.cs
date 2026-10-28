@@ -13,10 +13,16 @@ namespace EchoesOfCravejada
         private float _total;
         private SpriteRenderer _sprite;
 
+        /// <summary>
+        /// Derrama uma poca centrada em ground. O sprite da superficie tem o
+        /// pivo no canto de baixo, a esquerda: por isso o objeto vai meia
+        /// largura pra esquerda, e o gatilho acompanha o desenho — machuca so
+        /// onde se ve acido.
+        /// </summary>
         public static void Spill(Vector3 ground, float width, float time, Sprite sprite)
         {
             var puddle = new GameObject("AcidPuddle");
-            puddle.transform.position = ground;
+            puddle.transform.position = ground - new Vector3(width * 0.5f, 0f, 0f);
 
             var renderer = puddle.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
@@ -27,8 +33,8 @@ namespace EchoesOfCravejada
 
             var trigger = puddle.AddComponent<BoxCollider2D>();
             trigger.isTrigger = true;
-            trigger.size = new Vector2(width - 0.3f, 0.5f);
-            trigger.offset = new Vector2(0f, 0.25f);
+            trigger.size = new Vector2(width - 0.4f, 0.35f);
+            trigger.offset = new Vector2(width * 0.5f, 0.18f);
 
             var body = puddle.AddComponent<Rigidbody2D>();
             body.bodyType = RigidbodyType2D.Kinematic;

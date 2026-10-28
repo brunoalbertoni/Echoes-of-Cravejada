@@ -226,10 +226,10 @@ namespace EchoesOfCravejada.EditorTools
             public int X;
             public int Y;
 
-            /// <summary>Qual esqueleto: 0 de lenco, 1 de capuz.</summary>
+            /// <summary>Qual corpo de lata (ver DiscardedArt): 0 Refugo, 1 Rebite, 2 Ferrolho, 3 Pequena.</summary>
             public int Variant;
 
-            /// <summary>O tamanho do esqueleto. A Pequena e menor que os outros.</summary>
+            /// <summary>A escala do desenho. O da Pequena ja e pequeno.</summary>
             public float Scale = 1f;
 
             public NpcRole Role = NpcRole.Plain;
@@ -271,8 +271,8 @@ namespace EchoesOfCravejada.EditorTools
         }
 
         /// <summary>
-        /// Os primeiros personagens do jogo: esqueletos de autômatos
-        /// descartados antes do Scrap.
+        /// Os primeiros personagens do jogo: autômatos velhos, de lataria
+        /// amassada, descartados no poco antes do Scrap.
         /// </summary>
         public static readonly NpcSpot[] Npcs =
         {
@@ -360,7 +360,7 @@ namespace EchoesOfCravejada.EditorTools
             // Scrap, e o motor e o Steam Dash.
             new NpcSpot
             {
-                Name = "Ferrolho", X = 12, Y = 50, Variant = 0, Role = NpcRole.MotorFitter,
+                Name = "Ferrolho", X = 12, Y = 50, Variant = 2, Role = NpcRole.MotorFitter,
                 Lines = new[]
                 {
                     "Psiu. Devagar. Daqui para a frente o chão é de espinhos, e lá embaixo mora o Coletor.",
@@ -395,7 +395,7 @@ namespace EchoesOfCravejada.EditorTools
             // pista da pinca que esta la dentro.
             new NpcSpot
             {
-                Name = "Pequena", X = 37, Y = 6, Variant = 1, Scale = 0.8f, AfterBoss = true,
+                Name = "Pequena", X = 37, Y = 6, Variant = 3, AfterBoss = true,
                 Lines = new[]
                 {
                     "Não precisa ter medo de mim. Sou só a Pequena. Fui eu que escrevi o nome no muro, lá embaixo.",
@@ -537,6 +537,54 @@ namespace EchoesOfCravejada.EditorTools
                 "Ninguém jamais desceu para mandá-lo parar.",
                 "Preso entre as chapas há algo que não é dele: um aro de prata pequeno, bem polido. Você o guarda.",
             }),
+        };
+
+        // ------------------------------------------------------------------
+        // As placas de tutorial
+        // ------------------------------------------------------------------
+
+        /// <summary>O movimento que a placa ensina. O numero e tambem o desenho dela.</summary>
+        public enum TutorialKind
+        {
+            WallJump = 0,
+            Pogo = 1,
+        }
+
+        /// <summary>
+        /// Uma placa de tutorial: ficar na area dela abre o painel com a mini
+        /// cena do movimento. X e Y sao a celula onde ela esta fincada; a area
+        /// vai de AreaX0 a AreaX1 (inclusive), da linha Y ate duas acima.
+        /// </summary>
+        public readonly struct TutorialSpot
+        {
+            public readonly TutorialKind Kind;
+            public readonly string Name;
+            public readonly int X;
+            public readonly int Y;
+            public readonly int AreaX0;
+            public readonly int AreaX1;
+
+            public TutorialSpot(TutorialKind kind, string name, int x, int y, int areaX0, int areaX1)
+            {
+                Kind = kind;
+                Name = name;
+                X = x;
+                Y = y;
+                AreaX0 = areaX0;
+                AreaX1 = areaX1;
+            }
+        }
+
+        public static readonly TutorialSpot[] Tutorials =
+        {
+            // No patamar do topo do poco, embaixo da chamine: o primeiro trecho
+            // em que so se sobe de parede em parede. A area e o patamar todo;
+            // ao entrar na chamine, o painel recolhe.
+            new TutorialSpot(TutorialKind.WallJump, "Tutorial_WallJump", 39, 22, 33, 39),
+
+            // Na Pista de Provas, que abre com a purificacao: a beirada logo
+            // antes dos espinhos rentes ao chao, que so se cruzam quicando.
+            new TutorialSpot(TutorialKind.Pogo, "Tutorial_Pogo", 47, 6, 43, 47),
         };
 
         // ------------------------------------------------------------------
@@ -925,10 +973,8 @@ namespace EchoesOfCravejada.EditorTools
             }
         }
 
-        // objects_misc.png: linha 0 sao caixotes (0-3) e restos de caixote (4-5),
-        // linha 2 sao pedacos de cerca (0-2).
-        private static string Crate(int variant) => $"misc_c{variant}_r0";
-        private static string Debris(int variant) => $"misc_c{4 + variant}_r0";
+        // objects_misc.png: linha 2 sao pedacos de cerca (0-2). Os caixotes da
+        // linha 0 sairam: no meio da sucata eles destoavam.
         private static string Fence(int variant) => $"misc_c{variant}_r2";
 
         // bg_objects.png: linha 0 pedras escuras, 1 pedras cinza, 2 mato seco
@@ -937,6 +983,41 @@ namespace EchoesOfCravejada.EditorTools
         private static string GreyRock(int variant) => $"bgobj_c{variant}_r1";
         private static string DarkWeed(int variant) => $"bgobj_c{variant}_r2";
         private static string GreyWeed(int variant) => $"bgobj_c{variant}_r3";
+
+        /// <summary>
+        /// Os geodos: o losango grande de minerio, 2x2 tiles, com o canto de
+        /// baixo a esquerda em (X, Y). So moram dentro da rocha, com pelo menos
+        /// um tile de rocha em volta (o Validate cobra): na beirada ou no ar
+        /// eles parecem pedras soltas.
+        /// </summary>
+        public static readonly (int Band, int X, int Y)[] Geodes =
+        {
+            // O teto dos andares de cima.
+            (BlueBand, 20, 57),
+            (BlueBand, 58, 57),
+            (RustBand, 60, 44),
+            (GreyBand, 70, 46),
+            (RustBand, 11, 47),
+
+            // As paredes e o chao do poco.
+            (BlueBand, 41, 17),
+            (BlueBand, 7, 27),
+            (BlueBand, 30, 31),
+            (GreyBand, 1, 15),
+            (RustBand, 20, 1),
+            (RustBand, 1, 31),
+            (BlueBand, 9, 1),
+
+            // O macico de rocha em volta da arena, da Pista e do abismo.
+            (BlueBand, 43, 29),
+            (GreyBand, 55, 16),
+            (RustBand, 66, 3),
+            (RustBand, 76, 8),
+            (BlueBand, 81, 28),
+            (RustBand, 90, 12),
+            (BlueBand, 104, 30),
+            (GreyBand, 104, 18),
+        };
 
         public static readonly Prop[] Props = BuildProps();
 
@@ -949,33 +1030,10 @@ namespace EchoesOfCravejada.EditorTools
                 props.Add(new Prop(tile, x, y, layer, true));
             }
 
-            void Stacked(string tile, int x, int y)
-            {
-                props.Add(new Prop(tile, x, y, PropLayer.Middle, false));
-            }
-
-            // O losango grande de minerio ocupa 2x2 tiles: colunas 1-2, linhas
-            // 2-3 da banda de cor. A linha 2 e a metade de cima.
-            void Ore(int band, int x, int y, PropLayer layer)
-            {
-                props.Add(new Prop(TileName(1, band + 2), x, y + 1, layer, false));
-                props.Add(new Prop(TileName(2, band + 2), x + 1, y + 1, layer, false));
-                props.Add(new Prop(TileName(1, band + 3), x, y, layer, false));
-                props.Add(new Prop(TileName(2, band + 3), x + 1, y, layer, false));
-            }
-
             // --- O monte de sucata onde o Scrap acorda ---
             Ground(GreyRock(4), 16, 5);
-            Ground(Debris(1), 17, 5);
             Ground(GreyRock(2), 18, 6);
-            Ground(Crate(0), 19, 6);
-            Stacked(Crate(3), 19, 7);
-            Ground(Crate(2), 20, 6);
-            Ground(Debris(0), 23, 6);
-            Ground(Crate(1), 24, 6);
-            Stacked(Debris(0), 24, 7);
             Ground(GreyRock(1), 25, 6);
-            Ground(Crate(3), 26, 5);
             Ground(GreyRock(3), 27, 5);
 
             // --- Chao, lado oeste ---
@@ -983,17 +1041,12 @@ namespace EchoesOfCravejada.EditorTools
             Ground(Fence(1), 7, 5);
             Ground(GreyRock(0), 11, 4);
             Ground(GreyRock(2), 12, 4);
-            Ground(Debris(1), 13, 4);
-            Ore(GreyBand, 14, 4, PropLayer.Back);
             Ground(GreyWeed(0), 9, 4, PropLayer.Back);
             Ground(DarkWeed(1), 5, 5, PropLayer.Front);
             Ground(DarkRock(1), 10, 4, PropLayer.Front);
             Ground(DarkWeed(2), 15, 4, PropLayer.Front);
 
             // --- Chao, lado leste ---
-            Ground(Crate(0), 29, 4);
-            Ground(Debris(0), 30, 4);
-            Ore(RustBand, 31, 4, PropLayer.Back);
             Ground(Fence(2), 33, 4);
             Ground(GreyRock(1), 34, 4);
             Ground(DarkRock(2), 28, 4, PropLayer.Front);
@@ -1001,7 +1054,6 @@ namespace EchoesOfCravejada.EditorTools
 
             // --- Degrau da parede leste ---
             Ground(GreyWeed(3), 36, 6, PropLayer.Back);
-            Ground(Crate(2), 38, 6);
             Ground(GreyRock(4), 39, 6);
 
             // --- Saliencia da parede oeste, na boca do tunel ---
@@ -1013,115 +1065,61 @@ namespace EchoesOfCravejada.EditorTools
             Ground(Fence(0), 33, 22);
             Ground(Fence(1), 34, 22);
             Ground(GreyWeed(1), 35, 22, PropLayer.Back);
-            Ore(BlueBand, 36, 22, PropLayer.Back);
             Ground(DarkWeed(4), 38, 22, PropLayer.Front);
 
             // --- Andar 1 ---
             Ground(GreyRock(2), 31, 40);
-            Ground(Debris(1), 30, 40);
             Ground(DarkWeed(1), 23, 40, PropLayer.Front);
-            Ground(Crate(0), 15, 40);
-            Ground(Debris(0), 14, 40);
-            Ground(Crate(1), 9, 40);
-            Ore(GreyBand, 21, 40, PropLayer.Back);
-            Ore(RustBand, 29, 43, PropLayer.Back);
 
             // --- Andar 2 ---
             Ground(GreyRock(1), 10, 50);
-            Ground(Crate(3), 11, 50);
-            Ground(Debris(0), 27, 50);
             Ground(GreyRock(3), 34, 52);
             Ground(Fence(0), 46, 50);
             Ground(Fence(1), 47, 50);
             Ground(DarkRock(1), 38, 50, PropLayer.Front);
-            Ore(BlueBand, 29, 50, PropLayer.Back);
-            Ore(GreyBand, 42, 50, PropLayer.Back);
-            Ore(BlueBand, 20, 57, PropLayer.Middle);
-            Ore(RustBand, 60, 44, PropLayer.Middle);
-            Ore(GreyBand, 70, 46, PropLayer.Middle);
-            Ore(BlueBand, 58, 57, PropLayer.Middle);
-            Ore(RustBand, 12, 47, PropLayer.Middle);
 
             // --- A Triagem: as pecas que o Coletor separou e nunca subiram ---
-            Ground(Crate(2), 53, 50);
             Ground(GreyRock(3), 57, 50);
-            Ground(Debris(1), 58, 50);
-            Ore(RustBand, 65, 50, PropLayer.Back);
-            Ground(Crate(0), 78, 50);
-            Stacked(Debris(0), 78, 51);
-            Ground(Crate(3), 89, 50);
             Ground(DarkWeed(2), 67, 50, PropLayer.Front);
-            Ore(GreyBand, 86, 52, PropLayer.Back);
 
             // --- A Antessala ---
             Ground(Fence(0), 61, 37);
             Ground(Fence(1), 62, 37);
             Ground(GreyRock(1), 64, 37);
-            Ground(Debris(0), 71, 37);
-            Ground(Crate(1), 92, 37);
             Ground(GreyWeed(2), 76, 37, PropLayer.Back);
             Ground(DarkRock(2), 88, 37, PropLayer.Front);
-            Ore(BlueBand, 80, 39, PropLayer.Back);
 
             // --- O abismo ---
             Ground(GreyRock(3), 82, 22);
-            Ground(Debris(1), 85, 22);
             Ground(Fence(0), 95, 22);
             Ground(Fence(1), 96, 22);
             Ground(DarkWeed(2), 94, 22, PropLayer.Front);
-            Ore(BlueBand, 104, 30, PropLayer.Middle);
-            Ore(RustBand, 90, 12, PropLayer.Middle);
-            Ore(GreyBand, 104, 18, PropLayer.Middle);
 
             // --- Arena: o degrau da saida. Os patamares de cada lado do fosso
             //     sairam: de cima deles dava pra bater no Coletor sem ele alcancar ---
             Ground(Fence(1), 79, 22);
             Ground(Fence(2), 80, 22);
-            Ground(DarkWeed(3), 77, 20, PropLayer.Front);
 
-            // --- Arena: o fosso. A sucata fica amontoada nos cantos, encostada
-            //     nos patamares; o meio fica livre pra luta ---
-            Ground(Crate(1), 52, 20);
-            Stacked(Crate(0), 52, 21);
-            // (53 a 55 ficam livres: e de la que sobe o vapor da volta.)
-            Ground(Debris(1), 71, 20);
-            Ground(Crate(3), 72, 20);
-            Stacked(Debris(1), 72, 21);
-            Ground(GreyRock(0), 73, 20);
+            // --- Arena: o fosso. So mato baixo, atras, longe das beiradas das
+            //     plataformas; nada na frente do Scrap nem colado embaixo delas,
+            //     pra luta ficar legivel ---
             Ground(GreyWeed(1), 56, 20, PropLayer.Back);
-            Ore(RustBand, 57, 20, PropLayer.Back);
-            Ore(GreyBand, 67, 20, PropLayer.Back);
             Ground(GreyWeed(3), 69, 20, PropLayer.Back);
-            Ground(DarkWeed(1), 59, 20, PropLayer.Front);
-            Ground(DarkWeed(4), 65, 20, PropLayer.Front);
-            Ground(DarkRock(3), 66, 20, PropLayer.Front);
 
             // --- Mato nas plataformas, so pra elas nao ficarem peladas ---
             Ground(GreyWeed(4), 30, 8, PropLayer.Back);
             Ground(GreyWeed(4), 13, 12, PropLayer.Back);
             Ground(GreyWeed(2), 22, 18, PropLayer.Back);
 
-            // --- Cristais apagados e veios, incrustados na rocha ---
-            Ore(BlueBand, 41, 17, PropLayer.Middle);
-            Ore(BlueBand, 7, 27, PropLayer.Middle);
-            Ore(BlueBand, 30, 31, PropLayer.Middle);
-            Ore(GreyBand, 1, 15, PropLayer.Middle);
-            Ore(GreyBand, 41, 6, PropLayer.Middle);
-            Ore(RustBand, 20, 1, PropLayer.Middle);
-            Ore(RustBand, 1, 31, PropLayer.Middle);
-            Ore(BlueBand, 9, 1, PropLayer.Middle);
-
-            // --- O mesmo, no macico de rocha embaixo e em volta da arena ---
-            Ore(BlueBand, 46, 12, PropLayer.Middle);
-            Ore(RustBand, 50, 5, PropLayer.Middle);
-            Ore(GreyBand, 55, 15, PropLayer.Middle);
-            Ore(BlueBand, 61, 9, PropLayer.Middle);
-            Ore(RustBand, 66, 3, PropLayer.Middle);
-            Ore(GreyBand, 70, 13, PropLayer.Middle);
-            Ore(RustBand, 76, 8, PropLayer.Middle);
-            Ore(BlueBand, 81, 28, PropLayer.Middle);
-            Ore(GreyBand, 81, 14, PropLayer.Middle);
-            Ore(BlueBand, 43, 29, PropLayer.Middle);
+            // --- Os geodos, incrustados na rocha. O losango ocupa 2x2 tiles:
+            //     colunas 1-2, linhas 2-3 da banda de cor (a 2 e a metade de cima) ---
+            foreach ((int band, int x, int y) in Geodes)
+            {
+                props.Add(new Prop(TileName(1, band + 2), x, y + 1, PropLayer.Middle, false));
+                props.Add(new Prop(TileName(2, band + 2), x + 1, y + 1, PropLayer.Middle, false));
+                props.Add(new Prop(TileName(1, band + 3), x, y, PropLayer.Middle, false));
+                props.Add(new Prop(TileName(2, band + 3), x + 1, y, PropLayer.Middle, false));
+            }
 
             return props.ToArray();
         }
@@ -1250,7 +1248,8 @@ namespace EchoesOfCravejada.EditorTools
 
             // Arena: mais densa que a do poco, e empocada no fosso.
             new FogBank("Fog_Arena_Pit_Back", 63f, 22f, 30f, 3f, 0.20f, 2.7f, false),
-            new FogBank("Fog_Arena_Pit_Front", 63f, 20.5f, 22f, 1.5f, 0.12f, 1.4f, true),
+            // A da frente fica no meio do fosso, sem chegar nos degraus dos lados.
+            new FogBank("Fog_Arena_Pit_Front", 63f, 20.5f, 18f, 1.5f, 0.12f, 1.4f, true),
 
             // Os andares de cima: um veu baixo, so pra o chao nao ficar limpo.
             new FogBank("Fog_Floor1", 22f, 41f, 30f, 2f, 0.12f, 1.6f, false),
@@ -1272,6 +1271,9 @@ namespace EchoesOfCravejada.EditorTools
         {
             ("MetalDust_Pit", 22f, 44f, 29f, 25f, 14f),
             ("MetalDust_Arena", 63f, 30f, 33f, 13f, 10f),
+
+            // Um fio de poeira caindo da boca da Calha N.º 1 em cima do monte onde o Scrap acorda.
+            ("MetalDust_Chute", 21.5f, 1.6f, 25.4f, 19f, 6f),
         };
 
         // ------------------------------------------------------------------
@@ -1402,6 +1404,28 @@ namespace EchoesOfCravejada.EditorTools
             foreach (LoreSpot lore in Lore)
             {
                 MustReach((lore.X, lore.Y), $"O texto {lore.Name}");
+            }
+
+            foreach (TutorialSpot sign in Tutorials)
+            {
+                MustReach((sign.X, sign.Y), $"A placa {sign.Name}");
+            }
+
+            // A placa do pulo de parede tem que estar embaixo da chamine que ela ensina.
+            foreach (TutorialSpot sign in Tutorials)
+            {
+                if (sign.Kind != TutorialKind.WallJump) continue;
+                if (sign.AreaX1 < Chimney.X || sign.AreaX0 > Chimney.X + Chimney.Width - 1)
+                {
+                    problems.Add($"A area de {sign.Name} nao fica embaixo da chamine.");
+                }
+            }
+
+            // E a do golpe pra baixo, na beirada dos espinhos da Pista.
+            foreach (TutorialSpot sign in Tutorials)
+            {
+                if (sign.Kind != TutorialKind.Pogo) continue;
+                if (!IsSpike(sign.X + 1, sign.Y - 1)) problems.Add($"A placa {sign.Name} nao fica na beirada dos espinhos.");
             }
 
             // Tudo o que se le ou com quem se conversa: o HUD so mostra um
@@ -1630,6 +1654,24 @@ namespace EchoesOfCravejada.EditorTools
                     {
                         problems.Add($"As janelas em ({window.X}, {window.Y}) e ({other.X}, {other.Y}) se sobrepoem.");
                     }
+                }
+            }
+
+            // Os geodos so dentro da rocha, com um tile de folga em volta.
+            foreach (var (_, gx, gy) in Geodes)
+            {
+                bool buried = true;
+                for (int y = gy - 1; y <= gy + 2 && buried; y++)
+                {
+                    for (int x = gx - 1; x <= gx + 2 && buried; x++)
+                    {
+                        buried = IsRock(x, y);
+                    }
+                }
+
+                if (!buried)
+                {
+                    problems.Add($"O geodo em ({gx}, {gy}) nao esta inteiro dentro da rocha: parece uma pedra solta.");
                 }
             }
 

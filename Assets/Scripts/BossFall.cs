@@ -22,8 +22,9 @@ namespace EchoesOfCravejada
         /// <param name="cloud">A nuvem de Oxide dele (um filho). Pode faltar.</param>
         /// <param name="home">Onde ele esta, no chao.</param>
         /// <param name="hold">Chamado todo quadro: e onde quem chama mantem o Scrap travado.</param>
+        /// <param name="progress">Chamado todo quadro com quanto da tremedeira ja passou (0 a 1): e onde quem tem animacao de queda troca o quadro.</param>
         public static IEnumerator Explode(Transform boss, SpriteRenderer sprite, ParticleSystem cloud,
-            Vector3 home, Action hold, float buildUp = 2.2f)
+            Vector3 home, Action hold, float buildUp = 2.2f, Action<float> progress = null)
         {
             float nextPuff = 0f;
             int puff = 0;
@@ -33,6 +34,7 @@ namespace EchoesOfCravejada
                 hold?.Invoke();
 
                 float k = t / buildUp;
+                progress?.Invoke(k);
                 float jitter = Mathf.Lerp(0.04f, 0.16f, k);
                 boss.position = home + new Vector3(UnityEngine.Random.Range(-jitter, jitter),
                     UnityEngine.Random.Range(0f, jitter * 0.5f), 0f);

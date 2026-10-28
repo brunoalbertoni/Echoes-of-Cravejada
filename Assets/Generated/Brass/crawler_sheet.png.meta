@@ -1,0 +1,649 @@
+fileFormatVersion: 2
+guid: 5c85748be5f3d124e917ecf1d635e2a4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2082868649429166980
+    second: crawler_sheet_0
+  - first:
+      213: 7517248926391574628
+    second: crawler_sheet_1
+  - first:
+      213: -5098101328679351749
+    second: crawler_sheet_2
+  - first:
+      213: 3375005709304889706
+    second: crawler_sheet_3
+  - first:
+      213: -6840694324315117212
+    second: crawler_sheet_4
+  - first:
+      213: -3608459466683566654
+    second: crawler_sheet_5
+  - first:
+      213: 6752708748413733022
+    second: crawler_sheet_6
+  - first:
+      213: 4290998007389527944
+    second: crawler_sheet_7
+  - first:
+      213: -684380538582443926
+    second: crawler_sheet_8
+  - first:
+      213: -431886389832558427
+    second: crawler_sheet_9
+  - first:
+      213: -8613418787416919183
+    second: crawler_sheet_10
+  - first:
+      213: -2252877927274111801
+    second: crawler_sheet_11
+  - first:
+      213: -7974780731549473202
+    second: crawler_sheet_12
+  - first:
+      213: 769988620411820008
+    second: crawler_sheet_13
+  - first:
+      213: 3290218315092009896
+    second: crawler_sheet_14
+  - first:
+      213: -2717385262024356245
+    second: crawler_sheet_15
+  - first:
+      213: -3144803821052913516
+    second: crawler_sheet_16
+  - first:
+      213: -2563481675439156343
+    second: crawler_sheet_17
+  - first:
+      213: 2854149433134658228
+    second: crawler_sheet_18
+  - first:
+      213: -4396727063400264771
+    second: crawler_sheet_19
+  - first:
+      213: -9201148857034698722
+    second: crawler_sheet_20
+  - first:
+      213: 2702379676954494385
+    second: crawler_sheet_21
+  - first:
+      213: 1848867548534397575
+    second: crawler_sheet_22
+  - first:
+      213: 7798689947993852813
+    second: crawler_sheet_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: crawler_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 48
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 173b65aaf3df67880800000000000000
+      internalID: -8613418787416919183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 48
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cc128e167b2cb0e0800000000000000
+      internalID: -2252877927274111801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 48
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e462d564d23e35190800000000000000
+      internalID: -7974780731549473202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 48
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e75db8129c8faa00800000000000000
+      internalID: 769988620411820008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 48
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a32b80102439ad20800000000000000
+      internalID: 3290218315092009896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 48
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6e08236088e94ad0800000000000000
+      internalID: -2717385262024356245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49899dd26996b54d0800000000000000
+      internalID: -3144803821052913516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 0
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 983d9338ffeac6cd0800000000000000
+      internalID: -2563481675439156343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b2bfd999c9fb9720800000000000000
+      internalID: 2854149433134658228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbb4eabd700bbf2c0800000000000000
+      internalID: -4396727063400264771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 96
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5252c4d2f19277641b85bca0c8c1495d
+      internalID: 574061543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 96
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 134cbba6adf2e4144a3cd7e79ea3147f
+      internalID: 499148346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 96
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1015423d2643e6445a82918f2a7370fc
+      internalID: -1707531540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 96
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 364a94adf2b8c6e4f94d0171e17079f3
+      internalID: 105502389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 96
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9033b590b8eb55d4193464a4ea2df1a0
+      internalID: -632647771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 96
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bcafedf225bae4b4cb523daf23bf56f3
+      internalID: -1860822093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 96
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c3ffbae81cc05746b4face856f11a36
+      internalID: -1959680661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 96
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c45caf2dfb2c40047b41efeae97197a2
+      internalID: -244266770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 48
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9cc2e7223562773449b8242d7961c7e5
+      internalID: -796792475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: crawler_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 48
+        width: 72
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35416666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6d4dfec9bf91404cbb7fbfef862c2a4
+      internalID: -241342125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 15c94256bc1fb9e4fa2edf4716034485
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      crawler_sheet_00: 574061543
+      crawler_sheet_01: 499148346
+      crawler_sheet_02: -1707531540
+      crawler_sheet_03: 105502389
+      crawler_sheet_04: -632647771
+      crawler_sheet_05: -1860822093
+      crawler_sheet_06: -1959680661
+      crawler_sheet_07: -244266770
+      crawler_sheet_08: -796792475
+      crawler_sheet_09: -241342125
+      crawler_sheet_10: -8613418787416919183
+      crawler_sheet_11: -2252877927274111801
+      crawler_sheet_12: -7974780731549473202
+      crawler_sheet_13: 769988620411820008
+      crawler_sheet_14: 3290218315092009896
+      crawler_sheet_15: -2717385262024356245
+      crawler_sheet_16: -3144803821052913516
+      crawler_sheet_17: -2563481675439156343
+      crawler_sheet_18: 2854149433134658228
+      crawler_sheet_19: -4396727063400264771
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

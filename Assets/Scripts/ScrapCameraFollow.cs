@@ -28,10 +28,47 @@ namespace EchoesOfCravejada
 
         private Camera _camera;
         private Vector3 _velocity;
+        private float _baseSize;
+
+        // A camera dirigida: numa cena, quem dirige diz pra onde ela olha e o
+        // quanto aproxima (1 = o normal; menor fecha, maior abre). Estatico
+        // pra a cena nao precisar achar a camera.
+        private static bool _directed;
+        private static Vector2 _focus;
+        private static float _zoom = 1f;
+        private static float _directSmooth = 0.4f;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetDirection()
+        {
+            _directed = false;
+            _zoom = 1f;
+        }
+
+        /// <summary>
+        /// Toma a camera numa cena: ela desliza ate focus (em unidades de mundo)
+        /// e aproxima ou afasta ate zoom vezes o tamanho normal. smooth e o
+        /// tempo do deslize: maior, mais lento e mais cinematografico.
+        /// </summary>
+        public static void Direct(Vector2 focus, float zoom, float smooth = 0.4f)
+        {
+            _directed = true;
+            _focus = focus;
+            _zoom = Mathf.Max(0.3f, zoom);
+            _directSmooth = Mathf.Max(0.01f, smooth);
+        }
+
+        /// <summary>Devolve a camera ao Scrap, voltando ao tamanho normal devagar.</summary>
+        public static void Release()
+        {
+            _directed = false;
+            _zoom = 1f;
+        }
 
         private void Awake()
         {
             _camera = GetComponent<Camera>();
+            _baseSize = _camera.orthographicSize;
         }
 
         private void OnEnable()
@@ -80,8 +117,14 @@ namespace EchoesOfCravejada
             transform.position -= _shakeOffset;
             _shakeOffset = Vector3.zero;
 
+            // O tamanho vai devagar ate o pedido (ou volta ao normal).
+            if (_baseSize <= 0f) _baseSize = _camera.orthographicSize;
+            float size = _baseSize * (_directed ? _zoom : 1f);
+            _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, size, 1f - Mathf.Exp(-Time.deltaTime * 2.6f));
+
+            Vector3 goal = _directed ? new Vector3(_focus.x, _focus.y, transform.position.z) : DesiredPosition();
             Vector3 desired = Vector3.SmoothDamp(
-                transform.position, DesiredPosition(), ref _velocity, smoothTime);
+                transform.position, goal, ref _velocity, _directed ? _directSmooth : smoothTime);
 
             transform.position = Resolve(desired);
 

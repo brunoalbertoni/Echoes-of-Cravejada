@@ -13,7 +13,7 @@ namespace EchoesOfCravejada.EditorTools
     /// Nao depende de UnityEngine de proposito: assim da pra gerar as imagens
     /// fora do editor e olhar antes de abrir o jogo.
     /// </summary>
-    public static class BrassArt
+    public static partial class BrassArt
     {
         public const int Tile = 16;
 

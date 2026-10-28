@@ -29,6 +29,7 @@ namespace EchoesOfCravejada
         [SerializeField] private Sprite shardSprite;
 
         private SpriteRenderer _sprite;
+        private Collider2D[] _colliders;
         private Color _baseColor = Color.white;
         private bool _dead;
         private int _fullHealth;
@@ -52,6 +53,15 @@ namespace EchoesOfCravejada
         /// <summary>Avisa que ele voltou, quando o Scrap morre. Serve pra quem tem estado pra zerar.</summary>
         public event System.Action Revived;
 
+        /// <summary>
+        /// Se preenchido, a animacao de morte: roda (sem colisao, sem dano)
+        /// antes de ele sumir. Sem ela, ele some no ato. E como o rastejante
+        /// do District 1 se desmonta.
+        /// </summary>
+        public System.Func<IEnumerator> DeathAnimation;
+
+        public bool IsDead => _dead;
+
         /// <summary>Usado pelos geradores de fase.</summary>
         public void Configure(int newHealth, int newShards, Sprite newShardSprite)
         {
@@ -64,6 +74,7 @@ namespace EchoesOfCravejada
         {
             _sprite = GetComponentInChildren<SpriteRenderer>();
             if (_sprite != null) _baseColor = _sprite.color;
+            _colliders = GetComponents<Collider2D>();
 
             _fullHealth = health;
             _home = transform.position;
@@ -80,6 +91,9 @@ namespace EchoesOfCravejada
 
         private void Revive()
         {
+            StopAllCoroutines();
+            SetColliders(true);
+
             _dead = false;
             health = _fullHealth;
             transform.position = _home;
@@ -121,6 +135,16 @@ namespace EchoesOfCravejada
                 }
 
                 Died?.Invoke();
+
+                if (DeathAnimation != null && gameObject.activeInHierarchy)
+                {
+                    StopAllCoroutines();
+                    if (_sprite != null) _sprite.color = _baseColor;
+                    SetColliders(false);
+                    StartCoroutine(Vanish());
+                    return;
+                }
+
                 gameObject.SetActive(false);
                 return;
             }
@@ -129,6 +153,21 @@ namespace EchoesOfCravejada
             {
                 StopAllCoroutines();
                 StartCoroutine(Flash());
+            }
+        }
+
+        private IEnumerator Vanish()
+        {
+            yield return DeathAnimation();
+            gameObject.SetActive(false);
+        }
+
+        private void SetColliders(bool enabled)
+        {
+            if (_colliders == null) return;
+            foreach (Collider2D part in _colliders)
+            {
+                if (part != null) part.enabled = enabled;
             }
         }
 

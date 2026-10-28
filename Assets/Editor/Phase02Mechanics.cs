@@ -65,9 +65,11 @@ namespace EchoesOfCravejada.EditorTools
             BuildLore(Child(root, "Lore"));
             BuildRewards(Child(root, "Rewards"));
             BuildVeils(Child(root, "Veils"));
-            BuildBoss(root);
-            BuildRisingAcid(root);
-            BuildPurification(root, enemies.gameObject);
+
+            // A purificacao vem antes do boss: e ele quem a dispara ao cair.
+            AreaPurifier purifier = BuildPurification(root, enemies.gameObject);
+            BuildBoss(root, purifier);
+            BuildElevator(root);
         }
 
         private static Transform Child(Transform parent, string name)
@@ -83,6 +85,25 @@ namespace EchoesOfCravejada.EditorTools
             renderer.sprite = Phase02Assets.LoadSprite(spriteName);
             renderer.sortingLayerName = layer;
             renderer.sortingOrder = order;
+            return renderer;
+        }
+
+        /// <summary>Um SpriteRenderer de ator com o primeiro quadro de uma folha.</summary>
+        private static SpriteRenderer Frames(GameObject target, Sprite[] frames, int first, int order)
+        {
+            var renderer = target.AddComponent<SpriteRenderer>();
+            renderer.sprite = frames != null && first < frames.Length ? frames[first] : null;
+            renderer.sortingLayerName = Phase01Assets.SortingActors;
+            renderer.sortingOrder = order;
+            return renderer;
+        }
+
+        /// <summary>Quem se conversa, parado mas vivo: o primeiro quadro e o loop.</summary>
+        private static SpriteRenderer Talker(GameObject target, int variant, int order)
+        {
+            Sprite[] idle = Phase02Assets.LoadSheet(Phase02Assets.District2NpcSheet(variant), District2NpcArt.IdleFrames);
+            SpriteRenderer renderer = Frames(target, idle, 0, order);
+            target.AddComponent<SpriteLoop>().Configure(idle, 5f, District2NpcArt.BlinkFrame);
             return renderer;
         }
 
@@ -175,10 +196,8 @@ namespace EchoesOfCravejada.EditorTools
         {
             foreach ((string name, Phase02Layout.Area area) in Phase02Layout.AcidPools)
             {
-                // O do poco de fuga ocupa a largura toda do poco, pra poder subir por ele.
-                bool rising = name == Phase02Layout.RisingAcidPool;
                 int x = area.X;
-                int width = rising ? 11 : area.Width;
+                int width = area.Width;
 
                 var poolObject = new GameObject(name);
                 poolObject.transform.SetParent(parent, false);
@@ -337,6 +356,13 @@ namespace EchoesOfCravejada.EditorTools
                     wheel,
                     Phase02Assets.LoadSprite(Phase02Assets.ValveClean));
 
+                // A valvula do fim de uma ala abre uma trava longe dali, e
+                // algumas religam um atalho em outra sala: o HUD avisa.
+                if (spec.Lock || !string.IsNullOrEmpty(spec.Notice))
+                {
+                    valveObject.AddComponent<LockValveNotice>().Configure(spec.Lock, spec.Notice);
+                }
+
                 Valves[spec.Name] = valve;
             }
         }
@@ -348,6 +374,10 @@ namespace EchoesOfCravejada.EditorTools
         private static void BuildEnemies(Transform parent)
         {
             Sprite shard = Phase02Assets.LoadSprite(Phase02Assets.Shard);
+            Sprite[] leech = Phase02Assets.LoadSheet(Phase02Assets.LeechSheet, LeechArt.FrameCount);
+            Sprite[] sentry = Phase02Assets.LoadSheet(Phase02Assets.SentrySheet, SentryArt.FrameCount);
+            Sprite[] welder = Phase02Assets.LoadSheet(Phase02Assets.WelderSheet, WelderArt.FrameCount);
+            Sprite[] bloater = Phase02Assets.LoadSheet(Phase02Assets.BloaterSheet, BloaterArt.FrameCount);
 
             foreach (Phase02Layout.EnemySpec spec in Phase02Layout.Enemies)
             {
@@ -361,50 +391,56 @@ namespace EchoesOfCravejada.EditorTools
                 var trigger = enemy.AddComponent<BoxCollider2D>();
                 trigger.isTrigger = true;
 
-                float middle = (spec.X0 + spec.X1 + 1) * 0.5f;
+                // Onde comeca: o ponto marcado, ou o meio do trecho.
+                float middle = spec.StartX >= 0 ? spec.StartX + 0.5f : (spec.X0 + spec.X1 + 1) * 0.5f;
 
                 switch (spec.Kind)
                 {
                     case Phase02Layout.EnemyKind.PipeLeech:
                         // O x de onde ela pende vem em Direction (ver Phase02Layout.Leech).
-                        enemy.transform.position = new Vector3(spec.Direction + 0.5f, spec.CeilingY + 0.5f, 0f);
-                        Sprite(enemy, Phase02Assets.PipeLeech, Phase01Assets.SortingActors, -3).flipY = true;
-                        trigger.size = new Vector2(0.8f, 0.7f);
+                        // O pivo e a base do desenho, e o corpo pende do alto dele:
+                        // o objeto fica 1,5 tile abaixo do cano (a celula CeilingY + 1).
+                        enemy.transform.position = new Vector3(spec.Direction + 0.5f, spec.CeilingY - 0.5f, 0f);
+                        Frames(enemy, leech, LeechArt.Cling, -3);
+                        trigger.size = new Vector2(0.6f, 1f);
+                        trigger.offset = new Vector2(0f, 0.95f);
 
                         enemy.AddComponent<Damageable>().Configure(5, 2, shard);
-                        enemy.AddComponent<PipeLeech>().Configure(spec.Y + 0.5f, spec.X0 + 0.5f, spec.X1 + 0.5f);
+                        enemy.AddComponent<PipeLeech>().Configure(spec.Y, spec.X0 + 0.5f, spec.X1 + 0.5f, leech);
                         break;
 
                     case Phase02Layout.EnemyKind.ValveSentry:
                         enemy.transform.position = new Vector3(spec.X0 + 0.5f, spec.Y, 0f);
-                        Sprite(enemy, Phase02Assets.ValveSentry, Phase01Assets.SortingActors, -3);
-                        trigger.size = new Vector2(0.8f, 1.4f);
-                        trigger.offset = new Vector2(0f, 0.7f);
+                        Frames(enemy, sentry, SentryArt.Idle, -3);
+                        trigger.size = new Vector2(0.9f, 1.5f);
+                        trigger.offset = new Vector2(0f, 0.75f);
 
                         enemy.AddComponent<Damageable>().Configure(6, 4, shard);
                         enemy.AddComponent<ValveSentry>().Configure(spec.Direction, spec.Range,
-                            Phase02Assets.LoadSprite(Phase02Assets.SteamBolt));
+                            Phase02Assets.LoadSprite(Phase02Assets.SteamBolt), sentry,
+                            new Vector2(SentryArt.MuzzleX, SentryArt.MuzzleY));
                         break;
 
                     case Phase02Layout.EnemyKind.BrassWelder:
                         enemy.transform.position = new Vector3(middle, spec.Y, 0f);
-                        Sprite(enemy, Phase02Assets.BrassWelder, Phase01Assets.SortingActors, -3);
+                        Frames(enemy, welder, WelderArt.Walk, -3);
                         trigger.size = new Vector2(0.8f, 1.4f);
                         trigger.offset = new Vector2(0f, 0.7f);
 
                         enemy.AddComponent<Damageable>().Configure(7, 5, shard);
-                        enemy.AddComponent<BrassWelder>().Configure(spec.X0 + 0.5f, spec.X1 + 0.5f);
+                        enemy.AddComponent<BrassWelder>().Configure(spec.X0 + 0.5f, spec.X1 + 0.5f, welder);
                         break;
 
                     case Phase02Layout.EnemyKind.AcidBloater:
-                        // Pivo no centro: os pes ficam 0.75 abaixo.
-                        enemy.transform.position = new Vector3(middle, spec.Y + 0.75f, 0f);
-                        Sprite(enemy, Phase02Assets.AcidBloater, Phase01Assets.SortingActors, -3);
+                        // Pivo na base: a posicao e onde os pes pisam.
+                        enemy.transform.position = new Vector3(middle, spec.Y, 0f);
+                        Frames(enemy, bloater, BloaterArt.Walk, -3);
                         trigger.size = new Vector2(1.2f, 1.3f);
+                        trigger.offset = new Vector2(0f, 0.75f);
 
                         enemy.AddComponent<Damageable>().Configure(8, 6, shard);
                         enemy.AddComponent<AcidBloater>().Configure(spec.X0 + 0.75f, spec.X1 + 0.25f,
-                            Phase02Assets.LoadSprite(Phase02Assets.AcidSurface));
+                            Phase02Assets.LoadSprite(Phase02Assets.AcidSurface), bloater);
                         break;
                 }
             }
@@ -503,7 +539,7 @@ namespace EchoesOfCravejada.EditorTools
             crisolObject.transform.SetParent(parent, false);
             crisolObject.transform.position = new Vector3(tile.X + 0.5f, tile.Y, 0f);
 
-            Sprite(crisolObject, Phase02Assets.Crisol, Phase01Assets.SortingActors, -4);
+            Talker(crisolObject, District2NpcArt.Crisol, -4);
 
             var area = crisolObject.AddComponent<BoxCollider2D>();
             area.isTrigger = true;
@@ -519,7 +555,8 @@ namespace EchoesOfCravejada.EditorTools
 
         /// <summary>
         /// A historia espalhada pelo mapa: paginas, pichacoes, a placa e o velho
-        /// encanador. Tudo usa o Npc — chegar perto e apertar E.
+        /// encanador. Tudo usa o Npc — chegar perto e apertar E. O que se le tem
+        /// arte propria (LoreArt.Phase02): um desenho no mapa e um grande na leitura.
         /// </summary>
         private static void BuildLore(Transform parent)
         {
@@ -561,10 +598,9 @@ namespace EchoesOfCravejada.EditorTools
                         break;
 
                     case Phase02Layout.LoreKind.Tarnished:
-                        // O mesmo corpo do Brass Welder, sem a ferrugem de luta:
-                        // e um deles, so que nao foi tomado.
-                        SpriteRenderer body = Sprite(loreObject, Phase02Assets.BrassWelder, Phase01Assets.SortingActors, -4);
-                        body.color = new Color(0.85f, 0.92f, 1f);
+                        // Um Tarnished que nao foi tomado: o velho encanador, ou a
+                        // Solda, que aparece sem a mascara depois da purificacao.
+                        Talker(loreObject, spec.Name == "Npc_Solda" ? District2NpcArt.Solda : District2NpcArt.OldPlumber, -4);
                         Object.DestroyImmediate(artObject);
                         break;
                 }
@@ -598,6 +634,13 @@ namespace EchoesOfCravejada.EditorTools
                 else npc.ConfigureReadable(spec.Title, spec.Lines);
 
                 if (spec.PurifiedLines != null) npc.ConfigurePurified(spec.PurifiedLines);
+
+                // A arte propria (LoreArt): troca o desenho generico do mapa e
+                // mostra o grande na leitura.
+                if (LoreArt.Phase02.TryGetValue(spec.Name, out LoreArt.Piece own))
+                {
+                    LoreArtAssets.Apply(own, artObject, npc, Phase01Assets.SortingTerrain);
+                }
 
                 // Uma luz fraca, pra dar pra achar no escuro.
                 Phase01Generator.CreatePointLight(loreObject.transform, "Glow",
@@ -690,7 +733,32 @@ namespace EchoesOfCravejada.EditorTools
         // O Boiler Master, o acido ascendente e a purificacao
         // ------------------------------------------------------------------
 
-        private static void BuildBoss(Transform parent)
+        /// <summary>
+        /// O elevador da estacao: a cabine em cima do poco da Escadaria, que
+        /// sobe com o Scrap ate o alto e carrega o District 3. E a saida da fase.
+        /// </summary>
+        private static void BuildElevator(Transform parent)
+        {
+            Phase02Layout.Area car = Phase02Layout.ElevatorCar;
+            float plate = 4f / Phase01Assets.PixelsPerUnit;
+
+            var elevatorObject = new GameObject("Elevator");
+            elevatorObject.transform.SetParent(parent, false);
+
+            // O piso de chapa da cabine fica logo abaixo da linha onde se pisa.
+            elevatorObject.transform.position = new Vector3(car.X, car.Y - plate, 0f);
+            Sprite(elevatorObject, Phase02Assets.ElevatorCage, Phase01Assets.SortingActors, -4);
+
+            var trigger = elevatorObject.AddComponent<BoxCollider2D>();
+            trigger.isTrigger = true;
+            trigger.size = new Vector2(car.Width, 2f);
+            trigger.offset = new Vector2(car.Width * 0.5f, plate + 1f);
+
+            elevatorObject.AddComponent<ElevatorRide>().Configure(
+                Phase02Layout.ElevatorTopY, Phase03Layout.SceneName, Phase03Layout.FromDistrict2SpawnId);
+        }
+
+        private static void BuildBoss(Transform parent, AreaPurifier purifier)
         {
             (int X, int Y) tile = Phase02Layout.BossTile;
             (int X0, int X1) range = Phase02Layout.BossRange;
@@ -700,7 +768,10 @@ namespace EchoesOfCravejada.EditorTools
             bossObject.transform.SetParent(parent, false);
             bossObject.transform.position = new Vector3(tile.X + 0.5f, tile.Y, 0f);
 
-            Sprite(bossObject, Phase02Assets.BoilerMaster, Phase01Assets.SortingActors, -2);
+            // Os quadros dele: normal e em sobrepressao (da metade da vida pra baixo).
+            Sprite[] bossFrames = Phase02Assets.LoadSheet(Phase02Assets.MasterSheet, BoilerMasterArt.FrameCount);
+            Sprite[] bossHot = Phase02Assets.LoadSheet(Phase02Assets.MasterHotSheet, BoilerMasterArt.FrameCount);
+            Frames(bossObject, bossFrames, BoilerMasterArt.Dormant, -2).flipX = true;
 
             var body = bossObject.AddComponent<BoxCollider2D>();
             body.isTrigger = true;
@@ -709,11 +780,6 @@ namespace EchoesOfCravejada.EditorTools
 
             var rigidbody = bossObject.AddComponent<Rigidbody2D>();
             rigidbody.bodyType = RigidbodyType2D.Kinematic;
-
-            Valve[] arenaValves = Phase02Layout.Valves
-                .Where(spec => spec.Arena && Valves.ContainsKey(spec.Name))
-                .Select(spec => Valves[spec.Name])
-                .ToArray();
 
             Gates.TryGetValue(Phase02Layout.BossGate, out Gate exitGate);
 
@@ -726,31 +792,15 @@ namespace EchoesOfCravejada.EditorTools
                 Phase02Assets.LoadSprite(Phase02Assets.SteamColumn),
                 Phase02Assets.LoadSprite(Phase02Assets.Shard),
                 Phase02Assets.LoadSprite(Phase02Assets.DashModule),
-                arenaValves, exitGate);
+                exitGate, purifier);
 
             // A nuvem em que ele explode ao cair.
             master.ConfigureCloud(Phase01Generator.CreateOxideCloud(bossObject.transform, _steam));
+            master.ConfigureFrames(bossFrames, bossHot);
 
             // A grade da passagem pra sala pre-boss: fecha enquanto ele luta.
             Phase02Layout.Area seal = Phase02Layout.ArenaSeal;
             Phase01Generator.CreateArenaSeal(parent, _groundLayer, new RectInt(seal.X, seal.Y, seal.Width, seal.Height));
-        }
-
-        private static void BuildRisingAcid(Transform parent)
-        {
-            if (!Pools.TryGetValue(Phase02Layout.RisingAcidPool, out AcidPool pool)) return;
-
-            Phase02Layout.Area area = Phase02Layout.RisingAcidTrigger;
-
-            var triggerObject = new GameObject("RisingAcidTrigger");
-            triggerObject.transform.SetParent(parent, false);
-            triggerObject.transform.position = new Vector3(area.CenterX, area.CenterY, 0f);
-
-            var trigger = triggerObject.AddComponent<BoxCollider2D>();
-            trigger.isTrigger = true;
-            trigger.size = new Vector2(area.Width, area.Height);
-
-            triggerObject.AddComponent<RisingAcidTrigger>().Configure(pool, Phase02Layout.RisingAcidHeight);
         }
 
         /// <summary>
@@ -759,7 +809,7 @@ namespace EchoesOfCravejada.EditorTools
         /// os corrompidos e com a nevoa da Galeria Alta, e traz a Solda pra fora.
         /// (Nao abre atalho pro poco: a saida do distrito e so pela sala do boss.)
         /// </summary>
-        private static void BuildPurification(Transform parent, GameObject enemies)
+        private static AreaPurifier BuildPurification(Transform parent, GameObject enemies)
         {
             GameObject lighting = GameObject.Find("Lighting");
             var corrupted = new List<Light2D>();
@@ -816,17 +866,7 @@ namespace EchoesOfCravejada.EditorTools
                 AppearOnPurify.ToArray(), vanish.ToArray(), shortcuts);
             purifier.ConfigurePools(Pools.Values.ToArray());
 
-            Phase02Layout.Area area = Phase02Layout.PurifyArea;
-
-            var triggerObject = new GameObject("PurifyTrigger");
-            triggerObject.transform.SetParent(parent, false);
-            triggerObject.transform.position = new Vector3(area.CenterX, area.CenterY, 0f);
-
-            var trigger = triggerObject.AddComponent<BoxCollider2D>();
-            trigger.isTrigger = true;
-            trigger.size = new Vector2(area.Width, area.Height);
-
-            triggerObject.AddComponent<PurifyTrigger>().Configure(purifier);
+            return purifier;
         }
     }
 }

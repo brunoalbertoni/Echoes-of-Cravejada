@@ -119,6 +119,12 @@ namespace EchoesOfCravejada.EditorTools
                 return;
             }
 
+            // Os inimigos, o Mestre das Caldeiras e quem se conversa, no detalhe do Scrap.
+            Phase02Assets.EnsureDistrict2Art();
+
+            // O que se le: o desenho do mapa e o grande, da leitura, de cada um.
+            LoreArtAssets.Write(LoreArt.Phase02.Values);
+
             Dictionary<string, TileBase> tiles = Phase02Assets.BuildTiles();
             if (tiles.Count == 0)
             {
@@ -411,6 +417,54 @@ namespace EchoesOfCravejada.EditorTools
                     case Phase02Layout.FixtureKind.NozzleUp:
                         AddSprite(fixtureObject, Phase02Assets.NozzleName(fixture.Size), 21);
                         break;
+
+                    // A decoracao dos operarios: atras do Scrap, na frente da parede.
+                    case Phase02Layout.FixtureKind.Lamp:
+                        AddSprite(fixtureObject, Phase02Assets.HangingLamp, 8);
+                        break;
+
+                    case Phase02Layout.FixtureKind.Locker:
+                        AddSprite(fixtureObject, fixture.Flipped ? Phase02Assets.LockerOpen : Phase02Assets.Locker, 5);
+                        break;
+
+                    case Phase02Layout.FixtureKind.MaskRack:
+                        AddSprite(fixtureObject, Phase02Assets.MaskRack, 5);
+                        break;
+
+                    case Phase02Layout.FixtureKind.Shelf:
+                        AddSprite(fixtureObject, Phase02Assets.EmptyShelf, 5);
+                        break;
+
+                    case Phase02Layout.FixtureKind.Barrel:
+                        AddSprite(fixtureObject, Phase02Assets.Barrel, 6);
+                        break;
+
+                    case Phase02Layout.FixtureKind.Poster:
+                        AddSprite(fixtureObject, Phase02Assets.CrownPoster, 5);
+                        break;
+
+                    case Phase02Layout.FixtureKind.Sign:
+                        AddSprite(fixtureObject, Phase02Assets.RoomSign, 5);
+                        break;
+
+                    case Phase02Layout.FixtureKind.ElevatorRail:
+                    {
+                        SpriteRenderer rail = AddSprite(fixtureObject, Phase02Assets.ElevatorRail, 4);
+                        rail.drawMode = SpriteDrawMode.Tiled;
+                        rail.size = new Vector2(3f, fixture.Size);
+                        break;
+                    }
+
+                    case Phase02Layout.FixtureKind.Railing:
+                    case Phase02Layout.FixtureKind.Chain:
+                    {
+                        bool railing = fixture.Kind == Phase02Layout.FixtureKind.Railing;
+                        SpriteRenderer tiled = AddSprite(fixtureObject,
+                            railing ? Phase02Assets.Railing : Phase02Assets.Chain, railing ? 20 : 5);
+                        tiled.drawMode = SpriteDrawMode.Tiled;
+                        tiled.size = railing ? new Vector2(fixture.Size, 1f) : new Vector2(1f, fixture.Size);
+                        break;
+                    }
 
                     case Phase02Layout.FixtureKind.NozzleSide:
                     {

@@ -32,6 +32,15 @@ namespace EchoesOfCravejada
         [Tooltip("Se vira pro Scrap. Desligado pra pagina, pichacao e placa, que nao viram.")]
         [SerializeField] private bool facesPlayer = true;
 
+        [Tooltip("Pro que se le: o desenho grande (a carta, a placa, o muro) mostrado na tela durante a leitura.")]
+        [SerializeField] private Sprite document;
+
+        [Tooltip("O desenho de depois da purificacao, se ele muda. Vazio repete o de cima.")]
+        [SerializeField] private Sprite purifiedDocument;
+
+        // O desenho desta leitura, escolhido junto com as falas.
+        private Sprite _document;
+
         private ScrapController _controller;
         private SpriteRenderer _sprite;
         private int _line = -1;
@@ -57,6 +66,12 @@ namespace EchoesOfCravejada
 
         /// <summary>O verbo do aviso: "conversar com" pra gente, "ler" pra coisa escrita.</summary>
         public string Prompt => prompt;
+
+        /// <summary>
+        /// O desenho grande do que se esta lendo agora (a carta, a placa), ou
+        /// null pra quem so fala.
+        /// </summary>
+        public Sprite Document => Talking == this ? _document : null;
 
         /// <summary>A fala na tela agora, ou null se ele nao esta falando.</summary>
         public string CurrentLine => _line >= 0 && _talk != null && _line < _talk.Length ? _talk[_line] : null;
@@ -92,6 +107,16 @@ namespace EchoesOfCravejada
             purifiedLines = newLines;
         }
 
+        /// <summary>
+        /// Usado pelos geradores de fase: o desenho grande mostrado durante a
+        /// leitura, e o de depois da purificacao, se muda.
+        /// </summary>
+        public void ConfigureDocument(Sprite newDocument, Sprite newPurifiedDocument = null)
+        {
+            document = newDocument;
+            purifiedDocument = newPurifiedDocument;
+        }
+
         /// <summary>As falas de sempre, as configuradas primeiro (antes da purificacao).</summary>
         protected string[] FirstLines => lines;
 
@@ -122,6 +147,9 @@ namespace EchoesOfCravejada
         {
             if (_controller == null) return;
 
+            // Com o card de conquista na tela, o E e o de fechar o card.
+            if (AbilityCard.Showing) return;
+
             // Com a loja aberta, o botao de conversar e o de fechar a loja.
             if (Crisol.ShopOpen != null) return;
 
@@ -136,7 +164,14 @@ namespace EchoesOfCravejada
             // So comeca a conversa com os pes no chao; continuar pode a qualquer hora.
             if (_line < 0 && !_controller.IsGrounded) return;
 
-            if (_line < 0) _talk = PickLines();
+            if (_line < 0)
+            {
+                _talk = PickLines();
+
+                // O desenho acompanha o texto: o de depois, se o texto e o de depois.
+                bool after = _talk != null && _talk == purifiedLines && purifiedDocument != null;
+                _document = after ? purifiedDocument : document;
+            }
 
             _line++;
 
@@ -159,6 +194,7 @@ namespace EchoesOfCravejada
             if (_controller == null || newLines == null || newLines.Length == 0) return;
 
             _talk = newLines;
+            _document = document;
             _line = 0;
             Talking = this;
             _controller.ControlLocked = true;

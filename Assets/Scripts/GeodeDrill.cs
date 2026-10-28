@@ -447,7 +447,7 @@ namespace EchoesOfCravejada
 
             // O ultimo giro acende a arena inteira, e o distrito acorda.
             NoiseSystem.Emit(place + Vector3.up, 40f, 0.2f);
-            if (purifier != null) purifier.Purify();
+            if (purifier != null) purifier.Purify(place);
         }
 
         /// <summary>Parada: vira carcaca, nao machuca mais, e a placa do chassi aparece.</summary>

@@ -1,0 +1,1551 @@
+fileFormatVersion: 2
+guid: bafbb3393d6ccc04d84d397a4c6b474d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4134530043833074817
+    second: coletor_sheet_0
+  - first:
+      213: -588299217602493360
+    second: coletor_sheet_1
+  - first:
+      213: -5325407089783723834
+    second: coletor_sheet_2
+  - first:
+      213: 5453178255850459558
+    second: coletor_sheet_3
+  - first:
+      213: 928332709436738428
+    second: coletor_sheet_4
+  - first:
+      213: -5391533725953382470
+    second: coletor_sheet_5
+  - first:
+      213: 7386787985911901395
+    second: coletor_sheet_6
+  - first:
+      213: -4940643383201730628
+    second: coletor_sheet_7
+  - first:
+      213: 5749463066234344840
+    second: coletor_sheet_8
+  - first:
+      213: -7790478468370838830
+    second: coletor_sheet_9
+  - first:
+      213: -3520136058744692315
+    second: coletor_sheet_10
+  - first:
+      213: -4876987982538046489
+    second: coletor_sheet_11
+  - first:
+      213: 1009234059967562718
+    second: coletor_sheet_12
+  - first:
+      213: -4831298912503157414
+    second: coletor_sheet_13
+  - first:
+      213: -9027933094637238397
+    second: coletor_sheet_14
+  - first:
+      213: 7849297322696998801
+    second: coletor_sheet_15
+  - first:
+      213: 5333087238078912986
+    second: coletor_sheet_16
+  - first:
+      213: -1419995362257308615
+    second: coletor_sheet_17
+  - first:
+      213: -2247015595102752028
+    second: coletor_sheet_18
+  - first:
+      213: 4026755155858002221
+    second: coletor_sheet_19
+  - first:
+      213: -4325585622343969143
+    second: coletor_sheet_20
+  - first:
+      213: 6525757761703570956
+    second: coletor_sheet_21
+  - first:
+      213: -7776842965891234971
+    second: coletor_sheet_22
+  - first:
+      213: -2821047746525294530
+    second: coletor_sheet_23
+  - first:
+      213: -7688237381426729422
+    second: coletor_sheet_24
+  - first:
+      213: -3355518514234150351
+    second: coletor_sheet_25
+  - first:
+      213: -8235410711094946600
+    second: coletor_sheet_26
+  - first:
+      213: -8478291975480789687
+    second: coletor_sheet_27
+  - first:
+      213: 2834781685262967154
+    second: coletor_sheet_28
+  - first:
+      213: -2935319988689842553
+    second: coletor_sheet_29
+  - first:
+      213: -699651615298415114
+    second: coletor_sheet_30
+  - first:
+      213: -769757689725433844
+    second: coletor_sheet_31
+  - first:
+      213: 6560948165652071498
+    second: coletor_sheet_32
+  - first:
+      213: -8874657894344248482
+    second: coletor_sheet_33
+  - first:
+      213: -6754898071536737015
+    second: coletor_sheet_34
+  - first:
+      213: -6340588651697859185
+    second: coletor_sheet_35
+  - first:
+      213: -5430140605008367869
+    second: coletor_sheet_36
+  - first:
+      213: -7680600109795319436
+    second: coletor_sheet_37
+  - first:
+      213: 7866662376307419157
+    second: coletor_sheet_38
+  - first:
+      213: 8033293403668322382
+    second: coletor_sheet_39
+  - first:
+      213: 7237454838576427569
+    second: coletor_sheet_40
+  - first:
+      213: 7559951685230572500
+    second: coletor_sheet_41
+  - first:
+      213: -4622811047555398692
+    second: coletor_sheet_42
+  - first:
+      213: -8674478488373877327
+    second: coletor_sheet_43
+  - first:
+      213: -6037783489965358962
+    second: coletor_sheet_44
+  - first:
+      213: -2384710731356491252
+    second: coletor_sheet_45
+  - first:
+      213: 1569162478933770557
+    second: coletor_sheet_46
+  - first:
+      213: 473905941797135165
+    second: coletor_sheet_47
+  - first:
+      213: 8096905115762310323
+    second: coletor_sheet_48
+  - first:
+      213: -120243763327260428
+    second: coletor_sheet_49
+  - first:
+      213: -6739104467887877365
+    second: coletor_sheet_50
+  - first:
+      213: 7016716765492002958
+    second: coletor_sheet_51
+  - first:
+      213: -4134001687277684374
+    second: coletor_sheet_52
+  - first:
+      213: 7427070241226821490
+    second: coletor_sheet_53
+  - first:
+      213: 7468790008917224242
+    second: coletor_sheet_54
+  - first:
+      213: -1806484317544848481
+    second: coletor_sheet_55
+  - first:
+      213: 5661667727285498031
+    second: coletor_sheet_56
+  - first:
+      213: -333683797037271283
+    second: coletor_sheet_57
+  - first:
+      213: -4092527174716678169
+    second: coletor_sheet_58
+  - first:
+      213: -2831407459813588869
+    second: coletor_sheet_59
+  - first:
+      213: 6177911363020942691
+    second: coletor_sheet_60
+  - first:
+      213: 2348570306616512491
+    second: coletor_sheet_61
+  - first:
+      213: -3400356484890318642
+    second: coletor_sheet_62
+  - first:
+      213: -4584241312818808400
+    second: coletor_sheet_63
+  - first:
+      213: -4441805001529997771
+    second: coletor_sheet_64
+  - first:
+      213: 5251066636012423555
+    second: coletor_sheet_65
+  - first:
+      213: -7215257337621582686
+    second: coletor_sheet_66
+  - first:
+      213: -9169327325025952774
+    second: coletor_sheet_67
+  - first:
+      213: -4749186913008097311
+    second: coletor_sheet_68
+  - first:
+      213: 81360330933717471
+    second: coletor_sheet_69
+  - first:
+      213: 8143864070933927384
+    second: coletor_sheet_70
+  - first:
+      213: -1213053033184226334
+    second: coletor_sheet_71
+  - first:
+      213: 2214848677783930853
+    second: coletor_sheet_72
+  - first:
+      213: -7452627027178015756
+    second: coletor_sheet_73
+  - first:
+      213: 1710148761931812670
+    second: coletor_sheet_74
+  - first:
+      213: 4096213485960432119
+    second: coletor_sheet_75
+  - first:
+      213: 1308505327347875752
+    second: coletor_sheet_76
+  - first:
+      213: -4583974571531098625
+    second: coletor_sheet_77
+  - first:
+      213: -4970479573973851620
+    second: coletor_sheet_78
+  - first:
+      213: -3590902367165080031
+    second: coletor_sheet_79
+  - first:
+      213: -5713292017553224600
+    second: coletor_sheet_80
+  - first:
+      213: 2496972769464895400
+    second: coletor_sheet_81
+  - first:
+      213: 6218119325299851425
+    second: coletor_sheet_82
+  - first:
+      213: -700784521908705483
+    second: coletor_sheet_83
+  - first:
+      213: 4534718757598672162
+    second: coletor_sheet_84
+  - first:
+      213: -4200712565307278535
+    second: coletor_sheet_85
+  - first:
+      213: 8385459292406266069
+    second: coletor_sheet_86
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: coletor_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 560
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a1aa71b7e6f52fc0800000000000000
+      internalID: -3520136058744692315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 560
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e388fee445715cb0800000000000000
+      internalID: -4876987982538046489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 560
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed38797c705810e00800000000000000
+      internalID: 1009234059967562718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 560
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5da4848c37c3fcb0800000000000000
+      internalID: -4831298912503157414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 560
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3878726bea656b280800000000000000
+      internalID: -9027933094637238397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 560
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19f77cfd35e4eec60800000000000000
+      internalID: 7849297322696998801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 448
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad9dcdd469ee20a40800000000000000
+      internalID: 5333087238078912986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 448
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93473f1ddb92b4ce0800000000000000
+      internalID: -1419995362257308615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 448
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e23321b83ff0d0e0800000000000000
+      internalID: -2247015595102752028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 448
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d219366ca78e1e730800000000000000
+      internalID: 4026755155858002221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_20
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 448
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98696ae5bce68f3c0800000000000000
+      internalID: -4325585622343969143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_21
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 448
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0ee69cfb16209a50800000000000000
+      internalID: 6525757761703570956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_22
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 448
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 563ce08a68a131490800000000000000
+      internalID: -7776842965891234971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_23
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 448
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3091f56500a9d8d0800000000000000
+      internalID: -2821047746525294530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 336
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23e2e2be5d4ed4590800000000000000
+      internalID: -7688237381426729422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_25
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 336
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 132b3d980bdce61d0800000000000000
+      internalID: -3355518514234150351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_26
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 336
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d41db16791f5bd80800000000000000
+      internalID: -8235410711094946600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_27
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 336
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9453c634e5e075a80800000000000000
+      internalID: -8478291975480789687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_28
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 336
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 271e1e56cea275720800000000000000
+      internalID: 2834781685262967154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_29
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 336
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78ec904b506a347d0800000000000000
+      internalID: -2935319988689842553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_30
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 336
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f51c9310965a46f0800000000000000
+      internalID: -699651615298415114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_31
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 336
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c084ac4a5754155f0800000000000000
+      internalID: -769757689725433844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 224
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a444173689b2d0b50800000000000000
+      internalID: 6560948165652071498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_33
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 224
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e53be704aa1e6d480800000000000000
+      internalID: -8874657894344248482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_34
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 224
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 905e4103ef7c142a0800000000000000
+      internalID: -6754898071536737015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_35
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 224
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f851da41734b108a0800000000000000
+      internalID: -6340588651697859185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_36
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 224
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30f2d0ec3e344a4b0800000000000000
+      internalID: -5430140605008367869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_37
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 224
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 471e2d9c4e6096590800000000000000
+      internalID: -7680600109795319436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_38
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 224
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 518ebbb70cffb2d60800000000000000
+      internalID: 7866662376307419157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_39
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 224
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e489326d9cdfb7f60800000000000000
+      internalID: 8033293403668322382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 132b74b74da907460800000000000000
+      internalID: 7237454838576427569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_41
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 112
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d3b84dd0085ae860800000000000000
+      internalID: 7559951685230572500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_42
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 112
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd385be48d978dfb0800000000000000
+      internalID: -4622811047555398692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_43
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 112
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b525b036cf0e9780800000000000000
+      internalID: -8674478488373877327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_44
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 112
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8085e9c7eb753ca0800000000000000
+      internalID: -6037783489965358962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_45
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 112
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c023f6d793ec7eed0800000000000000
+      internalID: -2384710731356491252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_46
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 112
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3108b7f5f8c6c510800000000000000
+      internalID: 1569162478933770557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_47
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 112
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d33e3c571f6a39600800000000000000
+      internalID: 473905941797135165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bc3e05bd4cfd5070800000000000000
+      internalID: 8096905115762310323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_49
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f82c603feec45ef0800000000000000
+      internalID: -120243763327260428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_50
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b039b471134e972a0800000000000000
+      internalID: -6739104467887877365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 672
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a261e22baac8ca46bfa3ae7746aee1a
+      internalID: 75543593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 672
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcc30497fd133ca4081d7c51675d9765
+      internalID: -2076282934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 672
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adad3852aa42d634fb3b5c8d00e8617c
+      internalID: -207424965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 672
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4197d0bb09856ad4aaed420e5e7a6693
+      internalID: -1288098381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 672
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 572079546b06a3b4bb9baaca85c8e43b
+      internalID: -1851585544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 672
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ffa931f15427aeb44a8af9e335c24d19
+      internalID: -1574305279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 672
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f1181a4c93b0d444ac4d4654fcceff3
+      internalID: -564894153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 672
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c515e4ff8cb8a674e8e290ccf5755d33
+      internalID: 279423117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 560
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8fda8c3b306a0147bdf4da6a0ea35c2
+      internalID: 1983807465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: coletor_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 560
+        width: 128
+        height: 112
+      alignment: 9
+      pivot: {x: 0.5, y: 0.008928572}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f113eef11a098b4d89c580905ae66e6
+      internalID: -1134346896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6c016f3cc665d214da197aef5becab4a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      coletor_sheet_00: 75543593
+      coletor_sheet_01: -2076282934
+      coletor_sheet_02: -207424965
+      coletor_sheet_03: -1288098381
+      coletor_sheet_04: -1851585544
+      coletor_sheet_05: -1574305279
+      coletor_sheet_06: -564894153
+      coletor_sheet_07: 279423117
+      coletor_sheet_08: 1983807465
+      coletor_sheet_09: -1134346896
+      coletor_sheet_10: -3520136058744692315
+      coletor_sheet_11: -4876987982538046489
+      coletor_sheet_12: 1009234059967562718
+      coletor_sheet_13: -4831298912503157414
+      coletor_sheet_14: -9027933094637238397
+      coletor_sheet_15: 7849297322696998801
+      coletor_sheet_16: 5333087238078912986
+      coletor_sheet_17: -1419995362257308615
+      coletor_sheet_18: -2247015595102752028
+      coletor_sheet_19: 4026755155858002221
+      coletor_sheet_20: -4325585622343969143
+      coletor_sheet_21: 6525757761703570956
+      coletor_sheet_22: -7776842965891234971
+      coletor_sheet_23: -2821047746525294530
+      coletor_sheet_24: -7688237381426729422
+      coletor_sheet_25: -3355518514234150351
+      coletor_sheet_26: -8235410711094946600
+      coletor_sheet_27: -8478291975480789687
+      coletor_sheet_28: 2834781685262967154
+      coletor_sheet_29: -2935319988689842553
+      coletor_sheet_30: -699651615298415114
+      coletor_sheet_31: -769757689725433844
+      coletor_sheet_32: 6560948165652071498
+      coletor_sheet_33: -8874657894344248482
+      coletor_sheet_34: -6754898071536737015
+      coletor_sheet_35: -6340588651697859185
+      coletor_sheet_36: -5430140605008367869
+      coletor_sheet_37: -7680600109795319436
+      coletor_sheet_38: 7866662376307419157
+      coletor_sheet_39: 8033293403668322382
+      coletor_sheet_40: 7237454838576427569
+      coletor_sheet_41: 7559951685230572500
+      coletor_sheet_42: -4622811047555398692
+      coletor_sheet_43: -8674478488373877327
+      coletor_sheet_44: -6037783489965358962
+      coletor_sheet_45: -2384710731356491252
+      coletor_sheet_46: 1569162478933770557
+      coletor_sheet_47: 473905941797135165
+      coletor_sheet_48: 8096905115762310323
+      coletor_sheet_49: -120243763327260428
+      coletor_sheet_50: -6739104467887877365
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
