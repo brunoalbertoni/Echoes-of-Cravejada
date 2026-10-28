@@ -72,6 +72,13 @@ namespace EchoesOfCravejada
         [Tooltip("Janela em que ainda da pra pular depois de ja ter soltado a parede.")]
         [SerializeField] private float wallCoyoteTime = 0.10f;
 
+        [Header("Wall Grip - Novo Comportamento")]
+        [Tooltip("Tempo em segundos que ele fica grudado parado na parede antes de começar a escorregar.")]
+        [SerializeField] private float wallStickDuration = 1.0f;
+
+        private float _wallStickTimer;
+        private int _lastJumpedWallSide;
+
         private Rigidbody2D _body;
         private SpriteRenderer _sprite;
 
@@ -200,6 +207,12 @@ namespace EchoesOfCravejada
             _isGrounded = groundCheck != null
                 && Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayers);
 
+            // Se tocou no chão, limpa a memória da parede anterior
+            if (_isGrounded)
+            {
+                _lastJumpedWallSide = 0;
+            }
+
             // Coyote time: recarrega no chao, escorre no ar.
             _coyoteCounter = _isGrounded ? coyoteTime : _coyoteCounter - Time.deltaTime;
             _jumpBufferCounter -= Time.deltaTime;
@@ -207,7 +220,7 @@ namespace EchoesOfCravejada
 
             UpdateWall();
 
-            // O pulo do ar volta ao pisar no chao ou encostar numa parede.
+            // O pulo do ar volta ao pisar no chao ou encostar numa parede valida.
             if (_isGrounded || _wallSide != 0) _airJumpUsed = false;
 
             if (!Mathf.Approximately(_moveInput, 0f)) _facing = _moveInput < 0f ? -1 : 1;
@@ -224,6 +237,7 @@ namespace EchoesOfCravejada
         /// </summary>
         private void UpdateWall()
         {
+            int previousWall = _wallSide;
             _wallSide = 0;
 
             if (!_isGrounded)
@@ -235,17 +249,40 @@ namespace EchoesOfCravejada
                 else if (Physics2D.OverlapBox(center + new Vector2(-0.46f, 0f), size, 0f, groundLayers)) _wallSide = -1;
             }
 
+            // Se encontrou uma parede diferente da que acabou de pular, libera a trava
+            if (_wallSide != 0 && _wallSide != _lastJumpedWallSide)
+            {
+                _lastJumpedWallSide = 0;
+            }
+
+            // Se for a MESMA parede de onde acabou de sair, ignora para não escalar a mesma parede
+            if (_wallSide != 0 && _wallSide == _lastJumpedWallSide)
+            {
+                _wallSide = 0;
+            }
+
             if (_wallSide != 0)
             {
                 _lastWallSide = _wallSide;
                 _wallCoyoteCounter = wallCoyoteTime;
+
+                // Se acabou de encostar na parede, ativa a parada de 1s
+                if (previousWall == 0)
+                {
+                    _wallStickTimer = wallStickDuration;
+                }
+                else if (_wallStickTimer > 0f)
+                {
+                    _wallStickTimer -= Time.deltaTime;
+                }
             }
             else
             {
                 _wallCoyoteCounter -= Time.deltaTime;
+                _wallStickTimer = 0f;
             }
 
-            // Segura quem empurra contra a parede enquanto cai.
+            // Segura na parede se estiver encostado e caindo
             _wallSliding = _wallSide != 0
                 && _body.linearVelocity.y <= 0f
                 && Mathf.Abs(_moveInput) > 0.1f
@@ -356,18 +393,35 @@ namespace EchoesOfCravejada
                 return;
             }
 
-            // Pulo de parede: sai na diagonal, pra longe dela.
+            // Pulo de parede: depende do direcional apontado
             if (_jumpBufferCounter > 0f && !_isGrounded && _wallCoyoteCounter > 0f && _lastWallSide != 0)
             {
                 float gravity = Mathf.Abs(Physics2D.gravity.y) * gravityScale;
-                float launchSpeed = Mathf.Sqrt(2f * gravity * Mathf.Max(jumpHeight * wallJumpHeight, 0.01f));
 
-                _body.linearVelocity = new Vector2(-_lastWallSide * wallJumpPush, launchSpeed);
+                // Registra qual parede foi usada para pular (impede que grude nela de novo até ir pra outra ou tocar no chão)
+                _lastJumpedWallSide = _lastWallSide;
 
-                _steerLock = wallJumpLockTime;
+                bool pushingAway = Mathf.Abs(_moveInput) > 0.2f && Mathf.Sign(_moveInput) != _lastWallSide;
+
+                if (pushingAway)
+                {
+                    // Pulo completo: joga na diagonal pra outra parede
+                    float launchSpeed = Mathf.Sqrt(2f * gravity * Mathf.Max(jumpHeight * wallJumpHeight, 0.01f));
+                    _body.linearVelocity = new Vector2(-_lastWallSide * wallJumpPush, launchSpeed);
+
+                    _steerLock = wallJumpLockTime;
+                    _facing = -_lastWallSide;
+                }
+                else
+                {
+                    // Pulo neutro pra cima: descola e cai reto sem impulso horizontal
+                    float launchSpeed = Mathf.Sqrt(2f * gravity * Mathf.Max(jumpHeight * 0.7f, 0.01f));
+                    _body.linearVelocity = new Vector2(0f, launchSpeed);
+                }
+
                 _jumpBufferCounter = 0f;
                 _wallCoyoteCounter = 0f;
-                _facing = -_lastWallSide;
+                _wallStickTimer = 0f;
                 return;
             }
 
@@ -400,11 +454,21 @@ namespace EchoesOfCravejada
                 ? gravityScale * fallGravityMultiplier
                 : gravityScale;
 
-            // Segurando na parede ele nao cai mais rapido que isso.
-            if (_wallSliding && _body.linearVelocity.y < -wallSlideSpeed)
+            if (_wallSliding)
             {
                 Vector2 velocity = _body.linearVelocity;
-                velocity.y = -wallSlideSpeed;
+
+                // Se ainda estiver no tempo de "grudar", congela o Scrap verticalmente na parede
+                if (_wallStickTimer > 0f)
+                {
+                    velocity.y = 0f;
+                }
+                else if (velocity.y < -wallSlideSpeed)
+                {
+                    // Passado o tempo, escorrega na velocidade configurada
+                    velocity.y = -wallSlideSpeed;
+                }
+
                 _body.linearVelocity = velocity;
             }
         }

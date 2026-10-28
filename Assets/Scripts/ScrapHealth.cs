@@ -112,6 +112,11 @@ namespace EchoesOfCravejada
         {
             if (Time.time < _invulnerableUntil || _health <= 0) return;
 
+
+            // LINHA NOVA: se estiver no Dash, ignora o dano totalmente
+            var dash = GetComponent<ScrapDash>();
+            if (dash != null && dash.IsDashing) return;
+
             // Durante uma cutscene ninguem apanha: o que ainda estava voando
             // quando ela comecou (sucata, onda de choque) passa reto.
             if (Cinematic.Active) return;
