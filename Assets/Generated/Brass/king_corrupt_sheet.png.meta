@@ -1,0 +1,1702 @@
+fileFormatVersion: 2
+guid: be2ea03c4415ec0489a27f86b7d727a5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7671936651896984249
+    second: king_corrupt_sheet_0
+  - first:
+      213: 8957029082656206245
+    second: king_corrupt_sheet_1
+  - first:
+      213: -5023553833517760276
+    second: king_corrupt_sheet_2
+  - first:
+      213: 6283129540682889764
+    second: king_corrupt_sheet_3
+  - first:
+      213: -813905852256444462
+    second: king_corrupt_sheet_4
+  - first:
+      213: 9042559657723932003
+    second: king_corrupt_sheet_5
+  - first:
+      213: -7582427604429795505
+    second: king_corrupt_sheet_6
+  - first:
+      213: -255490044504640206
+    second: king_corrupt_sheet_7
+  - first:
+      213: -2689839200306611937
+    second: king_corrupt_sheet_8
+  - first:
+      213: 6713230239098916894
+    second: king_corrupt_sheet_9
+  - first:
+      213: -8092408028635176713
+    second: king_corrupt_sheet_10
+  - first:
+      213: 6802647835786751345
+    second: king_corrupt_sheet_11
+  - first:
+      213: 7316772236862683975
+    second: king_corrupt_sheet_12
+  - first:
+      213: -2890995705307959032
+    second: king_corrupt_sheet_13
+  - first:
+      213: -6186719318511074531
+    second: king_corrupt_sheet_14
+  - first:
+      213: 5795153241343597687
+    second: king_corrupt_sheet_15
+  - first:
+      213: 6949179457478264013
+    second: king_corrupt_sheet_16
+  - first:
+      213: -7806022005391830074
+    second: king_corrupt_sheet_17
+  - first:
+      213: 9162727790054776344
+    second: king_corrupt_sheet_18
+  - first:
+      213: 5164795177171290323
+    second: king_corrupt_sheet_19
+  - first:
+      213: 3462395042503377168
+    second: king_corrupt_sheet_20
+  - first:
+      213: -5132352857257526244
+    second: king_corrupt_sheet_21
+  - first:
+      213: 8449937886732893061
+    second: king_corrupt_sheet_22
+  - first:
+      213: 7108828617532497111
+    second: king_corrupt_sheet_23
+  - first:
+      213: 6078574473791060104
+    second: king_corrupt_sheet_24
+  - first:
+      213: 3511802470950966781
+    second: king_corrupt_sheet_25
+  - first:
+      213: 3945864613660645992
+    second: king_corrupt_sheet_26
+  - first:
+      213: 2626776177733793778
+    second: king_corrupt_sheet_27
+  - first:
+      213: 1572105930297400284
+    second: king_corrupt_sheet_28
+  - first:
+      213: 4535916193689595391
+    second: king_corrupt_sheet_29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: king_corrupt_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f06eabf5cdf1bf80800000000000000
+      internalID: -8092408028635176713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17d26282a2cd76e50800000000000000
+      internalID: 6802647835786751345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74bf3a065956a8560800000000000000
+      internalID: 7316772236862683975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80170f129be11e7d0800000000000000
+      internalID: -2890995705307959032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d13c917fe8b542aa0800000000000000
+      internalID: -6186719318511074531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77c1d314b258c6050800000000000000
+      internalID: 5795153241343597687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc40f63f5e1707060800000000000000
+      internalID: 6949179457478264013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c3dcbb18507ba390800000000000000
+      internalID: -7806022005391830074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81e90dbf06c882f70800000000000000
+      internalID: 9162727790054776344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d802f079d90da740800000000000000
+      internalID: 5164795177171290323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_20
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 011cc7452f5ec0030800000000000000
+      internalID: 3462395042503377168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_21
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1c3439c44836c8b0800000000000000
+      internalID: -5132352857257526244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_22
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58b34d00db5344570800000000000000
+      internalID: 8449937886732893061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_23
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dcd725a6f1a7a260800000000000000
+      internalID: 7108828617532497111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 888b21b374f6b5450800000000000000
+      internalID: 6078574473791060104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_25
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df51f52bdbd6cb030800000000000000
+      internalID: 3511802470950966781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_26
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86ad605c5f682c630800000000000000
+      internalID: 3945864613660645992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_27
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f7f742340f247420800000000000000
+      internalID: 2626776177733793778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_28
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdb59a4a30e31d510800000000000000
+      internalID: 1572105930297400284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_29
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffd6fcfeebfc2fe30800000000000000
+      internalID: 4535916193689595391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 784d14e063012fc43bdf7fb766a49ac4
+      internalID: -1868791532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1ae274d3a4f86142b46327783724b2a
+      internalID: -329745649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39aea7b56e5cead49bbe6400e4a77bab
+      internalID: -1465686822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e759a1e6245d1c449a6fb1d9a454d41f
+      internalID: 1923419795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ec80e329ac21d040970c0d13d76b7be
+      internalID: -228959448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf0f0c0f3ba4ef94ba24341af9ad90c2
+      internalID: 1356785895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93c88af5b8fa7c6449a6167b3345c492
+      internalID: -2017742935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e5462c300f91c74ca372b29bab15eaf
+      internalID: 325273207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2973dfbeaa738c7418439779b0c81808
+      internalID: -1418564666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ec5d8635449c8446a4228b6c7e75061
+      internalID: 2070222281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_30
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d9e4cf6a72166e4e9970ea7703b19ab
+      internalID: -246889147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_31
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19f1778a801f7cc498a38a598c623f2f
+      internalID: -992464336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12b79da9b2ed9c143b1e955ff6c1c749
+      internalID: 107921462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_33
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bce5f0f54eaa06046803bdf0bcaac3dc
+      internalID: 1299425630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_34
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6930d844e4f64844b298299c06a7d9e
+      internalID: -2013113451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_35
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef030de0817c96a44b858ec009764181
+      internalID: -1364005446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_36
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0500852d0afa964e9d470d5b4e226ef
+      internalID: 85922220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_37
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bdcb983db795a54ea05a1a13d0bed88
+      internalID: 1072915907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_38
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8462746219fd62840b0c2647f660d561
+      internalID: 779145790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_39
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8eac71821d8cd54189ce34e99be0f0d
+      internalID: -841289217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 166eb8e84c531494e97fd5100f56d391
+      internalID: -1776378241
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_41
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 365856e07aee3424394efc64a47b7ec3
+      internalID: -1613431971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_42
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc4d1bd0959094941b0079fd24dc75e2
+      internalID: -1658211953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_43
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ed0377ba9a559d48ada42e33f7d6c97
+      internalID: 261944244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_44
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73dc6f2f0a672384cad9eaa64374f275
+      internalID: -1679432621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_45
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfd9626ab49134b439fa498b4d462588
+      internalID: 267838321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_46
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e24c5d90eb7cbc546bbadade8e199d3e
+      internalID: -1124144498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_47
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb2dfe051cce325489f792e077dbbb05
+      internalID: 4015920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fde16f41d07c584bb51ce7c81f9f9a0
+      internalID: 1010132493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_49
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d74f7b74ae7bc8b48b6cdfb20e1ffd1f
+      internalID: 848622467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_50
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67f83560e11c3e849ab43a6b42dbaad8
+      internalID: -2028047727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_51
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbdef8d6256419546a706051ac26088f
+      internalID: -402925719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_52
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0469504bca93faa4fa52aef78e9e950b
+      internalID: 506825055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_53
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 392dc43905dc36f4dae7c541043d18b7
+      internalID: 216482334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_54
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e16c2297dbe4e1341afd74bb07fcb9df
+      internalID: -32258762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_55
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6259f0891da85004c9f70c42f96eb4d8
+      internalID: 1810989948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f14311625c6c51a4f8b56b4c0af2b568
+      internalID: 1078541373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_57
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba9c7981b55e3a04391e87a28e9f5044
+      internalID: -175819165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_58
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbeb6c92afbd98544973123292d346ed
+      internalID: -486374434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_59
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbbc76dca31191449961d123ff0c2a47
+      internalID: 971498937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_60
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c54a75098eb7764ea46bb3a587463ce
+      internalID: 246888895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_61
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d267f3408e40b514c8c031202d466ac5
+      internalID: 936982399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_62
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3311224bb95d4f146842c865c63a825e
+      internalID: 355738558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_63
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78dc309fe9a8baa4e89b6a51a2e223a0
+      internalID: 1213358441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_corrupt_sheet_64
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97c5dfb411f19a64e86c5a611bbe84bb
+      internalID: 813414163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2dd00429823815d48b6020b3382d2999
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      king_corrupt_sheet_00: -1868791532
+      king_corrupt_sheet_01: -329745649
+      king_corrupt_sheet_02: -1465686822
+      king_corrupt_sheet_03: 1923419795
+      king_corrupt_sheet_04: -228959448
+      king_corrupt_sheet_05: 1356785895
+      king_corrupt_sheet_06: -2017742935
+      king_corrupt_sheet_07: 325273207
+      king_corrupt_sheet_08: -1418564666
+      king_corrupt_sheet_09: 2070222281
+      king_corrupt_sheet_10: -8092408028635176713
+      king_corrupt_sheet_11: 6802647835786751345
+      king_corrupt_sheet_12: 7316772236862683975
+      king_corrupt_sheet_13: -2890995705307959032
+      king_corrupt_sheet_14: -6186719318511074531
+      king_corrupt_sheet_15: 5795153241343597687
+      king_corrupt_sheet_16: 6949179457478264013
+      king_corrupt_sheet_17: -7806022005391830074
+      king_corrupt_sheet_18: 9162727790054776344
+      king_corrupt_sheet_19: 5164795177171290323
+      king_corrupt_sheet_20: 3462395042503377168
+      king_corrupt_sheet_21: -5132352857257526244
+      king_corrupt_sheet_22: 8449937886732893061
+      king_corrupt_sheet_23: 7108828617532497111
+      king_corrupt_sheet_24: 6078574473791060104
+      king_corrupt_sheet_25: 3511802470950966781
+      king_corrupt_sheet_26: 3945864613660645992
+      king_corrupt_sheet_27: 2626776177733793778
+      king_corrupt_sheet_28: 1572105930297400284
+      king_corrupt_sheet_29: 4535916193689595391
+      king_corrupt_sheet_30: -246889147
+      king_corrupt_sheet_31: -992464336
+      king_corrupt_sheet_32: 107921462
+      king_corrupt_sheet_33: 1299425630
+      king_corrupt_sheet_34: -2013113451
+      king_corrupt_sheet_35: -1364005446
+      king_corrupt_sheet_36: 85922220
+      king_corrupt_sheet_37: 1072915907
+      king_corrupt_sheet_38: 779145790
+      king_corrupt_sheet_39: -841289217
+      king_corrupt_sheet_40: -1776378241
+      king_corrupt_sheet_41: -1613431971
+      king_corrupt_sheet_42: -1658211953
+      king_corrupt_sheet_43: 261944244
+      king_corrupt_sheet_44: -1679432621
+      king_corrupt_sheet_45: 267838321
+      king_corrupt_sheet_46: -1124144498
+      king_corrupt_sheet_47: 4015920
+      king_corrupt_sheet_48: 1010132493
+      king_corrupt_sheet_49: 848622467
+      king_corrupt_sheet_50: -2028047727
+      king_corrupt_sheet_51: -402925719
+      king_corrupt_sheet_52: 506825055
+      king_corrupt_sheet_53: 216482334
+      king_corrupt_sheet_54: -32258762
+      king_corrupt_sheet_55: 1810989948
+      king_corrupt_sheet_56: 1078541373
+      king_corrupt_sheet_57: -175819165
+      king_corrupt_sheet_58: -486374434
+      king_corrupt_sheet_59: 971498937
+      king_corrupt_sheet_60: 246888895
+      king_corrupt_sheet_61: 936982399
+      king_corrupt_sheet_62: 355738558
+      king_corrupt_sheet_63: 1213358441
+      king_corrupt_sheet_64: 813414163
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

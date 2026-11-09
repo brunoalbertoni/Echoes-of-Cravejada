@@ -1,0 +1,797 @@
+fileFormatVersion: 2
+guid: 3d29838a6190ea54db4bf01d9a7476f6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4154236606986907973
+    second: cave_miner_sheet_0
+  - first:
+      213: 5986921207319459168
+    second: cave_miner_sheet_1
+  - first:
+      213: -4900191680658988411
+    second: cave_miner_sheet_2
+  - first:
+      213: -5692024363518271339
+    second: cave_miner_sheet_3
+  - first:
+      213: 8924899913882654929
+    second: cave_miner_sheet_4
+  - first:
+      213: 8264581448488059702
+    second: cave_miner_sheet_5
+  - first:
+      213: 5997073297855816663
+    second: cave_miner_sheet_6
+  - first:
+      213: 4090936032394262661
+    second: cave_miner_sheet_7
+  - first:
+      213: -8799726699577645897
+    second: cave_miner_sheet_8
+  - first:
+      213: 3535838608712711262
+    second: cave_miner_sheet_9
+  - first:
+      213: -5674655821162235611
+    second: cave_miner_sheet_10
+  - first:
+      213: -4983676916939868579
+    second: cave_miner_sheet_11
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: cave_miner_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 320
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 529b505a8929f31b0800000000000000
+      internalID: -5674655821162235611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 320
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d563c7aaf3c66dab0800000000000000
+      internalID: -4983676916939868579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 480
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7b7fe91ab42eb24183108aa78605493
+      internalID: 445925620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 480
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8974e5bd46ed1d2459a026b2c23109c5
+      internalID: 1722624713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 480
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adfb89dc221d7d241bd27173dfb5eedb
+      internalID: -1845057104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 480
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 20054a34aa304124ca180d4923a7ff75
+      internalID: -575635042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 480
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e7597787afabd745815ad76864560a1
+      internalID: 1073933784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 480
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 741ed7cc4c847f248a16a25ee1ee1d02
+      internalID: 1378997665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 480
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 482de4b20ef48c24894989710125b9fc
+      internalID: 1360854588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 1568
+        y: 480
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3a36386d8311be40abaaaa035d4bf0a
+      internalID: 363461520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 320
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 562b9552cad53a544ab999650d5b0367
+      internalID: -33704071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 320
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8315eec9968419548bdaad5c0e7242c7
+      internalID: -260335007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 320
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15f159099b534c747910ef7da9c54bbf
+      internalID: 1273917565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 320
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12b76baea6e00e24fa9b13912c1aa48e
+      internalID: 351051750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 320
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae96084a09c183446ba7fdb358ea5962
+      internalID: -450770999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 1568
+        y: 320
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c04556b682d85004cb496ab299a34661
+      internalID: -290611423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 160
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b2476b072d37f6439522333b6346817
+      internalID: 904620518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 160
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e0acd2e50f9452428728b1c09acffed
+      internalID: 173836205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 160
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c12fef8e26da0ef42a56c38f2c2761c7
+      internalID: -1728899642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 160
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b0e0deb39068bb42a6d156cc8a1e682
+      internalID: 1470757815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_20
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 160
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f859a3bfdf65c6b49b900a21dd74a6b1
+      internalID: -742181810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_21
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 160
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b9d54a667f833b4aa7657559e1ab922
+      internalID: -279728091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_22
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 160
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51020e87e9813654ab98b0e75fd30dad
+      internalID: 1374383568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_23
+      rect:
+        serializedVersion: 2
+        x: 1568
+        y: 160
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b6f7136b59eae540a6755ba61a3940a
+      internalID: 897784463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d21a5c8d67e3184488f6072107d7a16
+      internalID: -1054773576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_25
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27f81e67e006d234f82a95c57902820b
+      internalID: 390058536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_26
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5a4a7b2548b5a6444b12ac15624e6c98
+      internalID: -994941513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cave_miner_sheet_27
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 0
+        width: 224
+        height: 160
+      alignment: 9
+      pivot: {x: 1, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7f3109d2501c7a4997f00c84811bedf
+      internalID: -966943849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 930bde974c453a64396b05dcc0d9418a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      cave_miner_sheet_00: 445925620
+      cave_miner_sheet_01: 1722624713
+      cave_miner_sheet_02: -1845057104
+      cave_miner_sheet_03: -575635042
+      cave_miner_sheet_04: 1073933784
+      cave_miner_sheet_05: 1378997665
+      cave_miner_sheet_06: 1360854588
+      cave_miner_sheet_07: 363461520
+      cave_miner_sheet_08: -33704071
+      cave_miner_sheet_09: -260335007
+      cave_miner_sheet_10: -5674655821162235611
+      cave_miner_sheet_11: -4983676916939868579
+      cave_miner_sheet_12: 1273917565
+      cave_miner_sheet_13: 351051750
+      cave_miner_sheet_14: -450770999
+      cave_miner_sheet_15: -290611423
+      cave_miner_sheet_16: 904620518
+      cave_miner_sheet_17: 173836205
+      cave_miner_sheet_18: -1728899642
+      cave_miner_sheet_19: 1470757815
+      cave_miner_sheet_20: -742181810
+      cave_miner_sheet_21: -279728091
+      cave_miner_sheet_22: 1374383568
+      cave_miner_sheet_23: 897784463
+      cave_miner_sheet_24: -1054773576
+      cave_miner_sheet_25: 390058536
+      cave_miner_sheet_26: -994941513
+      cave_miner_sheet_27: -966943849
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

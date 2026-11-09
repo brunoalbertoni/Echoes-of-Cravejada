@@ -1,0 +1,874 @@
+fileFormatVersion: 2
+guid: 2403d6939f2ff754292e649df9a596b1
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8618089387744351703
+    second: d3_hunter_sheet_0
+  - first:
+      213: -7605661175609198124
+    second: d3_hunter_sheet_1
+  - first:
+      213: 4784600332338866606
+    second: d3_hunter_sheet_2
+  - first:
+      213: 1603901012316619510
+    second: d3_hunter_sheet_3
+  - first:
+      213: -8919093740974153185
+    second: d3_hunter_sheet_4
+  - first:
+      213: 1099050306604074978
+    second: d3_hunter_sheet_5
+  - first:
+      213: 2192590446325625663
+    second: d3_hunter_sheet_6
+  - first:
+      213: -4138191740883727135
+    second: d3_hunter_sheet_7
+  - first:
+      213: -5749210943904632221
+    second: d3_hunter_sheet_8
+  - first:
+      213: -2429916750475729075
+    second: d3_hunter_sheet_9
+  - first:
+      213: 1481451398175463450
+    second: d3_hunter_sheet_10
+  - first:
+      213: -898942434292672131
+    second: d3_hunter_sheet_11
+  - first:
+      213: -3956939521814896945
+    second: d3_hunter_sheet_12
+  - first:
+      213: -3385156095291857922
+    second: d3_hunter_sheet_13
+  - first:
+      213: 5183564359724768309
+    second: d3_hunter_sheet_14
+  - first:
+      213: 2986217076429196214
+    second: d3_hunter_sheet_15
+  - first:
+      213: 9054794166512283570
+    second: d3_hunter_sheet_16
+  - first:
+      213: -2798224607004538606
+    second: d3_hunter_sheet_17
+  - first:
+      213: -8117401037962129826
+    second: d3_hunter_sheet_18
+  - first:
+      213: 2496179791488026281
+    second: d3_hunter_sheet_19
+  - first:
+      213: -6866023108386129470
+    second: d3_hunter_sheet_20
+  - first:
+      213: -3330714215977103115
+    second: d3_hunter_sheet_21
+  - first:
+      213: 7897493756020802069
+    second: d3_hunter_sheet_22
+  - first:
+      213: 73252546242833563
+    second: d3_hunter_sheet_23
+  - first:
+      213: 289208822898828024
+    second: d3_hunter_sheet_24
+  - first:
+      213: -8827483965828637289
+    second: d3_hunter_sheet_25
+  - first:
+      213: 3696733728175451725
+    second: d3_hunter_sheet_26
+  - first:
+      213: 67085725732189982
+    second: d3_hunter_sheet_27
+  - first:
+      213: 8090265761414130525
+    second: d3_hunter_sheet_28
+  - first:
+      213: 1114393522657787355
+    second: d3_hunter_sheet_29
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: d3_hunter_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 112
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a181144923c2f8410800000000000000
+      internalID: 1481451398175463450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 112
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d79d57a6e905683f0800000000000000
+      internalID: -898942434292672131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 112
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fced48c38702619c0800000000000000
+      internalID: -3956939521814896945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 112
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef361e677728501d0800000000000000
+      internalID: -3385156095291857922
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 112
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53c15cb4258bfe740800000000000000
+      internalID: 5183564359724768309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 112
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bb84cefb9c217920800000000000000
+      internalID: 2986217076429196214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 56
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bf6e31f15719ad70800000000000000
+      internalID: 9054794166512283570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 56
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 219ccb9ab85ba29d0800000000000000
+      internalID: -2798224607004538606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 56
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5e41e883c2395f80800000000000000
+      internalID: -8117401037962129826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 56
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a607278b4634a220800000000000000
+      internalID: 2496179791488026281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_20
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 56
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c975055c5cf6b0a0800000000000000
+      internalID: -6866023108386129470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_21
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 56
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f05754411de6c1d0800000000000000
+      internalID: -3330714215977103115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_22
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 56
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5124c777ab8899d60800000000000000
+      internalID: 7897493756020802069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_23
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 56
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9c62bd7dce340100800000000000000
+      internalID: 73252546242833563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f22bc264e9730400800000000000000
+      internalID: 289208822898828024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_25
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79dd3546a1a7e7580800000000000000
+      internalID: -8827483965828637289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_26
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4e6a195dbf6d4330800000000000000
+      internalID: 3696733728175451725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_27
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1734c3bc165ee000800000000000000
+      internalID: 67085725732189982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_28
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5b289f88d5664070800000000000000
+      internalID: 8090265761414130525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 168
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: deed4d1c92df6f14a917459ea4e88d27
+      internalID: -317934792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 168
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 923d0e0a239d1ca45bcbfb9e45f449ca
+      internalID: 1103737506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 168
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d98973d0545fc84da9fe0227ded10fe
+      internalID: 254995336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 168
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: beb46a7d70cf8f14384a633ecef84af4
+      internalID: -1052639965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 168
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ee2efe1853c8514d8c3b6e0d4ce2ecb
+      internalID: 1355406347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 168
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8caca22e2a0f3a4b892c659a6a0bba4
+      internalID: -936391430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 168
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 272a5c9db642f3445b90a50381a30086
+      internalID: 444033312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 168
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ef4131fcef240941b993c9b12382a17
+      internalID: -1159563673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 112
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd1776aa3d722d94f99f93805cdda6f3
+      internalID: 489304889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_hunter_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 112
+        width: 64
+        height: 56
+      alignment: 9
+      pivot: {x: 0.375, y: 0.017857144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9888d82d9577004783e21d1be65d76e
+      internalID: 1094213273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 81b0692c138639d47ba1b7b53a574cb2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      d3_hunter_sheet_00: -317934792
+      d3_hunter_sheet_01: 1103737506
+      d3_hunter_sheet_02: 254995336
+      d3_hunter_sheet_03: -1052639965
+      d3_hunter_sheet_04: 1355406347
+      d3_hunter_sheet_05: -936391430
+      d3_hunter_sheet_06: 444033312
+      d3_hunter_sheet_07: -1159563673
+      d3_hunter_sheet_08: 489304889
+      d3_hunter_sheet_09: 1094213273
+      d3_hunter_sheet_10: 1481451398175463450
+      d3_hunter_sheet_11: -898942434292672131
+      d3_hunter_sheet_12: -3956939521814896945
+      d3_hunter_sheet_13: -3385156095291857922
+      d3_hunter_sheet_14: 5183564359724768309
+      d3_hunter_sheet_15: 2986217076429196214
+      d3_hunter_sheet_16: 9054794166512283570
+      d3_hunter_sheet_17: -2798224607004538606
+      d3_hunter_sheet_18: -8117401037962129826
+      d3_hunter_sheet_19: 2496179791488026281
+      d3_hunter_sheet_20: -6866023108386129470
+      d3_hunter_sheet_21: -3330714215977103115
+      d3_hunter_sheet_22: 7897493756020802069
+      d3_hunter_sheet_23: 73252546242833563
+      d3_hunter_sheet_24: 289208822898828024
+      d3_hunter_sheet_25: -8827483965828637289
+      d3_hunter_sheet_26: 3696733728175451725
+      d3_hunter_sheet_27: 67085725732189982
+      d3_hunter_sheet_28: 8090265761414130525
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

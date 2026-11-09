@@ -1,0 +1,641 @@
+fileFormatVersion: 2
+guid: 4dac825fb27be9540b5837177336dc1a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3388119827736031749
+    second: d4_silver_sentinel_sheet_0
+  - first:
+      213: -57081001038083861
+    second: d4_silver_sentinel_sheet_1
+  - first:
+      213: -4424535006525070262
+    second: d4_silver_sentinel_sheet_2
+  - first:
+      213: 1589155902674553346
+    second: d4_silver_sentinel_sheet_3
+  - first:
+      213: 8810124212100242301
+    second: d4_silver_sentinel_sheet_4
+  - first:
+      213: 4501599208160238913
+    second: d4_silver_sentinel_sheet_5
+  - first:
+      213: -7975087915202466422
+    second: d4_silver_sentinel_sheet_6
+  - first:
+      213: -8489291870284405651
+    second: d4_silver_sentinel_sheet_7
+  - first:
+      213: 5365325574138768973
+    second: d4_silver_sentinel_sheet_8
+  - first:
+      213: 4229062474280182848
+    second: d4_silver_sentinel_sheet_9
+  - first:
+      213: 1864111102516873658
+    second: d4_silver_sentinel_sheet_10
+  - first:
+      213: 772797911117755602
+    second: d4_silver_sentinel_sheet_11
+  - first:
+      213: -854441358133606083
+    second: d4_silver_sentinel_sheet_12
+  - first:
+      213: 5895207633209398854
+    second: d4_silver_sentinel_sheet_13
+  - first:
+      213: 361223265163751636
+    second: d4_silver_sentinel_sheet_14
+  - first:
+      213: 9006113866765609966
+    second: d4_silver_sentinel_sheet_15
+  - first:
+      213: 4729629852492871954
+    second: d4_silver_sentinel_sheet_16
+  - first:
+      213: -717961568733227197
+    second: d4_silver_sentinel_sheet_17
+  - first:
+      213: 4234746365328865682
+    second: d4_silver_sentinel_sheet_18
+  - first:
+      213: 8819729005544794663
+    second: d4_silver_sentinel_sheet_19
+  - first:
+      213: -1021761443399905734
+    second: d4_silver_sentinel_sheet_20
+  - first:
+      213: -5443244510988985205
+    second: d4_silver_sentinel_sheet_21
+  - first:
+      213: -56189591702160297
+    second: d4_silver_sentinel_sheet_22
+  - first:
+      213: -5330514720676024840
+    second: d4_silver_sentinel_sheet_23
+  - first:
+      213: 101329698075455514
+    second: d4_silver_sentinel_sheet_24
+  - first:
+      213: 6654976579436027074
+    second: d4_silver_sentinel_sheet_25
+  - first:
+      213: 1872440591314373680
+    second: d4_silver_sentinel_sheet_26
+  - first:
+      213: -3251339814672639096
+    second: d4_silver_sentinel_sheet_27
+  - first:
+      213: 8153848727058266703
+    second: d4_silver_sentinel_sheet_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab94167db27aed910800000000000000
+      internalID: 1864111102516873658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d4765f0b9789ba00800000000000000
+      internalID: 772797911117755602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d394b0f9c1a6424f0800000000000000
+      internalID: -854441358133606083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6461e96bb1cffc150800000000000000
+      internalID: 5895207633209398854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d031b455a2530500800000000000000
+      internalID: 361223265163751636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eeba84b68d42cfc70800000000000000
+      internalID: 9006113866765609966
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 219bbecca4503a140800000000000000
+      internalID: 4729629852492871954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3471645d1c94906f0800000000000000
+      internalID: -717961568733227197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 299bd43f167d4ca30800000000000000
+      internalID: 4234746365328865682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e3da9c5d425b94449d89d624358be85
+      internalID: 1759357033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0c667e492252fb4f83ff5a281c04e34
+      internalID: -700944267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1fd1c685f201df48a647a9c25068ac7
+      internalID: 767719926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2f2e19e1226cda4d921a0be151c9bc1
+      internalID: -977343618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b94889653b48674ebecc4365cfdab64
+      internalID: 945403027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4ae3d3f2cc1eb748a6a2ea11a3a7150
+      internalID: 1189433388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 155a70d2a31c288498b13a55e71d2e42
+      internalID: -3328076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 762a8bc1aeeae62428788f27596e1d61
+      internalID: -273803898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa169acc3348cbf4ea9a2666c272682a
+      internalID: -602099589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_silver_sentinel_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0e55b792703a31643838c9627a97ffa9
+      internalID: -355386753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e4fad39c6e94cf941a1f94d035daf628
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      d4_silver_sentinel_sheet_00: 1759357033
+      d4_silver_sentinel_sheet_01: -700944267
+      d4_silver_sentinel_sheet_02: 767719926
+      d4_silver_sentinel_sheet_03: -977343618
+      d4_silver_sentinel_sheet_04: 945403027
+      d4_silver_sentinel_sheet_05: 1189433388
+      d4_silver_sentinel_sheet_06: -3328076
+      d4_silver_sentinel_sheet_07: -273803898
+      d4_silver_sentinel_sheet_08: -602099589
+      d4_silver_sentinel_sheet_09: -355386753
+      d4_silver_sentinel_sheet_10: 1864111102516873658
+      d4_silver_sentinel_sheet_11: 772797911117755602
+      d4_silver_sentinel_sheet_12: -854441358133606083
+      d4_silver_sentinel_sheet_13: 5895207633209398854
+      d4_silver_sentinel_sheet_14: 361223265163751636
+      d4_silver_sentinel_sheet_15: 9006113866765609966
+      d4_silver_sentinel_sheet_16: 4729629852492871954
+      d4_silver_sentinel_sheet_17: -717961568733227197
+      d4_silver_sentinel_sheet_18: 4234746365328865682
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

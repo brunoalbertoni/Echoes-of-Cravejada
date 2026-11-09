@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: 58f1834c97c7d3948aeb7d23b31c2f96
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2281315523311911402
+    second: d3_mite_sheet_0
+  - first:
+      213: 277324480044625415
+    second: d3_mite_sheet_1
+  - first:
+      213: 4233717909305913319
+    second: d3_mite_sheet_2
+  - first:
+      213: -8104540868122139420
+    second: d3_mite_sheet_3
+  - first:
+      213: -299101964042225004
+    second: d3_mite_sheet_4
+  - first:
+      213: 3327363699503041237
+    second: d3_mite_sheet_5
+  - first:
+      213: -6813956631756837623
+    second: d3_mite_sheet_6
+  - first:
+      213: 4024052459028272473
+    second: d3_mite_sheet_7
+  - first:
+      213: -8690786732994036218
+    second: d3_mite_sheet_8
+  - first:
+      213: 2342737256494020680
+    second: d3_mite_sheet_9
+  - first:
+      213: -1659584043234337588
+    second: d3_mite_sheet_10
+  - first:
+      213: -4972272740208247548
+    second: d3_mite_sheet_11
+  - first:
+      213: 5470283588078867052
+    second: d3_mite_sheet_12
+  - first:
+      213: -3989747018712740501
+    second: d3_mite_sheet_13
+  - first:
+      213: -2130654946375742936
+    second: d3_mite_sheet_14
+  - first:
+      213: -5286553585318301699
+    second: d3_mite_sheet_15
+  - first:
+      213: 4084278185913797176
+    second: d3_mite_sheet_16
+  - first:
+      213: -4809368919385056218
+    second: d3_mite_sheet_17
+  - first:
+      213: 8920565222834396833
+    second: d3_mite_sheet_18
+  - first:
+      213: -8487055527511224949
+    second: d3_mite_sheet_19
+  - first:
+      213: -3117855791276057713
+    second: d3_mite_sheet_20
+  - first:
+      213: 488250595155102325
+    second: d3_mite_sheet_21
+  - first:
+      213: -8375107590303329544
+    second: d3_mite_sheet_22
+  - first:
+      213: -5558686886476178451
+    second: d3_mite_sheet_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: d3_mite_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 0
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccc5c140b19f7f8e0800000000000000
+      internalID: -1659584043234337588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40d77897940fefab0800000000000000
+      internalID: -4972272740208247548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c621718c0f95aeb40800000000000000
+      internalID: 5470283588078867052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 0
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6d04fd993291a8c0800000000000000
+      internalID: -3989747018712740501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82a485e6d946e62e0800000000000000
+      internalID: -2130654946375742936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dffe805068362a6b0800000000000000
+      internalID: -5286553585318301699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 28
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cad0091c2e8134e4c8ca54c1d31a969f
+      internalID: -1287925761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 28
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ef8a9bd8d12c8243b65446ebc2b8751
+      internalID: 146629708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 28
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 526acd90a8e91174dbcf032caa23d0a6
+      internalID: 1762999296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 28
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4737aa5e7f4668f4f8d9e4a4fa26dd9a
+      internalID: 1802941495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 28
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49e43151a930bcd409c6d741d9c711b8
+      internalID: 706254979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 28
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 761ff4d17e158ca479596d0caf52ddfa
+      internalID: -1861406587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 28
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55a3cb9a214566f498672b21efaebb0a
+      internalID: 1345245416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 28
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 252511f5e4f67d044a17ae50d8546e8e
+      internalID: -1556198019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01017015ff616224cbec951cb3c6c622
+      internalID: 832151400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_mite_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 0
+        width: 40
+        height: 28
+      alignment: 9
+      pivot: {x: 0.5, y: 0.035714287}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 552653463afd3e84ea4901eb52e81eef
+      internalID: -66285775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 215e454024305c1469689e45956ddae4
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      d3_mite_sheet_00: -1287925761
+      d3_mite_sheet_01: 146629708
+      d3_mite_sheet_02: 1762999296
+      d3_mite_sheet_03: 1802941495
+      d3_mite_sheet_04: 706254979
+      d3_mite_sheet_05: -1861406587
+      d3_mite_sheet_06: 1345245416
+      d3_mite_sheet_07: -1556198019
+      d3_mite_sheet_08: 832151400
+      d3_mite_sheet_09: -66285775
+      d3_mite_sheet_10: -1659584043234337588
+      d3_mite_sheet_11: -4972272740208247548
+      d3_mite_sheet_12: 5470283588078867052
+      d3_mite_sheet_13: -3989747018712740501
+      d3_mite_sheet_14: -2130654946375742936
+      d3_mite_sheet_15: -5286553585318301699
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

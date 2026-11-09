@@ -1,0 +1,744 @@
+fileFormatVersion: 2
+guid: 0e097345ea3f42144aedc39b04cce529
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 14255108790491625
+    second: king_radiant_sheet_0
+  - first:
+      213: 5655109095967351849
+    second: king_radiant_sheet_1
+  - first:
+      213: 7107900625543459669
+    second: king_radiant_sheet_2
+  - first:
+      213: -220927326796026394
+    second: king_radiant_sheet_3
+  - first:
+      213: -2511813227876850340
+    second: king_radiant_sheet_4
+  - first:
+      213: -6048211364229775486
+    second: king_radiant_sheet_5
+  - first:
+      213: 1560757929707337683
+    second: king_radiant_sheet_6
+  - first:
+      213: 4705549135331636686
+    second: king_radiant_sheet_7
+  - first:
+      213: 4898108047582212293
+    second: king_radiant_sheet_8
+  - first:
+      213: -6872871715073070795
+    second: king_radiant_sheet_9
+  - first:
+      213: -2605719277040355263
+    second: king_radiant_sheet_10
+  - first:
+      213: 3942380626202383385
+    second: king_radiant_sheet_11
+  - first:
+      213: 472662290375648000
+    second: king_radiant_sheet_12
+  - first:
+      213: -7583283344557810562
+    second: king_radiant_sheet_13
+  - first:
+      213: -3226199460646071731
+    second: king_radiant_sheet_14
+  - first:
+      213: -8278254261512915487
+    second: king_radiant_sheet_15
+  - first:
+      213: 3819241026564668015
+    second: king_radiant_sheet_16
+  - first:
+      213: 3596598724259756102
+    second: king_radiant_sheet_17
+  - first:
+      213: -7445900001628730456
+    second: king_radiant_sheet_18
+  - first:
+      213: -4454836766418079133
+    second: king_radiant_sheet_19
+  - first:
+      213: -6949258742894178753
+    second: king_radiant_sheet_20
+  - first:
+      213: -4910686767838003757
+    second: king_radiant_sheet_21
+  - first:
+      213: 1727250316238844466
+    second: king_radiant_sheet_22
+  - first:
+      213: -3358483584479787363
+    second: king_radiant_sheet_23
+  - first:
+      213: -4286894018360530372
+    second: king_radiant_sheet_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 24
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: king_radiant_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 288
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1483f9b8f10a6dbd0800000000000000
+      internalID: -2605719277040355263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 288
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 914dc2aba4626b630800000000000000
+      internalID: 3942380626202383385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 288
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 003209c49db3f8600800000000000000
+      internalID: 472662290375648000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 288
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7cde70e9f3c2c690800000000000000
+      internalID: -7583283344557810562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 2304
+        y: 288
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4252a50fac3a33d0800000000000000
+      internalID: -3226199460646071731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 2688
+        y: 288
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e5b826fb9bbd1d80800000000000000
+      internalID: -8278254261512915487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6a3cfb7a7ba00530800000000000000
+      internalID: 3819241026564668015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 648302feb7fa9e130800000000000000
+      internalID: 3596598724259756102
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8abc6d90669daa890800000000000000
+      internalID: -7445900001628730456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 362fc4d409d3d22c0800000000000000
+      internalID: -4454836766418079133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_20
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3ec389fdf54f8f90800000000000000
+      internalID: -6949258742894178753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_21
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 0
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ddfdcf076cb9dbb0800000000000000
+      internalID: -4910686767838003757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_22
+      rect:
+        serializedVersion: 2
+        x: 2304
+        y: 0
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 232f891e20d68f710800000000000000
+      internalID: 1727250316238844466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_23
+      rect:
+        serializedVersion: 2
+        x: 2688
+        y: 0
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d960a1359f44461d0800000000000000
+      internalID: -3358483584479787363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 576
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a250dbfb24ec0940a8f70215648bb50
+      internalID: 1247488478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 576
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71a23143de9579540b24b1f2d828359d
+      internalID: 315863211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 576
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f075f139cfdaeb342a82b3e521250353
+      internalID: 1910568399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 576
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c3384b0689783c409e8303849140658
+      internalID: -500408806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 576
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35471b1251a16c1479f3973f41f873a6
+      internalID: -404267683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 576
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e55efd4885badb04f9aa028d4f6b5e16
+      internalID: -481162319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 2304
+        y: 576
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c82c7244f15d1b4dbcf689ccec1c5e4
+      internalID: -1880455119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 2688
+        y: 576
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66e4448539603654fb55ca7dc084ab96
+      internalID: -1581360286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 288
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b3f7641398a70846a6a6e2295c5f9b0
+      internalID: -1805093282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_radiant_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 288
+        width: 384
+        height: 288
+      alignment: 9
+      pivot: {x: 0.5, y: 0.013888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b674138e56b84484492415b038f1c859
+      internalID: 1629076509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 7ff617b71ec38fb41bdc72bf177b9294
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      king_radiant_sheet_00: 1247488478
+      king_radiant_sheet_01: 315863211
+      king_radiant_sheet_02: 1910568399
+      king_radiant_sheet_03: -500408806
+      king_radiant_sheet_04: -404267683
+      king_radiant_sheet_05: -481162319
+      king_radiant_sheet_06: -1880455119
+      king_radiant_sheet_07: -1581360286
+      king_radiant_sheet_08: -1805093282
+      king_radiant_sheet_09: 1629076509
+      king_radiant_sheet_10: -2605719277040355263
+      king_radiant_sheet_11: 3942380626202383385
+      king_radiant_sheet_12: 472662290375648000
+      king_radiant_sheet_13: -7583283344557810562
+      king_radiant_sheet_14: -3226199460646071731
+      king_radiant_sheet_15: -8278254261512915487
+      king_radiant_sheet_16: 3819241026564668015
+      king_radiant_sheet_17: 3596598724259756102
+      king_radiant_sheet_18: -7445900001628730456
+      king_radiant_sheet_19: -4454836766418079133
+      king_radiant_sheet_20: -6949258742894178753
+      king_radiant_sheet_21: -4910686767838003757
+      king_radiant_sheet_22: 1727250316238844466
+      king_radiant_sheet_23: -3358483584479787363
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

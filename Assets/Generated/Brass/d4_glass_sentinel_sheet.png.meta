@@ -1,0 +1,641 @@
+fileFormatVersion: 2
+guid: 8a5e5d435fa251145a25af87873f786a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4352345990643796311
+    second: d4_glass_sentinel_sheet_0
+  - first:
+      213: -8379177344970398776
+    second: d4_glass_sentinel_sheet_1
+  - first:
+      213: -7859651470361346384
+    second: d4_glass_sentinel_sheet_2
+  - first:
+      213: 439332196425137627
+    second: d4_glass_sentinel_sheet_3
+  - first:
+      213: -169005663670878647
+    second: d4_glass_sentinel_sheet_4
+  - first:
+      213: 3445819300309883935
+    second: d4_glass_sentinel_sheet_5
+  - first:
+      213: -7170859190622516184
+    second: d4_glass_sentinel_sheet_6
+  - first:
+      213: -1543675670096587327
+    second: d4_glass_sentinel_sheet_7
+  - first:
+      213: 3089364686700167317
+    second: d4_glass_sentinel_sheet_8
+  - first:
+      213: -9032536519811700460
+    second: d4_glass_sentinel_sheet_9
+  - first:
+      213: -2150837057790796341
+    second: d4_glass_sentinel_sheet_10
+  - first:
+      213: 7138330552728910565
+    second: d4_glass_sentinel_sheet_11
+  - first:
+      213: -5122997616046878783
+    second: d4_glass_sentinel_sheet_12
+  - first:
+      213: 6019909422953935633
+    second: d4_glass_sentinel_sheet_13
+  - first:
+      213: 5718997630898584441
+    second: d4_glass_sentinel_sheet_14
+  - first:
+      213: -6854523803841816192
+    second: d4_glass_sentinel_sheet_15
+  - first:
+      213: 4738648822861011600
+    second: d4_glass_sentinel_sheet_16
+  - first:
+      213: -4672219250008122635
+    second: d4_glass_sentinel_sheet_17
+  - first:
+      213: 5115410771856143562
+    second: d4_glass_sentinel_sheet_18
+  - first:
+      213: 3731260976139522187
+    second: d4_glass_sentinel_sheet_19
+  - first:
+      213: 8070058593027967646
+    second: d4_glass_sentinel_sheet_20
+  - first:
+      213: 8158482409298113981
+    second: d4_glass_sentinel_sheet_21
+  - first:
+      213: 7252701891233632698
+    second: d4_glass_sentinel_sheet_22
+  - first:
+      213: 6001124223676519239
+    second: d4_glass_sentinel_sheet_23
+  - first:
+      213: 4974756373883230955
+    second: d4_glass_sentinel_sheet_24
+  - first:
+      213: -9077287795905583755
+    second: d4_glass_sentinel_sheet_25
+  - first:
+      213: -6155179968677803195
+    second: d4_glass_sentinel_sheet_26
+  - first:
+      213: 1594093405016435133
+    second: d4_glass_sentinel_sheet_27
+  - first:
+      213: 2587132195535247278
+    second: d4_glass_sentinel_sheet_28
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcd12a07711b622e0800000000000000
+      internalID: -2150837057790796341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ea79b431d1701360800000000000000
+      internalID: 7138330552728910565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cf4a5e9fc477e8b0800000000000000
+      internalID: -5122997616046878783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 113323fa9b30b8350800000000000000
+      internalID: 6019909422953935633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97bb2057b06fd5f40800000000000000
+      internalID: 5718997630898584441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0899c8fcae6dfd0a0800000000000000
+      internalID: -6854523803841816192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09a14f97fff03c140800000000000000
+      internalID: 4738648822861011600
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fa168ab851f82fb0800000000000000
+      internalID: -4672219250008122635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac431b09ef69df640800000000000000
+      internalID: 5115410771856143562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5799bc337e27ce34a8b5aae2e6646c98
+      internalID: -188028822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 081a6a1157e364d41b4241e26782bbba
+      internalID: -846787786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04bf1d1fb2681e343890fc021cad93de
+      internalID: 956796349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d6f77d3a4294374985b2ef2a99c517e
+      internalID: -220297320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8f164b7af61dd943999309b052c6c50
+      internalID: 1320164179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: befbe37d7eb58f44d9e2dfc810510a8b
+      internalID: 1242982512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed02751b92646b44281cce46b11fc39e
+      internalID: -1637219914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 128
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd40af2c621fb944d8cf72fc2d51bc51
+      internalID: -708629858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b328a10d349949b4e9366d37ea8df4e8
+      internalID: -840790844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_glass_sentinel_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 64
+        width: 56
+        height: 64
+      alignment: 9
+      pivot: {x: 0.42857143, y: 0.015625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d60bc41b3916cbd43b46d974a6231937
+      internalID: -1256775161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 34bc6cff8f2834446a07fd8755d1ea50
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      d4_glass_sentinel_sheet_00: -188028822
+      d4_glass_sentinel_sheet_01: -846787786
+      d4_glass_sentinel_sheet_02: 956796349
+      d4_glass_sentinel_sheet_03: -220297320
+      d4_glass_sentinel_sheet_04: 1320164179
+      d4_glass_sentinel_sheet_05: 1242982512
+      d4_glass_sentinel_sheet_06: -1637219914
+      d4_glass_sentinel_sheet_07: -708629858
+      d4_glass_sentinel_sheet_08: -840790844
+      d4_glass_sentinel_sheet_09: -1256775161
+      d4_glass_sentinel_sheet_10: -2150837057790796341
+      d4_glass_sentinel_sheet_11: 7138330552728910565
+      d4_glass_sentinel_sheet_12: -5122997616046878783
+      d4_glass_sentinel_sheet_13: 6019909422953935633
+      d4_glass_sentinel_sheet_14: 5718997630898584441
+      d4_glass_sentinel_sheet_15: -6854523803841816192
+      d4_glass_sentinel_sheet_16: 4738648822861011600
+      d4_glass_sentinel_sheet_17: -4672219250008122635
+      d4_glass_sentinel_sheet_18: 5115410771856143562
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

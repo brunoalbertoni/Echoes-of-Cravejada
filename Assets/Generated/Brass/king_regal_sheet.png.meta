@@ -1,0 +1,1807 @@
+fileFormatVersion: 2
+guid: 00eca1a0fdfed2648bc5670e79643417
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3977280638564330521
+    second: king_regal_sheet_0
+  - first:
+      213: -1938793665781387528
+    second: king_regal_sheet_1
+  - first:
+      213: -2507183678453061020
+    second: king_regal_sheet_2
+  - first:
+      213: -700361962213179760
+    second: king_regal_sheet_3
+  - first:
+      213: 2306769303035794475
+    second: king_regal_sheet_4
+  - first:
+      213: -2911379781300839596
+    second: king_regal_sheet_5
+  - first:
+      213: -6087412203146540213
+    second: king_regal_sheet_6
+  - first:
+      213: -7091274498285136692
+    second: king_regal_sheet_7
+  - first:
+      213: -6208673960717701377
+    second: king_regal_sheet_8
+  - first:
+      213: 6587323099617525478
+    second: king_regal_sheet_9
+  - first:
+      213: -5064026060428845077
+    second: king_regal_sheet_10
+  - first:
+      213: 4913367912246276747
+    second: king_regal_sheet_11
+  - first:
+      213: 6887010897279677187
+    second: king_regal_sheet_12
+  - first:
+      213: -5480332000315388840
+    second: king_regal_sheet_13
+  - first:
+      213: 5942568927188474604
+    second: king_regal_sheet_14
+  - first:
+      213: -3875891129687101223
+    second: king_regal_sheet_15
+  - first:
+      213: -6846175295589701971
+    second: king_regal_sheet_16
+  - first:
+      213: 7153587148706479173
+    second: king_regal_sheet_17
+  - first:
+      213: 221738556805602354
+    second: king_regal_sheet_18
+  - first:
+      213: -444946753065729538
+    second: king_regal_sheet_19
+  - first:
+      213: 626636538731413406
+    second: king_regal_sheet_20
+  - first:
+      213: 7278354836423246193
+    second: king_regal_sheet_21
+  - first:
+      213: -6146611187984911698
+    second: king_regal_sheet_22
+  - first:
+      213: 4742993639946232192
+    second: king_regal_sheet_23
+  - first:
+      213: -5471770328970682601
+    second: king_regal_sheet_24
+  - first:
+      213: 7335323870229689787
+    second: king_regal_sheet_25
+  - first:
+      213: -582179878700549813
+    second: king_regal_sheet_26
+  - first:
+      213: 5417996396107430146
+    second: king_regal_sheet_27
+  - first:
+      213: -4966231650804185206
+    second: king_regal_sheet_28
+  - first:
+      213: -2040877638089792567
+    second: king_regal_sheet_29
+  - first:
+      213: 8389874031254888414
+    second: king_regal_sheet_30
+  - first:
+      213: 1351038558229446737
+    second: king_regal_sheet_31
+  - first:
+      213: -2741401998679834610
+    second: king_regal_sheet_32
+  - first:
+      213: -156645359181280082
+    second: king_regal_sheet_33
+  - first:
+      213: 4737389418867720608
+    second: king_regal_sheet_34
+  - first:
+      213: 4788031534262090208
+    second: king_regal_sheet_35
+  - first:
+      213: -4488992066587226059
+    second: king_regal_sheet_36
+  - first:
+      213: -4938329270197929141
+    second: king_regal_sheet_37
+  - first:
+      213: -4397002265058255105
+    second: king_regal_sheet_38
+  - first:
+      213: 2578900641319287678
+    second: king_regal_sheet_39
+  - first:
+      213: -8176037001827970361
+    second: king_regal_sheet_40
+  - first:
+      213: 5019086946019488592
+    second: king_regal_sheet_41
+  - first:
+      213: 3316976781589967769
+    second: king_regal_sheet_42
+  - first:
+      213: 8790481814376000689
+    second: king_regal_sheet_43
+  - first:
+      213: 6281247367161043160
+    second: king_regal_sheet_44
+  - first:
+      213: -9018346889725330601
+    second: king_regal_sheet_45
+  - first:
+      213: -1685228777468088159
+    second: king_regal_sheet_46
+  - first:
+      213: -6684058079738836274
+    second: king_regal_sheet_47
+  - first:
+      213: 3403344220592962038
+    second: king_regal_sheet_48
+  - first:
+      213: 5027183294047424389
+    second: king_regal_sheet_49
+  - first:
+      213: -853228699692428963
+    second: king_regal_sheet_50
+  - first:
+      213: 5933166856555942159
+    second: king_regal_sheet_51
+  - first:
+      213: 8025835931683012086
+    second: king_regal_sheet_52
+  - first:
+      213: 1149268549009057197
+    second: king_regal_sheet_53
+  - first:
+      213: -3025724604559738808
+    second: king_regal_sheet_54
+  - first:
+      213: -1615606864794069045
+    second: king_regal_sheet_55
+  - first:
+      213: -2760649587610616047
+    second: king_regal_sheet_56
+  - first:
+      213: 4422052150001455753
+    second: king_regal_sheet_57
+  - first:
+      213: -5364003156368581709
+    second: king_regal_sheet_58
+  - first:
+      213: 3685651974216258001
+    second: king_regal_sheet_59
+  - first:
+      213: 1111828066540320667
+    second: king_regal_sheet_60
+  - first:
+      213: 7831799656216463744
+    second: king_regal_sheet_61
+  - first:
+      213: 7764592373630374984
+    second: king_regal_sheet_62
+  - first:
+      213: 2080178538021225422
+    second: king_regal_sheet_63
+  - first:
+      213: -1451241737283367444
+    second: king_regal_sheet_64
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: king_regal_sheet_10
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bef51ded027f8b9b0800000000000000
+      internalID: -5064026060428845077
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_11
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b82fd34851acf2440800000000000000
+      internalID: 4913367912246276747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_12
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30379901ce3939f50800000000000000
+      internalID: 6887010897279677187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_13
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85ccefde413f1f3b0800000000000000
+      internalID: -5480332000315388840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_14
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cead75644fe387250800000000000000
+      internalID: 5942568927188474604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_15
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d0b9ea8d81163ac0800000000000000
+      internalID: -3875891129687101223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da6225c57df7df0a0800000000000000
+      internalID: -6846175295589701971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_17
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54cf2744c95a64360800000000000000
+      internalID: 7153587148706479173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_18
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23cd767ea06c31300800000000000000
+      internalID: 221738556805602354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_19
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef1cd87194b33d9f0800000000000000
+      internalID: -444946753065729538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_20
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9fbd56ac9242b800800000000000000
+      internalID: 626636538731413406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_21
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 171014e4929e10560800000000000000
+      internalID: 7278354836423246193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_22
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea2b7bfc0b9d2baa0800000000000000
+      internalID: -6146611187984911698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_23
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 1620
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 081aee8069f72d140800000000000000
+      internalID: 4742993639946232192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71f1e2160ed5014b0800000000000000
+      internalID: -5471770328970682601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_25
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb5fb7d123e4cc560800000000000000
+      internalID: 7335323870229689787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_26
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b497cae1c7eabe7f0800000000000000
+      internalID: -582179878700549813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_27
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20974583407903b40800000000000000
+      internalID: 5417996396107430146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_28
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a87c38530a6641bb0800000000000000
+      internalID: -4966231650804185206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_29
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c3ae97e9985da3e0800000000000000
+      internalID: -2040877638089792567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_30
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edfd83fdaf1de6470800000000000000
+      internalID: 8389874031254888414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_31
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 1350
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1504f1d196adfb210800000000000000
+      internalID: 1351038558229446737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e008422286594f9d0800000000000000
+      internalID: -2741401998679834610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_33
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eac494230eb73ddf0800000000000000
+      internalID: -156645359181280082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_34
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a10e42a3969eb140800000000000000
+      internalID: 4737389418867720608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_35
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e97f05ff41827240800000000000000
+      internalID: 4788031534262090208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_36
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5309587cf75e3b1c0800000000000000
+      internalID: -4488992066587226059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_37
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4b30f171b7877bb0800000000000000
+      internalID: -4938329270197929141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_38
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffe5d9a7cb5baf2c0800000000000000
+      internalID: -4397002265058255105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_39
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 1080
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7bfcdc38781ac320800000000000000
+      internalID: 2578900641319287678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_40
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c218935aa1e88e80800000000000000
+      internalID: -8176037001827970361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_41
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 053ba423cf067a540800000000000000
+      internalID: 5019086946019488592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_42
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99373ea0fc4480e20800000000000000
+      internalID: 3316976781589967769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_43
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bca96ed2a01ef970800000000000000
+      internalID: 8790481814376000689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_44
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d8ddf173397b2750800000000000000
+      internalID: 6281247367161043160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_45
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75b3ca8f84568d280800000000000000
+      internalID: -9018346889725330601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_46
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a0bfb90b5ddc98e0800000000000000
+      internalID: -1685228777468088159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_47
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 810
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eca461317947d33a0800000000000000
+      internalID: -6684058079738836274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_48
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f972d4798b1b3f20800000000000000
+      internalID: 3403344220592962038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_49
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58f897e129424c540800000000000000
+      internalID: 5027183294047424389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_50
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d511aaaa409b824f0800000000000000
+      internalID: -853228699692428963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_51
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f01532e12d7d65250800000000000000
+      internalID: 5933166856555942159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_52
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fd3885d14f716f60800000000000000
+      internalID: 8025835931683012086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_53
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da5a63ff7a503ff00800000000000000
+      internalID: 1149268549009057197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_54
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 848be0dc0877206d0800000000000000
+      internalID: -3025724604559738808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_55
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 540
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc75447cd163499e0800000000000000
+      internalID: -1615606864794069045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4f23ba35a40a4f48a44d93fa7a91186
+      internalID: -2081975778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73bad45f8be08f24d9978688125741b9
+      internalID: -1600754461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e42f3089fa56efc448a419e4333e5756
+      internalID: 637413438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cdedf2168dacdc4289f16692635b39c
+      internalID: -2140171062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45a69275cdef80343961bcc22552243e
+      internalID: 613012733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4dc1e4fe04cf6942bc894f6098963a4
+      internalID: -1334667163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39ecd278bb0720945b4660d7c3198c5d
+      internalID: 522758633
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 2160
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 655a2b4bd3860e145bf0761739babc43
+      internalID: -113433063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_08
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74f8a33a0f1656c4387e5fad804c93cd
+      internalID: 816384244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_09
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 1890
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6376c611f5ab51e488c2c8e12cd457b0
+      internalID: 40703331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_56
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05cf958c5c82fb84a93ed8cd45c45783
+      internalID: 1689101211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_57
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5dc2658afad82b4bb8cd2f797265364
+      internalID: -1769305003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_58
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8412188005a73b4c901ba4e831ae7c2
+      internalID: 421857666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_59
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9b9320c6ec01644b8f0bcb37a374142
+      internalID: -975843425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_60
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 065d8cb99d209f24fb62cb3230eca2fc
+      internalID: 1785056529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_61
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00fddd99176527b48b6c1a383d32c7a5
+      internalID: 501985170
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_62
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c63f9f9ce19f1b4baa667886f94ccab
+      internalID: -875331144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_63
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 270
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0afd5c9102d3974d9434f429a172e9c
+      internalID: 1568907526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: king_regal_sheet_64
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b3790268a35cc24ca25adadef8e6633
+      internalID: 13885970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 07c1edf984b688a48908d6ee31d076c7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      king_regal_sheet_00: -2081975778
+      king_regal_sheet_01: -1600754461
+      king_regal_sheet_02: 637413438
+      king_regal_sheet_03: -2140171062
+      king_regal_sheet_04: 613012733
+      king_regal_sheet_05: -1334667163
+      king_regal_sheet_06: 522758633
+      king_regal_sheet_07: -113433063
+      king_regal_sheet_08: 816384244
+      king_regal_sheet_09: 40703331
+      king_regal_sheet_10: -5064026060428845077
+      king_regal_sheet_11: 4913367912246276747
+      king_regal_sheet_12: 6887010897279677187
+      king_regal_sheet_13: -5480332000315388840
+      king_regal_sheet_14: 5942568927188474604
+      king_regal_sheet_15: -3875891129687101223
+      king_regal_sheet_16: -6846175295589701971
+      king_regal_sheet_17: 7153587148706479173
+      king_regal_sheet_18: 221738556805602354
+      king_regal_sheet_19: -444946753065729538
+      king_regal_sheet_20: 626636538731413406
+      king_regal_sheet_21: 7278354836423246193
+      king_regal_sheet_22: -6146611187984911698
+      king_regal_sheet_23: 4742993639946232192
+      king_regal_sheet_24: -5471770328970682601
+      king_regal_sheet_25: 7335323870229689787
+      king_regal_sheet_26: -582179878700549813
+      king_regal_sheet_27: 5417996396107430146
+      king_regal_sheet_28: -4966231650804185206
+      king_regal_sheet_29: -2040877638089792567
+      king_regal_sheet_30: 8389874031254888414
+      king_regal_sheet_31: 1351038558229446737
+      king_regal_sheet_32: -2741401998679834610
+      king_regal_sheet_33: -156645359181280082
+      king_regal_sheet_34: 4737389418867720608
+      king_regal_sheet_35: 4788031534262090208
+      king_regal_sheet_36: -4488992066587226059
+      king_regal_sheet_37: -4938329270197929141
+      king_regal_sheet_38: -4397002265058255105
+      king_regal_sheet_39: 2578900641319287678
+      king_regal_sheet_40: -8176037001827970361
+      king_regal_sheet_41: 5019086946019488592
+      king_regal_sheet_42: 3316976781589967769
+      king_regal_sheet_43: 8790481814376000689
+      king_regal_sheet_44: 6281247367161043160
+      king_regal_sheet_45: -9018346889725330601
+      king_regal_sheet_46: -1685228777468088159
+      king_regal_sheet_47: -6684058079738836274
+      king_regal_sheet_48: 3403344220592962038
+      king_regal_sheet_49: 5027183294047424389
+      king_regal_sheet_50: -853228699692428963
+      king_regal_sheet_51: 5933166856555942159
+      king_regal_sheet_52: 8025835931683012086
+      king_regal_sheet_53: 1149268549009057197
+      king_regal_sheet_54: -3025724604559738808
+      king_regal_sheet_55: -1615606864794069045
+      king_regal_sheet_56: 1689101211
+      king_regal_sheet_57: -1769305003
+      king_regal_sheet_58: 421857666
+      king_regal_sheet_59: -975843425
+      king_regal_sheet_60: 1785056529
+      king_regal_sheet_61: 501985170
+      king_regal_sheet_62: -875331144
+      king_regal_sheet_63: 1568907526
+      king_regal_sheet_64: 13885970
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
