@@ -41,7 +41,7 @@ namespace EchoesOfCravejada.EditorTools
             yield return ("palace_core_socket", CoreSocket, false, false);
             yield return ("palace_mirror_shard", MirrorShard, false, false);
             yield return ("palace_carpet", Carpet, false, true);
-            yield return ("palace_crown", FallenCrown, false, false);
+            yield return ("palace_crown", LootArt.FallenCrown, false, false);
         }
 
         /// <summary>Estandarte de veludo da Coroa, 26x58: a coroa e o 925 bordados a ouro, franja embaixo.</summary>

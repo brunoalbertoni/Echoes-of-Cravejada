@@ -1,0 +1,541 @@
+fileFormatVersion: 2
+guid: da9839801a2ada745a93a7f64f75ad56
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 351237505856481523
+    second: d5_king_wreck_sheet_0
+  - first:
+      213: -3659033409924772830
+    second: d5_king_wreck_sheet_1
+  - first:
+      213: -1664402639191293020
+    second: d5_king_wreck_sheet_2
+  - first:
+      213: 8193730365535279972
+    second: d5_king_wreck_sheet_3
+  - first:
+      213: 4068519476735147621
+    second: d5_king_wreck_sheet_4
+  - first:
+      213: -8376800114921239664
+    second: d5_king_wreck_sheet_5
+  - first:
+      213: -3398078180752854174
+    second: d5_king_wreck_sheet_6
+  - first:
+      213: 6809977162086361596
+    second: d5_king_wreck_sheet_7
+  - first:
+      213: -6125129152217403483
+    second: d5_king_wreck_sheet_8
+  - first:
+      213: 2997853032184891156
+    second: d5_king_wreck_sheet_9
+  - first:
+      213: -3651071188027201452
+    second: d5_king_wreck_sheet_10
+  - first:
+      213: -3099292126481771155
+    second: d5_king_wreck_sheet_11
+  - first:
+      213: -7984010960180531562
+    second: d5_king_wreck_sheet_12
+  - first:
+      213: 1615068508338978603
+    second: d5_king_wreck_sheet_13
+  - first:
+      213: 1974071516860659510
+    second: d5_king_wreck_sheet_14
+  - first:
+      213: -7174782291139429372
+    second: d5_king_wreck_sheet_15
+  - first:
+      213: 1883717474255648327
+    second: d5_king_wreck_sheet_16
+  - first:
+      213: 6652736803927539608
+    second: d5_king_wreck_sheet_17
+  - first:
+      213: 3762053185422335363
+    second: d5_king_wreck_sheet_18
+  - first:
+      213: -8648162361952345776
+    second: d5_king_wreck_sheet_19
+  - first:
+      213: 4204619791920427910
+    second: d5_king_wreck_sheet_20
+  - first:
+      213: 5266352710956979125
+    second: d5_king_wreck_sheet_21
+  - first:
+      213: 1534740625411739203
+    second: d5_king_wreck_sheet_22
+  - first:
+      213: -4675882571017105603
+    second: d5_king_wreck_sheet_23
+  - first:
+      213: 1645296853946052031
+    second: d5_king_wreck_sheet_24
+  - first:
+      213: 2000794501593733982
+    second: d5_king_wreck_sheet_25
+  - first:
+      213: -4581750974730254640
+    second: d5_king_wreck_sheet_26
+  - first:
+      213: 5828680036143756130
+    second: d5_king_wreck_sheet_27
+  - first:
+      213: -4568016306891121785
+    second: d5_king_wreck_sheet_28
+  - first:
+      213: 8333830933698441280
+    second: d5_king_wreck_sheet_29
+  - first:
+      213: -8108383409493709951
+    second: d5_king_wreck_sheet_30
+  - first:
+      213: -8261368459889755195
+    second: d5_king_wreck_sheet_31
+  - first:
+      213: -302304239471496102
+    second: d5_king_wreck_sheet_32
+  - first:
+      213: 1963003339539008307
+    second: d5_king_wreck_sheet_33
+  - first:
+      213: -1721532313471120761
+    second: d5_king_wreck_sheet_34
+  - first:
+      213: 2696261316693380699
+    second: d5_king_wreck_sheet_35
+  - first:
+      213: -5707045619759774602
+    second: d5_king_wreck_sheet_36
+  - first:
+      213: -198588175921786481
+    second: d5_king_wreck_sheet_37
+  - first:
+      213: -8772097506788679760
+    second: d5_king_wreck_sheet_38
+  - first:
+      213: -9220018080283077742
+    second: d5_king_wreck_sheet_39
+  - first:
+      213: 1787388225866619449
+    second: d5_king_wreck_sheet_40
+  - first:
+      213: 8300724417875570372
+    second: d5_king_wreck_sheet_41
+  - first:
+      213: 8912082652121982511
+    second: d5_king_wreck_sheet_42
+  - first:
+      213: 1058640703055137023
+    second: d5_king_wreck_sheet_43
+  - first:
+      213: -7367917641741878173
+    second: d5_king_wreck_sheet_44
+  - first:
+      213: 3557871655444793801
+    second: d5_king_wreck_sheet_45
+  - first:
+      213: -3741523336637066306
+    second: d5_king_wreck_sheet_46
+  - first:
+      213: -6166559333407050207
+    second: d5_king_wreck_sheet_47
+  - first:
+      213: -351133422212499298
+    second: d5_king_wreck_sheet_48
+  - first:
+      213: -6645145601043570108
+    second: d5_king_wreck_sheet_49
+  - first:
+      213: -8769111966748637667
+    second: d5_king_wreck_sheet_50
+  - first:
+      213: -3673965816429875756
+    second: d5_king_wreck_sheet_51
+  - first:
+      213: -8492801819675772215
+    second: d5_king_wreck_sheet_52
+  - first:
+      213: 1982700330091365392
+    second: d5_king_wreck_sheet_53
+  - first:
+      213: -1556835375018363447
+    second: d5_king_wreck_sheet_54
+  - first:
+      213: 6191119608101870306
+    second: d5_king_wreck_sheet_55
+  - first:
+      213: 1817931287141354179
+    second: d5_king_wreck_sheet_56
+  - first:
+      213: -8835426028617018806
+    second: d5_king_wreck_sheet_57
+  - first:
+      213: -6217254427932191755
+    second: d5_king_wreck_sheet_58
+  - first:
+      213: -1520752050906694077
+    second: d5_king_wreck_sheet_59
+  - first:
+      213: -8566676762704293812
+    second: d5_king_wreck_sheet_60
+  - first:
+      213: 8063023276672740838
+    second: d5_king_wreck_sheet_61
+  - first:
+      213: -5003804465394281305
+    second: d5_king_wreck_sheet_62
+  - first:
+      213: -8758885803739819355
+    second: d5_king_wreck_sheet_63
+  - first:
+      213: -1638016015470742282
+    second: d5_king_wreck_sheet_64
+  - first:
+      213: 4319064843480715932
+    second: d5_king_wreck_sheet_65
+  - first:
+      213: 1434321023775535023
+    second: d5_king_wreck_sheet_66
+  - first:
+      213: 7954132085940958797
+    second: d5_king_wreck_sheet_67
+  - first:
+      213: 8056629409878809038
+    second: d5_king_wreck_sheet_68
+  - first:
+      213: 8187348496962792801
+    second: d5_king_wreck_sheet_69
+  - first:
+      213: 1890484849522303111
+    second: d5_king_wreck_sheet_70
+  - first:
+      213: -8408585935969316790
+    second: d5_king_wreck_sheet_71
+  - first:
+      213: -3485610722277575085
+    second: d5_king_wreck_sheet_72
+  - first:
+      213: 8118904981112847204
+    second: d5_king_wreck_sheet_73
+  - first:
+      213: -6366822975665240108
+    second: d5_king_wreck_sheet_74
+  - first:
+      213: -882796923959111621
+    second: d5_king_wreck_sheet_75
+  - first:
+      213: -6699186145099577004
+    second: d5_king_wreck_sheet_76
+  - first:
+      213: -3066230915621293460
+    second: d5_king_wreck_sheet_77
+  - first:
+      213: 7463925064162021387
+    second: d5_king_wreck_sheet_78
+  - first:
+      213: -3325664755747718670
+    second: d5_king_wreck_sheet_79
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: d5_king_wreck_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f52614c287fab545837abbcb7c9c801
+      internalID: 1487021390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d5_king_wreck_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e1cc58edefca7643a2ed1dbaa9ca9a8
+      internalID: -737180956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d5_king_wreck_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 0
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e98b463502bb8b49a6bb2b5321bd526
+      internalID: -103279110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d5_king_wreck_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 0
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b80de6f1d759594dbf85a599fa2a926
+      internalID: 1961417169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d5_king_wreck_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 0
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0499d4ac434d87549b13706f7991478d
+      internalID: 1558781870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d5_king_wreck_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 0
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1800cb0a5969cbb47a74700eac451ef7
+      internalID: -1075840295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d5_king_wreck_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 1584
+        y: 0
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5211ed5f71b6e84a84348858ffefa2c
+      internalID: -1255661605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d5_king_wreck_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 1848
+        y: 0
+        width: 264
+        height: 270
+      alignment: 9
+      pivot: {x: 0.4375, y: 0.022222223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14bfbdb4596a4c44b9cf288a5ea6dc73
+      internalID: -718177310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5d62fc9a2681edb44b431176e70e4b24
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      d5_king_wreck_sheet_00: 1487021390
+      d5_king_wreck_sheet_01: -737180956
+      d5_king_wreck_sheet_02: -103279110
+      d5_king_wreck_sheet_03: 1961417169
+      d5_king_wreck_sheet_04: 1558781870
+      d5_king_wreck_sheet_05: -1075840295
+      d5_king_wreck_sheet_06: -1255661605
+      d5_king_wreck_sheet_07: -718177310
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

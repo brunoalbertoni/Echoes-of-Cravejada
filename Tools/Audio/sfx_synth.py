@@ -1,5 +1,6 @@
 """
-Sintetiza os efeitos sonoros do jogo (pacote 1: o Scrap, a coleta e a interface).
+Sintetiza os efeitos sonoros do jogo: o Scrap, a coleta e a interface (pacote 1),
+os inimigos e as mecanicas (pacote 2), os chefes e as cutscenes (pacote 3).
 
 Tudo e feito do zero com numpy: sem gravacao de terceiros, sem licenca a creditar.
 Gera WAV 16-bit mono em Assets/Common/Audio/Resources/Sfx/. Rodar da raiz do projeto:
@@ -1307,9 +1308,1343 @@ def oxide_bump():
     return finish(mix(d, (fizz, 0, 1.0), (thump(0.25, 100, 70, 0.04), 0, 0.4)))
 
 
+# ======================================================================
+# Pacote 3: os chefes e os sons pequenos que faltavam
+# ======================================================================
+#
+# Cada chefe tem uma "materia" e os sons dele saem dela:
+# - O Coletor: ferro velho e motor a vapor tossindo.
+# - O Mestre das Caldeiras: latao, apito, vapor sob pressao.
+# - O Capataz: um homem (voz grossa, botas, picareta) e cristal de quartzo.
+# - A Broca: motor rodando sem parar, rocha e cristal.
+# - O Alquimista: liquido pesado (mercurio), vidro e prata.
+# - O Rei: prata, luz (acordes brilhantes) e, corrompido, Oxide (rugido verde).
+#
+# Os avisos sobem (o tom, o volume, o chiado): sao a deixa pra reagir.
+
+# ----------------------------------------------------------------------
+# Pecas
+# ----------------------------------------------------------------------
+
+FORMANTS = {
+    "a": ((800, 1.0), (1150, 0.5), (2900, 0.18)),
+    "o": ((450, 1.0), (800, 0.45), (2830, 0.12)),
+    "u": ((325, 1.0), (700, 0.3), (2530, 0.08)),
+    "e": ((400, 1.0), (1700, 0.4), (2600, 0.18)),
+}
+
+
+def voice(f0, seconds, rng, vowel="a", size=1.0, rough=0.0, breath=0.15):
+    """Uma voz: serra na altura f0 (numero ou vetor) passada pelos formantes de uma vogal.
+    `size` < 1 encolhe os formantes (um corpo maior); `rough` poe aspereza (grito, rosnado)."""
+    n = n_of(seconds)
+    f = np.full(n, float(f0)) if np.isscalar(f0) else np.resize(f0, n)
+    if rough:
+        wobble = lowpass(rng.uniform(-1, 1, n), 60)
+        f = f * (1 + rough * 0.25 * wobble / max(1e-6, np.max(np.abs(wobble))))
+    src = osc(f, seconds, "saw") + breath * noise(seconds, rng)
+    out = np.zeros(n)
+    for fc, gain in FORMANTS[vowel]:
+        out += gain * bandpass(src, fc * size, 5.0)
+    if rough:
+        out = np.tanh(out * (1 + 3 * rough)) / np.tanh(1 + 3 * rough)
+    return out
+
+
+def seamless(x, xfade):
+    """Fecha um loop: o pedaco extra do fim (`xfade` s) desbota por cima do comeco."""
+    k = n_of(xfade)
+    length = len(x) - k
+    out = x[:length].copy()
+    ramp = np.linspace(0, 1, k)
+    out[:k] = x[:k] * ramp + x[length:length + k] * (1 - ramp)
+    return out
+
+
+def add(*parts):
+    """Soma pedacos que comecam juntos, mesmo de tamanhos diferentes."""
+    out = np.zeros(max(len(p) for p in parts))
+    for p in parts:
+        out[:len(p)] += p
+    return out
+
+
+def rumble(seconds, rng, fc=140, attack=0.05, tau=0.4, hold=0.0):
+    return lowpass(noise(seconds, rng), fc) * env(seconds, attack, tau, hold)
+
+
+def crescendo(seconds, power=1.6, floor=0.05):
+    return floor + (1 - floor) * np.linspace(0, 1, n_of(seconds)) ** power
+
+
+def chuff(seconds, rng, fc=1400):
+    """Um bafo de vapor de locomotiva."""
+    return bandpass(noise(seconds, rng), fc, 0.7) * env(seconds, 0.006, seconds * 0.35)
+
+
+def tinkles(seconds, rng, count, f_lo=2500, f_hi=6000, decay=0.05):
+    parts = []
+    for _ in range(count):
+        f = rng.uniform(f_lo, f_hi)
+        ping = modes(0.25, f, [1.0, 1.73], [decay, decay * 0.6], [1.0, 0.4], rng)
+        parts.append((ping, rng.uniform(0, seconds * 0.85), rng.uniform(0.3, 1.0)))
+    return mix(seconds, *parts)
+
+
+def debris(seconds, rng, count, f_lo=140, f_hi=320, spread=None):
+    spread = seconds * 0.8 if spread is None else spread
+    return mix(seconds, *[(thump(0.2, rng.uniform(f_lo, f_hi), f_lo * 0.6, 0.03), rng.uniform(0.02, spread),
+                           rng.uniform(0.3, 0.8)) for _ in range(count)])
+
+
+def chord(freqs, seconds, rng, decay=1.0, detune=1.2):
+    out = np.zeros(n_of(seconds))
+    for f in freqs:
+        out += bell(f, seconds, decay=decay, rng=rng, ratios=(1.0, 2.0, 3.0), amps=(1.0, 0.25, 0.1), detune=detune)
+    return out
+
+
+def shimmer(seconds, rng, f_lo=2000, f_hi=7000, rising=True, count=24, decay=0.12):
+    """Brilho: muitos sininhos agudos espalhados, subindo ou descendo de tom."""
+    parts = []
+    for i in range(count):
+        k = rng.random()
+        at = k * seconds * 0.9
+        frac = k if rising else 1 - k
+        f = f_lo * (f_hi / f_lo) ** (0.7 * frac + 0.3 * rng.random())
+        parts.append((bell(f, 0.4, decay=decay, rng=rng, ratios=(1.0, 2.76), amps=(1.0, 0.25)), at, rng.uniform(0.3, 1.0)))
+    return mix(seconds, *parts)
+
+
+# ----------------------------------------------------------------------
+# Comum a todos os chefes
+# ----------------------------------------------------------------------
+
+def boss_fall_jet():
+    """Um jato de Oxide na queda: o chiado verde e o tranco grave."""
+    rng = np.random.default_rng(401)
+    d = 0.7
+    jet = bandpass(noise(0.6, rng), 1300, 0.6) * bell_env(0.6, peak=0.15)
+    jet += 0.5 * highpass(noise(0.6, rng), 3500) * bell_env(0.6, peak=0.1)
+    whump = thud(95, 42, 0.12, 0.5)
+    shake = rumble(0.6, rng, 120, 0.01, 0.2)
+    return finish(mix(d, (jet, 0, 0.9), (whump, 0, 0.9), (shake, 0, 0.6), (grit(0.5, rng, 400, 3000) * env(0.5, 0.01, 0.15), 0, 0.3)))
+
+
+def boss_fall_burst():
+    """O estouro final: o chefe vira uma nuvem de Oxide."""
+    rng = np.random.default_rng(402)
+    d = 3.2
+    boom = thud(62, 24, 0.8, 2.5, attack=0.004)
+    blast = lowpass(noise(2.5, rng), 1800) * env(2.5, 0.003, 0.35)
+    cloud = bandpass(noise(3.0, rng), 900, 0.5) * env(3.0, 0.05, 0.9, hold=0.2)
+    hissy = highpass(noise(3.0, rng), 3000) * env(3.0, 0.02, 0.7)
+    parts = [(boom, 0, 1.0), (blast, 0, 0.9), (cloud, 0.02, 0.5), (hissy, 0.02, 0.25),
+             (click(0.1, rng, fc=2500, tau=0.01), 0, 0.7)]
+    for _ in range(10):
+        parts.append((clank(0.35, rng.uniform(500, 2200), rng, decay=0.05), rng.uniform(0.2, 1.6), 0.15))
+    return finish(mix(d, *parts))
+
+
+def arena_seal_down():
+    """A grade da arena descendo e batendo no chao."""
+    rng = np.random.default_rng(403)
+    d = 1.0
+    slide = grind(0.25, rng, fc=900, q=1.2, rattle=0.6) * crescendo(0.25, 1.0, 0.3)
+    slam = add(clank(0.7, 170, rng, decay=0.28), 0.8 * thud(110, 50, 0.08, 0.5))
+    bars = mix(0.7, *[(clank(0.3, rng.uniform(700, 1400), rng, decay=0.05), rng.uniform(0.0, 0.12), 0.25) for _ in range(5)])
+    return finish(mix(d, (slide, 0, 0.6), (slam, 0.24, 1.0), (bars, 0.25, 0.6), (rumble(0.5, rng, 160, 0.01, 0.15), 0.24, 0.5)))
+
+
+def arena_seal_up():
+    """A grade subindo: corrente e ferro arrastando."""
+    rng = np.random.default_rng(404)
+    d = 0.8
+    pull = grind(0.35, rng, fc=1100, q=1.5, rattle=1.0) * bell_env(0.35, peak=0.6)
+    chain = mix(0.4, *[(clank(0.2, rng.uniform(1500, 2600), rng, decay=0.025), i * 0.045, 0.35) for i in range(8)])
+    stop = clank(0.4, 260, rng, decay=0.12)
+    return finish(mix(d, (pull, 0, 0.8), (chain, 0, 0.5), (stop, 0.33, 0.7)))
+
+
+def boss_slam():
+    """Uma pancada de chefe no chao: o tranco, a poeira, o cascalho."""
+    rng = np.random.default_rng(405)
+    d = 1.3
+    boom = thud(85, 30, 0.3, 1.0)
+    blast = lowpass(noise(0.5, rng), 1200) * env(0.5, 0.002, 0.08)
+    crack = click(0.08, rng, fc=1800, tau=0.008)
+    gravel = grit(1.0, rng, 300, fc=1500) * env(1.0, 0.01, 0.25)
+    return finish(mix(d, (boom, 0, 1.0), (blast, 0, 0.7), (crack, 0, 0.6), (gravel, 0.02, 0.4),
+                      (debris(1.0, rng, 6, spread=0.6), 0.08, 0.4)))
+
+
+def shock_wave():
+    """A onda correndo rente ao chao: um ronco que passa."""
+    rng = np.random.default_rng(406)
+    d = 1.1
+    roll = rumble(1.0, rng, 260, 0.0, 1.0) * bell_env(1.0, peak=0.15)
+    whirl = sweep(noise(1.0, rng), glide(500, 200, 1.0), 1.5) * bell_env(1.0, peak=0.2)
+    gravel = grit(1.0, rng, 250, fc=1300) * bell_env(1.0, peak=0.2)
+    return finish(mix(d, (roll, 0, 1.0), (whirl, 0, 0.4), (gravel, 0, 0.5)))
+
+
+def chunk_land():
+    """Um pedaco de sucata batendo no chao."""
+    rng = np.random.default_rng(407)
+    d = 0.55
+    hitp = add(clank(0.45, 360, rng, decay=0.09), 0.7 * thump(0.3, 140, 70, 0.04))
+    bounce = 0.4 * clank(0.3, 520, rng, decay=0.05)
+    return finish(mix(d, (hitp, 0, 1.0), (bounce, 0.14, 0.5), (0.25 * clank(0.2, 700, rng, decay=0.03), 0.24, 0.4)))
+
+
+def boss_step(seed):
+    """O passo pesado de um chefe de ferro."""
+    rng = np.random.default_rng(seed)
+    d = 0.38
+    foot = thud(rng.uniform(68, 78), 40, 0.07, 0.35)
+    metal = clank(0.3, rng.uniform(260, 320), rng, decay=0.04, bright=0.6)
+    return finish(mix(d, (foot, 0, 1.0), (metal, 0.005, 0.35), (grit(0.2, rng, 200, 1500) * env(0.2, 0.002, 0.05), 0, 0.2)))
+
+
+def boss_hurt_metal():
+    """Ferro velho apanhando: o clangor e um gemido de motor."""
+    rng = np.random.default_rng(408)
+    d = 0.55
+    ring = clank(0.5, 230, rng, decay=0.12)
+    groan = squeak(320, 210, 0.4, vibrato=9, depth=0.03)
+    return finish(mix(d, (ring, 0, 1.0), (groan, 0.02, 0.45), (hiss(0.2, rng, 3000, 0.001, 0.04), 0, 0.3)))
+
+
+def boss_hurt_silver():
+    """Prata macica apanhando: um sino grosso e claro."""
+    rng = np.random.default_rng(409)
+    d = 0.7
+    ring = modes(0.65, 880, [1.0, 1.41, 2.03, 2.74, 3.6], [0.25, 0.2, 0.14, 0.1, 0.07], [0.7, 0.5, 0.4, 0.25, 0.15], rng)
+    return finish(mix(d, (ring, 0, 1.0), (click(0.05, rng, fc=5000, tau=0.002), 0, 0.6), (thump(0.2, 160, 90, 0.03), 0, 0.4)))
+
+
+def boss_jump():
+    """Um chefe pesado saltando: o empurrao de vapor e o ar."""
+    rng = np.random.default_rng(410)
+    d = 0.6
+    push = thud(90, 55, 0.06, 0.3)
+    blast = bandpass(noise(0.4, rng), 1200, 0.6) * env(0.4, 0.004, 0.12)
+    air = whoosh(0.5, rng, 300, 1400, q=1.0, peak=0.35)
+    return finish(mix(d, (push, 0, 0.8), (blast, 0, 0.6), (air, 0.05, 0.7)))
+
+
+def boss_wall_hit():
+    """Um chefe batendo de frente na parede."""
+    rng = np.random.default_rng(411)
+    d = 1.1
+    clang = add(clank(0.9, 140, rng, decay=0.3), 0.6 * clank(0.6, 410, rng, decay=0.1))
+    boom = thud(75, 35, 0.2, 0.8)
+    return finish(mix(d, (clang, 0, 0.9), (boom, 0, 1.0), (debris(0.9, rng, 5), 0.1, 0.4)))
+
+
+def polish_shine():
+    """O Scrap brilhando: a crosta saindo num glissando de sininhos."""
+    rng = np.random.default_rng(412)
+    d = 1.6
+    sweep_up = shimmer(1.0, rng, 1500, 6500, rising=True, count=28)
+    swell = sweep(noise(1.0, rng), glide(600, 5000, 1.0), 4.0) * crescendo(1.0, 1.4)
+    ding = chord((1046.5, 1568, 2093), 1.0, rng, decay=0.7)
+    return finish(mix(d, (sweep_up, 0, 0.6), (swell, 0, 0.25), (ding, 0.58, 0.6), (grit(0.5, rng, 300, 5000), 0.5, 0.3)))
+
+
+# ----------------------------------------------------------------------
+# O Coletor (fase 1)
+# ----------------------------------------------------------------------
+
+def collector_wake():
+    """Acorda: o motor engasga e pega, a chamine tosse duas vezes."""
+    rng = np.random.default_rng(421)
+    d = 1.5
+    parts = []
+    at = 0.0
+    gap = 0.22
+    for i in range(6):
+        parts.append((thump(0.18, 95, 55, 0.04), at, 0.4 + 0.1 * i))
+        parts.append((clank(0.15, 300, rng, decay=0.02, bright=0.5), at, 0.15))
+        at += gap
+        gap *= 0.82
+    t = times(1.1)
+    hum = lowpass(osc(glide(38, 62, 1.1), 1.1, "saw"), 260) * crescendo(1.1, 1.0, 0.0) * (1 + 0.2 * np.sin(2 * np.pi * 9 * t))
+    parts.append((hum, 0.3, 0.6))
+    parts.append((chuff(0.35, rng, 900), 0.55, 0.8))
+    parts.append((chuff(0.45, rng, 800), 0.9, 0.9))
+    return finish(mix(d, *parts))
+
+
+def collector_roar():
+    """O urro da metade: a garganta de ferro, o apito, a nuvem saindo."""
+    rng = np.random.default_rng(422)
+    d = 1.8
+    t = times(1.4)
+    f0 = np.interp(t, [0, 0.25, 1.0, 1.4], [70, 105, 95, 60]) * (1 + 0.02 * np.sin(2 * np.pi * 6 * t))
+    throat = voice(f0, 1.4, rng, "a", size=0.6, rough=0.6) * bell_env(1.4, peak=0.25)
+    whistle = osc(glide(1300, 1750, 1.2), 1.2) * bell_env(1.2, peak=0.3) * (1 + 0.3 * np.sin(2 * np.pi * 11 * times(1.2)))
+    vent = hiss(1.6, rng, 1200, 0.15, 0.6, hold=0.6)
+    return finish(mix(d, (throat, 0, 1.0), (whistle, 0.1, 0.25), (vent, 0.1, 0.55), (rumble(1.2, rng, 120, 0.1, 0.5), 0, 0.5)))
+
+
+def collector_claw_windup():
+    """A garra recolhendo: o servo sobe de tom e a catraca estala."""
+    rng = np.random.default_rng(423)
+    d = 0.65
+    servo = bandpass(osc(glide(160, 520, 0.6), 0.6, "saw"), 900, 1.2) * crescendo(0.6, 1.0, 0.3)
+    ratchet = mix(0.6, *[(click(0.03, rng, fc=2600, tau=0.003), i * 0.06, 0.4 + 0.05 * i) for i in range(10)])
+    return finish(mix(d, (servo, 0, 0.8), (ratchet, 0, 0.6)))
+
+
+def collector_claw_strike():
+    """A garra: o golpe cortando o ar e o estalo das pontas."""
+    rng = np.random.default_rng(424)
+    d = 0.5
+    air = whoosh(0.3, rng, 400, 1800, q=1.0, peak=0.4)
+    snap = add(clank(0.35, 620, rng, decay=0.06), 0.5 * click(0.05, rng, fc=3000, tau=0.004))
+    return finish(mix(d, (air, 0, 0.9), (snap, 0.12, 0.8), (thump(0.2, 120, 70, 0.04), 0.12, 0.4)))
+
+
+def collector_throw_windup():
+    """Enfia a mao na cacamba: ferro chacoalhando."""
+    rng = np.random.default_rng(425)
+    d = 0.6
+    rattle = grind(0.5, rng, fc=600, q=1.0, rattle=2.0) * bell_env(0.5, peak=0.5)
+    bits = mix(0.5, *[(clank(0.2, rng.uniform(400, 1200), rng, decay=0.03), rng.uniform(0, 0.4), 0.3) for _ in range(7)])
+    return finish(mix(d, (rattle, 0, 0.8), (bits, 0, 0.6)))
+
+
+def collector_throw():
+    """O arremesso: um braco pesado varrendo o ar."""
+    rng = np.random.default_rng(426)
+    d = 0.5
+    air = whoosh(0.4, rng, 250, 1100, q=0.9, peak=0.35)
+    return finish(mix(d, (air, 0, 1.0), (thump(0.2, 100, 60, 0.05), 0, 0.4), (clank(0.25, 350, rng, decay=0.05), 0.02, 0.3)))
+
+
+# ----------------------------------------------------------------------
+# O Mestre das Caldeiras (fase 2)
+# ----------------------------------------------------------------------
+
+def bm_wake():
+    rng = np.random.default_rng(431)
+    d = 1.4
+    visor = add(click(0.05, rng, fc=2000, tau=0.006), 0.6 * bell(1400, 0.3, decay=0.15, rng=rng, ratios=(1.0, 2.0), amps=(1.0, 0.3)))
+    hum = lowpass(osc(glide(45, 70, 1.0), 1.0, "saw"), 300) * crescendo(1.0, 1.0, 0.0)
+    gauge = squeak(700, 950, 0.3) * 0.6
+    return finish(mix(d, (visor, 0, 0.6), (hum, 0.1, 0.6), (chuff(0.3, rng, 1300), 0.5, 0.9), (chuff(0.35, rng, 1100), 0.8, 0.9),
+                      (gauge, 0.35, 0.3)))
+
+
+def bm_overpressure():
+    """A sobrepressao: o apito grita, ele urra, as juntas vazam."""
+    rng = np.random.default_rng(432)
+    d = 1.8
+    t = times(1.4)
+    whistle = (osc(glide(1150, 2500, 1.4), 1.4) + 0.3 * osc(glide(2300, 5000, 1.4), 1.4)) * bell_env(1.4, peak=0.7) \
+        * (1 + 0.15 * np.sin(2 * np.pi * 7 * t))
+    roar = voice(np.interp(t, [0, 0.3, 1.4], [80, 110, 75]), 1.4, rng, "o", size=0.6, rough=0.5) * bell_env(1.4, peak=0.3)
+    vents = hiss(1.7, rng, 1500, 0.08, 0.7, hold=0.7)
+    rattle = grit(1.4, rng, np.linspace(30, 220, n_of(1.4)), fc=900)
+    return finish(mix(d, (whistle, 0, 0.35), (roar, 0, 0.9), (vents, 0.05, 0.6), (rattle, 0, 0.4)))
+
+
+def bm_hammer_windup():
+    """O martelo subindo: o pistao enche e range."""
+    rng = np.random.default_rng(433)
+    d = 0.7
+    fill = sweep(noise(0.65, rng), glide(500, 2500, 0.65), 2.0) * crescendo(0.65, 1.3, 0.1)
+    creak = squeak(180, 320, 0.6, vibrato=12, depth=0.04)
+    return finish(mix(d, (fill, 0, 0.6), (creak, 0, 0.6), (clank(0.2, 500, rng, decay=0.04), 0.0, 0.3)))
+
+
+def bm_charge_windup():
+    """Ele raspa o pe e o motor acelera: bafos cada vez mais juntos."""
+    rng = np.random.default_rng(434)
+    d = 0.65
+    parts = []
+    at, gap = 0.0, 0.18
+    for i in range(5):
+        parts.append((chuff(0.12, rng, 1200 + 150 * i), at, 0.5 + 0.1 * i))
+        at += gap
+        gap *= 0.75
+    parts.append((grind(0.3, rng, 700, 1.0, rattle=0.5) * bell_env(0.3), 0, 0.4))
+    return finish(mix(d, *parts))
+
+
+def bm_charge_run():
+    """A investida: locomotiva desembestada."""
+    rng = np.random.default_rng(435)
+    d = 1.45
+    parts = [(chuff(0.1, rng, 1300), i * 0.085, 0.6 if i % 2 else 0.9) for i in range(16)]
+    parts += [(thump(0.15, 80, 50, 0.04), i * 0.17, 0.5) for i in range(8)]
+    rattle = grit(1.4, rng, 120, fc=1000)
+    return finish(mix(d, *parts, (rattle, 0, 0.5)))
+
+
+def bm_burst_windup():
+    """A rajada carregando: a pressao sobe na boca."""
+    rng = np.random.default_rng(436)
+    d = 0.6
+    build = bandpass(noise(0.55, rng), 1800, 1.5) * crescendo(0.55, 2.0)
+    whine = osc(glide(600, 1100, 0.55), 0.55) * crescendo(0.55, 1.5) * 0.3
+    return finish(mix(d, (build, 0, 1.0), (whine, 0, 0.5)))
+
+
+def bm_burst_fire():
+    """Um tiro de vapor."""
+    rng = np.random.default_rng(437)
+    d = 0.32
+    pop = thump(0.15, 160, 80, 0.025)
+    puff = bandpass(noise(0.28, rng), 2200, 0.7) * env(0.28, 0.002, 0.07)
+    return finish(mix(d, (pop, 0, 0.7), (puff, 0, 1.0)))
+
+
+def geyser_warn():
+    """O chao borbulhando antes do geiser."""
+    rng = np.random.default_rng(438)
+    d = 0.85
+    gurgle = bubbles(0.8, rng, 18, 120, 450, rising=True, density_curve=lambda u: u ** 0.6) * crescendo(0.8, 1.0, 0.3)
+    shake = rumble(0.8, rng, 160, 0.0, 1.0) * crescendo(0.8, 1.5)
+    return finish(mix(d, (gurgle, 0, 0.9), (shake, 0, 0.8)))
+
+
+def geyser_burst():
+    """O geiser: a coluna de vapor rasgando pra cima."""
+    rng = np.random.default_rng(439)
+    d = 1.1
+    roar = hiss(1.05, rng, 1200, 0.01, 0.35, hold=0.55)
+    low = rumble(1.0, rng, 300, 0.005, 0.3, hold=0.3)
+    return finish(mix(d, (roar, 0, 1.0), (low, 0, 0.7), (thump(0.3, 120, 60, 0.06), 0, 0.6)))
+
+
+def module_drop():
+    """O modulo de pressao caindo do chefe: metal, vapor e um brilho."""
+    rng = np.random.default_rng(440)
+    d = 1.0
+    clink = add(clank(0.4, 520, rng, decay=0.08), 0.6 * thump(0.2, 160, 90, 0.03))
+    puff = hiss(0.5, rng, 1800, 0.01, 0.15)
+    glow = chord((880, 1318.5), 0.8, rng, decay=0.5)
+    return finish(mix(d, (clink, 0, 0.8), (puff, 0.02, 0.4), (glow, 0.12, 0.45)))
+
+
+# ----------------------------------------------------------------------
+# O Capataz (fase 3)
+# ----------------------------------------------------------------------
+
+def sniff(rng, seconds=0.14):
+    return bandpass(noise(seconds, rng), 2400, 1.2) * bell_env(seconds, peak=0.35)
+
+
+def foreman_wake():
+    rng = np.random.default_rng(451)
+    d = 1.4
+    t = times(0.6)
+    grunt = voice(np.interp(t, [0, 0.6], [85, 70]), 0.6, rng, "u", size=0.75, rough=0.3) * bell_env(0.6, peak=0.25)
+    return finish(mix(d, (sniff(rng), 0, 0.6), (sniff(rng), 0.2, 0.7), (grunt, 0.5, 1.0),
+                      (clank(0.3, 900, rng, decay=0.04, bright=0.5), 0.6, 0.25), (debris(0.6, rng, 3, 150, 250), 0.7, 0.4)))
+
+
+def foreman_listen():
+    """Escutando: fareja baixinho. E so pra lembrar que ele esta ali."""
+    rng = np.random.default_rng(452)
+    d = 0.6
+    return finish(mix(d, (sniff(rng, 0.12), 0, 0.8), (sniff(rng, 0.12), 0.16, 0.6), (sniff(rng, 0.2), 0.33, 1.0)))
+
+
+def foreman_step(seed):
+    """A bota dele na pedra, e a lanterna balancando."""
+    rng = np.random.default_rng(seed)
+    d = 0.32
+    boot = thud(rng.uniform(85, 95), 50, 0.05, 0.3)
+    scuff = bandpass(noise(0.12, rng), 1100, 1.0) * env(0.12, 0.003, 0.03)
+    lamp = clank(0.2, rng.uniform(1100, 1300), rng, decay=0.03, bright=0.4)
+    return finish(mix(d, (boot, 0, 1.0), (scuff, 0, 0.5), (lamp, 0.01, 0.15), (grit(0.2, rng, 300, 2000) * env(0.2, 0.002, 0.04), 0, 0.3)))
+
+
+def foreman_pick_windup():
+    """Ergue a picareta com as duas maos."""
+    rng = np.random.default_rng(453)
+    d = 0.65
+    t = times(0.5)
+    grunt = voice(np.interp(t, [0, 0.5], [95, 125]), 0.5, rng, "o", size=0.75, rough=0.25) * bell_env(0.5, peak=0.6)
+    lift = whoosh(0.5, rng, 300, 900, q=1.2, peak=0.8)
+    return finish(mix(d, (grunt, 0.05, 0.8), (lift, 0, 0.5), (squeak(240, 280, 0.4, 5, 0.03), 0, 0.2)))
+
+
+def foreman_pick_slam():
+    """A picareta cravando: aco na pedra."""
+    rng = np.random.default_rng(454)
+    d = 0.9
+    steel = modes(0.6, 1350, [1, 1.47, 2.09, 2.71], [0.15, 0.1, 0.07, 0.05], [0.7, 0.5, 0.35, 0.2], rng)
+    stone = add(thud(110, 45, 0.12, 0.5), 0.8 * click(0.1, rng, fc=1600, tau=0.01))
+    return finish(mix(d, (steel, 0, 0.7), (stone, 0, 1.0), (grit(0.6, rng, 500, 1800) * env(0.6, 0.002, 0.15), 0, 0.5),
+                      (debris(0.6, rng, 4, 200, 400, 0.3), 0.04, 0.5)))
+
+
+def foreman_pick_stuck():
+    """A ponta presa: ele puxa o cabo, a pedra range."""
+    rng = np.random.default_rng(455)
+    d = 1.3
+    scrape = grind(1.2, rng, fc=500, q=1.3, rattle=0.8) * (0.6 + 0.4 * np.abs(np.sin(2 * np.pi * 1.6 * times(1.2))))
+    parts = [(scrape, 0, 0.7)]
+    for i in range(3):
+        g = voice(105 + 8 * i, 0.22, rng, "e", size=0.75, rough=0.3) * bell_env(0.22, peak=0.3)
+        parts.append((g, 0.1 + i * 0.38, 0.55))
+    return finish(mix(d, *parts))
+
+
+def foreman_ram_windup():
+    """Bufa como um touro e raspa a bota."""
+    rng = np.random.default_rng(456)
+    d = 0.7
+    snort = (bandpass(noise(0.25, rng), 700, 1.0) + 0.5 * lowpass(noise(0.25, rng), 300)) * env(0.25, 0.01, 0.07)
+    scuff = grind(0.25, rng, 900, 1.0, rattle=1.0) * bell_env(0.25)
+    return finish(mix(d, (snort, 0, 1.0), (scuff, 0.25, 0.6), (snort * 0.7, 0.42, 0.8)))
+
+
+def foreman_ram_wall():
+    """A cabecada na parede: a toca inteira estremece e ele fica zonzo."""
+    rng = np.random.default_rng(457)
+    d = 2.2
+    boom = thud(58, 24, 0.5, 1.5)
+    crack = click(0.12, rng, fc=1400, tau=0.015)
+    crumble = grit(1.5, rng, 400, 1500) * env(1.5, 0.01, 0.4)
+    dizzy = osc(1760, 1.4) * env(1.4, 0.05, 0.6) * (1 + 0.5 * np.sin(2 * np.pi * 5 * times(1.4)))
+    return finish(mix(d, (boom, 0, 1.0), (crack, 0, 0.7), (crumble, 0.02, 0.5), (debris(1.2, rng, 8), 0.05, 0.6),
+                      (tinkles(1.0, rng, 8), 0.2, 0.35), (dizzy, 0.25, 0.12)))
+
+
+def foreman_whistle():
+    """O apito de capataz: chama o turno."""
+    rng = np.random.default_rng(458)
+    d = 0.9
+    def blast(sec):
+        t = times(sec)
+        trill = 1 + 0.6 * np.sign(np.sin(2 * np.pi * 32 * t)) * 0.5
+        tone = osc(2750 * (1 + 0.01 * np.sin(2 * np.pi * 32 * t)), sec) * trill
+        return (tone + 0.2 * bandpass(noise(sec, rng), 2750, 3.0)) * env(sec, 0.015, 0.05, hold=sec - 0.08)
+    return finish(mix(d, (blast(0.18), 0, 0.9), (blast(0.45), 0.27, 1.0)))
+
+
+def foreman_scream():
+    """O grito da metade: o teto vem abaixo."""
+    rng = np.random.default_rng(459)
+    d = 1.8
+    t = times(1.4)
+    f0 = np.interp(t, [0, 0.2, 1.0, 1.4], [150, 240, 220, 150])
+    scream = voice(f0, 1.4, rng, "a", size=0.8, rough=0.8, breath=0.3) * bell_env(1.4, peak=0.2)
+    return finish(mix(d, (scream, 0, 1.0), (rumble(1.7, rng, 140, 0.2, 0.8, hold=0.4), 0, 0.8),
+                      (debris(1.6, rng, 10), 0.3, 0.4), (tinkles(1.4, rng, 10), 0.4, 0.3)))
+
+
+def foreman_warn():
+    """O aviso: os olhos de quartzo tilintam."""
+    rng = np.random.default_rng(460)
+    d = 0.5
+    glint = bell(2637, 0.45, decay=0.25, rng=rng, detune=3.0) + 0.6 * bell(3951, 0.45, decay=0.18, rng=rng)
+    return finish(mix(d, (glint, 0, 1.0)))
+
+
+def foreman_hatch():
+    """O chao rachando, e o bicho saindo da pedra."""
+    rng = np.random.default_rng(461)
+    d = 1.0
+    parts = [(click(0.05, rng, fc=rng.uniform(1500, 3500), tau=0.003), 0.7 * rng.random() ** 0.7, rng.uniform(0.3, 0.8)) for _ in range(14)]
+    parts.append((rumble(0.7, rng, 180, 0.05, 1.0) * crescendo(0.7), 0, 0.6))
+    parts.append((add(thump(0.3, 140, 70, 0.05), grit(0.3, rng, 800, 2000) * env(0.3, 0.001, 0.08)), 0.7, 0.9))
+    parts.append((tinkles(0.3, rng, 4), 0.72, 0.4))
+    return finish(mix(d, *parts))
+
+
+def foreman_hurt(seed):
+    rng = np.random.default_rng(seed)
+    d = 0.4
+    f = rng.uniform(110, 130)
+    grunt = voice(glide(f, f * 0.8, 0.25), 0.25, rng, "e" if seed % 2 else "o", size=0.75, rough=0.4) * env(0.25, 0.01, 0.08)
+    crystal = bell(rng.uniform(2200, 2900), 0.3, decay=0.12, rng=rng)
+    return finish(mix(d, (grunt, 0, 1.0), (crystal, 0, 0.35), (thump(0.15, 120, 80, 0.03), 0, 0.4)))
+
+
+def foreman_death():
+    """
+    A queda do Capataz, casada com os quadros dele: o gemido, a picareta
+    caindo, os joelhos, o capacete batendo e rolando, os cristais se
+    desfazendo e o corpo deitando.
+    """
+    rng = np.random.default_rng(462)
+    d = 3.6
+    t = times(0.8)
+    groan = voice(np.interp(t, [0, 0.8], [110, 75]), 0.8, rng, "o", size=0.75, rough=0.3) * bell_env(0.8, peak=0.2)
+    pick = add(clank(0.5, 1250, rng, decay=0.08), 0.6 * thump(0.2, 180, 90, 0.03))
+    pick2 = 0.5 * clank(0.3, 1400, rng, decay=0.05)
+    knees = add(thud(95, 45, 0.1, 0.4), 0.5 * grit(0.2, rng, 600, 1500) * env(0.2, 0.002, 0.05))
+    helmet = modes(0.8, 640, [1, 1.52, 2.4, 3.3], [0.2, 0.15, 0.1, 0.07], [0.7, 0.5, 0.3, 0.2], rng)
+    roll = mix(0.5, *[(clank(0.2, 700 + 40 * i, rng, decay=0.03), i * 0.09, 0.4 - 0.05 * i) for i in range(6)])
+    melt = shimmer(1.0, rng, 1800, 5000, rising=False, count=18, decay=0.15)
+    sigh = bandpass(noise(0.7, rng), 900, 1.0) * bell_env(0.7, peak=0.3)
+    body = add(thud(80, 40, 0.15, 0.6), 0.4 * grit(0.3, rng, 300, 1200) * env(0.3, 0.002, 0.08))
+    return finish(mix(d, (groan, 0, 0.8), (pick, 0.2, 0.7), (pick2, 0.33, 0.6), (knees, 0.5, 0.9), (helmet, 0.9, 0.6),
+                      (roll, 1.0, 0.6), (melt, 1.35, 0.4), (sigh, 2.0, 0.35), (body, 2.4, 0.9)))
+
+
+def shard_loosen():
+    """Um estilhaco se soltando do teto: range e solta po."""
+    rng = np.random.default_rng(463)
+    d = 0.55
+    creak = squeak(2300, 2000, 0.45, vibrato=15, depth=0.015)
+    dust = grit(0.5, rng, 600, 4000) * bell_env(0.5, peak=0.5)
+    return finish(mix(d, (creak, 0, 0.6), (dust, 0, 0.6), (click(0.05, rng, fc=3500, tau=0.003), 0.45, 0.6)))
+
+
+def shard_land():
+    rng = np.random.default_rng(464)
+    d = 0.55
+    return finish(mix(d, (glass_shatter(0.5, rng, 1800, 5000, shards=8, spread=0.15), 0, 1.0), (thump(0.15, 180, 100, 0.02), 0, 0.5)))
+
+
+def pebble_pop():
+    rng = np.random.default_rng(465)
+    d = 0.14
+    return finish(mix(d, (click(0.08, rng, fc=2200, tau=0.006), 0, 1.0), (thump(0.08, 260, 160, 0.015), 0, 0.5)))
+
+
+# ----------------------------------------------------------------------
+# A Broca (fase 3)
+# ----------------------------------------------------------------------
+
+def drill_motor():
+    """O motor da broca rodando sem parar. 2 s, emenda sem pulo."""
+    rng = np.random.default_rng(471)
+    d = 2.0
+    xf = 0.3
+    t = times(d + xf)
+    tone = (np.sin(2 * np.pi * 55 * t) + 0.7 * np.sin(2 * np.pi * 110 * t) + 0.4 * np.sin(2 * np.pi * 165 * t)
+            + 0.25 * np.sin(2 * np.pi * 330 * t) + 0.12 * np.sin(2 * np.pi * 880 * t))
+    tone *= 1 + 0.35 * np.sin(2 * np.pi * 12 * t)
+    whine = bandpass(osc(1320, d + xf, "saw"), 1320, 4.0) * 0.4
+    grindy = bandpass(noise(d + xf, rng), 700, 1.2) * (0.6 + 0.4 * np.abs(np.sin(2 * np.pi * 6 * t)))
+    chips = grit(d + xf, rng, 90, fc=2000)
+    x = 0.8 * tone + whine + 0.7 * grindy + 0.6 * chips
+    return finish(seamless(x, xf), peak=0.75, loop=True)
+
+
+def drill_emerge():
+    """A broca tremendo na boca do tunel: a rocha estalando e o motor subindo."""
+    rng = np.random.default_rng(472)
+    d = 0.8
+    rev = bandpass(osc(glide(50, 120, 0.7), 0.7, "saw"), 400, 0.8) * crescendo(0.7, 1.2, 0.2)
+    cracks = mix(0.7, *[(click(0.05, rng, fc=rng.uniform(1200, 2500), tau=0.004), rng.uniform(0, 0.65), 0.5) for _ in range(9)])
+    return finish(mix(d, (rev, 0, 0.8), (cracks, 0, 0.7), (rumble(0.7, rng, 180, 0.0, 1.0) * crescendo(0.7), 0, 0.8)))
+
+
+def drill_rumble():
+    """Ela furando por baixo: o chao treme e estala."""
+    rng = np.random.default_rng(473)
+    d = 0.9
+    shake = rumble(0.85, rng, 150, 0.0, 1.0) * crescendo(0.85, 1.4, 0.2)
+    grindy = bandpass(noise(0.85, rng), 450, 1.5) * crescendo(0.85, 1.4, 0.1)
+    return finish(mix(d, (shake, 0, 1.0), (grindy, 0, 0.5), (grit(0.85, rng, 200, 1500), 0, 0.4)))
+
+
+def drill_erupt():
+    """Fura pra cima: a laje explode e a broca guincha."""
+    rng = np.random.default_rng(474)
+    d = 1.0
+    blast = add(thud(90, 35, 0.25, 0.8), lowpass(noise(0.4, rng), 1500) * env(0.4, 0.002, 0.07))
+    shriek = bandpass(osc(glide(600, 1500, 0.4), 0.4, "saw"), 1100, 2.0) * bell_env(0.4, peak=0.2)
+    return finish(mix(d, (blast, 0, 1.0), (shriek, 0, 0.5), (debris(0.9, rng, 9, 200, 420), 0.03, 0.6),
+                      (tinkles(0.6, rng, 6, 2000, 4500), 0.05, 0.3)))
+
+
+def pillar_crack():
+    """O pilar cravado gemendo antes de estourar."""
+    rng = np.random.default_rng(475)
+    d = 0.45
+    creak = squeak(1500, 1100, 0.4, vibrato=18, depth=0.02)
+    cracks = mix(0.4, *[(click(0.04, rng, fc=rng.uniform(2500, 4500), tau=0.003), 0.38 * rng.random() ** 0.6, 0.6) for _ in range(10)])
+    return finish(mix(d, (creak, 0, 0.6), (cracks, 0, 0.8)))
+
+
+def drill_impale():
+    """A broca cravando no cristal: o guincho e o motor engasgando."""
+    rng = np.random.default_rng(476)
+    d = 0.8
+    crunch = add(glass_shatter(0.5, rng, 1200, 3500, shards=8, spread=0.1), thud(80, 40, 0.1, 0.5))
+    choke = bandpass(osc(glide(110, 50, 0.6), 0.6, "saw"), 300, 0.8) * env(0.6, 0.005, 0.2) * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 14 * times(0.6))))
+    return finish(mix(d, (crunch, 0, 0.9), (choke, 0.05, 0.7)))
+
+
+def drill_shake_free():
+    """Se solta: ronca em brasa e gira."""
+    rng = np.random.default_rng(477)
+    d = 0.95
+    rev = bandpass(osc(glide(50, 160, 0.5), 0.5, "saw"), 500, 0.8) * crescendo(0.5, 1.0, 0.3)
+    spin = whoosh(0.4, rng, 500, 2500, q=1.2, peak=0.3)
+    spray = grit(0.4, rng, 600, 1800) * env(0.4, 0.002, 0.12)
+    return finish(mix(d, (rev, 0, 0.8), (spin, 0.42, 0.9), (spray, 0.45, 0.6), (thump(0.3, 100, 50, 0.06), 0.45, 0.7)))
+
+
+def drill_collapse():
+    """Perdeu o controle: gira no lugar e o chao inteiro vai embora."""
+    rng = np.random.default_rng(478)
+    d = 3.4
+    spin = sweep(osc(glide(80, 220, 1.3), 1.3, "saw"), glide(500, 1400, 1.3), 1.5) * crescendo(1.3, 1.0, 0.3)
+    shake = rumble(1.3, rng, 160, 0.0, 1.0) * crescendo(1.3, 1.3, 0.2)
+    boom = thud(55, 22, 0.9, 2.0)
+    crash = lowpass(noise(2.0, rng), 1400) * env(2.0, 0.003, 0.4)
+    return finish(mix(d, (spin, 0, 0.6), (shake, 0, 0.8), (boom, 1.3, 1.0), (crash, 1.3, 0.8),
+                      (debris(1.8, rng, 18, 120, 300), 1.32, 0.6), (tinkles(1.5, rng, 12, 1800, 4500), 1.35, 0.3)))
+
+
+def drill_hurt():
+    rng = np.random.default_rng(479)
+    d = 0.5
+    ring = clank(0.45, 280, rng, decay=0.1)
+    sputter = bandpass(noise(0.35, rng), 500, 1.0) * env(0.35, 0.005, 0.12) * (0.5 + 0.5 * np.sign(np.sin(2 * np.pi * 22 * times(0.35))))
+    return finish(mix(d, (ring, 0, 0.9), (sputter, 0.02, 0.6)))
+
+
+def drill_die():
+    """Ela para: o motor perdendo forca ate calar."""
+    rng = np.random.default_rng(480)
+    d = 3.0
+    t = times(2.6)
+    f = glide(110, 20, 2.6)
+    motor = sweep(osc(f, 2.6, "saw"), glide(600, 120, 2.6), 0.9) * env(2.6, 0.01, 1.2)
+    motor *= 1 + 0.4 * np.sin(2 * np.pi * np.cumsum(glide(14, 2, 2.6)) / SR)
+    parts = [(motor, 0, 1.0), (hiss(2.0, rng, 1500, 0.3, 0.6), 0.6, 0.35)]
+    for at in (0.4, 1.1, 1.9):
+        parts.append((clank(0.4, rng.uniform(250, 400), rng, decay=0.1), at, 0.4))
+    return finish(mix(d, *parts))
+
+
+# ----------------------------------------------------------------------
+# O Alquimista de Mercurio (fase 4)
+# ----------------------------------------------------------------------
+
+def alchemist_laugh():
+    """A risada educada e liquida dele: ha-ha-ha-ha, borbulhando."""
+    rng = np.random.default_rng(491)
+    d = 1.4
+    parts = []
+    for i in range(5):
+        sec = 0.16
+        f = 230 - 14 * i
+        t = times(sec)
+        ha = voice(f * (1 + 0.04 * np.sin(2 * np.pi * 28 * t)), sec, rng, "a", size=1.05, breath=0.4) * bell_env(sec, peak=0.2)
+        parts.append((ha, i * 0.2, 1.0 - 0.1 * i))
+    parts.append((bubbles(1.2, rng, 14, 300, 900), 0, 0.3))
+    return finish(mix(d, *parts))
+
+
+def alchemist_glide():
+    """Ele escorre pelo chao: liquido pesado arrastando."""
+    rng = np.random.default_rng(492)
+    d = 1.0
+    t = times(0.95)
+    slither = bandpass(noise(0.95, rng), 650, 1.2) * (0.5 + 0.5 * np.sin(2 * np.pi * 3 * t) ** 2) * bell_env(0.95, peak=0.4)
+    return finish(mix(d, (slither, 0, 1.0), (bubbles(0.9, rng, 6, 250, 600, rising=False), 0, 0.4)))
+
+
+def alchemist_bell_call():
+    """Ele aponta pro teto: um brilho de vidro subindo."""
+    rng = np.random.default_rng(493)
+    d = 0.8
+    parts = [(bell(f, 0.6, decay=0.35, rng=rng), i * 0.07, 0.6) for i, f in enumerate((1046.5, 1318.5, 1568, 2093))]
+    return finish(mix(d, *parts, (sweep(noise(0.5, rng), glide(1000, 6000, 0.5), 3.0) * crescendo(0.5), 0, 0.2)))
+
+
+def jar_creak():
+    """A campanula rangendo no teto (a sombra cresce no chao)."""
+    rng = np.random.default_rng(494)
+    d = 0.95
+    creak = squeak(1700, 1450, 0.9, vibrato=8, depth=0.02) * crescendo(0.9, 1.0, 0.4)
+    ticks = mix(0.9, *[(bell(rng.uniform(3000, 5000), 0.15, decay=0.04, rng=rng), rng.uniform(0, 0.85), 0.3) for _ in range(6)])
+    return finish(mix(d, (creak, 0, 0.8), (ticks, 0, 0.5)))
+
+
+def jar_drop():
+    """A campanula batendo no chao: vidro grosso, sem quebrar."""
+    rng = np.random.default_rng(495)
+    d = 1.3
+    ring = modes(1.2, 620, [1.0, 1.58, 2.27, 3.1, 4.2], [0.6, 0.45, 0.3, 0.2, 0.12], [0.7, 0.5, 0.35, 0.25, 0.15], rng, detune=1.5)
+    return finish(mix(d, (thud(120, 55, 0.08, 0.4), 0, 1.0), (ring, 0, 0.7), (click(0.05, rng, fc=3500, tau=0.003), 0, 0.5)))
+
+
+def jar_hit():
+    """O cinzel no vidro: a pancada e a rachadura."""
+    rng = np.random.default_rng(496)
+    d = 0.55
+    knock = modes(0.5, 800, [1.0, 1.58, 2.27], [0.2, 0.14, 0.1], [0.7, 0.5, 0.3], rng)
+    cracks = mix(0.3, *[(click(0.04, rng, fc=rng.uniform(3000, 5500), tau=0.002), rng.uniform(0, 0.15), 0.5) for _ in range(6)])
+    return finish(mix(d, (knock, 0, 0.9), (cracks, 0.01, 0.8), (thump(0.15, 180, 100, 0.03), 0, 0.4)))
+
+
+def jar_shatter():
+    rng = np.random.default_rng(497)
+    d = 1.3
+    return finish(mix(d, (glass_shatter(1.2, rng, 1500, 6500, shards=30, spread=0.4, decay=0.08), 0, 1.0),
+                      (thud(100, 50, 0.12, 0.5), 0, 0.5), (debris(1.0, rng, 5, 300, 600), 0.1, 0.3)))
+
+
+def jar_suffocate():
+    """Preso na campanula: o ar acabando, uma batida surda no peito."""
+    rng = np.random.default_rng(498)
+    d = 0.75
+    drain = sweep(noise(0.6, rng), glide(2500, 500, 0.6), 2.0) * bell_env(0.6, peak=0.15)
+    knock = thud(70, 45, 0.08, 0.3)
+    return finish(mix(d, (drain, 0, 0.8), (knock, 0.05, 0.9), (knock * 0.6, 0.3, 0.7)))
+
+
+def alchemist_distill():
+    """Ele ferve e sobe em vapor."""
+    rng = np.random.default_rng(499)
+    d = 1.25
+    boil = bubbles(0.75, rng, 30, 300, 1200, density_curve=lambda u: u ** 0.5) * crescendo(0.75, 1.0, 0.3)
+    rise = sweep(noise(0.6, rng), glide(500, 3500, 0.6), 1.2) * bell_env(0.6, peak=0.4)
+    return finish(mix(d, (boil, 0, 0.9), (rise, 0.65, 0.8), (hiss(0.6, rng, 3000, 0.05, 0.25), 0.65, 0.3)))
+
+
+def alchemist_condense():
+    """A nuvem descendo e virando mercurio de novo."""
+    rng = np.random.default_rng(500)
+    d = 1.25
+    fall = sweep(noise(0.6, rng), glide(3500, 500, 0.6), 1.2) * bell_env(0.6, peak=0.5)
+    splat = splash(0.5, rng, fc=700, tau=0.1)
+    return finish(mix(d, (fall, 0, 0.7), (splat, 0.6, 1.0), (bubbles(0.5, rng, 8, 300, 800), 0.65, 0.4)))
+
+
+def alchemist_whip_windup():
+    """O braco recolhe e a gota cresce na luva."""
+    rng = np.random.default_rng(501)
+    d = 0.75
+    swell = osc(glide(180, 520, 0.7), 0.7) * crescendo(0.7, 1.2, 0.2) * (1 + 0.2 * np.sin(2 * np.pi * 14 * times(0.7)))
+    wet = bandpass(noise(0.7, rng), 900, 2.0) * crescendo(0.7, 1.5, 0.1)
+    return finish(mix(d, (swell, 0, 0.6), (wet, 0, 0.6), (bubbles(0.7, rng, 6, 400, 900), 0, 0.3)))
+
+
+def alchemist_whip():
+    """O chicote de mercurio estalando."""
+    rng = np.random.default_rng(502)
+    d = 0.55
+    lash = whoosh(0.25, rng, 600, 3000, q=1.0, peak=0.5)
+    crack = add(click(0.06, rng, fc=2500, tau=0.006), 0.6 * splash(0.3, rng, fc=1200, tau=0.05))
+    return finish(mix(d, (lash, 0, 0.9), (crack, 0.12, 1.0)))
+
+
+def alchemist_pour():
+    """Ele derrama mercurio no chao."""
+    rng = np.random.default_rng(503)
+    d = 0.65
+    t = times(0.6)
+    stream = bandpass(noise(0.6, rng), 1100, 1.5) * (0.7 + 0.3 * lowpass(rng.uniform(-1, 1, n_of(0.6)), 20) * 8) * bell_env(0.6, peak=0.3)
+    return finish(mix(d, (stream, 0, 0.8), (bubbles(0.6, rng, 12, 250, 700, rising=False), 0.05, 0.6)))
+
+
+def merc_geyser_burst():
+    """A coluna de mercurio subindo do chao ao teto."""
+    rng = np.random.default_rng(504)
+    d = 0.9
+    rush = sweep(noise(0.8, rng), glide(400, 2200, 0.8), 0.8) * env(0.8, 0.005, 0.3)
+    ring = bell(1500, 0.6, decay=0.25, rng=rng, ratios=(1.0, 1.5, 2.2), amps=(0.6, 0.4, 0.3))
+    return finish(mix(d, (rush, 0, 1.0), (splash(0.5, rng, 800, 0.1), 0, 0.7), (ring, 0, 0.3)))
+
+
+def alchemist_transmute():
+    """O mercurio virando prata macica: estala congelando e soa como sino."""
+    rng = np.random.default_rng(505)
+    d = 1.2
+    freeze = mix(0.5, *[(click(0.04, rng, fc=1500 + 6000 * (i / 20), tau=0.003), 0.5 * (i / 20) ** 0.8, 0.5) for i in range(20)])
+    ring = modes(1.0, 740, [1.0, 1.41, 2.03, 2.74], [0.6, 0.45, 0.3, 0.2], [0.8, 0.5, 0.35, 0.2], rng, detune=1.0)
+    return finish(mix(d, (freeze, 0, 0.8), (ring, 0.45, 0.8), (thump(0.2, 140, 80, 0.04), 0.45, 0.5)))
+
+
+def alchemist_burst():
+    """Ele estoura da prata: lascas de metal e respingos."""
+    rng = np.random.default_rng(506)
+    d = 0.9
+    crack = glass_shatter(0.6, rng, 1000, 3000, shards=10, spread=0.15, decay=0.07)
+    wet = splash(0.6, rng, fc=800, tau=0.12)
+    return finish(mix(d, (crack, 0, 0.7), (wet, 0, 1.0), (thud(110, 50, 0.08, 0.4), 0, 0.6)))
+
+
+def alchemist_flood():
+    """Os tanques racham e o chao vira mercurio."""
+    rng = np.random.default_rng(507)
+    d = 1.8
+    tanks = glass_shatter(0.9, rng, 900, 3000, shards=16, spread=0.35, decay=0.1)
+    gush = bandpass(noise(1.5, rng), 600, 0.8) * env(1.5, 0.1, 0.6, hold=0.3)
+    return finish(mix(d, (tanks, 0, 0.8), (gush, 0.3, 0.9), (bubbles(1.3, rng, 20, 150, 500), 0.4, 0.5),
+                      (thud(70, 35, 0.2, 0.6), 0, 0.6)))
+
+
+def alchemist_drain():
+    """A queda: ele escorre pelo ralo, rodando."""
+    rng = np.random.default_rng(508)
+    d = 2.3
+    t = times(2.2)
+    swirl = sweep(noise(2.2, rng), 700 + 400 * np.sin(2 * np.pi * np.cumsum(glide(2, 6, 2.2)) / SR), 2.0) * env(2.2, 0.05, 0.9)
+    gulp = bubbles(2.0, rng, 18, 120, 500, rising=False)
+    tone = osc(glide(300, 70, 2.0), 2.0) * env(2.0, 0.05, 0.8) * 0.4
+    return finish(mix(d, (swirl, 0, 0.8), (gulp, 0, 0.7), (tone, 0, 0.6), (splash(0.4, rng, 500, 0.1), 1.7, 0.4)))
+
+
+def rune_polished():
+    """A runa da arena acesa: um acorde de prata."""
+    rng = np.random.default_rng(509)
+    d = 1.4
+    return finish(mix(d, (chord((659.3, 987.8, 1318.5), 1.3, rng, decay=0.9), 0, 1.0), (shimmer(0.6, rng, 2500, 6000), 0, 0.3)))
+
+
+# ----------------------------------------------------------------------
+# O Rei de Prata (fase 5)
+# ----------------------------------------------------------------------
+
+def king_wake():
+    """Os olhos acendem e a cabeca sobe: um zumbido grave de prata."""
+    rng = np.random.default_rng(521)
+    d = 1.9
+    eyes = bell(1975.5, 0.6, decay=0.4, rng=rng, detune=2.0) + 0.7 * bell(2960, 0.6, decay=0.3, rng=rng)
+    drone = lowpass(osc(glide(48, 55, 1.6), 1.6, "saw"), 400) * crescendo(1.6, 0.8, 0.0)
+    halo = chord((220, 329.6), 1.6, rng, decay=2.0) * crescendo(1.6, 1.0, 0.0)
+    creak = squeak(140, 180, 0.6, vibrato=4, depth=0.02)
+    return finish(mix(d, (eyes, 0, 0.6), (eyes * 0.7, 0.08, 0.5), (drone, 0.1, 0.7), (halo, 0.2, 0.4), (creak, 0.7, 0.3)))
+
+
+def king_scepter_plant():
+    """O cetro firmando no chao: um baque e um sino longo."""
+    rng = np.random.default_rng(522)
+    d = 1.6
+    ring = modes(1.5, 330, [1.0, 2.01, 2.76, 3.98, 5.4], [1.0, 0.7, 0.5, 0.35, 0.2], [0.8, 0.4, 0.35, 0.2, 0.1], rng, detune=0.8)
+    return finish(mix(d, (thud(100, 40, 0.15, 0.5), 0, 1.0), (ring, 0, 0.7), (click(0.05, rng, fc=3000, tau=0.004), 0, 0.5)))
+
+
+def king_armor():
+    """A armadura de prata rangendo e tilintando quando ele se mexe."""
+    rng = np.random.default_rng(523)
+    d = 0.55
+    clinks = mix(0.5, *[(modes(0.25, rng.uniform(1800, 3200), [1, 1.5, 2.3], [0.06, 0.04, 0.03], [1, 0.5, 0.3], rng),
+                         rng.uniform(0, 0.35), rng.uniform(0.3, 0.8)) for _ in range(6)])
+    creak = squeak(220, 260, 0.45, vibrato=6, depth=0.03)
+    return finish(mix(d, (clinks, 0, 0.8), (creak, 0, 0.4)))
+
+
+def king_step(seed):
+    """O passo do Rei: pesado e com um tinido de prata."""
+    rng = np.random.default_rng(seed)
+    d = 0.45
+    foot = thud(rng.uniform(70, 80), 38, 0.08, 0.4)
+    clink = modes(0.35, rng.uniform(1500, 1800), [1, 1.41, 2.03], [0.09, 0.06, 0.04], [1, 0.6, 0.3], rng)
+    return finish(mix(d, (foot, 0, 1.0), (clink, 0.005, 0.3)))
+
+
+def king_point():
+    """Ele aponta o cetro: a luta comeca."""
+    rng = np.random.default_rng(524)
+    d = 0.9
+    swish = whoosh(0.35, rng, 400, 2500, q=1.2, peak=0.5)
+    ting = chord((1318.5, 1975.5), 0.7, rng, decay=0.6)
+    return finish(mix(d, (swish, 0, 0.7), (ting, 0.2, 0.8)))
+
+
+def king_sweep_windup():
+    """O cetro recolhido por cima do ombro: raspa e carrega."""
+    rng = np.random.default_rng(525)
+    d = 0.5
+    scrape = sweep(noise(0.45, rng), glide(1500, 4000, 0.45), 3.0) * crescendo(0.45, 1.2, 0.2)
+    charge = osc(glide(660, 1320, 0.45), 0.45) * crescendo(0.45, 2.0) * 0.35
+    return finish(mix(d, (scrape, 0, 0.8), (charge, 0, 0.6)))
+
+
+def king_sweep():
+    """A cetrada varrendo rente ao chao."""
+    rng = np.random.default_rng(526)
+    d = 0.75
+    swing = whoosh(0.4, rng, 250, 1600, q=0.8, peak=0.45) + 0.6 * lowpass(noise(0.4, rng), 400) * bell_env(0.4, peak=0.45)
+    ring = modes(0.5, 440, [1.0, 2.01, 2.76], [0.3, 0.2, 0.12], [0.6, 0.3, 0.2], rng)
+    return finish(mix(d, (swing, 0, 1.0), (ring, 0.15, 0.4)))
+
+
+def king_beam_aim():
+    """O fio de mira: um assobio fino e tenso. 2 s, emenda sem pulo."""
+    rng = np.random.default_rng(527)
+    d = 2.0
+    t = times(d)
+    tone = (np.sin(2 * np.pi * 2640 * t) + 0.4 * np.sin(2 * np.pi * 2643 * t)) * (0.8 + 0.2 * np.sin(2 * np.pi * 8 * t))
+    air = bandpass(noise(d + 0.2, rng), 2640, 6.0)
+    return finish(tone + 0.3 * seamless(air, 0.2), peak=0.6, loop=True)
+
+
+def king_beam_loop():
+    """O raio aceso: um zumbido largo e brilhante. 2 s, emenda sem pulo."""
+    rng = np.random.default_rng(528)
+    d = 2.0
+    t = times(d + 0.3)
+    hum = sum(a * np.sin(2 * np.pi * f * t) for f, a in ((110, 1.0), (220, 0.7), (330.5, 0.5), (440, 0.4), (660, 0.3), (1320.5, 0.15)))
+    hum *= 1 + 0.15 * np.sin(2 * np.pi * 15 * t)
+    sizzle = highpass(noise(d + 0.3, rng), 3500) * 0.35 + grit(d + 0.3, rng, 200, 4000) * 0.6
+    choir = chord((523.25, 784), d + 0.3, rng, decay=30.0, detune=2.0) * 0.4
+    return finish(seamless(0.7 * hum + sizzle + choir, 0.3), peak=0.75, loop=True)
+
+
+def king_beam_fire():
+    """O raio acendendo."""
+    rng = np.random.default_rng(529)
+    d = 0.8
+    zap_ = sweep(noise(0.3, rng), glide(6000, 800, 0.3), 2.0) * env(0.3, 0.002, 0.1)
+    boom = thud(110, 50, 0.15, 0.5)
+    flare = chord((1046.5, 1568), 0.7, rng, decay=0.4)
+    return finish(mix(d, (zap_, 0, 0.8), (boom, 0, 0.7), (flare, 0, 0.5)))
+
+
+def king_sky_charge():
+    """Agachado, o cetro baixo: a luz junta."""
+    rng = np.random.default_rng(530)
+    d = 0.42
+    gather = sweep(noise(0.4, rng), glide(800, 6000, 0.4), 4.0) * crescendo(0.4, 1.5)
+    tone = osc(glide(440, 880, 0.4), 0.4) * crescendo(0.4, 2.0) * 0.4
+    return finish(mix(d, (gather, 0, 1.0), (tone, 0, 0.6)))
+
+
+def king_sky_lance():
+    """A Coluna de Luz: o cetro pro alto e o teto acende."""
+    rng = np.random.default_rng(531)
+    d = 1.4
+    boom = thud(90, 35, 0.3, 1.0)
+    blast = sweep(noise(0.8, rng), glide(1500, 7000, 0.8), 1.0) * env(0.8, 0.003, 0.25)
+    pillar = chord((523.25, 659.3, 784, 1046.5), 1.3, rng, decay=0.8)
+    return finish(mix(d, (boom, 0, 0.9), (blast, 0, 0.7), (pillar, 0, 0.6), (shimmer(0.8, rng, 3000, 8000), 0.05, 0.3)))
+
+
+def king_cast():
+    """A coroa acendendo antes das facetas: um arpejo subindo."""
+    rng = np.random.default_rng(532)
+    d = 0.6
+    parts = [(bell(f, 0.45, decay=0.25, rng=rng), i * 0.08, 0.7) for i, f in enumerate((1318.5, 1661.2, 1975.5, 2637))]
+    return finish(mix(d, *parts))
+
+
+def facet_launch():
+    rng = np.random.default_rng(533)
+    d = 0.45
+    return finish(mix(d, (whoosh(0.35, rng, 1500, 6000, q=1.5, peak=0.2), 0, 1.0), (shimmer(0.3, rng, 3000, 7000, count=10), 0, 0.4)))
+
+
+def facet_bounce():
+    """Uma faceta quicando na parede."""
+    rng = np.random.default_rng(534)
+    d = 0.28
+    ping = modes(0.26, 3100, [1.0, 1.73, 2.6], [0.07, 0.045, 0.03], [1.0, 0.5, 0.3], rng)
+    return finish(mix(d, (ping, 0, 1.0), (click(0.03, rng, fc=6000, tau=0.002), 0, 0.5)))
+
+
+def facet_glint():
+    """Os brilhos no teto: a chuva vai cair ali."""
+    rng = np.random.default_rng(535)
+    d = 0.7
+    twinkle = shimmer(0.65, rng, 3500, 8000, rising=True, count=20, decay=0.08) * crescendo(0.7, 1.0, 0.3)[:n_of(0.65)]
+    return finish(mix(d, (twinkle, 0, 1.0)))
+
+
+def facet_rain():
+    rng = np.random.default_rng(536)
+    d = 1.0
+    fall = shimmer(0.8, rng, 1500, 6000, rising=False, count=26, decay=0.07)
+    rush = sweep(noise(0.6, rng), glide(5000, 1500, 0.6), 2.0) * bell_env(0.6, peak=0.3)
+    return finish(mix(d, (fall, 0, 1.0), (rush, 0, 0.4)))
+
+
+def king_inhale():
+    """O Rei corrompido inspira: o aviso do sopro."""
+    rng = np.random.default_rng(537)
+    d = 1.05
+    suck = sweep(noise(1.0, rng), glide(300, 2000, 1.0), 2.0) * crescendo(1.0, 1.4, 0.1)
+    drone = lowpass(osc(glide(45, 60, 1.0), 1.0, "saw"), 300) * crescendo(1.0, 1.0, 0.2)
+    return finish(mix(d, (suck, 0, 1.0), (drone, 0, 0.6)))
+
+
+def king_breath():
+    """O sopro do Oxide: rugido verde rente ao chao."""
+    rng = np.random.default_rng(538)
+    d = 1.6
+    t = times(1.4)
+    growl = voice(np.interp(t, [0, 0.3, 1.4], [70, 90, 55]), 1.4, rng, "o", size=0.55, rough=0.7, breath=0.5) * bell_env(1.4, peak=0.15)
+    gust = lowpass(noise(1.5, rng), 1200) * env(1.5, 0.02, 0.5, hold=0.3)
+    fizz = bandpass(noise(1.5, rng), 2500, 0.8) * env(1.5, 0.05, 0.5, hold=0.2)
+    return finish(mix(d, (growl, 0, 0.8), (gust, 0, 1.0), (fizz, 0, 0.4)))
+
+
+def king_glide():
+    """A pinca: ele desliza a sala inteira com as duas maos abertas."""
+    rng = np.random.default_rng(539)
+    d = 1.2
+    rush = whoosh(1.1, rng, 300, 1400, q=0.9, peak=0.3) + 0.5 * lowpass(noise(1.1, rng), 300) * bell_env(1.1, peak=0.3)
+    hissy = bandpass(noise(1.1, rng), 2200, 1.0) * bell_env(1.1, peak=0.3)
+    return finish(mix(d, (rush, 0, 1.0), (hissy, 0, 0.4)))
+
+
+def king_crown_crack():
+    """A vida zera: ele cai de joelhos e a coroa racha."""
+    rng = np.random.default_rng(540)
+    d = 1.6
+    knees = thud(70, 30, 0.25, 0.8)
+    crack = mix(0.5, *[(click(0.05, rng, fc=rng.uniform(2500, 5000), tau=0.003), 0.45 * rng.random() ** 0.5, 0.6) for _ in range(14)])
+    ring = modes(1.2, 1046.5, [1.0, 1.06, 2.76], [0.6, 0.6, 0.2], [0.6, 0.6, 0.3], rng)
+    return finish(mix(d, (knees, 0, 1.0), (crack, 0.3, 0.9), (ring, 0.32, 0.4), (rumble(1.4, rng, 120, 0.05, 0.6), 0, 0.6)))
+
+
+def king_shatter():
+    """A metade de luz se estilhacando."""
+    rng = np.random.default_rng(541)
+    d = 2.4
+    glass = glass_shatter(1.8, rng, 1500, 8000, shards=50, spread=0.6, decay=0.1)
+    collapse = sum(osc(glide(f, f * 0.5, 2.0), 2.0) for f in (523.25, 659.3, 784)) * env(2.0, 0.005, 0.8) * 0.3
+    return finish(mix(d, (glass, 0, 1.0), (collapse, 0, 0.6), (thud(70, 30, 0.4, 1.2), 0, 0.8)))
+
+
+def king_rise():
+    """Ele se ergue inteiro em Oxide: o rugido verde crescendo."""
+    rng = np.random.default_rng(542)
+    d = 2.8
+    t = times(2.4)
+    drone = lowpass(osc(glide(35, 70, 2.4), 2.4, "saw"), 500) * crescendo(2.4, 1.2, 0.1)
+    roar = voice(np.interp(t, [0, 1.6, 2.4], [55, 80, 95]), 2.4, rng, "a", size=0.5, rough=0.7, breath=0.5) * crescendo(2.4, 2.0, 0.0)
+    fizz = bandpass(noise(2.4, rng), 1500, 0.6) * crescendo(2.4, 1.5, 0.1)
+    return finish(mix(d, (drone, 0, 0.7), (roar, 0, 0.8), (fizz, 0, 0.4), (boss_fall_jet() * 0.8, 2.15, 1.0)))
+
+
+def king_fall():
+    """
+    A queda do Rei, casada com os quadros: cambaleia, larga o cetro (que
+    tine longe), ajoelha, e a coroa cai e rola ate parar.
+    """
+    rng = np.random.default_rng(543)
+    d = 3.8
+    stagger = king_armor() * 0.8
+    scepter = add(modes(1.2, 520, [1.0, 2.01, 2.76, 3.98], [0.5, 0.35, 0.25, 0.15], [0.7, 0.4, 0.3, 0.2], rng),
+                   0.7 * thump(0.2, 200, 100, 0.03))
+    bounce = 0.4 * modes(0.6, 540, [1.0, 2.01], [0.3, 0.2], [0.7, 0.3], rng)
+    knees = thud(70, 30, 0.2, 0.7)
+    crown = modes(0.6, 1318.5, [1.0, 1.41, 2.03], [0.25, 0.18, 0.12], [0.8, 0.5, 0.3], rng)
+    roll = mix(1.5, *[(modes(0.2, 1318.5 * (1 + 0.03 * np.sin(i)), [1.0, 1.41], [0.05, 0.03], [1.0, 0.4], rng),
+                       0.06 + i * (0.07 + 0.012 * i), 0.5 * (1 - i / 16)) for i in range(16)])
+    settle = modes(0.6, 1318.5, [1.0, 1.41], [0.12, 0.08], [1.0, 0.4], rng) * (1 + 0.8 * np.sin(2 * np.pi * np.cumsum(glide(18, 4, 0.6)) / SR))
+    return finish(mix(d, (stagger, 0, 0.6), (scepter, 0.3, 0.8), (bounce, 0.55, 0.6), (knees, 0.75, 1.0),
+                      (crown, 1.35, 0.6), (roll, 1.4, 0.7), (settle * 0.4, 2.95, 0.6)))
+
+
+def king_lie_down():
+    rng = np.random.default_rng(544)
+    d = 0.9
+    return finish(mix(d, (thud(65, 30, 0.2, 0.7), 0, 1.0), (king_armor() * 0.7, 0.02, 0.7), (hiss(0.6, rng, 900, 0.05, 0.25), 0.1, 0.2)))
+
+
+# ----------------------------------------------------------------------
+# Sons pequenos: cutscenes, projeteis, perigos, interface
+# ----------------------------------------------------------------------
+
+def scrap_eye_flicker():
+    """Os olhos do Scrap pegando: um estalo eletrico."""
+    rng = np.random.default_rng(551)
+    d = 0.16
+    buzz = osc(120, 0.12, "square") * env(0.12, 0.001, 0.03)
+    return finish(mix(d, (buzz, 0, 0.5), (click(0.05, rng, fc=3500, tau=0.003), 0, 1.0)))
+
+
+def scrap_boot():
+    """O Scrap ligando de vez: o motor dele sobe."""
+    rng = np.random.default_rng(552)
+    d = 1.0
+    t = times(0.8)
+    hum = (osc(glide(70, 420, 0.8), 0.8, "tri") + 0.3 * osc(glide(140, 840, 0.8), 0.8)) * bell_env(0.8, peak=0.75)
+    hum *= 1 + 0.2 * np.sin(2 * np.pi * 18 * t)
+    return finish(mix(d, (hum, 0, 0.8), (click(0.04, rng, fc=2500, tau=0.004), 0, 0.6), (clank(0.25, 700, rng, decay=0.04), 0.62, 0.3)))
+
+
+def cartoon_shot():
+    """A troca de quadro da cutscene desenhada."""
+    rng = np.random.default_rng(553)
+    d = 0.5
+    return finish(mix(d, (whoosh(0.45, rng, 600, 3000, q=1.0, peak=0.35), 0, 1.0)))
+
+
+def cartoon_reveal():
+    """A luz passando pelo corpo e a crosta saltando em lascas."""
+    rng = np.random.default_rng(554)
+    d = 2.5
+    n = n_of(2.2)
+    glow = sweep(noise(2.2, rng), glide(1200, 4500, 2.2), 5.0) * (0.3 + 0.7 * np.sin(np.linspace(0, np.pi, n)) ** 0.8)
+    flakes = grit(2.2, rng, np.linspace(80, 400, n), fc=2500) * 0.9
+    chips = mix(2.2, *[(click(0.04, rng, fc=rng.uniform(1500, 3500), tau=0.004), rng.uniform(0, 2.1), rng.uniform(0.2, 0.5)) for _ in range(30)])
+    sparkle = shimmer(2.2, rng, 2000, 7000, rising=True, count=30)
+    return finish(mix(d, (glow, 0, 0.5), (flakes, 0, 0.5), (chips, 0, 0.6), (sparkle, 0, 0.4)))
+
+
+def cartoon_flash():
+    """O clarao do fim: tudo vira branco."""
+    rng = np.random.default_rng(555)
+    d = 1.8
+    rise = sweep(noise(0.6, rng), glide(800, 8000, 0.6), 3.0) * crescendo(0.6, 2.0)
+    ring = chord((523.25, 784, 1046.5, 1568), 1.3, rng, decay=1.0)
+    return finish(mix(d, (rise, 0, 0.7), (ring, 0.55, 0.8), (shimmer(1.0, rng, 3000, 8000), 0.55, 0.3)))
+
+
+def heart_hold_loop():
+    """Segurando E no Altar: um acorde quente pulsando. 2 s, emenda sem pulo."""
+    rng = np.random.default_rng(556)
+    d = 2.0
+    t = times(d)
+    pulse = 0.75 + 0.25 * np.sin(2 * np.pi * 1.0 * t)
+    tone = sum(a * np.sin(2 * np.pi * f * t) for f, a in ((220, 1.0), (330, 0.6), (440, 0.4), (660, 0.2), (880.5, 0.1)))
+    air = bandpass(noise(d + 0.2, rng), 1800, 2.0)
+    return finish(tone * pulse + 0.15 * seamless(air, 0.2), peak=0.7, loop=True)
+
+
+def heart_give():
+    """O nucleo entregue."""
+    rng = np.random.default_rng(557)
+    d = 2.0
+    return finish(mix(d, (chord((440, 554.4, 659.3, 880), 1.9, rng, decay=1.3), 0, 1.0), (shimmer(1.2, rng, 2000, 6000), 0, 0.3),
+                      (thud(80, 40, 0.2, 0.6), 0, 0.4)))
+
+
+def finale_light():
+    """A luz branca descendo pela Coluna."""
+    rng = np.random.default_rng(558)
+    d = 3.2
+    fall = shimmer(2.4, rng, 1500, 7000, rising=False, count=40, decay=0.2)
+    swell = sweep(noise(2.4, rng), glide(5000, 600, 2.4), 3.0) * bell_env(2.4, peak=0.6)
+    choir = chord((261.6, 392, 523.25, 659.3), 2.8, rng, decay=2.5) * crescendo(2.8, 0.8, 0.0)
+    low = thud(60, 40, 1.0, 1.0)
+    return finish(mix(d, (fall, 0, 0.5), (swell, 0, 0.4), (choir, 0, 0.7), (low, 2.2, 0.5)))
+
+
+def steam_bolt_hit():
+    rng = np.random.default_rng(559)
+    d = 0.3
+    return finish(mix(d, (hiss(0.28, rng, 1800, 0.002, 0.06), 0, 1.0), (thump(0.12, 160, 90, 0.02), 0, 0.5)))
+
+
+def spike_hit():
+    """O espinho furando: um tinido seco de ponta de ferro."""
+    rng = np.random.default_rng(560)
+    d = 0.35
+    shink = modes(0.3, 1900, [1.0, 1.52, 2.31], [0.06, 0.04, 0.03], [1.0, 0.6, 0.3], rng)
+    return finish(mix(d, (shink, 0, 0.8), (click(0.04, rng, fc=4000, tau=0.003), 0, 0.8), (thump(0.12, 150, 90, 0.02), 0, 0.4)))
+
+
+def ui_sign_open():
+    return finish(mix(0.2, (blip(520, 780, 0.14, 0.05, 0.05), 0, 1.0), (blip(1040, 1040, 0.08, 0.03), 0.06, 0.3)))
+
+
+def ui_sign_close():
+    return finish(mix(0.2, (blip(700, 450, 0.14, 0.05, 0.05), 0, 1.0)))
+
+
+def stage_appear():
+    """O palco da cerimonia aparecendo: pedra deslizando e o circulo brilhando."""
+    rng = np.random.default_rng(561)
+    d = 1.6
+    slide = grind(1.0, rng, 500, 1.2, rattle=0.4) * bell_env(1.0, peak=0.4)
+    glow = shimmer(1.2, rng, 1500, 5000, rising=True, count=20) * crescendo(1.2, 1.0, 0.2)[:n_of(1.2)]
+    ding = chord((659.3, 987.8), 0.7, rng, decay=0.5)
+    return finish(mix(d, (slide, 0, 0.6), (glow, 0.1, 0.5), (ding, 0.9, 0.6)))
+
+
+# ----------------------------------------------------------------------
+# A Bancada de Ourives (o checkpoint)
+# ----------------------------------------------------------------------
+
+def bench_strike():
+    """Uma martelada na bigorna: o tinido limpo do ourives."""
+    rng = np.random.default_rng(571)
+    d = 0.9
+    ring = modes(0.85, 1480, [1.0, 2.37, 3.9, 5.7], [0.35, 0.18, 0.1, 0.06], [0.8, 0.45, 0.25, 0.12], rng, detune=1.0)
+    knock = thud(180, 110, 0.03, 0.15)
+    return finish(mix(d, (ring, 0, 0.9), (knock, 0, 0.6), (click(0.03, rng, fc=5000, tau=0.002), 0, 0.6),
+                      (grit(0.3, rng, 900, 4000) * env(0.3, 0.001, 0.08), 0, 0.25)))
+
+
+def bench_ignite():
+    """A gema acendendo: um sopro de forja e um acorde claro subindo."""
+    rng = np.random.default_rng(572)
+    d = 2.2
+    whoomp = sweep(noise(0.6, rng), glide(300, 2500, 0.6), 1.0) * env(0.6, 0.02, 0.25)
+    rise = sweep(noise(0.5, rng), glide(1500, 7000, 0.5), 4.0) * crescendo(0.5, 2.0)
+    ring = chord((587.3, 880, 1174.7, 1760), 2.0, rng, decay=1.2) * crescendo(2.0, 0.3, 0.0)
+    return finish(mix(d, (whoomp, 0, 0.7), (rise, 0, 0.35), (ring, 0.12, 0.8), (shimmer(1.2, rng, 2500, 8000), 0.15, 0.35),
+                      (thud(90, 50, 0.2, 0.5), 0.1, 0.4)))
+
+
+def engrave_etch():
+    """O buril riscando a placa: a foto virando gravura."""
+    rng = np.random.default_rng(573)
+    d = 0.8
+    parts = []
+    at = 0.0
+    for i in range(7):
+        sec = rng.uniform(0.05, 0.09)
+        f0, f1 = rng.uniform(2500, 3500), rng.uniform(4500, 6500)
+        scratch = sweep(noise(sec, rng), glide(f0, f1, sec), 3.0) * bell_env(sec, peak=0.3)
+        parts.append((scratch, at, rng.uniform(0.5, 1.0)))
+        at += sec + rng.uniform(0.0, 0.02)
+    parts.append((bell(2349, 0.3, decay=0.15, rng=rng), at, 0.25))
+    return finish(mix(d, *parts))
+
+
+def engrave_stamp():
+    """A placa batendo no canto da tela: um carimbo de latao."""
+    rng = np.random.default_rng(574)
+    d = 0.7
+    stamp = thud(150, 70, 0.06, 0.4)
+    plate = modes(0.6, 720, [1.0, 1.58, 2.27, 3.1], [0.18, 0.12, 0.09, 0.06], [0.7, 0.5, 0.3, 0.2], rng)
+    return finish(mix(d, (stamp, 0, 1.0), (plate, 0, 0.55), (click(0.04, rng, fc=2500, tau=0.004), 0, 0.5),
+                      (bell(1760, 0.4, decay=0.2, rng=rng), 0.04, 0.2)))
+
+
 # ----------------------------------------------------------------------
 # A lista
 # ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# A abertura: a queda pela Calha N.º 1
+# ----------------------------------------------------------------------
+
+def intro_chute_rattle():
+    """Algo descendo pela calha: batidas de ferro no tubo, cada vez mais perto e mais rapidas, e o ronco do cano."""
+    rng = np.random.default_rng(901)
+    d = 2.4
+    t = times(2.2)
+    growl = rumble(2.2, rng, 180, 1.6, 0.4) * (0.15 + 0.85 * (t / 2.2) ** 2)
+    tube = sweep(noise(2.2, rng), glide(300, 900, 2.2), 2.5) * (0.1 + 0.6 * (t / 2.2) ** 2)
+    parts = [(growl, 0, 0.9), (tube, 0, 0.35)]
+    at = 0.25
+    while at < 2.15:
+        k = at / 2.2
+        hit = add(clank(0.25, rng.uniform(240, 420) * (0.8 + 0.4 * k), rng, decay=0.05, bright=0.7),
+                  0.6 * thump(0.15, 160, 80, 0.03))
+        parts.append((hit, at, 0.25 + 0.75 * k * k))
+        at += 0.42 - 0.3 * k + rng.uniform(-0.03, 0.03)
+    return finish(mix(d, *parts))
+
+
+def intro_crash():
+    """O Scrap se esborrachando no monte de sucata: o baque, a chapa, a avalanche de pecas, o tilintar no fim."""
+    rng = np.random.default_rng(902)
+    d = 2.0
+    boom = thud(95, 32, 0.35, 1.2)
+    blast = lowpass(noise(0.6, rng), 1500) * env(0.6, 0.002, 0.1)
+    sheet = clank(1.0, 180, rng, decay=0.35, bright=1.2)
+    crack = click(0.08, rng, fc=2200, tau=0.01)
+    pile = debris(1.4, rng, 14, f_lo=200, f_hi=520, spread=1.0)
+    gravel = grit(1.5, rng, 420, fc=1600) * env(1.5, 0.01, 0.4)
+    tinkles = mix(1.6, *[(clank(0.3, rng.uniform(900, 1800), rng, decay=0.05), rng.uniform(0.3, 1.3), rng.uniform(0.15, 0.4))
+                         for _ in range(7)])
+    return finish(mix(d, (boom, 0, 1.0), (blast, 0, 0.7), (sheet, 0.01, 0.5), (crack, 0, 0.6), (pile, 0.05, 0.6),
+                      (gravel, 0.03, 0.45), (tinkles, 0.1, 0.5)))
+
 
 SOUNDS = {
     # O Scrap
@@ -1424,6 +2759,138 @@ SOUNDS = {
     "Elevator_Loop": elevator_loop,
     "Purify_Wave": purify_wave,
     "Oxide_Bump": oxide_bump,
+    # Comum aos chefes
+    "Boss_FallJet": boss_fall_jet,
+    "Boss_FallBurst": boss_fall_burst,
+    "Boss_Slam": boss_slam,
+    "Boss_Step_1": lambda: boss_step(415),
+    "Boss_Step_2": lambda: boss_step(416),
+    "Boss_HurtMetal": boss_hurt_metal,
+    "Boss_HurtSilver": boss_hurt_silver,
+    "Boss_Jump": boss_jump,
+    "Boss_WallHit": boss_wall_hit,
+    "Arena_SealDown": arena_seal_down,
+    "Arena_SealUp": arena_seal_up,
+    "Shock_Wave": shock_wave,
+    "Chunk_Land": chunk_land,
+    "Polish_Shine": polish_shine,
+    # O Coletor
+    "Collector_Wake": collector_wake,
+    "Collector_Roar": collector_roar,
+    "Collector_ClawWindup": collector_claw_windup,
+    "Collector_ClawStrike": collector_claw_strike,
+    "Collector_ThrowWindup": collector_throw_windup,
+    "Collector_Throw": collector_throw,
+    # O Mestre das Caldeiras
+    "BoilerMaster_Wake": bm_wake,
+    "BoilerMaster_Overpressure": bm_overpressure,
+    "BoilerMaster_HammerWindup": bm_hammer_windup,
+    "BoilerMaster_ChargeWindup": bm_charge_windup,
+    "BoilerMaster_ChargeRun": bm_charge_run,
+    "BoilerMaster_BurstWindup": bm_burst_windup,
+    "BoilerMaster_BurstFire": bm_burst_fire,
+    "Geyser_Warn": geyser_warn,
+    "Geyser_Burst": geyser_burst,
+    "Module_Drop": module_drop,
+    # O Capataz
+    "Foreman_Wake": foreman_wake,
+    "Foreman_Listen": foreman_listen,
+    "Foreman_Step_1": lambda: foreman_step(463),
+    "Foreman_Step_2": lambda: foreman_step(464),
+    "Foreman_PickWindup": foreman_pick_windup,
+    "Foreman_PickSlam": foreman_pick_slam,
+    "Foreman_PickStuck": foreman_pick_stuck,
+    "Foreman_RamWindup": foreman_ram_windup,
+    "Foreman_RamWall": foreman_ram_wall,
+    "Foreman_Whistle": foreman_whistle,
+    "Foreman_Scream": foreman_scream,
+    "Foreman_Warn": foreman_warn,
+    "Foreman_Hatch": foreman_hatch,
+    "Foreman_Hurt_1": lambda: foreman_hurt(465),
+    "Foreman_Hurt_2": lambda: foreman_hurt(466),
+    "Foreman_Death": foreman_death,
+    "Shard_Loosen": shard_loosen,
+    "Shard_Land": shard_land,
+    "Pebble_Pop": pebble_pop,
+    # A Broca
+    "Drill_Motor": drill_motor,
+    "Drill_Emerge": drill_emerge,
+    "Drill_Rumble": drill_rumble,
+    "Drill_Erupt": drill_erupt,
+    "Drill_PillarCrack": pillar_crack,
+    "Drill_Impale": drill_impale,
+    "Drill_ShakeFree": drill_shake_free,
+    "Drill_Collapse": drill_collapse,
+    "Drill_Hurt": drill_hurt,
+    "Drill_Die": drill_die,
+    # O Alquimista de Mercurio
+    "Alchemist_Laugh": alchemist_laugh,
+    "Alchemist_Glide": alchemist_glide,
+    "Alchemist_BellCall": alchemist_bell_call,
+    "Alchemist_Distill": alchemist_distill,
+    "Alchemist_Condense": alchemist_condense,
+    "Alchemist_WhipWindup": alchemist_whip_windup,
+    "Alchemist_Whip": alchemist_whip,
+    "Alchemist_Pour": alchemist_pour,
+    "Alchemist_GeyserBurst": merc_geyser_burst,
+    "Alchemist_Transmute": alchemist_transmute,
+    "Alchemist_Burst": alchemist_burst,
+    "Alchemist_Flood": alchemist_flood,
+    "Alchemist_Drain": alchemist_drain,
+    "Jar_Creak": jar_creak,
+    "Jar_Drop": jar_drop,
+    "Jar_Hit": jar_hit,
+    "Jar_Shatter": jar_shatter,
+    "Jar_Suffocate": jar_suffocate,
+    "Rune_Polished": rune_polished,
+    # O Rei de Prata
+    "King_Wake": king_wake,
+    "King_ScepterPlant": king_scepter_plant,
+    "King_Armor": king_armor,
+    "King_Step_1": lambda: king_step(545),
+    "King_Step_2": lambda: king_step(546),
+    "King_Point": king_point,
+    "King_SweepWindup": king_sweep_windup,
+    "King_Sweep": king_sweep,
+    "King_BeamAim": king_beam_aim,
+    "King_BeamLoop": king_beam_loop,
+    "King_BeamFire": king_beam_fire,
+    "King_SkyCharge": king_sky_charge,
+    "King_SkyLance": king_sky_lance,
+    "King_Cast": king_cast,
+    "Facet_Launch": facet_launch,
+    "Facet_Bounce": facet_bounce,
+    "Facet_Glint": facet_glint,
+    "Facet_Rain": facet_rain,
+    "King_Inhale": king_inhale,
+    "King_Breath": king_breath,
+    "King_Glide": king_glide,
+    "King_CrownCrack": king_crown_crack,
+    "King_Shatter": king_shatter,
+    "King_Rise": king_rise,
+    "King_Fall": king_fall,
+    "King_LieDown": king_lie_down,
+    # Sons pequenos
+    "Scrap_EyeFlicker": scrap_eye_flicker,
+    "Scrap_Boot": scrap_boot,
+    "Intro_ChuteRattle": intro_chute_rattle,
+    "Intro_Crash": intro_crash,
+    "Cartoon_Shot": cartoon_shot,
+    "Cartoon_Reveal": cartoon_reveal,
+    "Cartoon_Flash": cartoon_flash,
+    "Heart_HoldLoop": heart_hold_loop,
+    "Heart_Give": heart_give,
+    "Finale_Light": finale_light,
+    "SteamBolt_Hit": steam_bolt_hit,
+    "Spike_Hit": spike_hit,
+    "Ui_SignOpen": ui_sign_open,
+    "Ui_SignClose": ui_sign_close,
+    "Stage_Appear": stage_appear,
+    # A Bancada de Ourives
+    "Bench_Strike": bench_strike,
+    "Bench_Ignite": bench_ignite,
+    "Engrave_Etch": engrave_etch,
+    "Engrave_Stamp": engrave_stamp,
 }
 
 

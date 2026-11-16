@@ -37,10 +37,13 @@ namespace EchoesOfCravejada.EditorTools
         private const string MarbleBlock = "marble_block";
         private const string Circle = "transmutation_circle";
         private const string Emitter = "light_emitter";
+        private const string MirrorSprite = "silver_mirror";
+        private const string LockSprite = "crystal_lock";
         private const string Drop = "mercury_drop";
         private const string Flask = "oxide_flask";
         private const string Cabinet = "reagent_cabinet";
         private const string AlchemistSheet = "alchemist_sheet";
+        private const string AlchemistWreckSheet = "d4_alchemist_wreck_sheet";
         private const string StairDoor = "stair_palace_door";
         private static string StairFlightName(int steps) => "stair_flight_" + steps;
         private static string StairLandingName(int tiles) => "stair_landing_" + tiles;
@@ -189,9 +192,11 @@ namespace EchoesOfCravejada.EditorTools
             BuildBlocks(Child(root, "Transmutables"));
             BuildVapor(Child(root, "Vapor"));
             BuildCircles(Child(root, "TransmutationCircles"));
+            BuildElevator(Child(root, "Elevator"));
             BuildBeams(Child(root, "LightBeams"));
             BuildDrips(Child(root, "MercuryDrips"));
             BuildGates(Child(root, "Gates"));
+            BuildMirrorPuzzles(Child(root, "MirrorPuzzles"));
             BuildReagents(Child(root, "Reagents"));
             BuildAlembic(root);
             BuildSecrets(Child(root, "Secrets"));
@@ -280,6 +285,8 @@ namespace EchoesOfCravejada.EditorTools
             Phase02Assets.WriteSprite(MarbleBlock, MarbleArt.MarbleBlock(), corner, true);
             Phase02Assets.WriteSprite(Circle, MarbleArt.Circle(), feet);
             Phase02Assets.WriteSprite(Emitter, MarbleArt.Emitter(), middle);
+            Phase02Assets.WriteSprite(MirrorSprite, MarbleArt.Mirror(), middle);
+            Phase02Assets.WriteSprite(LockSprite, MarbleArt.Lock(), middle);
             Phase02Assets.WriteSprite(Drop, MarbleArt.Drop(), middle);
             Phase02Assets.WriteSprite(Flask, MarbleArt.Flask(), middle);
             Phase02Assets.WriteSprite(Cabinet, MarbleArt.Cabinet(), feet);
@@ -292,7 +299,7 @@ namespace EchoesOfCravejada.EditorTools
             }
 
             for (int lit = 0; lit <= 3; lit++) Phase02Assets.WriteSprite(LabArt.GreatAlembicName(lit), LabArt.GreatAlembic(lit), feet);
-            for (int i = 0; i < 3; i++) Phase02Assets.WriteSprite(LabArt.ReagentName(i), LabArt.Reagent(i), middle);
+            for (int i = 0; i < 3; i++) Phase02Assets.WriteSprite(LabArt.ReagentName(i), LootArt.Reagent(i), middle, false, LootArt.PixelsPerUnit);
             for (int cracks = 0; cracks <= 3; cracks++) Phase02Assets.WriteSprite(BellName(cracks), LabArt.BellJar(cracks), feet);
             Phase02Assets.WriteSprite(BellShadow, LabArt.BellShadow(), middle);
             Phase02Assets.WriteSprite(Bead, LabArt.MercuryBead(), middle);
@@ -334,6 +341,8 @@ namespace EchoesOfCravejada.EditorTools
             // O chefe, no detalhe dos chefes: uma folha, 32 px por tile.
             Phase02Assets.WriteSheet(AlchemistSheet, AlchemistArt.Frames(),
                 new Vector2(AlchemistArt.PivotX, AlchemistArt.PivotY), AlchemistArt.PixelsPerUnit);
+            Phase02Assets.WriteSheet(AlchemistWreckSheet, AlchemistWreckArt.Frames(),
+                new Vector2(AlchemistWreckArt.PivotX, AlchemistWreckArt.PivotY), AlchemistWreckArt.PixelsPerUnit);
 
             return Phase01Assets.SliceGrid(MarblePath, MarblePrefix);
         }
@@ -458,21 +467,6 @@ namespace EchoesOfCravejada.EditorTools
 
                 var propObject = new GameObject($"{prop.Sprite}_{prop.X:0.#}_{prop.Y:0.#}");
                 propObject.transform.SetParent(root.transform, false);
-
-                if (prop.Sprite == "elevator")
-                {
-                    // A cabine do elevador do District 3, com os trilhos subindo ate o teto.
-                    propObject.transform.position = new Vector3(prop.X - 1f, prop.Y - 4f / Phase01Assets.PixelsPerUnit, 0f);
-                    Sprite(propObject, Phase02Assets.ElevatorCage, Phase01Assets.SortingActors, -4);
-
-                    var rails = new GameObject("Rails");
-                    rails.transform.SetParent(propObject.transform, false);
-                    rails.transform.localPosition = new Vector3(0f, 3f, 0f);
-                    SpriteRenderer rail = Sprite(rails, Phase02Assets.ElevatorRail, Phase01Assets.SortingTerrain, 4);
-                    rail.drawMode = SpriteDrawMode.Tiled;
-                    rail.size = new Vector2(3f, 7f);
-                    continue;
-                }
 
                 propObject.transform.position = new Vector3(prop.X, prop.Y, 0f);
                 Sprite(propObject, prop.Sprite, Phase01Assets.SortingTerrain, prop.Order);
@@ -650,10 +644,56 @@ namespace EchoesOfCravejada.EditorTools
         }
 
         // ------------------------------------------------------------------
+        // O elevador da chegada
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// A cabine do District 3, parada no andar do saguao, com o proprio
+        /// chao (ela tampa a boca do poco) e os trilhos descendo ate o fundo.
+        /// Na chegada ela parte do fundo e sobe com o Scrap (ElevatorArrival).
+        /// </summary>
+        private static void BuildElevator(Transform parent)
+        {
+            (int x, int bottom, int stop, int top) = Phase04Layout.ElevatorShaft;
+            float plate = 4f / Phase01Assets.PixelsPerUnit;
+
+            var rails = new GameObject("ElevatorRails");
+            rails.transform.SetParent(parent, false);
+            rails.transform.position = new Vector3(x, bottom, 0f);
+            SpriteRenderer rail = Sprite(rails, Phase02Assets.ElevatorRail, Phase01Assets.SortingTerrain, 4);
+            rail.drawMode = SpriteDrawMode.Tiled;
+            rail.size = new Vector2(3f, top + 1 - bottom);
+
+            var car = new GameObject("ElevatorCar") { layer = _groundLayer };
+            car.transform.SetParent(parent, false);
+
+            // O piso de chapa da cabine fica logo abaixo da linha onde se pisa.
+            car.transform.position = new Vector3(x, stop - plate, 0f);
+            Sprite(car, Phase02Assets.ElevatorCage, Phase01Assets.SortingActors, -4);
+
+            var body = car.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Kinematic;
+
+            // O chao da cabine: a celula logo abaixo do andar, que o mapa deixou sem tile.
+            var floor = car.AddComponent<BoxCollider2D>();
+            floor.size = new Vector2(3f, 1f);
+            floor.offset = new Vector2(1.5f, plate - 0.5f);
+
+            car.AddComponent<ElevatorArrival>().Configure(Phase04Layout.FromDistrict3SpawnId, bottom - plate, 6f);
+        }
+
+        // ------------------------------------------------------------------
         // Os raios da Optica
         // ------------------------------------------------------------------
 
-        /// <summary>Os raios-perigo: ligam e desligam em ritmo, e so queimam o Scrap.</summary>
+        private static readonly Color HazardLight = new Color(1f, 0.96f, 0.62f, 0.95f);
+        private static readonly Color GuideLight = new Color(0.62f, 0.90f, 1f, 0.85f);
+
+        /// <summary>
+        /// Os raios. Os de perigo ligam e desligam em ritmo e queimam o Scrap;
+        /// a luz-guia dos enigmas e azulada, mais fina, sempre acesa, e nao
+        /// queima: so dobra nos espelhos e acende as fechaduras.
+        /// </summary>
         private static void BuildBeams(Transform parent)
         {
             foreach (Phase04Layout.Beam beam in Phase04Layout.Beams)
@@ -665,18 +705,22 @@ namespace EchoesOfCravejada.EditorTools
                 var lanternObject = new GameObject("Lantern");
                 lanternObject.transform.SetParent(emitterObject.transform, false);
                 SpriteRenderer lantern = Sprite(lanternObject, Emitter, Phase01Assets.SortingTerrain, 22);
+                if (beam.Guide) lantern.color = new Color(0.80f, 0.92f, 1f);
 
                 // O desenho olha pra direita: gira pro lado do raio.
                 float angle = Mathf.Atan2(beam.DirY, beam.DirX) * Mathf.Rad2Deg;
                 if (beam.DirX < 0) lantern.flipX = true;
                 else lanternObject.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
 
+                Color color = beam.Guide ? GuideLight : HazardLight;
+                float width = beam.Guide ? 0.11f : 0.16f;
+
                 var line = emitterObject.AddComponent<LineRenderer>();
                 line.sharedMaterial = _unlit;
-                line.startColor = new Color(1f, 0.96f, 0.62f, 0.95f);
-                line.endColor = new Color(1f, 0.96f, 0.62f, 0.95f);
-                line.startWidth = 0.16f;
-                line.endWidth = 0.16f;
+                line.startColor = color;
+                line.endColor = color;
+                line.startWidth = width;
+                line.endWidth = width;
                 line.numCapVertices = 2;
                 line.numCornerVertices = 2;
                 line.useWorldSpace = true;
@@ -686,10 +730,72 @@ namespace EchoesOfCravejada.EditorTools
 
                 var light = emitterObject.AddComponent<LightBeam>();
                 light.Configure(new Vector2(beam.DirX, beam.DirY));
-                light.ConfigurePulse(beam.On, beam.Off, beam.Offset, false);
+                if (beam.Guide) light.ConfigureGuide();
+                else light.ConfigurePulse(beam.On, beam.Off, beam.Offset, false);
 
                 Phase01Generator.CreatePointLight(emitterObject.transform, "Glow",
-                    (beam.X + 0.5f, beam.Y + 0.5f), new Color(1f, 0.95f, 0.65f), 0.8f, 4f);
+                    (beam.X + 0.5f, beam.Y + 0.5f), beam.Guide ? new Color(0.70f, 0.88f, 1f) : new Color(1f, 0.95f, 0.65f), 0.8f, 4f);
+            }
+        }
+
+        /// <summary>
+        /// Os enigmas de espelho: os espelhos de prata (girar com E) e as
+        /// fechaduras de cristal, cada uma ligada ao portao que abre. A
+        /// fechadura escondida do cofre nao brilha ate ser acesa.
+        /// </summary>
+        private static void BuildMirrorPuzzles(Transform parent)
+        {
+            foreach (Phase04Layout.MirrorSpec spec in Phase04Layout.Mirrors)
+            {
+                var mirrorObject = new GameObject(spec.Name);
+                mirrorObject.transform.SetParent(parent, false);
+                mirrorObject.transform.position = new Vector3(spec.X + 0.5f, spec.Y + 0.5f, 0f);
+
+                SpriteRenderer sprite = Sprite(mirrorObject, MirrorSprite, Phase01Assets.SortingActors, -2);
+
+                // A area onde o Scrap alcanca o espelho: do chao onde ele fica ate o espelho.
+                float low = Mathf.Min(spec.Y, spec.StandY);
+                float high = Mathf.Max(spec.Y, spec.StandY) + 1f;
+                float left = Mathf.Min(spec.X, spec.StandX) - 0.6f;
+                float right = Mathf.Max(spec.X, spec.StandX) + 1.6f;
+
+                var reach = mirrorObject.AddComponent<BoxCollider2D>();
+                reach.isTrigger = true;
+                reach.size = new Vector2(right - left, high - low);
+                reach.offset = new Vector2((left + right) * 0.5f - (spec.X + 0.5f), (low + high) * 0.5f - (spec.Y + 0.5f));
+
+                // A face, onde a luz bate: pequena, no meio.
+                var faceObject = new GameObject("Face");
+                faceObject.transform.SetParent(mirrorObject.transform, false);
+                var face = faceObject.AddComponent<BoxCollider2D>();
+                face.isTrigger = true;
+                face.size = new Vector2(0.45f, 0.45f);
+
+                mirrorObject.AddComponent<SilverMirror>().Configure(spec.Slash, face, sprite);
+
+                Phase01Generator.CreatePointLight(mirrorObject.transform, "Shine",
+                    (spec.X + 0.5f, spec.Y + 0.5f), new Color(0.85f, 0.92f, 1f), 0.35f, 1.8f);
+            }
+
+            foreach (Phase04Layout.LockSpec spec in Phase04Layout.Locks)
+            {
+                var lockObject = new GameObject(spec.Name);
+                lockObject.transform.SetParent(parent, false);
+                lockObject.transform.position = new Vector3(spec.X + 0.5f, spec.Y + 0.5f, 0f);
+
+                SpriteRenderer sprite = Sprite(lockObject, LockSprite, Phase01Assets.SortingTerrain, 23);
+                if (spec.Hidden) lockObject.transform.localScale = Vector3.one * 0.75f;
+
+                var trigger = lockObject.AddComponent<BoxCollider2D>();
+                trigger.isTrigger = true;
+                trigger.size = new Vector2(0.9f, 0.9f);
+
+                // A escondida nao tem brilho nenhum: so a pedra clareando quando a luz chega.
+                Light2D glow = spec.Hidden ? null : Phase01Generator.CreatePointLight(lockObject.transform, "Glow",
+                    (spec.X + 0.5f, spec.Y + 0.5f), new Color(0.75f, 0.85f, 1f), 0.15f, 3f);
+
+                BuiltGates.TryGetValue(spec.Gate, out Gate gate);
+                lockObject.AddComponent<CrystalLock>().Configure(gate, sprite, glow);
             }
         }
 
@@ -705,10 +811,11 @@ namespace EchoesOfCravejada.EditorTools
                 gateObject.transform.SetParent(parent, false);
                 gateObject.transform.position = new Vector3(spec.X, spec.Y, 0f);
 
-                SpriteRenderer bars = Sprite(gateObject, Phase02Assets.GateBars, Phase01Assets.SortingTerrain, 15);
+                // O disfarcado e um bloco de marmore igual a parede: so a fechadura escondida o denuncia.
+                SpriteRenderer bars = Sprite(gateObject, spec.Disguised ? MarbleBlock : Phase02Assets.GateBars, Phase01Assets.SortingTerrain, 15);
                 bars.drawMode = SpriteDrawMode.Tiled;
                 bars.size = new Vector2(spec.Width, spec.Height);
-                bars.color = new Color(0.85f, 0.90f, 1f);
+                bars.color = spec.Disguised ? new Color(0.78f, 0.80f, 0.88f) : new Color(0.85f, 0.90f, 1f);
 
                 var wall = gateObject.AddComponent<BoxCollider2D>();
                 wall.size = new Vector2(spec.Width, spec.Height);
@@ -787,8 +894,7 @@ namespace EchoesOfCravejada.EditorTools
             pickup.transform.SetParent(parent, false);
             pickup.transform.position = new Vector3(secret.X + 0.5f, secret.Y + 1f, 0f);
 
-            SpriteRenderer module = Sprite(pickup, Phase02Assets.DashModule, Phase01Assets.SortingActors, -1);
-            module.color = new Color(1f, 0.85f, 0.45f);
+            Sprite(pickup, Phase02Assets.ChassisPlate, Phase01Assets.SortingActors, -1);
 
             var trigger = pickup.AddComponent<CircleCollider2D>();
             trigger.isTrigger = true;
@@ -879,8 +985,10 @@ namespace EchoesOfCravejada.EditorTools
                         trigger.size = new Vector2(1.2f, 0.85f);
                         trigger.offset = new Vector2(0f, 0.42f);
 
-                        foe.AddComponent<Damageable>().Configure(2, 3, shard);
-                        foe.AddComponent<QuicksilverSlime>().Configure(minX, maxX, slime);
+                        // A vida dos corrompidos do District 4 e o dobro da das fases de
+                        // antes; cada metade da gosma tambem aguenta dois golpes.
+                        foe.AddComponent<Damageable>().Configure(4, 3, shard);
+                        foe.AddComponent<QuicksilverSlime>().Configure(minX, maxX, slime, 2);
                         break;
 
                     case Phase04Layout.FoeKind.FlaskThrower:
@@ -888,7 +996,7 @@ namespace EchoesOfCravejada.EditorTools
                         trigger.size = new Vector2(0.8f, 1.5f);
                         trigger.offset = new Vector2(0f, 0.75f);
 
-                        foe.AddComponent<Damageable>().Configure(2, 4, shard);
+                        foe.AddComponent<Damageable>().Configure(4, 4, shard);
                         foe.AddComponent<FlaskThrower>().Configure(Phase02Assets.LoadSprite(Flask),
                             Phase02Assets.LoadSprite(Phase02Assets.AcidSurface), thrower, ThrowerArt.HandHeight);
                         break;
@@ -898,7 +1006,7 @@ namespace EchoesOfCravejada.EditorTools
                         trigger.size = new Vector2(1.2f, 1.8f);
                         trigger.offset = new Vector2(0f, 0.9f);
 
-                        foe.AddComponent<Damageable>().Configure(5, 6, shard);
+                        foe.AddComponent<Damageable>().Configure(10, 6, shard);
                         foe.AddComponent<FailedExperiment>().Configure(minX, maxX, experiment);
                         break;
 
@@ -907,8 +1015,9 @@ namespace EchoesOfCravejada.EditorTools
                         trigger.size = new Vector2(0.9f, 1.8f);
                         trigger.offset = new Vector2(0f, 0.9f);
 
-                        foe.AddComponent<Damageable>().Configure(4, 5, shard);
-                        foe.AddComponent<TransmutedSentinel>().Configure(minX, maxX, glass, silver);
+                        // A armadura que vira prata (ferro, pro Scrap) pesa: encostar tira 2.
+                        foe.AddComponent<Damageable>().Configure(8, 5, shard);
+                        foe.AddComponent<TransmutedSentinel>().Configure(minX, maxX, glass, silver, 2);
                         break;
                 }
             }
@@ -1210,10 +1319,15 @@ namespace EchoesOfCravejada.EditorTools
             BuiltGates.TryGetValue(Phase04Layout.BossExitGate, out Gate exit);
 
             var boss = bossObject.AddComponent<MercuryAlchemist>();
-            boss.Configure(arena.X0 + 2.5f, arena.X1 - 1.5f, Phase04Layout.ArenaFloorY, Phase04Layout.ArenaCeilingY,
+            // Da grade da entrada (x 129) ate a grade da saida (x 171): nao sobra canto longe dele.
+            boss.Configure(arena.X0 + 1.5f, arena.X1 + 0.2f, Phase04Layout.ArenaFloorY, Phase04Layout.ArenaCeilingY,
                 new Rect(wake.X, wake.Y, wake.Width, wake.Height),
                 circles.ToArray(), jar, flood.ToArray(), whip, Phase02Assets.LoadSprite(Bead), exit);
             boss.ConfigureFrames(frames);
+
+            // O que sobra quando ele escorre: a poca, o jaleco, a mascara, o tanque.
+            boss.ConfigureWreck(WreckAssets.Build(root, "MercuryAlchemistWreck",
+                Phase02Assets.LoadSheet(AlchemistWreckSheet, AlchemistWreckArt.FrameCount), bossObject.transform.position));
 
             // As lentes acesas, no escuro da arena.
             Phase01Generator.CreatePointLight(bossObject.transform, "LensGlow",

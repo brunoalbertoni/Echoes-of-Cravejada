@@ -39,6 +39,9 @@ namespace EchoesOfCravejada
         [Tooltip("Segundos que ela fica em prata depois de um golpe.")]
         [SerializeField] private float silverTime = 2.6f;
 
+        [Tooltip("Quanto tira do Scrap ao encostar. A armadura pesa: o dobro dos outros.")]
+        [SerializeField] private int contactDamage = 2;
+
         [Tooltip("Os quadros de vidro e os de prata, na ordem das constantes.")]
         [SerializeField] private Sprite[] glassFrames;
         [SerializeField] private Sprite[] silverFrames;
@@ -53,10 +56,11 @@ namespace EchoesOfCravejada
         public bool IsSilver => Time.time < _silverUntil;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(float newMinX, float newMaxX, Sprite[] newGlassFrames = null, Sprite[] newSilverFrames = null)
+        public void Configure(float newMinX, float newMaxX, Sprite[] newGlassFrames = null, Sprite[] newSilverFrames = null, int newContactDamage = 2)
         {
             minX = newMinX;
             maxX = newMaxX;
+            contactDamage = newContactDamage;
             if (newGlassFrames != null) glassFrames = newGlassFrames;
             if (newSilverFrames != null) silverFrames = newSilverFrames;
         }
@@ -169,7 +173,7 @@ namespace EchoesOfCravejada
             if (_damageable.IsDead) return;
 
             var health = other.GetComponentInParent<ScrapHealth>();
-            if (health != null) health.TakeDamage(1, transform.position);
+            if (health != null) health.TakeDamage(contactDamage, transform.position);
         }
     }
 }

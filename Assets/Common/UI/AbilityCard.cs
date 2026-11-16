@@ -79,6 +79,7 @@ namespace EchoesOfCravejada
             if (Time.unscaledTime - _openedAt >= MinOpenTime && ContinuePressed())
             {
                 _closingAt = Time.unscaledTime;
+                Sfx.SignClose.Play();
             }
         }
 

@@ -37,7 +37,12 @@ namespace EchoesOfCravejada
             transform.position += (Vector3)step;
 
             _left -= step.magnitude;
-            if (_left <= 0f) Destroy(gameObject);
+            if (_left <= 0f)
+            {
+                // Acabou o alcance: o cristal se desfaz.
+                Sfx.ShardShotHit.Play(transform.position, volume: 0.4f);
+                Destroy(gameObject);
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -46,6 +51,7 @@ namespace EchoesOfCravejada
             if (health == null) return;
 
             health.TakeDamage(1, transform.position);
+            Sfx.ShardShotHit.Play(transform.position);
             Destroy(gameObject);
         }
     }

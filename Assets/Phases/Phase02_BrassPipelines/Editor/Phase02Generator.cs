@@ -277,6 +277,9 @@ namespace EchoesOfCravejada.EditorTools
                 target.SetTile(new Vector3Int(prop.X, prop.Y, 0), Phase01Generator.Resolve(tiles, prop.Tile));
             }
 
+            // As plataformas baixas da arena do Mestre: o Scrap passa por baixo delas.
+            Phase01Generator.CreateThinSteps(ground, decoration, Phase02Layout.ThinSteps);
+
             foreach (Tilemap tilemap in new[]
                      {
                          backCave, back, farPipes, backPipes, backProps,

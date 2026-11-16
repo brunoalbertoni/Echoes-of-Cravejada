@@ -35,6 +35,19 @@ namespace EchoesOfCravejada
             if (health != null)
             {
                 health.TakeDamage(damage, transform.position, true);
+
+                // Espinho fura com um tinido; o abismo nao tem som de ponta.
+                bool hurtNow = health.LastHitTime == Time.time;
+                if (hurtNow && name.StartsWith("Spikes")) Sfx.SpikeHit.Play(health.transform.position);
+
+                // Piscando de um golpe recente ou no meio do dash, o dano nao
+                // entra; mas ele tem que voltar pro chao seguro mesmo assim,
+                // senao segue caindo pelo abismo ate morrer.
+                if (!hurtNow && health.Health > 0 && !Cinematic.Active)
+                {
+                    var back = other.GetComponentInParent<ScrapRespawn>();
+                    if (back != null) back.Respawn();
+                }
                 return;
             }
 

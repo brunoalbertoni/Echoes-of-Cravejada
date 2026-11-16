@@ -34,11 +34,14 @@ namespace EchoesOfCravejada
 
         private void Update()
         {
-            if (circle == null) return;
+            // Como nas outras fases: o Alquimista cai e o distrito purifica na
+            // hora, de onde ele caiu. O circulo do palco nao e mais usado.
+            if (circle != null && circle.gameObject.activeSelf) circle.gameObject.SetActive(false);
+            if (_litHere || !MercuryAlchemist.Defeated || AreaPurifier.IsPurified || purifier == null) return;
 
-            // O circulo so existe pra quem ja derrubou o Alquimista, e some depois da purificacao.
-            bool show = MercuryAlchemist.Defeated && (_litHere || !AreaPurifier.IsPurified);
-            if (circle.gameObject.activeSelf != show) circle.gameObject.SetActive(show);
+            _litHere = true;
+            var alchemist = FindAnyObjectByType<MercuryAlchemist>();
+            purifier.Purify(alchemist != null ? alchemist.transform.position : transform.position);
         }
 
         private void OnLit()

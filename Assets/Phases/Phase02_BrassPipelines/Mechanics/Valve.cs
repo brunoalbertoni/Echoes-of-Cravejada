@@ -1,24 +1,18 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace EchoesOfCravejada
 {
     /// <summary>
-    /// Uma valvula enferrujada: a purificacao local do District 2. Segurar o
-    /// botao perto dela faz o Scrap raspar e polir o volante; quando termina,
-    /// ele gira e muda a sala — liga vapor, seca acido, abre passagem.
-    ///
-    /// Enquanto raspa o Scrap nao anda nem pula: fica vulneravel. Apanhar no
-    /// meio joga fora o que ja tinha raspado.
-    ///
-    /// Teclas: E ou K; no controle, o botao de cima.
+    /// Uma valvula emperrada: a purificacao local do District 2. O volante
+    /// travou de ferrugem; cada golpe de cinzel o sacode e solta um pouco, e no
+    /// ultimo ele gira e muda a sala — liga vapor, seca acido, abre passagem.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    public class Valve : MonoBehaviour
+    public class Valve : MonoBehaviour, IDamageable
     {
-        [Tooltip("Segundos segurando ate o volante girar.")]
-        [SerializeField] private float scrapeTime = 2.2f;
+        [Tooltip("Quantos golpes ate o volante girar.")]
+        [SerializeField] private int hitsToTurn = 3;
 
         [Header("O que ela muda")]
         [SerializeField] private SteamVent[] ventsToTurnOn;
@@ -31,15 +25,22 @@ namespace EchoesOfCravejada
 
         private Sprite _rustySprite;
         private ScrapController _controller;
-        private ScrapHealth _health;
-        private float _progress;
-        private bool _scraping;
+        private int _hits;
         private bool _turned;
+        private float _shake;
 
         /// <summary>A valvula perto da qual o Scrap esta, se houver. O HUD usa pro aviso e pra barra.</summary>
         public static Valve Nearby { get; private set; }
 
-        public float Progress => Mathf.Clamp01(_progress / Mathf.Max(0.1f, scrapeTime));
+        public float Progress => Mathf.Clamp01(_hits / (float)Mathf.Max(1, hitsToTurn));
+
+        /// <summary>
+        /// Quem abre os portoes e outro (a cena das travas): o volante gira, mas
+        /// os portoes ficam esperando a camera chegar neles.
+        /// </summary>
+        public bool DeferGates { get; set; }
+
+        public Gate[] Gates => gatesToOpen;
 
         public bool IsTurned => _turned;
 
@@ -80,38 +81,21 @@ namespace EchoesOfCravejada
         public void Rust()
         {
             _turned = false;
-            _progress = 0f;
+            _hits = 0;
             if (wheel != null && _rustySprite != null) wheel.sprite = _rustySprite;
             if (_controller != null) Nearby = this;
         }
 
-        private void Update()
+        public void Damage(int amount, Vector2 from)
         {
-            if (_turned || _controller == null) return;
+            if (_turned) return;
 
-            bool holding = InteractHeld() && _controller.IsGrounded;
-
-            // Apanhou no meio: perde o que tinha raspado.
-            if (_scraping && _health != null && Time.time - _health.LastHitTime < 0.1f)
-            {
-                _progress = 0f;
-                holding = false;
-            }
-
-            if (holding != _scraping)
-            {
-                _scraping = holding;
-                _controller.ControlLocked = holding;
-            }
-
-            if (!_scraping) return;
-
-            _progress += Time.deltaTime;
-            if (_progress < scrapeTime) return;
+            _hits++;
+            _shake = 0.25f;
+            if (_hits < hitsToTurn) return;
 
             _turned = true;
-            _scraping = false;
-            _controller.ControlLocked = false;
+            _shake = 0f;
             if (Nearby == this) Nearby = null;
 
             if (wheel != null && cleanSprite != null) wheel.sprite = cleanSprite;
@@ -134,7 +118,7 @@ namespace EchoesOfCravejada
                 }
             }
 
-            if (gatesToOpen != null)
+            if (gatesToOpen != null && !DeferGates)
             {
                 foreach (Gate gate in gatesToOpen)
                 {
@@ -143,6 +127,15 @@ namespace EchoesOfCravejada
             }
 
             Turned?.Invoke(this);
+        }
+
+        private void Update()
+        {
+            if (wheel == null || _shake <= 0f) return;
+
+            _shake -= Time.deltaTime;
+            float angle = Mathf.Sin(Time.time * 80f) * 8f * Mathf.Clamp01(_shake / 0.25f);
+            wheel.transform.localRotation = Quaternion.Euler(0f, 0f, _shake > 0f ? angle : 0f);
         }
 
         private IEnumerator Spin()
@@ -158,22 +151,12 @@ namespace EchoesOfCravejada
             wheel.transform.localRotation = Quaternion.identity;
         }
 
-        private static bool InteractHeld()
-        {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.eKey.isPressed || keyboard.kKey.isPressed)) return true;
-
-            Gamepad pad = Gamepad.current;
-            return pad != null && pad.buttonNorth.isPressed;
-        }
-
         private void OnTriggerEnter2D(Collider2D other)
         {
             var controller = other.GetComponentInParent<ScrapController>();
             if (controller == null) return;
 
             _controller = controller;
-            _health = controller.GetComponent<ScrapHealth>();
             if (!_turned) Nearby = this;
         }
 
@@ -181,11 +164,7 @@ namespace EchoesOfCravejada
         {
             if (_controller == null || other.GetComponentInParent<ScrapController>() != _controller) return;
 
-            if (_scraping) _controller.ControlLocked = false;
-
-            _scraping = false;
             _controller = null;
-            _health = null;
             if (Nearby == this) Nearby = null;
         }
     }

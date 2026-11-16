@@ -1,0 +1,409 @@
+fileFormatVersion: 2
+guid: df18810a9e0218a4282276bea30f5dd7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1802011142148365936
+    second: d2_master_wreck_sheet_0
+  - first:
+      213: -4318117040469731976
+    second: d2_master_wreck_sheet_1
+  - first:
+      213: 4087567212560399641
+    second: d2_master_wreck_sheet_2
+  - first:
+      213: -3267129560641271926
+    second: d2_master_wreck_sheet_3
+  - first:
+      213: 6440320919544642204
+    second: d2_master_wreck_sheet_4
+  - first:
+      213: -4200470665493819383
+    second: d2_master_wreck_sheet_5
+  - first:
+      213: 2741116980645079622
+    second: d2_master_wreck_sheet_6
+  - first:
+      213: 4227051979598847340
+    second: d2_master_wreck_sheet_7
+  - first:
+      213: 4362721663246872370
+    second: d2_master_wreck_sheet_8
+  - first:
+      213: -3395943635893400935
+    second: d2_master_wreck_sheet_9
+  - first:
+      213: -3296316558371821716
+    second: d2_master_wreck_sheet_10
+  - first:
+      213: 6013513370822472893
+    second: d2_master_wreck_sheet_11
+  - first:
+      213: 6634933307514303028
+    second: d2_master_wreck_sheet_12
+  - first:
+      213: 291490507378452848
+    second: d2_master_wreck_sheet_13
+  - first:
+      213: 3508800080677001887
+    second: d2_master_wreck_sheet_14
+  - first:
+      213: 4928364530873140106
+    second: d2_master_wreck_sheet_15
+  - first:
+      213: -9210497097862859505
+    second: d2_master_wreck_sheet_16
+  - first:
+      213: -5814826878391246534
+    second: d2_master_wreck_sheet_17
+  - first:
+      213: -7981027097435493684
+    second: d2_master_wreck_sheet_18
+  - first:
+      213: 1589536436526141702
+    second: d2_master_wreck_sheet_19
+  - first:
+      213: -1787401626035101673
+    second: d2_master_wreck_sheet_20
+  - first:
+      213: -4875626493542695792
+    second: d2_master_wreck_sheet_21
+  - first:
+      213: -7834647525007238571
+    second: d2_master_wreck_sheet_22
+  - first:
+      213: 7603094960954906835
+    second: d2_master_wreck_sheet_23
+  - first:
+      213: 2028109405246570667
+    second: d2_master_wreck_sheet_24
+  - first:
+      213: 1820189134880829303
+    second: d2_master_wreck_sheet_25
+  - first:
+      213: -6331654398083139947
+    second: d2_master_wreck_sheet_26
+  - first:
+      213: -9094023275655668169
+    second: d2_master_wreck_sheet_27
+  - first:
+      213: -242295157072659610
+    second: d2_master_wreck_sheet_28
+  - first:
+      213: -7309233818512647778
+    second: d2_master_wreck_sheet_29
+  - first:
+      213: 2320737456907332921
+    second: d2_master_wreck_sheet_30
+  - first:
+      213: 6639106064684215245
+    second: d2_master_wreck_sheet_31
+  - first:
+      213: -8786668617784969959
+    second: d2_master_wreck_sheet_32
+  - first:
+      213: -1789426457410184852
+    second: d2_master_wreck_sheet_33
+  - first:
+      213: 736769874328398576
+    second: d2_master_wreck_sheet_34
+  - first:
+      213: 2265920828714651939
+    second: d2_master_wreck_sheet_35
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: d2_master_wreck_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 208
+        height: 128
+      alignment: 9
+      pivot: {x: 0.44230768, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07b68447bdabd6a41b33ed87b268568b
+      internalID: 1002518509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_wreck_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 0
+        width: 208
+        height: 128
+      alignment: 9
+      pivot: {x: 0.44230768, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b98061391e99c34a9c26c0008d29248
+      internalID: 1118784316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_wreck_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 0
+        width: 208
+        height: 128
+      alignment: 9
+      pivot: {x: 0.44230768, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7655a05d53dd9c04ea6350b1f9cab9b3
+      internalID: 1060425255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_wreck_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 0
+        width: 208
+        height: 128
+      alignment: 9
+      pivot: {x: 0.44230768, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfba54acaab3f0b4aaf7c350c5dd7980
+      internalID: 114435816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_wreck_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 0
+        width: 208
+        height: 128
+      alignment: 9
+      pivot: {x: 0.44230768, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf1a87c270295ee41a3cdd270a65c14c
+      internalID: -1727715274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_wreck_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 1040
+        y: 0
+        width: 208
+        height: 128
+      alignment: 9
+      pivot: {x: 0.44230768, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0295348bfee9a3b4db5a22db08da8fb7
+      internalID: -419826010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_wreck_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 1248
+        y: 0
+        width: 208
+        height: 128
+      alignment: 9
+      pivot: {x: 0.44230768, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b75e84f30d04034e9fcf982fc55a43e
+      internalID: 788285937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d2_master_wreck_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 1456
+        y: 0
+        width: 208
+        height: 128
+      alignment: 9
+      pivot: {x: 0.44230768, y: 0.0078125}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc15a625c49fdd04885b373114207d50
+      internalID: 1553431444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 18cdb74df7933134eb5895cd95527864
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      d2_master_wreck_sheet_00: 1002518509
+      d2_master_wreck_sheet_01: 1118784316
+      d2_master_wreck_sheet_02: 1060425255
+      d2_master_wreck_sheet_03: 114435816
+      d2_master_wreck_sheet_04: -1727715274
+      d2_master_wreck_sheet_05: -419826010
+      d2_master_wreck_sheet_06: 788285937
+      d2_master_wreck_sheet_07: 1553431444
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -15,7 +15,7 @@ namespace EchoesOfCravejada
         public static OldScrap Drop(Vector3 position, int shards, Sprite sprite)
         {
             var scrap = new GameObject("OldScrap");
-            scrap.transform.position = position;
+            scrap.transform.position = DropSpot.Free(position + Vector3.up * 0.5f) - Vector3.up * 0.5f;
 
             var renderer = scrap.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;

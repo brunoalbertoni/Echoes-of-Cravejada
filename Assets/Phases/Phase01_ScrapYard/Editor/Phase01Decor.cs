@@ -24,7 +24,7 @@ namespace EchoesOfCravejada.EditorTools
     ///                   parede, as marcas de garra. Nada em volta das
     ///                   plataformas, pra luta ficar legivel.
     ///   O ABISMO      — os cabos partidos por cima do vao.
-    ///   A PISTA       — a obra da Coroa, abandonada: nada alem da placa.
+    ///   A OBRA        — a obra da Coroa, largada: andaime, viga, canos e o carrinho.
     ///
     /// Os canos sempre vao de rocha a rocha (ou ate uma curva que segue em
     /// frente): as pontas ficam enterradas no terreno, que e desenhado por
@@ -333,8 +333,15 @@ namespace EchoesOfCravejada.EditorTools
             GirderV(98f, 22f, 49f);
             PipeV(100.6f, 21.5f, 49.5f);
 
-            // A Pista de Provas, abandonada faz tempo, fica sem cenografia: so a
-            // placa e a ferrugem. Quanto menos coisa, mais esquecida ela parece.
+            // A obra abandonada: o material que a Coroa trouxe e largou no dia
+            // em que o verde desceu. Andaime em pe sobre os ferros, viga
+            // escorando o teto, canos empilhados e o carrinho da carga.
+            Back(DecorArt.PipePile, 45.6f, 6f);
+            Wall(DecorArt.Hazard, 46.5f, 11f);
+            Back(DecorArt.Scaffold, 52.5f, 6f);
+            GirderV(57.5f, 6f, 15f);
+            Back(DecorArt.Barrel, 63.8f, 7f);
+            Back(DecorArt.Cart, 65.6f, 7f, true);
 
             return p.ToArray();
         }

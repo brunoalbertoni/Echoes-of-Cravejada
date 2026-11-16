@@ -88,7 +88,8 @@ namespace EchoesOfCravejada
         {
             // A primeira conversa so faz o pedido: quem ja chega com tudo ouve
             // a entrega na proxima, em vez de ganhar a gema calado.
-            bool askedBefore = KeyItems.HasFlag(AskedFlag);
+            // Sem nada a pedir (itemCount 0): a primeira conversa ja e a entrega.
+            bool askedBefore = KeyItems.HasFlag(AskedFlag) || itemCount <= 0;
             KeyItems.SetFlag(AskedFlag);
             if (!askedBefore) return;
 
@@ -99,7 +100,6 @@ namespace EchoesOfCravejada
 
             GemPurse.Add(gemReward);
             Sfx.Gem.Play();
-            HudNotice.Show(rewardNotice);
         }
 
         private string[] Progress(int held)

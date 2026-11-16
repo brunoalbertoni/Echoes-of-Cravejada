@@ -16,7 +16,7 @@ namespace EchoesOfCravejada.EditorTools
     ///
     /// O ANDAR 1 (por cima do poco, indo pra oeste). Os primeiros corrompidos e
     /// os espinhos de sucata — atacar com o cinzel, quicar por cima. No fim, a
-    /// alavanca enferrujada: raspar ate o portao abrir. Atras dele, a bancada.
+    /// alavanca emperrada: bater com o cinzel ate o portao abrir. Atras dele, a bancada.
     ///
     /// O ANDAR 2 (mais acima, voltando pra leste). O desafio misto: tudo junto.
     ///
@@ -150,11 +150,11 @@ namespace EchoesOfCravejada.EditorTools
 
         /// <summary>
         /// O portao do andar 1: a coluna de celulas que ele fecha. No mapa ela
-        /// e ar; quem a fecha e o objeto do portao, ate a alavanca ser raspada.
+        /// e ar; quem a fecha e o objeto do portao, ate a alavanca ser solta.
         /// </summary>
         public static (int X, int Y, int Height) Gate => (10, 40, 6);
 
-        /// <summary>A alavanca enferrujada, do lado de ca do portao.</summary>
+        /// <summary>A alavanca emperrada, do lado de ca do portao.</summary>
         public static (int X, int Y) LeverTile => (13, 40);
 
         /// <summary>A Bancada de Ourives, do lado de la. Canto de baixo, a esquerda.</summary>
@@ -277,32 +277,37 @@ namespace EchoesOfCravejada.EditorTools
         public static readonly NpcSpot[] Npcs =
         {
             // No fundo do poco, ao lado de onde o Scrap acorda: a historia
-            // inicial. Ele conta a queda da cidade e, de passagem, fala do
-            // Noble riscado que subiu pelos canos: e o Crisol do District 2.
-            // Depois da purificacao, aponta a Pista de Provas.
+            // inicial. Da o nome ao Scrap, conta a divisao da cidade (prata em
+            // cima, cobre e latao embaixo) e a onda de Oxide que desceu pros
+            // pobres. De passagem, fala do Noble riscado: e o Crisol do
+            // District 2. Depois da purificacao, aponta a obra abandonada.
             new NpcSpot
             {
                 Name = "Refugo", X = 13, Y = 4, Variant = 0,
                 Lines = new[]
                 {
-                    "Olha só... mais um caiu lá do alto. E este ainda acende os olhos.",
-                    "Bem-vindo ao Poço de Sucata, pequeno. É para cá que Cravejada joga tudo o que não brilha mais.",
-                    "Aqui todo mundo me chama de Refugo. Antes, eu carregava lampiões de cristal pela Avenida das Facetas, lá em cima.",
-                    "A cidade inteira cintilava dentro dos geodos. Quem mandava eram os 925 Nobres, forjados em prata pura. Diziam que o tempo não os tocava.",
-                    "Mas o Rei de Prata quis energia sem fim e mandou cavar até o Coração de Quartzo. Quando a broca o furou, o verde subiu.",
-                    "Está vendo essa névoa? É o Óxido. Ele come o metal, apaga os cristais e embaralha a cabeça da gente até sobrar só a raiva.",
-                    "Primeiro, a Coroa mandava para cá os que enlouqueciam. Depois, os que só rangiam. Depois, qualquer um.",
-                    "Uma vez caiu até um de prata, todo riscado. Não ficou nem um dia: subiu pelos canos resmungando sobre pedras e coroas.",
-                    "Mas você é diferente. O Óxido passa por você e não gruda. Nunca vi isso.",
-                    "Suba. O único caminho é para cima. E cuidado com o Coletor: é ele quem empurra os descartados para o fundo.",
+                    "Ei... mais um caiu lá de cima. E esse ainda tá com os olhos acesos.",
+                    "Olha só pra você, todo amassado. Parece um monte de sucata andando. Vou te chamar de Scrap.",
+                    "Bem-vindo ao Poço de Sucata, Scrap. É aqui que Cravejada, a Cidade de Prata, joga tudo que não quer mais.",
+                    "Me chamam de Refugo. Eu acendia os lampiões da Avenida das Facetas, lá em cima.",
+                    "Lá em cima quem manda é a prata. Os 925 Nobres vivem nos palácios do alto. A gente de cobre e latão mora embaixo e faz o serviço pesado.",
+                    "Mas pro Rei de Prata nunca era o bastante. Ele queria mais poder, e mandou cavar até o Coração de Quartzo, a pedra que move a cidade.",
+                    "Quando a broca furou o Coração, saiu uma onda verde enorme. O Óxido.",
+                    "Ele escorreu pra baixo, feito água. Os palácios quase nem sentiram. Os bairros de baixo foram engolidos.",
+                    "O Óxido come o metal, apaga os cristais e mexe com a cabeça da gente até sobrar só raiva.",
+                    "Aí a Coroa começou a jogar aqui quem pegava. Depois, quem só rangia. Depois, qualquer um de cobre ou latão.",
+                    "Uma vez caiu até um de prata, todo riscado. Não ficou nem um dia. Subiu pelos canos falando sozinho de pedras e coroas.",
+                    "Mas você... o verde passa por você e não gruda. Nunca vi isso.",
+                    "Sobe, Scrap. Daqui de baixo, o único jeito é pra cima.",
                 },
                 PurifiedLines = new[]
                 {
-                    "Está sentindo? O ar ficou leve. Fazia tanto tempo que eu não via o poço sem verde que tinha esquecido a cor da rocha.",
-                    "Então foi você que derrubou o Coletor. Ouvi o estrondo daqui de baixo e achei que fosse a calha despejando mais um.",
-                    "A névoa grossa que tampava o túnel ali do lado também sumiu. Atrás dela fica a Pista de Provas.",
-                    "Era lá que a Coroa testava os autômatos recém-montados. Quem não chegava ao fim descia pela calha. Quase ninguém chegava.",
-                    "Dizem que o prêmio do fim ainda está lá, esperando. Mas o último vão é largo demais para um pulo comum.",
+                    "Tá sentindo? O ar ficou leve. Fazia tanto tempo que eu não via o poço sem verde que já tinha esquecido a cor da pedra.",
+                    "Ouvi um estrondo enorme lá de cima. Achei que era a calha jogando mais um... mas era você, né?",
+                    "A névoa que tampava o túnel aqui do lado também sumiu. Lá atrás tem uma obra da Coroa.",
+                    "Iam construir um elevador de carga ali. Trouxeram ferro, andaime, caixa de peça nova... e um dia largaram tudo e foram embora.",
+                    "Foi no mesmo dia em que o verde desceu. Ninguém voltou pra buscar nada.",
+                    "Dizem que ainda tem coisa boa lá no fundo. Mas o último vão é largo demais pra um pulo comum.",
                 },
             },
 
@@ -313,98 +318,98 @@ namespace EchoesOfCravejada.EditorTools
                 Name = "Rebite", X = 8, Y = 40, Variant = 1, Role = NpcRole.ToolsQuest,
                 Lines = new[]
                 {
-                    "Chegou até aqui raspando a alavanca? Então você sabe polir. Isso é raro aqui embaixo.",
-                    "Esta é uma Bancada de Ourives. Encoste nela, e ela guarda o seu lugar e conserta o seu corpo.",
-                    "Ela desceu pela calha junto com o meu mestre, um ourives de latão. O Óxido pegou primeiro nas mãos dele. Eu era o aprendiz; desci atrás.",
-                    "Ele não se levantou mais. A bancada, sim: continua funcionando, como se ainda esperasse por ele.",
-                    "Se você quebrar lá fora, é para cá que volta. Mas os cacos que carregava ficam onde você caiu.",
-                    "Volte lá e pegue-os antes de quebrar de novo. Se quebrar duas vezes, eles se perdem de vez.",
-                    "E não se engane: enquanto você se remonta, os corrompidos também se levantam. Todos eles.",
-                    "Uma última coisa. As ferramentas do meu mestre se espalharam pelo distrito quando ele caiu: um buril, uma lupa e uma pinça.",
-                    "Se encontrá-las, traga-as para mim. Não quero que fiquem jogadas no meio da sucata.",
-                    "O caminho continua por cima. Pule de uma parede para a outra, como fez no poço.",
+                    "Você soltou aquela alavanca na pancada? Ela tava emperrada desde que eu cheguei aqui.",
+                    "Isso aqui é uma Bancada de Ourives. Aperta E nela, e ela guarda onde você tá e conserta seu corpo.",
+                    "Ela caiu pela calha junto com meu mestre, um ourives de latão. O Óxido pegou primeiro nas mãos dele. Eu era o aprendiz, vim atrás.",
+                    "Ele não levantou mais. A bancada, sim. Continua funcionando, como se ainda esperasse por ele.",
+                    "Se você quebrar lá fora, volta pra cá. Mas os cacos que tava carregando ficam onde você caiu.",
+                    "Vai lá buscar antes de quebrar de novo. Se quebrar duas vezes, eles somem de vez.",
+                    "E fica esperto: enquanto você se monta de novo, os corrompidos também levantam. Todos eles.",
+                    "Mais uma coisa. As ferramentas do meu mestre se espalharam por aí quando ele caiu: um buril, uma lupa e uma pinça.",
+                    "Se achar, traz pra mim. Não quero elas largadas no meio da sucata.",
+                    "O caminho continua por cima. Pula de uma parede pra outra, igual você fez no poço.",
                 },
-                PurifiedGreeting = "A luz voltou. Olhe a bancada: o latão está brilhando como no dia em que o mestre a poliu.",
+                PurifiedGreeting = "A luz voltou. Olha a bancada: o latão tá brilhando igual no dia em que o mestre poliu.",
                 NoToolLines = new[]
                 {
-                    "Ainda nada? O buril, a lupa e a pinça. Ele nunca largava as três.",
-                    "Procure nos cantos aonde ninguém vai. A sucata esconde bem o que é pequeno.",
+                    "Nada ainda? O buril, a lupa e a pinça. Ele nunca largava as três.",
+                    "Procura nos cantos onde ninguém vai. A sucata esconde bem as coisas pequenas.",
                 },
                 OneToolLines = new[]
                 {
-                    "Você achou uma delas! Faltam duas.",
-                    "Guarde-a com você até encontrar as outras. Quero ver o conjunto inteiro de novo.",
+                    "Você achou uma! Faltam duas.",
+                    "Guarda com você até achar as outras. Quero ver o conjunto inteiro de novo.",
                 },
                 TwoToolLines = new[]
                 {
-                    "Duas! Falta só uma.",
-                    "Ele dizia que ferramenta separada é ferramenta perdida. Ache a última, por favor.",
+                    "Duas! Só falta uma.",
+                    "Ele dizia que ferramenta separada é ferramenta perdida. Acha a última, por favor.",
                 },
                 CompleteLines = new[]
                 {
-                    "O buril, a lupa e a pinça... São mesmo dele. O cabo da lupa ainda tem a marca dos dedos.",
-                    "Vou deixá-las aqui, na bancada. É onde elas devem ficar.",
-                    "Tome. É a última gema que ele lapidou. Nunca chegou a entregá-la a ninguém.",
-                    "Aqui embaixo ela não compra nada. Mas guarde-a: uma gema lapidada vale muito para quem ainda sabe o que é brilho.",
+                    "O buril, a lupa e a pinça... São dele mesmo. O cabo da lupa ainda tem a marca dos dedos.",
+                    "Vou deixar aqui na bancada. É o lugar delas.",
+                    "Toma. É a última gema que ele lapidou. Nunca chegou a entregar pra ninguém.",
+                    "Aqui embaixo ela não compra nada. Mas guarda: lá em cima, uma gema lapidada vale muito.",
                 },
                 DoneLines = new[]
                 {
-                    "As ferramentas estão no lugar delas agora. Obrigado, Scrap.",
-                    "Às vezes eu pego a lupa e olho a sucata através dela. Tudo parece maior. Até a gente.",
+                    "As ferramentas tão no lugar delas agora. Valeu, Scrap.",
+                    "Às vezes eu olho a sucata pela lupa. Tudo parece maior. Até a gente.",
                 },
             },
 
-            // No comeco do andar 2, antes dos espinhos: quem era o Coletor e a
-            // dica de luta (ele pisca em amarelo antes de cada golpe). Era
-            // mecanico de caldeira: e ele quem monta o motor do Coletor no
-            // Scrap, e o motor e o Steam Dash.
+            // No comeco do andar 2: quem era o Coletor. Era mecanico de
+            // caldeira: e ele quem monta o motor do Coletor no Scrap, e o
+            // motor e o Steam Dash.
             new NpcSpot
             {
                 Name = "Ferrolho", X = 12, Y = 50, Variant = 2, Role = NpcRole.MotorFitter,
                 Lines = new[]
                 {
-                    "Psiu. Devagar. Daqui para a frente o chão é de espinhos, e lá embaixo mora o Coletor.",
-                    "Eu o conheci antes da praga. Era só um varredor grande, a vapor, que recolhia o que caía da calha e separava as peças boas.",
+                    "Psiu. Fala baixo. Lá embaixo mora o Coletor.",
+                    "Eu conheci ele antes do Óxido. Era um varredor grande, a vapor. Recolhia o que caía da calha e separava as peças boas das ruins.",
                     "Ele cantarolava enquanto trabalhava. Um zumbido de caldeira. A gente até gostava.",
-                    "Então o Óxido entrou nas engrenagens dele. Ele continuou recolhendo... só que esqueceu a diferença entre peça solta e peça viva.",
-                    "Repare no motor de vapor nas costas dele: é o que o faz arrancar daquele jeito. Eu era mecânico de caldeira; sei montar um desses.",
-                    "Se ele cair, traga-me o motor. Eu o instalo em você, e você vai arrancar como ele.",
-                    "E não fique parado na frente dele. Quando ele pisca em amarelo, é porque vai bater.",
+                    "Aí o verde entrou nas engrenagens dele. Ele continuou recolhendo... só que esqueceu a diferença entre peça solta e gente.",
+                    "Ele tem um motor de vapor nas costas, dos bons. Eu era mecânico de caldeira, sei montar um desses.",
+                    "Se você der um jeito nele, me traz o motor. Eu coloco em você.",
                 },
                 WaitingLines = new[]
                 {
                     "O verde sumiu... Então você conseguiu. O Coletor caiu mesmo.",
-                    "Mas cadê o motor? Ele ficou lá na arena, no meio da carcaça. Vá buscá-lo, e eu o instalo em você.",
+                    "E o motor? Ficou lá na arena, no meio da carcaça. Vai buscar que eu coloco em você.",
                 },
                 InstallLines = new[]
                 {
-                    "Isso! O motor do Coletor, ainda morno. Segure firme, que vai sacudir.",
-                    "Pronto: os pistões estão nas suas pernas. Solte o vapor, e você arranca para a frente, reto, sem cair.",
-                    "Com isso você cruza o abismo depois da arena. Do outro lado, o vapor sobe até os encanamentos de latão.",
-                    "Ele cantarolava quando arrancava. Se ouvir um zumbido nas costas, não se assuste: é só o motor se lembrando.",
+                    "Isso! O motor do Coletor, ainda quentinho. Segura firme, que vai tremer.",
+                    "Pronto, os pistões tão nas suas pernas. Solta o vapor e você dispara pra frente, reto, sem cair.",
+                    "Com isso dá pra cruzar o abismo depois da arena. Do outro lado, o vapor sobe até os canos de latão.",
+                    "Ele cantarolava quando arrancava. Se ouvir um zumbido nas costas, não se assusta: é só o motor lembrando.",
                 },
                 DoneLines = new[]
                 {
-                    "O motor está se dando bem com você. Nem parece que era de outro.",
-                    "Se um vão parecer largo demais, arranque no meio do pulo. O vapor segura você no ar por um instante.",
+                    "O motor gostou de você. Nem parece que era de outro.",
+                    "Se um vão parecer grande demais, dispara no meio do pulo. O vapor te segura no ar um pouquinho.",
                 },
             },
 
-            // Na boca da Pista de Provas, depois da purificacao: a que se
-            // escondia atras da nevoa. E a "Pequena" do Muro dos Nomes, e da a
-            // pista da pinca que esta la dentro.
+            // Na boca da obra abandonada, depois da purificacao: a que se
+            // escondia dentro da nevoa, com medo do Coletor. E a "Pequena" do
+            // Muro dos Nomes, e da a pista da pinca que esta la dentro.
             new NpcSpot
             {
                 Name = "Pequena", X = 37, Y = 6, Variant = 3, AfterBoss = true,
                 Lines = new[]
                 {
-                    "Não precisa ter medo de mim. Sou só a Pequena. Fui eu que escrevi o nome no muro, lá embaixo.",
-                    "Eu me escondi atrás da névoa, na Pista de Provas. O verde não me deixava sair... mas também não deixava o Coletor entrar.",
-                    "Lá dentro há espinhos rentes ao chão, largos demais para pular. Só se passa quicando neles, com o cinzel para baixo.",
-                    "Depois vêm uma chaminé estreita e, no fim, um vão que ninguém nunca cruzou.",
-                    "Do outro lado do vão está o prêmio que a Coroa guardava para quem completasse a prova. Eu tentei por anos.",
-                    "Ah, e há uma pinça de ourives caída no fundo da chaminé. Não sei de quem é.",
-                    "Acho que agora vou voltar ao muro e riscar uma coisa nova embaixo do meu nome: \"ainda aqui\".",
+                    "Ai! Não me pega! ...Ah. Você não é ele. Ufa.",
+                    "Eu sou a Pequena. Fui eu que escrevi meu nome no muro, lá embaixo. Ficou meio torto, mas é meu.",
+                    "Eu tinha muito, muito medo do Coletor. Ele fazia um barulhão, CLANC, CLANC, e levava todo mundo embora.",
+                    "Aí eu me escondi dentro da névoa. Ela ardia, e minha lata foi ficando toda verde... mas lá dentro ele nunca entrava.",
+                    "Toda vez que eu ouvia ele chegando, tampava os ouvidos e ficava bem quietinha. Mesmo doendo.",
+                    "Lá na obra tem uns ferros pontudos no chão, compridos demais pra pular. Dá pra passar quicando neles, com o cinzel virado pra baixo.",
+                    "Depois tem um buraco bem fundo, e lá no fim um vão enorme. Eu tentei pular um montão de vezes. Nunca deu.",
+                    "Ah! Lá no fundo do buraco tem uma pinça brilhante. Não é minha, juro.",
+                    "Agora que ele não vem mais, vou lá no muro escrever embaixo do meu nome: \"ainda aqui\".",
                 },
             },
         };
@@ -471,16 +476,15 @@ namespace EchoesOfCravejada.EditorTools
             new LoreSpot(LoreKind.Page, "Lore_TornTag", "uma etiqueta rasgada", 22, 6, false, new[]
             {
                 "Um pedaço de etiqueta preso num arame partido, caído bem onde você acordou.",
-                "A tinta borrou quase toda. Só dá para ler o fim: \"...TO N.º 7 — DESTINO: POÇO DE SUCATA.\"",
+                "A tinta borrou quase toda. Só dá pra ler o fim: \"...TO N.º 7 — DESTINO: POÇO DE SUCATA.\"",
                 "No verso, um carimbo vermelho pela metade: \"REJEI...\"",
             }),
 
             new LoreSpot(LoreKind.Plaque, "Lore_ChutePlaque", "a placa da calha", 31, 4, false, new[]
             {
-                "Uma placa de latão, pregada na rocha e verde de azinhavre. As letras em relevo ainda se leem:",
+                "Uma placa de latão pregada na rocha, verde de azinhavre. As letras em relevo ainda dão pra ler:",
                 "\"CALHA DE DESCARTE N.º 1 — SERVIÇO DE LIMPEZA DA COROA.\"",
                 "\"O QUE NÃO BRILHA, DESCE.\"",
-                "Por baixo, riscado a prego: \"e o que desce não sobe\". E, em outra letra, mais recente: \"ainda\".",
             }),
 
             new LoreSpot(LoreKind.Graffiti, "Lore_WallOfNames", "o muro dos nomes", 6, 5, false, new[]
@@ -499,23 +503,23 @@ namespace EchoesOfCravejada.EditorTools
                 "Embaixo de todos, em letra grande: \"QUEM LER ISTO, LEMBRE-SE DE NÓS.\"",
             }),
 
-            // Logo depois da nevoa: o que era a Pista de Provas. So se le
-            // depois da purificacao, porque antes nao da pra passar.
-            new LoreSpot(LoreKind.Plaque, "Lore_TrialPlaque", "a placa da Pista", 45, 6, false, new[]
+            // Logo depois da nevoa: a obra que a Coroa largou no dia em que o
+            // Oxide desceu. So se le depois da purificacao, porque antes nao
+            // da pra passar.
+            new LoreSpot(LoreKind.Plaque, "Lore_TrialPlaque", "a placa da obra", 45, 6, false, new[]
             {
-                "Uma placa de latão polido, a única do poço que o azinhavre não comeu.",
-                "\"PISTA DE PROVAS DA COROA. TODO AUTÔMATO RECÉM-MONTADO DEVE COMPLETÁ-LA.\"",
-                "\"QUEM NÃO COMPLETA, DESCE.\"",
-                "Mais abaixo, em letra menor: \"O prêmio no fim da pista pertence a quem o alcançar.\"",
+                "Uma placa de obra, de latão novinho. Nem deu tempo de o verde pegar nela.",
+                "\"OBRA DA COROA — ELEVADOR DE CARGA N.º 2. LEVARÁ A SUCATA BOA DE VOLTA À CIDADE.\"",
+                "\"CRAVEJADA NÃO PARA DE CRESCER.\"",
+                "Por cima de tudo, um carimbo vermelho, batido às pressas: \"OBRA SUSPENSA.\"",
             }),
 
             new LoreSpot(LoreKind.Page, "Lore_Decree", "um decreto dos Nobres", 32, 40, false, new[]
             {
-                "Um papel timbrado, com o selo dos 925 em cera prateada. Desceu pela calha junto com alguém.",
-                "\"DECRETO DO CONSELHO DOS 925 NOBLES. A corrosão verde não atinge a prata pura.\"",
+                "Um papel timbrado, com o selo dos 925 em cera prateada. Caiu pela calha junto com alguém.",
+                "\"DECRETO DO CONSELHO DOS 925 NOBRES. A corrosão verde não atinge a prata pura.\"",
                 "\"Todo autômato de cobre ou de latão que apresentar manchas, rangidos ou desobediência será recolhido e descartado.\"",
                 "\"Não há cura. Há descarte. Por ordem de Sua Majestade, o Rei de Prata.\"",
-                "Na margem, alguém anotou a carvão: \"a prata também mancha. Eu vi.\"",
             }),
 
             // Na entrada da Triagem: o que o Coletor fazia antes do Oxide, nas
@@ -525,7 +529,8 @@ namespace EchoesOfCravejada.EditorTools
                 "Uma folha presa num prego, com duas colunas escritas a giz em letra de máquina, toda igual.",
                 "\"PEÇAS BOAS: engrenagens, molas, rebites, lentes. SOBEM PELA CALHA.\"",
                 "\"PEÇAS RUINS: todo o resto. FICAM NO POÇO.\"",
-                "Embaixo, uma terceira coluna, começada depois, numa letra que treme: \"PEÇAS QUE SE MEXEM:\". Está em branco.",
+                "Embaixo, uma terceira coluna, começada depois, numa letra tremida: \"PEÇAS QUE SE MEXEM:\". Está em branco.",
+                "No pé da folha, na mesma letra de máquina, a assinatura: \"COLETOR DE REFUGO N.º 1.\"",
             }),
 
             // No meio do fosso da arena: aparece quando o Coletor cai. E dela
@@ -534,7 +539,7 @@ namespace EchoesOfCravejada.EditorTools
             {
                 "Onde o Coletor caiu, sobrou um pedaço de chassi com uma placa de latão rebitada. A ferrugem se soltou com a queda.",
                 "\"COLETOR DE REFUGO N.º 1 — SERVIÇO DE LIMPEZA DA COROA. MANTER O POÇO LIMPO. NÃO PARAR.\"",
-                "Ninguém jamais desceu para mandá-lo parar.",
+                "Ninguém nunca desceu pra mandar ele parar.",
                 "Preso entre as chapas há algo que não é dele: um aro de prata pequeno, bem polido. Você o guarda.",
             }),
         };
@@ -582,7 +587,7 @@ namespace EchoesOfCravejada.EditorTools
             // ao entrar na chamine, o painel recolhe.
             new TutorialSpot(TutorialKind.WallJump, "Tutorial_WallJump", 39, 22, 33, 39),
 
-            // Na Pista de Provas, que abre com a purificacao: a beirada logo
+            // Na obra abandonada, que abre com a purificacao: a beirada logo
             // antes dos espinhos rentes ao chao, que so se cruzam quicando.
             new TutorialSpot(TutorialKind.Pogo, "Tutorial_Pogo", 47, 6, 43, 47),
         };
@@ -645,9 +650,9 @@ namespace EchoesOfCravejada.EditorTools
         public static readonly ItemSpot[] Items =
         {
             // As ferramentas do mestre: todas depois do Rebite (o pedido vem
-            // antes da busca), menos a da Pista de Provas, que fica no poco mas
+            // antes da busca), menos a da obra abandonada, que fica no poco mas
             // so abre depois do boss. Uma no andar 2, em cima do bloco de
-            // rocha; uma na Triagem; uma no fundo da chamine da Pista.
+            // rocha; uma na Triagem; uma no fundo da chamine da obra.
             new ItemSpot(ItemKind.MasterTool, MasterToolPrefix + "Graver", "Buril do ourives encontrado", 34, 52, art: 0),
             new ItemSpot(ItemKind.MasterTool, MasterToolPrefix + "Loupe", "Lupa do ourives encontrada", 78, 54, art: 1),
             new ItemSpot(ItemKind.MasterTool, MasterToolPrefix + "Tweezers", "Pinça do ourives encontrada", 64, 7, art: 2),
@@ -655,22 +660,22 @@ namespace EchoesOfCravejada.EditorTools
             // O motor fica no fosso da arena quando o Coletor cai, longe da placa dele.
             new ItemSpot(ItemKind.Motor, MotorId, "Motor de vapor do Coletor: leve-o ao Ferrolho", 67, 20, afterBoss: true),
 
-            // O premio do fim da Pista de Provas.
+            // O premio do fim da obra abandonada.
             new ItemSpot(ItemKind.Chassis, "D1_Trial_Chassis", null, 79, 13),
         };
 
         // ------------------------------------------------------------------
-        // A nevoa da Pista e o selo da arena
+        // A nevoa da obra e o selo da arena
         // ------------------------------------------------------------------
 
         /// <summary>
-        /// O tunel da Pista de Provas, a direita do poco: as celulas que a
+        /// O tunel da obra abandonada, a direita do poco: as celulas que a
         /// nevoa densa de Oxide fecha. No mapa sao ar; quem fecha e o objeto,
         /// ate a purificacao.
         /// </summary>
         public static (int X, int Y, int Width, int Height) TrialVeil => (41, 6, 2, 3);
 
-        /// <summary>Uma celula dentro da Pista: nao da pra chegar nela com a nevoa no lugar.</summary>
+        /// <summary>Uma celula dentro da obra: nao da pra chegar nela com a nevoa no lugar.</summary>
         public static (int X, int Y) TrialInsideTile => (46, 6);
 
         /// <summary>
@@ -726,6 +731,13 @@ namespace EchoesOfCravejada.EditorTools
 
         /// <summary>O comeco da saida, do outro lado. O portao que o boss destranca.</summary>
         public static (int X, int Y) ExitGateTile => (78, 22);
+
+        /// <summary>
+        /// As plataformas baixas da arena, a um tile do chao: tem colisao so
+        /// numa tabua fina no topo (ver Phase01Generator.CreateThinSteps), pra
+        /// o Scrap passar por baixo sem travar. Por cima continuam degrau.
+        /// </summary>
+        public static readonly (int X0, int X1, int Y)[] ThinSteps = { (51, 52, 21), (73, 74, 21) };
 
         /// <summary>O corredor que sai da arena e leva ao abismo.</summary>
         public static (int X, int Y, int Width, int Height) ExitStub => (78, 22, 7, 3);
@@ -1008,7 +1020,7 @@ namespace EchoesOfCravejada.EditorTools
             (RustBand, 1, 31),
             (BlueBand, 9, 1),
 
-            // O macico de rocha em volta da arena, da Pista e do abismo.
+            // O macico de rocha em volta da arena, da obra e do abismo.
             (BlueBand, 43, 29),
             (GreyBand, 55, 16),
             (RustBand, 66, 3),
@@ -1179,7 +1191,7 @@ namespace EchoesOfCravejada.EditorTools
             (92f, 40f, 7f),
             (78f, 39f, 8f),
 
-            // A Pista de Provas: nao se ve antes da purificacao, e depois
+            // A obra abandonada: nao se ve antes da purificacao, e depois
             // viram os lampioes que a iluminam.
             (52f, 9f, 8f),
             (65f, 11f, 7f),
@@ -1256,7 +1268,7 @@ namespace EchoesOfCravejada.EditorTools
             new FogBank("Fog_Floor2", 28f, 51f, 44f, 2f, 0.12f, 2.2f, false),
             new FogBank("Fog_Sorting", 73f, 51f, 42f, 2f, 0.12f, 2.0f, false),
 
-            // A nevoa que tampa o tunel da Pista de Provas: grossa a ponto de
+            // A nevoa que tampa o tunel da obra abandonada: grossa a ponto de
             // tapar o que esta atras, na frente do Scrap. Some com o resto.
             new FogBank("Fog_TrialVeil", 41.5f, 7.5f, 2.5f, 3f, 0.5f, 7f, true),
             new FogBank("Fog_Antechamber", 78f, 38f, 30f, 2f, 0.10f, 1.4f, false),
@@ -1421,7 +1433,7 @@ namespace EchoesOfCravejada.EditorTools
                 }
             }
 
-            // E a do golpe pra baixo, na beirada dos espinhos da Pista.
+            // E a do golpe pra baixo, na beirada dos espinhos da obra.
             foreach (TutorialSpot sign in Tutorials)
             {
                 if (sign.Kind != TutorialKind.Pogo) continue;
@@ -1489,7 +1501,7 @@ namespace EchoesOfCravejada.EditorTools
                 MustReach((item.X, item.Y), $"O item {item.Id}");
             }
 
-            // A Pista de Provas: com a nevoa no lugar, nao se entra.
+            // A obra abandonada: com a nevoa no lugar, nao se entra.
             (int X, int Y, int Width, int Height) veil = TrialVeil;
             Map.Fill(veil.X, veil.Y, veil.X + veil.Width - 1, veil.Y + veil.Height - 1, LevelMap.Rock);
             LevelMap.Reach veiled = Map.Explore(SpawnTile, rules);
@@ -1497,10 +1509,10 @@ namespace EchoesOfCravejada.EditorTools
 
             if (veiled.CanStand(TrialInsideTile.X, TrialInsideTile.Y))
             {
-                problems.Add("Da pra entrar na Pista de Provas com a nevoa no lugar: ela nao esta fechando nada.");
+                problems.Add("Da pra entrar na obra abandonada com a nevoa no lugar: ela nao esta fechando nada.");
             }
 
-            // A primeira parte da Pista e de pogo: sem ele, nao se passa.
+            // A primeira parte da obra e de pogo: sem ele, nao se passa.
             var noPogo = new LevelMap.JumpRules { WallJump = true, MaxRun = 8 };
             LevelMap.Reach withoutPogo = Map.Explore(SpawnTile, noPogo, purifiedLifts);
 
@@ -1508,7 +1520,7 @@ namespace EchoesOfCravejada.EditorTools
             {
                 bool inTrial = !veiled.CanStand(item.X, item.Y);
 
-                // O que fica fora da Pista e nao depende do boss tem que dar
+                // O que fica fora da obra e nao depende do boss tem que dar
                 // pra pegar antes dele, sem o Steam Dash.
                 if (!inTrial && !item.AfterBoss && !beforeBoss.CanStand(item.X, item.Y))
                 {
@@ -1516,21 +1528,21 @@ namespace EchoesOfCravejada.EditorTools
                 }
 
                 // As ferramentas vem depois do pedido: atras do portao do
-                // Rebite. So a da Pista fica antes dele no mapa.
+                // Rebite. So a da obra fica antes dele no mapa.
                 if (item.Kind == ItemKind.MasterTool && !inTrial && locked.CanStand(item.X, item.Y))
                 {
                     problems.Add($"A ferramenta {item.Id} da pra pegar antes de passar pelo Rebite.");
                 }
 
-                // O premio da Pista e de quem ja tem o motor, e sabe quicar.
+                // O premio da obra e de quem ja tem o motor, e sabe quicar.
                 if (item.Kind == ItemKind.Chassis && inTrial && beforeBoss.CanStand(item.X, item.Y))
                 {
-                    problems.Add($"Da pra chegar no premio da Pista ({item.Id}) sem o Steam Dash.");
+                    problems.Add($"Da pra chegar no premio da obra ({item.Id}) sem o Steam Dash.");
                 }
 
                 if (inTrial && withoutPogo.CanStand(item.X, item.Y))
                 {
-                    problems.Add($"Da pra chegar em {item.Id}, na Pista, sem o pogo: os espinhos nao estao cobrando ele.");
+                    problems.Add($"Da pra chegar em {item.Id}, na obra, sem o pogo: os espinhos nao estao cobrando ele.");
                 }
 
                 // E de qualquer lugar da pra voltar pro poco.

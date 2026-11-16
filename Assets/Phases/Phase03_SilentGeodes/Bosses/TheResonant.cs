@@ -109,6 +109,11 @@ namespace EchoesOfCravejada
 
         private SpriteRenderer _sprite;
         private Collider2D _collider;
+
+        // O corpo, medido no desenho: a barriga e a picareta na frente. Na
+        // investida ele abaixa a cabeca e avanca o tronco: o corpo encurta e
+        // vai mais pra frente.
+        private BoxCollider2D _body;
         private Transform _player;
         private Vector3 _home;
         private int _health;
@@ -123,6 +128,7 @@ namespace EchoesOfCravejada
         private float _exposedUntil;
         private float _hurtUntil;
         private float _nextWhistle;
+        private float _nextStep;
         private bool _heard;
         private float _heardX;
 
@@ -197,6 +203,7 @@ namespace EchoesOfCravejada
         {
             _sprite = GetComponent<SpriteRenderer>();
             _collider = GetComponent<Collider2D>();
+            _body = _collider as BoxCollider2D;
             _health = maxHealth;
             _home = transform.position;
             Face(-1);
@@ -219,10 +226,10 @@ namespace EchoesOfCravejada
         {
             if (_defeated)
             {
-                // Caiu numa visita anterior e a safira (ou a chave) ficou pra
+                // Caiu numa visita anterior e a gema (ou a chave) ficou pra
                 // tras: ela volta.
                 Vector3 place = transform.position + Vector3.up * 0.6f;
-                if (!ScrapGems.HasSapphire) DropSapphire(place);
+                DropGem(place);
                 if (!string.IsNullOrEmpty(keyId) && !KeyItems.WasFound(keyId)) DropKey(place + Vector3.left * 1.2f);
 
                 Destroy(gameObject);
@@ -308,6 +315,7 @@ namespace EchoesOfCravejada
             // Acorda: ergue a cabeca, fareja e se levanta.
             if (_player != null) Face(_player.position.x >= transform.position.x ? 1 : -1);
             Play(Wake, WakeFrames, WakeFrames / 1.1f, false);
+            Sfx.ForemanWake.Play(transform.position);
             yield return new WaitForSeconds(1.2f);
 
             // E a primeira coisa que faz e chamar o turno.
@@ -361,6 +369,9 @@ namespace EchoesOfCravejada
             _flinchable = true;
             Play(Idle, IdleFrames, 5f);
 
+            // Escutando, ele fareja: e o jeito de saber onde ele esta no escuro.
+            Sfx.ForemanListen.Play(transform.position);
+
             for (float t = 0f; t < 0.9f && !_heard; t += Time.deltaTime)
             {
                 Smell();
@@ -379,6 +390,7 @@ namespace EchoesOfCravejada
             for (float t = 0f; t < 1.1f && !_heard; t += Time.deltaTime)
             {
                 Move(direction * Speed * 0.55f * Time.deltaTime);
+                Footstep(4f / 7f, 0.7f);
                 Smell();
                 yield return null;
             }
@@ -399,6 +411,7 @@ namespace EchoesOfCravejada
 
                 Face(distance >= 0f ? 1 : -1);
                 if (!Move(_facing * Speed * Time.deltaTime)) break;
+                Footstep(4f / (Speed * 4.5f), 1f);
                 yield return null;
             }
 
@@ -410,20 +423,26 @@ namespace EchoesOfCravejada
         {
             float windup = _phaseTwo ? 0.45f : 0.6f;
             Play(SlamWindup, SlamWindupFrames, SlamWindupFrames / windup, false);
+            Sfx.ForemanPickWindup.Play(transform.position, pitch: 0.6f / windup);
             yield return Warn(windup);
 
             Play(Slam, SlamFrames, SlamFrames / 0.3f, false);
             yield return new WaitForSeconds(0.1f);
 
-            // A pancada: machuca na ponta e acorda o que estiver por perto.
+            // A pancada: pega do peito ate a ponta cravada (como no desenho), e
+            // acorda o que estiver por perto.
             Vector2 tip = new Vector2(transform.position.x + _facing * slamReach, floorY + 0.6f);
-            Hit(tip, new Vector2(1.8f, 1.4f), slamDamage);
+            float near = 0.7f;
+            float far = slamReach + 0.7f;
+            Hit(new Vector2(transform.position.x + _facing * (near + far) * 0.5f, floorY + 1.1f), new Vector2(far - near, 2.2f), slamDamage);
             Emit(tip, 8f, 0.6f);
+            Sfx.ForemanPickSlam.Play(tip);
             yield return new WaitForSeconds(0.2f);
 
             // A ponta presa no chao: ele puxa o cabo e treme.
             _exposedUntil = Time.time + (_phaseTwo ? 1.1f : 1.5f);
             Play(Stuck, StuckFrames, 8f);
+            Sfx.ForemanPickStuck.Play(transform.position);
             while (IsExposed && !_dead) yield return null;
 
             Play(Idle, IdleFrames, 5f);
@@ -435,11 +454,13 @@ namespace EchoesOfCravejada
         {
             float windup = _phaseTwo ? 0.45f : 0.65f;
             Play(ChargeWindup, ChargeWindupFrames, ChargeWindupFrames / windup, false);
+            Sfx.ForemanRamWindup.Play(transform.position);
             yield return Warn(windup);
 
             float wall = _facing > 0 ? maxX : minX;
             float speed = _phaseTwo ? 11f : 9f;
             _charging = true;
+            FitBody();
             Play(Charge, ChargeFrames, 14f);
 
             while (!Mathf.Approximately(transform.position.x, wall) && !_dead)
@@ -447,13 +468,16 @@ namespace EchoesOfCravejada
                 float x = Mathf.MoveTowards(transform.position.x, wall, speed * Time.deltaTime);
                 transform.position = new Vector3(x, floorY, 0f);
                 if (Time.frameCount % 8 == 0) Emit(new Vector2(x, floorY + 0.5f), 5f, 0.2f);
+                Footstep(0.16f, 1.1f);
                 yield return null;
             }
 
             _charging = false;
+            FitBody();
 
             // A pancada na parede: a toca inteira treme e o teto solta estilhacos.
             Play(Dazed, 1, 1f, false);
+            Sfx.ForemanRamWall.Play(transform.position);
             Emit(new Vector2(transform.position.x + _facing, floorY + 2f), 20f, 0.6f);
             DropShards(_phaseTwo ? 6 : 4, transform.position.x);
 
@@ -474,6 +498,7 @@ namespace EchoesOfCravejada
 
             Play(Whistle, WhistleFrames, WhistleFrames / 0.7f, false);
             yield return new WaitForSeconds(0.3f);
+            Sfx.ForemanWhistle.Play(transform.position + Vector3.up * 2.5f, pitch: _phaseTwo ? 1.06f : 1f);
 
             Emit(transform.position + Vector3.up * 2.5f, 14f, 0.5f);
 
@@ -496,6 +521,7 @@ namespace EchoesOfCravejada
         private IEnumerator Scream()
         {
             Play(Roar, RoarFrames, 8f);
+            Sfx.ForemanScream.Play(transform.position);
             Emit(transform.position + Vector3.up * 2.5f, 24f, 1f);
             DropShards(7, _player != null ? _player.position.x : transform.position.x);
 
@@ -507,6 +533,9 @@ namespace EchoesOfCravejada
         /// <summary>O aviso antes do golpe: pisca em amarelo.</summary>
         private IEnumerator Warn(float seconds)
         {
+            // Os olhos de quartzo tilintam: ele vai golpear.
+            Sfx.ForemanWarn.Play(transform.position + Vector3.up * 2.6f);
+
             for (float t = 0f; t < seconds; t += Time.deltaTime)
             {
                 if (_sprite != null && Time.time >= _hurtUntil)
@@ -531,6 +560,15 @@ namespace EchoesOfCravejada
 
                 FallingShard.Drop(new Vector2(x, ceilingY), floorY, fallingShardSprite, 0.5f + i * 0.12f);
             }
+        }
+
+        /// <summary>Uma botada, no maximo uma a cada <paramref name="interval"/> segundos.</summary>
+        private void Footstep(float interval, float volume)
+        {
+            if (Time.time < _nextStep) return;
+
+            _nextStep = Time.time + interval;
+            Sfx.ForemanStep.Play(transform.position, volume: volume);
         }
 
         private void Hit(Vector2 center, Vector2 size, int damage)
@@ -558,6 +596,20 @@ namespace EchoesOfCravejada
 
             // A arte olha pra direita.
             if (_sprite != null) _sprite.flipX = _facing < 0;
+            FitBody();
+        }
+
+        /// <summary>O corpo do lado em que ele olha: em pe, ou abaixado na investida.</summary>
+        private void FitBody()
+        {
+            if (_body == null) return;
+
+            float back = _charging ? 0.8f : 0.6f;
+            float front = _charging ? 1.6f : 1.2f;
+            float height = _charging ? 2.7f : 3.3f;
+
+            _body.size = new Vector2(back + front, height);
+            _body.offset = new Vector2((front - back) * 0.5f * _facing, height * 0.5f);
         }
 
         // ------------------------------------------------------------------
@@ -597,6 +649,7 @@ namespace EchoesOfCravejada
 
             SpriteRenderer crack = broodCracks != null && spot < broodCracks.Length ? broodCracks[spot] : null;
             bool cracking = crackFrames != null && crackFrames.Length >= 3;
+            if (broodSpots != null && spot < broodSpots.Length) Sfx.ForemanHatch.Play(broodSpots[spot].position);
 
             for (float t = 0f; t < 0.7f; t += Time.deltaTime)
             {
@@ -672,6 +725,7 @@ namespace EchoesOfCravejada
             _health -= IsExposed ? amount * 2 : amount;
             _hurtUntil = Time.time + 0.14f;
             if (_sprite != null) _sprite.color = new Color(1f, 0.35f, 0.3f);
+            if (_health > 0) Sfx.ForemanHurt.Play(transform.position);
 
             if (_health <= 0)
             {
@@ -711,6 +765,9 @@ namespace EchoesOfCravejada
             // Um homem desse tamanho caindo: a caverna inteira escuta.
             NoiseSystem.Emit(transform.position + Vector3.up * 2f, 24f, 1f);
 
+            // O som da queda inteira, casado com os quadros abaixo.
+            Sfx.ForemanDeath.Play(transform.position);
+
             float[] hold = { 0.2f, 0.3f, 0.4f, 0.45f, 0.6f, 0.45f, 0.6f, 0.5f };
             for (int i = 0; i < DeathFrames; i++)
             {
@@ -718,10 +775,10 @@ namespace EchoesOfCravejada
 
                 if (i == 3)
                 {
-                    // O capacete no chao: a safira se solta, e a chave cai da argola.
+                    // O capacete no chao: a gema do soquete se solta, e a chave cai da argola.
                     Vector3 place = transform.position + new Vector3(_facing * 1.1f, 0.6f, 0f);
                     for (int s = 0; s < 12; s++) ShardPickup.Spawn(place + Vector3.up * 0.2f, shardSprite, 1, s);
-                    DropSapphire(place);
+                    DropGem(place);
                     DropKey(place + new Vector3(-_facing * 1.6f, 0f, 0f));
                 }
 
@@ -743,9 +800,13 @@ namespace EchoesOfCravejada
             Destroy(gameObject);
         }
 
-        private void DropSapphire(Vector3 place)
+        /// <summary>O id da gema lapidada que ele guarda: pega uma vez, nao volta.</summary>
+        public const string GemId = "D3_Foreman_Gem";
+
+        /// <summary>A gema lapidada que estava no soquete do capacete (moeda da loja do Crisol).</summary>
+        private void DropGem(Vector3 place)
         {
-            RewardPickup.Drop(place, rewardSprite, RewardPickup.Kind.Sapphire, Color.white);
+            RewardPickup.Drop(place, rewardSprite, RewardPickup.Kind.Gem, Color.white, GemId);
         }
 
         /// <summary>A CHAVE ANTIGA: um item-chave flutuando onde ele caiu.</summary>
@@ -754,7 +815,7 @@ namespace EchoesOfCravejada
             if (string.IsNullOrEmpty(keyId) || KeyItems.WasFound(keyId)) return;
 
             var key = new GameObject("AncientKey");
-            key.transform.position = place + Vector3.up * 0.8f;
+            key.transform.position = DropSpot.Free(place + Vector3.up * 0.8f);
 
             var renderer = key.AddComponent<SpriteRenderer>();
             renderer.sprite = keySprite;
@@ -791,6 +852,7 @@ namespace EchoesOfCravejada
 
             if (_sprite != null) _sprite.color = Color.white;
             if (_collider != null) _collider.enabled = true;
+            FitBody();
             Face(-1);
             PlayDormant();
 

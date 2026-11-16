@@ -121,6 +121,7 @@ namespace EchoesOfCravejada
 
             // O aviso: a sombra cresce no chao e o vidro treme no teto.
             Vector3 top = transform.position;
+            Sfx.JarCreak.Play(top, pitch: 0.9f / Mathf.Max(0.3f, warnTime));
             for (float t = 0f; t < warnTime; t += Time.deltaTime)
             {
                 float k = t / warnTime;
@@ -143,6 +144,7 @@ namespace EchoesOfCravejada
             transform.position = new Vector3(x, land, 0f);
             if (shadow != null) shadow.enabled = false;
             NoiseSystem.Emit(transform.position, 10f, 0.7f);
+            Sfx.JarDrop.Play(transform.position);
 
             var area = GetComponent<Collider2D>();
             if (area != null) area.enabled = true;
@@ -179,6 +181,8 @@ namespace EchoesOfCravejada
                 {
                     if (Time.time >= next)
                     {
+                        // O ar acabando dentro do vidro.
+                        Sfx.JarSuffocate.Play(transform.position);
                         _trapped.TakeDamage(1, transform.position + Vector3.up);
                         next = Time.time + suffocateEvery;
                     }
@@ -201,6 +205,7 @@ namespace EchoesOfCravejada
         {
             SetWalls(false);
             NoiseSystem.Emit(transform.position, 9f, 0.6f);
+            Sfx.JarShatter.Play(transform.position);
 
             if (glass != null)
             {
@@ -224,6 +229,9 @@ namespace EchoesOfCravejada
             _hits += Mathf.Max(1, amount);
             if (glass != null) glass.sprite = Stage(Mathf.Min(_hits, hitsToBreak - 1));
             NoiseSystem.Emit(transform.position, 6f, 0.4f);
+
+            // Cada rachadura mais aguda: da pra ouvir quanto falta.
+            if (_hits < hitsToBreak) Sfx.JarHit.Play(transform.position, pitch: 1f + 0.15f * (_hits - 1));
 
             if (_hits >= hitsToBreak) _trapped = null;
         }

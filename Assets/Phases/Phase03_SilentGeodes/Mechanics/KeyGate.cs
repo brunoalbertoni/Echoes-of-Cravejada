@@ -49,13 +49,11 @@ namespace EchoesOfCravejada
             if (!KeyItems.Has(keyId))
             {
                 Sfx.LockRattle.Play(transform.position);
-                HudNotice.Show("Trancada. A fechadura é antiga, de ferro — precisa de uma chave.");
                 return;
             }
 
             KeyItems.Deliver(keyId);
             Sfx.LockUnlock.Play(transform.position);
-            HudNotice.Show($"{keyName} gira na fechadura, rangendo.");
             Open(true);
         }
 

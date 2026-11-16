@@ -179,8 +179,8 @@ namespace EchoesOfCravejada.EditorTools
             BuildBackdrop(unlitMaterial);
             Transform scrap = BuildScrap(scrapSprite, polishedSprite, groundLayer, Phase01Layout.SpawnTile);
 
-            // A primeira cena do jogo: ele acordando no monte de sucata.
-            scrap.gameObject.AddComponent<WakeUpCutscene>();
+            // A primeira cena do jogo: ele despencando pela Calha N.º 1 e acordando no monte de sucata.
+            IntroFallAssets.Attach(scrap.gameObject);
             BuildCamera(scrap, Phase01Layout.Width, Phase01Layout.Height, OxideHaze);
             BuildLighting();
             BuildFog(fogMaterial);
@@ -258,6 +258,9 @@ namespace EchoesOfCravejada.EditorTools
             groundObject.AddComponent<GroundColliderRefresh>();
 
             PaintRoom(background, backProps, ground, decoration, foreground, tiles);
+
+            // As plataformas baixas da arena: o Scrap passa por baixo delas.
+            CreateThinSteps(ground, decoration, Phase01Layout.ThinSteps);
 
             FinishTilemap(background);
             FinishTilemap(backProps);
@@ -1043,7 +1046,7 @@ namespace EchoesOfCravejada.EditorTools
                 if (spot.AfterBoss) appear.Add(CreateNpc(root.transform, spot));
             }
 
-            // E somem: os corrompidos e a nevoa que tampa a Pista de Provas.
+            // E somem: os corrompidos e a nevoa que tampa a obra abandonada.
             var vanish = new List<GameObject> { BuildTrialVeil(root.transform, groundLayer) };
             if (enemies != null) vanish.Add(enemies);
 
@@ -1077,13 +1080,19 @@ namespace EchoesOfCravejada.EditorTools
 
             // Ele anda pela arena inteira, e acorda quando o Scrap pisa em
             // qualquer lugar dela.
-            bossObject.AddComponent<RustyScrapper>().Configure(
+            var collector = bossObject.AddComponent<RustyScrapper>();
+            collector.Configure(
                 Phase01Layout.BossRange.Min, Phase01Layout.BossRange.Max, spawn.Y,
                 new Rect(arena.X, arena.Y, arena.Width, 10f),
                 Phase02Assets.LoadSprite(Phase02Assets.ScrapChunk),
                 Phase02Assets.LoadSprite(Phase02Assets.ShockWave),
                 Phase02Assets.LoadSprite(Phase02Assets.Shard),
                 cloud, exitGate, purifier, cartoon, bossFrames, bossCracked);
+
+            // A carcaca dele: aparece onde ele cair (ou, voltando, onde ele dormia).
+            collector.ConfigureWreck(WreckAssets.Build(root.transform, "ColetorWreck",
+                Phase02Assets.LoadSheet(Phase02Assets.ColetorWreckSheet, ColetorWreckArt.FrameCount),
+                bossObject.transform.position));
         }
 
         /// <summary>
@@ -1114,7 +1123,7 @@ namespace EchoesOfCravejada.EditorTools
         }
 
         /// <summary>
-        /// A nevoa densa que tampa o tunel da Pista de Provas: uma parede
+        /// A nevoa densa que tampa o tunel da obra abandonada: uma parede
         /// invisivel, com o verde por cima (o banco de nevoa "Fog_Veil" do
         /// layout) e uma luz. Some com a purificacao.
         /// </summary>
@@ -1146,6 +1155,42 @@ namespace EchoesOfCravejada.EditorTools
         {
             (int X, int Y, int Width) cells = Phase01Layout.ArenaSeal;
             CreateArenaSeal(parent, groundLayer, new RectInt(cells.X, cells.Y, cells.Width, 1));
+        }
+
+        /// <summary>
+        /// Plataformas finas de verdade: o desenho delas sai do chao (que tem
+        /// colisao de celula inteira) e vai pro tilemap de decoracao (que nao
+        /// tem), e a colisao vira uma tabua fina no topo. Uma plataforma a um
+        /// tile do chao deixa o Scrap (1,05 de altura) passar por baixo e
+        /// continua sendo degrau por cima.
+        ///
+        /// Chamar depois de pintar o chao e antes de gerar o colisor composto.
+        /// </summary>
+        internal static void CreateThinSteps(Tilemap ground, Tilemap art, IEnumerable<(int X0, int X1, int Y)> steps)
+        {
+            const float board = 0.3f;
+
+            foreach ((int x0, int x1, int y) in steps)
+            {
+                for (int x = x0; x <= x1; x++)
+                {
+                    var cell = new Vector3Int(x, y, 0);
+                    TileBase tile = ground.GetTile(cell);
+                    if (tile == null) continue;
+
+                    art.SetTile(cell, tile);
+                    ground.SetTile(cell, null);
+                }
+
+                var step = new GameObject($"ThinStep_{x0}_{y}") { layer = ground.gameObject.layer };
+                step.transform.SetParent(ground.transform, false);
+                step.transform.position = new Vector3(x0, y, 0f);
+
+                int width = x1 - x0 + 1;
+                var collider = step.AddComponent<BoxCollider2D>();
+                collider.size = new Vector2(width, board);
+                collider.offset = new Vector2(width * 0.5f, 1f - board * 0.5f);
+            }
         }
 
         /// <summary>
@@ -1255,7 +1300,7 @@ namespace EchoesOfCravejada.EditorTools
                 if (!spot.AfterBoss) CreateLore(loreRoot.transform, spot);
             }
 
-            // As placas de tutorial. A da Pista de Provas ja vem na cena: quem
+            // As placas de tutorial. A da obra abandonada ja vem na cena: quem
             // a esconde ate a purificacao e a nevoa na frente do tunel.
             var tutorialRoot = new GameObject("Tutorials");
             tutorialRoot.transform.SetParent(parent, false);
@@ -1366,15 +1411,14 @@ namespace EchoesOfCravejada.EditorTools
                     break;
 
                 case Phase01Layout.ItemKind.Motor:
-                    renderer.sprite = Phase02Assets.LoadSprite(Phase02Assets.DashModule);
+                    renderer.sprite = Phase02Assets.LoadSprite(Phase02Assets.ColetorMotor);
                     item.AddComponent<KeyItemPickup>().Configure(spot.Id, spot.Message);
                     glow = new Color(1f, 0.75f, 0.5f);
                     break;
 
                 case Phase01Layout.ItemKind.Chassis:
-                    // O mesmo reforco escondido dos outros distritos: o modulo, dourado.
-                    renderer.sprite = Phase02Assets.LoadSprite(Phase02Assets.DashModule);
-                    renderer.color = new Color(1f, 0.85f, 0.45f);
+                    // O mesmo reforco escondido dos outros distritos: a placa de peito.
+                    renderer.sprite = Phase02Assets.LoadSprite(Phase02Assets.ChassisPlate);
                     item.AddComponent<RewardPickup>().Configure(RewardPickup.Kind.Chassis, spot.Id);
                     break;
             }
@@ -1584,7 +1628,7 @@ namespace EchoesOfCravejada.EditorTools
             var gate = gateObject.AddComponent<Gate>();
             gate.Configure(gateCells.Height);
 
-            // A alavanca, e a area em volta onde da pra raspar.
+            // A alavanca, e a area em volta onde o cinzel acerta.
             (int X, int Y) leverTile = Phase01Layout.LeverTile;
 
             var leverObject = new GameObject("RustyLever");

@@ -1,0 +1,478 @@
+fileFormatVersion: 2
+guid: b8454a6c55c4ae246b6254bc2606e89e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8219795126345454365
+    second: d4_alchemist_wreck_sheet_0
+  - first:
+      213: -57738045867822169
+    second: d4_alchemist_wreck_sheet_1
+  - first:
+      213: -8041947337474558145
+    second: d4_alchemist_wreck_sheet_2
+  - first:
+      213: 7643081643516028679
+    second: d4_alchemist_wreck_sheet_3
+  - first:
+      213: 1400224998972143117
+    second: d4_alchemist_wreck_sheet_4
+  - first:
+      213: 2600440901098722891
+    second: d4_alchemist_wreck_sheet_5
+  - first:
+      213: 3474885264940331649
+    second: d4_alchemist_wreck_sheet_6
+  - first:
+      213: -6396479169254038491
+    second: d4_alchemist_wreck_sheet_7
+  - first:
+      213: 5771180927278782054
+    second: d4_alchemist_wreck_sheet_8
+  - first:
+      213: -3780452129604114005
+    second: d4_alchemist_wreck_sheet_9
+  - first:
+      213: 8723860771736238176
+    second: d4_alchemist_wreck_sheet_10
+  - first:
+      213: -7979137900701042356
+    second: d4_alchemist_wreck_sheet_11
+  - first:
+      213: -6304032386973252601
+    second: d4_alchemist_wreck_sheet_12
+  - first:
+      213: 741328065030066694
+    second: d4_alchemist_wreck_sheet_13
+  - first:
+      213: 319335198775526549
+    second: d4_alchemist_wreck_sheet_14
+  - first:
+      213: -693304306400220430
+    second: d4_alchemist_wreck_sheet_15
+  - first:
+      213: 6283426311881113678
+    second: d4_alchemist_wreck_sheet_16
+  - first:
+      213: 2026915647510876858
+    second: d4_alchemist_wreck_sheet_17
+  - first:
+      213: 7402309226633461081
+    second: d4_alchemist_wreck_sheet_18
+  - first:
+      213: 2891882466591727105
+    second: d4_alchemist_wreck_sheet_19
+  - first:
+      213: 6390706885518663506
+    second: d4_alchemist_wreck_sheet_20
+  - first:
+      213: 2879734856727786131
+    second: d4_alchemist_wreck_sheet_21
+  - first:
+      213: 3743415187589865244
+    second: d4_alchemist_wreck_sheet_22
+  - first:
+      213: -3703526685958590806
+    second: d4_alchemist_wreck_sheet_23
+  - first:
+      213: -206602937221362404
+    second: d4_alchemist_wreck_sheet_24
+  - first:
+      213: -8780086027991869865
+    second: d4_alchemist_wreck_sheet_25
+  - first:
+      213: -4593157749938161298
+    second: d4_alchemist_wreck_sheet_26
+  - first:
+      213: -5289959851465159273
+    second: d4_alchemist_wreck_sheet_27
+  - first:
+      213: -5360251738730185471
+    second: d4_alchemist_wreck_sheet_28
+  - first:
+      213: -2133667996128998073
+    second: d4_alchemist_wreck_sheet_29
+  - first:
+      213: 7239930994908469886
+    second: d4_alchemist_wreck_sheet_30
+  - first:
+      213: 4089316753008593160
+    second: d4_alchemist_wreck_sheet_31
+  - first:
+      213: 2462527819609304249
+    second: d4_alchemist_wreck_sheet_32
+  - first:
+      213: -856378930738557670
+    second: d4_alchemist_wreck_sheet_33
+  - first:
+      213: -7168908053274104584
+    second: d4_alchemist_wreck_sheet_34
+  - first:
+      213: -5758198376549883067
+    second: d4_alchemist_wreck_sheet_35
+  - first:
+      213: -3778199370125233415
+    second: d4_alchemist_wreck_sheet_36
+  - first:
+      213: -571489930488271453
+    second: d4_alchemist_wreck_sheet_37
+  - first:
+      213: -8021415841877997588
+    second: d4_alchemist_wreck_sheet_38
+  - first:
+      213: 2038443031266507564
+    second: d4_alchemist_wreck_sheet_39
+  - first:
+      213: -954422641069085163
+    second: d4_alchemist_wreck_sheet_40
+  - first:
+      213: -2748460786127095381
+    second: d4_alchemist_wreck_sheet_41
+  - first:
+      213: -6079451244942512558
+    second: d4_alchemist_wreck_sheet_42
+  - first:
+      213: -2877622681141109626
+    second: d4_alchemist_wreck_sheet_43
+  - first:
+      213: 6585940740404134111
+    second: d4_alchemist_wreck_sheet_44
+  - first:
+      213: 4332846962474793015
+    second: d4_alchemist_wreck_sheet_45
+  - first:
+      213: -9002582757100288601
+    second: d4_alchemist_wreck_sheet_46
+  - first:
+      213: -4402380553001261100
+    second: d4_alchemist_wreck_sheet_47
+  - first:
+      213: 8767703597325689747
+    second: d4_alchemist_wreck_sheet_48
+  - first:
+      213: -3414959691218706157
+    second: d4_alchemist_wreck_sheet_49
+  - first:
+      213: -8236222347059975844
+    second: d4_alchemist_wreck_sheet_50
+  - first:
+      213: 6360062086549512331
+    second: d4_alchemist_wreck_sheet_51
+  - first:
+      213: 3010411465077191632
+    second: d4_alchemist_wreck_sheet_52
+  - first:
+      213: 3450838645685951128
+    second: d4_alchemist_wreck_sheet_53
+  - first:
+      213: 5604608640604954266
+    second: d4_alchemist_wreck_sheet_54
+  - first:
+      213: 6332728160197156528
+    second: d4_alchemist_wreck_sheet_55
+  - first:
+      213: 4947985438875897807
+    second: d4_alchemist_wreck_sheet_56
+  - first:
+      213: -5303996213175196476
+    second: d4_alchemist_wreck_sheet_57
+  - first:
+      213: -6113106181278803420
+    second: d4_alchemist_wreck_sheet_58
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: d4_alchemist_wreck_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 160
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41c0338924183e44cb221503ddafeb5d
+      internalID: -619224233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_alchemist_wreck_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 160
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b13ee17bf44e404a8b4325c6a5fd5d4
+      internalID: -1582594344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_alchemist_wreck_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 160
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcb550fc53b1f374e94e8b872c230c5f
+      internalID: -1205753144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_alchemist_wreck_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 160
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd164d5bb9736b349aa1817593c3cb31
+      internalID: -1475049021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_alchemist_wreck_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 160
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cb89ed46f2814945b6e770880e345b4
+      internalID: 1160400260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_alchemist_wreck_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 800
+        y: 0
+        width: 160
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab7f8f96735fe9b48b7e7c79374c23e6
+      internalID: -1857963882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_alchemist_wreck_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 160
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12c980e6d7d116c469c5fe7d1c0b4de1
+      internalID: 563585295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d4_alchemist_wreck_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 0
+        width: 160
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0.0625}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c51086f51a1fdfc4f97240c86397a7ff
+      internalID: -1925689848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: aadf6c3fd03bf414cbdfdc35ed347b12
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      d4_alchemist_wreck_sheet_00: -619224233
+      d4_alchemist_wreck_sheet_01: -1582594344
+      d4_alchemist_wreck_sheet_02: -1205753144
+      d4_alchemist_wreck_sheet_03: -1475049021
+      d4_alchemist_wreck_sheet_04: 1160400260
+      d4_alchemist_wreck_sheet_05: -1857963882
+      d4_alchemist_wreck_sheet_06: 563585295
+      d4_alchemist_wreck_sheet_07: -1925689848
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

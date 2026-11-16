@@ -55,7 +55,11 @@ namespace EchoesOfCravejada
             _velocity.y -= Gravity * Time.deltaTime;
             transform.position += (Vector3)(_velocity * Time.deltaTime);
 
-            if (_velocity.y < 0f && transform.position.y <= _floorY) Destroy(gameObject);
+            if (_velocity.y < 0f && transform.position.y <= _floorY)
+            {
+                Sfx.BeadLand.Play(transform.position);
+                Destroy(gameObject);
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)

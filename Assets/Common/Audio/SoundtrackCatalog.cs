@@ -133,6 +133,7 @@ namespace EchoesOfCravejada
             { "Phase03_SilentGeodes", new SoundPlace(SilentGeodes, "Ambience_Phase03", musicScale: 0.7f, ambienceScale: 0.85f) },
             { "Phase04_AlchemicalAteliers", new SoundPlace(AlchemicalAteliers, "Ambience_Phase04") },
             { "Phase05_SilverCity", new SoundPlace(SilverPalace, "Ambience_Phase05", ambienceScale: 1.15f) },
+            { "MainMenu", new SoundPlace(PalaceAfterKing, "Ambience_Phase01", musicScale: 0.9f, ambienceScale: 0.4f) },
         };
 
         /// <summary>O som de uma cena pelo nome, ou null se ela nao tem.</summary>

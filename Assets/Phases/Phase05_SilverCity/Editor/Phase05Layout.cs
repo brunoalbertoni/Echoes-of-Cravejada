@@ -12,10 +12,9 @@ namespace EchoesOfCravejada.EditorTools
     ///     janeloes com a cidade ao luar, quadros, bustos, lustres de cristal,
     ///     tapete vermelho. Nada pra ler: so o luxo. No fim, a bancada (e
     ///     Crisol, que tem a loja e a ultima conversa).
-    ///   2 a Sala do Trono: o Rei de Prata, de pe diante do trono.
-    ///   3 o Altar do Coracao: atras da sala, a Coluna desce pelo chao ate o
-    ///     Coracao de Quartzo; o Scrap entrega o nucleo limpo e a luz desce
-    ///     (O Grande Polimento, o final).
+    ///   2 a Sala do Trono: o Rei de Prata, de pe diante do trono. Quando ele
+    ///     cai, o Crisol vem correndo e o fim se decide ali mesmo: um golpe na
+    ///     Coluna (atras do trono) ou na Coroa (caida no chao).
     ///
     /// Como os outros layouts, este arquivo nao depende de UnityEngine.
     /// </summary>
@@ -103,6 +102,44 @@ namespace EchoesOfCravejada.EditorTools
 
         public static readonly List<Marker> Markers = new List<Marker>();
         public static readonly List<Prop> Props = new List<Prop>();
+
+        /// <summary>Uma coisa que se le com E: x e o meio, y o chao. A arte vem do LoreArt.Phase05.</summary>
+        public struct LoreSpot
+        {
+            public string Name;
+            public string Title;
+            public float X;
+            public int Y;
+            public string[] Lines;
+        }
+
+        public static readonly List<LoreSpot> Lore = new List<LoreSpot>();
+
+        /// <summary>Os retratos da nobreza no corredor, na ordem em que se passa por eles.</summary>
+        private static readonly (string Name, string Title, string[] Lines)[] Portraits =
+        {
+            ("Lore_Portrait_1", "retrato de um Nobre", new[]
+            {
+                "Um Nobre de prata, de gola alta, olhando de cima pra quem passa.",
+                "Na plaqueta: \"Mestre de Fundição\".",
+            }),
+            ("Lore_Portrait_2", "retrato de uma Nobre", new[]
+            {
+                "Uma Nobre de prata, coberta de joias, com a mão em cima de um cofre.",
+                "Na plaqueta: \"Tesoureira da Coroa\".",
+            }),
+            ("Lore_Portrait_Crisol", "retrato de um jovem", new[]
+            {
+                "Um jovem de prata lisa, sem um arranhão, de monóculo.",
+                "Na plaqueta: \"Crisol. Lapidário da Corte.\"",
+                "A plaqueta de baixo, a do título de nobreza, foi arrancada.",
+            }),
+            ("Lore_Portrait_3", "retrato de um Nobre", new[]
+            {
+                "Um Nobre de jaleco e máscara de bico, segurando um frasco de mercúrio contra a luz.",
+                "Na plaqueta: \"Alquimista-Chefe\".",
+            }),
+        };
         public static readonly List<Strip> Strips = new List<Strip>();
         public static readonly List<(string Name, int X, int Y)> Workbenches = new List<(string, int, int)>();
         public static readonly List<(float X, float Y, float Radius, bool Green)> Lamps = new List<(float, float, float, bool)>();
@@ -121,13 +158,12 @@ namespace EchoesOfCravejada.EditorTools
         public static readonly string[] CrisolLines =
         {
             "Scrap. Você subiu até aqui. Até ele.",
-            "Olhe este corredor. Cada coluna, cada moldura... tudo pago com a luz do Coração. A cidade escurecia lá embaixo e aqui dentro nunca faltou vela.",
+            "Olha esse corredor. Cada coluna, cada moldura... tudo pago com a luz do Coração. A cidade escurecia lá embaixo e aqui dentro nunca faltou vela.",
             "Sabe o que ele tem na cabeça? Uma coroa de quartzo com novecentas e vinte e cinco facetas. Eu lapidei cada uma.",
-            "Ele me pediu luz que nunca acabasse. Eu disse que pedra nenhuma dá isso. Ele mandou furar até achar uma que desse.",
-            "Atrás do trono fica a Coluna do Coração. Ela desce pela cidade inteira até o Coração de Quartzo, lá no fundo, embaixo das geodes.",
-            "Cada distrito que você limpou poliu o seu núcleo. Eu vejo daqui: você está mais limpo do que qualquer prata deste palácio.",
-            "Quando ele cair, entregue o seu núcleo à Coluna. A luz dele desce até o Coração e lava o verde de lá de baixo.",
-            "Fiquei quieto vezes demais na vida, Scrap. Desta vez eu digo: você consegue. ...Vá. A bancada é sua.",
+            "Ele me pediu uma luz que nunca acabasse. Eu disse que pedra nenhuma dá isso. Ele mandou furar até achar uma que desse.",
+            "Atrás do trono fica a Coluna do Coração. Ela desce pela cidade inteira até o Coração de Quartzo, lá no fundo, embaixo dos geodos.",
+            "Quando ele cair, entrega o seu núcleo à Coluna. A luz dele desce até o Coração e lava o verde de lá de baixo.",
+            "Fiquei quieto vezes demais na vida, Scrap. Dessa vez eu digo: você consegue. ...Vai. A bancada é sua.",
         };
 
         // A Sala do Trono.
@@ -142,7 +178,7 @@ namespace EchoesOfCravejada.EditorTools
         public static (float X, float Y) ThroneTile => (123.5f, FloorY);
 
         /// <summary>Ate onde o Rei anda, em x de mundo.</summary>
-        public static (float X0, float X1) KingRange => (102.5f, 144.5f);
+        public static (float X0, float X1) KingRange => (101.4f, 145.8f);
 
         public static (int X, int Y, int Width, int Height) KingWake => (100, FloorY, 47, 20);
 
@@ -152,13 +188,39 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>Os cacos de espelho que viram escudo contra o sopro, na fase 2.</summary>
         public static readonly float[] BreathCovers = { 110.5f, 117.5f, 129.5f, 136.5f };
 
-        /// <summary>A grade da entrada da sala (fecha durante a luta) e a do Altar (abre com o Rei caido).</summary>
+        /// <summary>A grade da entrada da sala (fecha durante a luta).</summary>
         public static (int X, int Y, int Height) ArenaSeal => (99, FloorY, 4);
-        public static (int X, int Y, int Height) AltarGate => (147, FloorY, 4);
 
-        // O Altar do Coracao.
-        public static (int X, int Y) ConduitTile => (160, FloorY);
-        public static (int X, int Y) CoreSocketTile => (154, FloorY);
+        /// <summary>Onde a coroa cai, quando o Rei tomba de vez.</summary>
+        public static (float X, float Y) CrownTile => (KingTile.X + 5.5f, FloorY);
+
+        /// <summary>De onde o Crisol sai correndo (o fim do corredor) e onde ele para, do lado do Scrap.</summary>
+        public static (float From, float To) FinaleCrisolRun => (92f, 116f);
+
+        /// <summary>O que o Crisol diz quando chega correndo, depois do Rei.</summary>
+        public static readonly string[] FinaleCrisolLines =
+        {
+            "Scrap! Espera! ...Ufa. Desci essa escadaria correndo.",
+            "Olha a coroa. Mesmo com ele caído, ela ainda puxa a luz do Coração pela Coluna.",
+            "Você tem dois caminhos. Se entregar o seu núcleo à Coluna, a luz desce limpa e cura o Coração de uma vez. Mas você se apaga.",
+            "Se quebrar a coroa, a luz que ele prendia volta pra cidade inteira. O Coração continua doente... mas você fica. E você é a prova de que um corpo bruto não apodrece.",
+            "Não vou escolher por você. Eu fiquei quieto a vida inteira, Scrap. Essa escolha é sua.",
+            "A Coluna, atrás do trono. Ou a coroa, ali no chão. Um golpe basta.",
+        };
+
+        /// <summary>O cartao de cada fim: o titulo e o texto.</summary>
+        public const string EndingColumnTitle = "A COLUNA";
+        public const string EndingColumnStory =
+            "O Scrap entregou o próprio núcleo à Coluna. A luz desceu limpa por Cravejada inteira e lavou o Coração de Quartzo.\n\n" +
+            "O verde foi embora. As luzes dos distritos acenderam, uma por uma.\n\n" +
+            "No Poço de Sucata, embaixo de \"COLETOR N.º 1\", a Pequena riscou um nome novo: SCRAP.";
+
+        public const string EndingCrownTitle = "A COROA";
+        public const string EndingCrownStory =
+            "O Scrap quebrou a coroa de 925 facetas. A luz que o palácio prendia voltou pra cidade.\n\n" +
+            "O Coração continua verde, mas o Óxido parou de avançar.\n\n" +
+            "No velho ateliê, o Crisol e a Assistente montam corpos brutos copiando o protótipo n.º 7. Um por um, os descartados sobem do poço.\n\n" +
+            "Cravejada vai ser salva por sucata.";
 
         // ------------------------------------------------------------------
         // Ferramentas
@@ -168,12 +230,20 @@ namespace EchoesOfCravejada.EditorTools
         {
             BuildCorridor();
             BuildThroneRoom();
-            BuildAltar();
         }
 
         private static void Carve(int x0, int y0, int x1, int y1) => Map.Fill(x0, y0, x1, y1, LevelMap.Air);
         private static void Solid(int x0, int y0, int x1, int y1) => Map.Fill(x0, y0, x1, y1, LevelMap.Rock);
         private static void Ledge(int x0, int x1, int y) => Map.Fill(x0, y, x1, y, LevelMap.Platform);
+
+        /// <summary>As sacadas da Sala do Trono: a luz e as lascas do Rei atravessam (nao sao abrigo).</summary>
+        public static readonly List<(int X0, int X1, int Y)> ArenaLedges = new List<(int, int, int)>();
+
+        private static void ArenaLedge(int x0, int x1, int y)
+        {
+            Ledge(x0, x1, y);
+            ArenaLedges.Add((x0, x1, y));
+        }
         private static void Room(string name, int x0, int y0, int x1, int y1) => Rooms.Add((name, x0, y0, x1, y1));
         private static void Mark(string group, string name, int x, int y) => Markers.Add(new Marker(group, name, x, y));
 
@@ -267,8 +337,13 @@ namespace EchoesOfCravejada.EditorTools
                     default: Put("palace_statue", between, FloorY, 5); break;
                 }
 
-                // Um quadro alto entre as colunas de trechos vizinhos.
-                if (section % 2 == 0) Put("palace_portrait_" + (section / 2 % 3), between, FloorY + 4.5f, 3);
+                // Um quadro alto entre as colunas de trechos vizinhos: os quatro
+                // primeiros sao os retratos da nobreza, que se leem; depois, estandartes.
+                if (section < Portraits.Length)
+                {
+                    (string name, string title, string[] lines) = Portraits[section];
+                    Lore.Add(new LoreSpot { Name = name, Title = title, X = between, Y = FloorY, Lines = lines });
+                }
                 else Put("palace_banner", between, FloorY + 5f, 3);
 
                 Lamp(x, FloorY + 6f, 7f);
@@ -311,10 +386,10 @@ namespace EchoesOfCravejada.EditorTools
             Solid(x0, 22, x0 + 3, y1);
             Solid(x1 - 3, 22, x1, y1);
 
-            Ledge(105, 109, 9);
-            Ledge(138, 142, 9);
-            Ledge(112, 116, 13);
-            Ledge(131, 135, 13);
+            ArenaLedge(105, 109, 9);
+            ArenaLedge(138, 142, 9);
+            ArenaLedge(112, 116, 13);
+            ArenaLedge(131, 135, 13);
 
             Mark(room, "KingSpawn", (int)KingTile.X, (int)KingTile.Y);
 
@@ -337,29 +412,6 @@ namespace EchoesOfCravejada.EditorTools
         }
 
         // ------------------------------------------------------------------
-        // 3. O Altar do Coracao
-        // ------------------------------------------------------------------
-
-        private static void BuildAltar()
-        {
-            const string room = "03_HeartAltar";
-            Room(room, 148, FloorY, 170, 21);
-
-            Carve(148, FloorY, 170, 21);
-            Carve(147, FloorY, 147, FloorY + 3);
-
-            Mark(room, "CoreSocket", CoreSocketTile.X, CoreSocketTile.Y);
-
-            Put("palace_conduit", ConduitTile.X + 0.5f, ConduitTile.Y - 1, 1);
-            Put("palace_core_socket", CoreSocketTile.X + 0.5f, CoreSocketTile.Y, 4);
-            Put("palace_candelabra", 168f, FloorY, 4);
-
-            Lamp(160f, FloorY + 5f, 9f, true);
-            Lamp(152f, FloorY + 4f, 5f);
-            Lamp(168f, FloorY + 4f, 5f);
-        }
-
-        // ------------------------------------------------------------------
         // Validacao
         // ------------------------------------------------------------------
 
@@ -372,11 +424,9 @@ namespace EchoesOfCravejada.EditorTools
             return rules;
         }
 
-        private static LevelMap.Reach Explore(bool altarOpen, (int X, int Y)? from = null)
+        private static LevelMap.Reach Explore((int X, int Y)? from = null)
         {
-            LevelMap world = Map.Clone();
-            if (!altarOpen) world.Fill(AltarGate.X, AltarGate.Y, AltarGate.X, AltarGate.Y + AltarGate.Height - 1, LevelMap.Rock);
-            return world.Explore(from ?? SpawnTile, Rules());
+            return Map.Clone().Explore(from ?? SpawnTile, Rules());
         }
 
         public static List<string> Validate()
@@ -404,7 +454,7 @@ namespace EchoesOfCravejada.EditorTools
                 if (!reach.CanStand(x, y)) problems.Add($"Nao da pra chegar em {what} ({x}, {y}).");
             }
 
-            LevelMap.Reach before = Explore(false);
+            LevelMap.Reach before = Explore();
             Need(before, CrisolTile.X, CrisolTile.Y, "Crisol");
             Need(before, 88, FloorY, "a bancada");
             Need(before, (int)KingTile.X, ArenaFloorY, "a Sala do Trono");
@@ -412,10 +462,8 @@ namespace EchoesOfCravejada.EditorTools
             Need(before, 140, 10, "a sacada baixa da direita");
             Need(before, 114, 14, "a sacada alta da esquerda");
             Need(before, 133, 14, "a sacada alta da direita");
-            if (before.CanStand(CoreSocketTile.X, CoreSocketTile.Y)) problems.Add("Da pra chegar no Altar antes do Rei cair.");
-
-            LevelMap.Reach after = Explore(true);
-            Need(after, CoreSocketTile.X, CoreSocketTile.Y, "o encaixe do nucleo");
+            Need(before, (int)CrownTile.X, FloorY, "a coroa caida");
+            LevelMap.Reach after = before;
 
             foreach (Marker marker in Markers)
             {

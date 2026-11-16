@@ -22,12 +22,31 @@ namespace EchoesOfCravejada
         private bool _firing;
         private int _mask;
 
+        // O fio de mira assobia e o raio aceso zumbe; a cena de cada golpe so diz Aim, Fire e Hide.
+        private SfxLoop _aimSound;
+        private SfxLoop _fireSound;
+        private bool _wasFiring;
+        private float _shownAt = -100f;
+
         private void Awake()
         {
             _line = GetComponent<LineRenderer>();
             _line.useWorldSpace = true;
             _line.positionCount = 0;
             _mask = LayerMask.GetMask("Ground");
+
+            _aimSound = SfxLoop.Attach(gameObject, Sfx.KingBeamAim);
+            _fireSound = SfxLoop.Attach(gameObject, Sfx.KingBeamLoop);
+            if (_aimSound != null) _aimSound.Fade = 8f;
+            if (_fireSound != null) _fireSound.Fade = 8f;
+        }
+
+        private void Update()
+        {
+            // Quem mira chama Aim/Fire todo quadro: parou de chamar, o raio apagou.
+            bool shown = Time.time - _shownAt < 0.1f;
+            if (_aimSound != null) _aimSound.Level = shown && !_firing ? 1f : 0f;
+            if (_fireSound != null) _fireSound.Level = shown && _firing ? 1f : 0f;
         }
 
         private void Start()
@@ -49,12 +68,20 @@ namespace EchoesOfCravejada
         public void Hide()
         {
             _firing = false;
+            _wasFiring = false;
+            _shownAt = -100f;
             if (_line != null) _line.positionCount = 0;
         }
 
         private void Show(Vector2 origin, float angle, bool firing)
         {
             _firing = firing;
+            _shownAt = Time.time;
+
+            // O som vem da ponta do cetro (a linha e em coordenadas de mundo: mover o objeto nao a mexe).
+            transform.position = origin;
+            if (firing && !_wasFiring) Sfx.KingBeamFire.Play(origin);
+            _wasFiring = firing;
 
             Vector2 direction = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
             Vector2 end = origin + direction * maxLength;
@@ -64,6 +91,7 @@ namespace EchoesOfCravejada
             foreach (RaycastHit2D hit in hits)
             {
                 if (hit.collider == null || hit.collider.isTrigger) continue;
+                if (SilverKing.Passable(hit.point)) continue;
                 if (hit.distance < best) best = hit.distance;
             }
 

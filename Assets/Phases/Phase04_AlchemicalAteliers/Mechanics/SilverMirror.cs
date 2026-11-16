@@ -1,20 +1,17 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace EchoesOfCravejada
 {
     /// <summary>
     /// Um espelho de prata num eixo, inclinado a 45 graus. Um raio de luz que
-    /// bate nele dobra a esquina. Chegar perto e apertar o botao o vira pro
-    /// outro lado: de "/" pra "\" e de volta.
+    /// bate nele dobra a esquina. Um golpe de cinzel o faz girar pro outro
+    /// lado, de "/" pra "\" e de volta, numa meia volta rapida no eixo.
     ///
     /// O espelho tem dois colisores: a area grande onde o Scrap o alcanca (a
     /// deste objeto) e a face pequena onde o raio bate (um filho).
-    ///
-    /// Teclas: E ou K; no controle, o botao de cima.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    public class SilverMirror : MonoBehaviour
+    public class SilverMirror : MonoBehaviour, IDamageable
     {
         [Tooltip("Verdadeiro se ele esta em \"/\" (sobe pra direita); falso se em \"\\\".")]
         [SerializeField] private bool slash = true;
@@ -24,7 +21,8 @@ namespace EchoesOfCravejada
 
         [SerializeField] private SpriteRenderer sprite;
 
-        private bool _near;
+        private float _turn = -1f;
+        private Vector3 _spriteScale = Vector3.one;
 
         public Collider2D Face => face;
 
@@ -41,6 +39,7 @@ namespace EchoesOfCravejada
 
         private void Start()
         {
+            if (sprite != null) _spriteScale = sprite.transform.localScale;
             Show();
         }
 
@@ -59,40 +58,44 @@ namespace EchoesOfCravejada
             if (sprite != null) sprite.flipX = !slash;
         }
 
-        private void Update()
+        public void Damage(int amount, Vector2 from)
         {
-            if (!_near) return;
+            // Ainda girando: o golpe so sacode.
+            if (_turn >= 0f) return;
 
-            HoldAction.Show(this, "E: girar o espelho", 0f);
-
-            if (!InteractPressed()) return;
-
-            slash = !slash;
-            Show();
+            _turn = 0f;
             NoiseSystem.Emit(transform.position, 5f, 0.2f);
             Sfx.MirrorTurn.Play(transform.position);
         }
 
-        private static bool InteractPressed()
+        private void Update()
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.eKey.wasPressedThisFrame || keyboard.kKey.wasPressedThisFrame)) return true;
+            if (_turn < 0f || sprite == null)
+            {
+                if (_turn >= 0f) { slash = !slash; Show(); _turn = -1f; }
+                return;
+            }
 
-            Gamepad pad = Gamepad.current;
-            return pad != null && pad.buttonNorth.wasPressedThisFrame;
-        }
+            // Meia volta no eixo: a face fecha, troca de lado e abre de novo,
+            // com um balanco no fim.
+            const float time = 0.3f;
+            float before = _turn;
+            _turn += Time.deltaTime;
+            if (before < time * 0.5f && _turn >= time * 0.5f)
+            {
+                slash = !slash;
+                Show();
+            }
 
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            if (other.GetComponentInParent<ScrapController>() != null) _near = true;
-        }
+            float k = Mathf.Clamp01(_turn / time);
+            float width = Mathf.Abs(Mathf.Cos(k * Mathf.PI));
+            float wobble = k >= 1f ? 0f : Mathf.Sin(k * Mathf.PI * 3f) * 0.06f * (1f - k);
+            sprite.transform.localScale = new Vector3(_spriteScale.x * Mathf.Max(0.08f, width), _spriteScale.y * (1f + wobble), _spriteScale.z);
 
-        private void OnTriggerExit2D(Collider2D other)
-        {
-            if (other.GetComponentInParent<ScrapController>() == null) return;
+            if (_turn < time + 0.05f) return;
 
-            _near = false;
-            HoldAction.Hide(this);
+            sprite.transform.localScale = _spriteScale;
+            _turn = -1f;
         }
     }
 }

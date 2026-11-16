@@ -61,8 +61,16 @@ namespace EchoesOfCravejada
             Vector2 position = transform.position;
             Vector2 step = _velocity * Time.deltaTime;
 
-            RaycastHit2D hit = Physics2D.Raycast(position, step.normalized, step.magnitude + 0.2f, _mask);
-            if (hit.collider != null && !hit.collider.isTrigger)
+            // A primeira parede de verdade: sacada (plataforma) a lasca atravessa.
+            RaycastHit2D hit = default;
+            float nearest = float.MaxValue;
+            foreach (RaycastHit2D candidate in Physics2D.RaycastAll(position, step.normalized, step.magnitude + 0.2f, _mask))
+            {
+                if (candidate.collider == null || candidate.collider.isTrigger || SilverKing.Passable(candidate.point)) continue;
+                if (candidate.distance < nearest) { nearest = candidate.distance; hit = candidate; }
+            }
+
+            if (hit.collider != null)
             {
                 if (_bounces <= 0)
                 {
@@ -72,6 +80,7 @@ namespace EchoesOfCravejada
 
                 _bounces--;
                 _velocity = Vector2.Reflect(_velocity, hit.normal);
+                Sfx.FacetBounce.Play(hit.point);
                 transform.position = hit.point + hit.normal * 0.25f;
                 return;
             }

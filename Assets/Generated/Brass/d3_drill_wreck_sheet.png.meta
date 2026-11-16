@@ -1,0 +1,382 @@
+fileFormatVersion: 2
+guid: 8c8b2ca7e3a0bd94293e5252f393d19a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1962812687165744230
+    second: d3_drill_wreck_sheet_0
+  - first:
+      213: -7712800052672167245
+    second: d3_drill_wreck_sheet_1
+  - first:
+      213: -7055813890168821041
+    second: d3_drill_wreck_sheet_2
+  - first:
+      213: 6275980349813023032
+    second: d3_drill_wreck_sheet_3
+  - first:
+      213: -159468439930519406
+    second: d3_drill_wreck_sheet_4
+  - first:
+      213: -8857214449877014825
+    second: d3_drill_wreck_sheet_5
+  - first:
+      213: -4393854241769684125
+    second: d3_drill_wreck_sheet_6
+  - first:
+      213: -9099215241930680639
+    second: d3_drill_wreck_sheet_7
+  - first:
+      213: -7713734951116246035
+    second: d3_drill_wreck_sheet_8
+  - first:
+      213: 8478138774909149439
+    second: d3_drill_wreck_sheet_9
+  - first:
+      213: 6648344378106918688
+    second: d3_drill_wreck_sheet_10
+  - first:
+      213: -7972784186221675156
+    second: d3_drill_wreck_sheet_11
+  - first:
+      213: 153539343713393513
+    second: d3_drill_wreck_sheet_12
+  - first:
+      213: 9152453498120987483
+    second: d3_drill_wreck_sheet_13
+  - first:
+      213: 5845862826625777718
+    second: d3_drill_wreck_sheet_14
+  - first:
+      213: -6471420615695599960
+    second: d3_drill_wreck_sheet_15
+  - first:
+      213: -2480806135900532616
+    second: d3_drill_wreck_sheet_16
+  - first:
+      213: 330188221327554374
+    second: d3_drill_wreck_sheet_17
+  - first:
+      213: -886737417054861416
+    second: d3_drill_wreck_sheet_18
+  - first:
+      213: 4959535905887772635
+    second: d3_drill_wreck_sheet_19
+  - first:
+      213: 5564442567727830623
+    second: d3_drill_wreck_sheet_20
+  - first:
+      213: -2671906800217574343
+    second: d3_drill_wreck_sheet_21
+  - first:
+      213: 7796729588992154500
+    second: d3_drill_wreck_sheet_22
+  - first:
+      213: -2394349840531707410
+    second: d3_drill_wreck_sheet_23
+  - first:
+      213: -4196684637509936748
+    second: d3_drill_wreck_sheet_24
+  - first:
+      213: 2577140957595859126
+    second: d3_drill_wreck_sheet_25
+  - first:
+      213: -694080850847258485
+    second: d3_drill_wreck_sheet_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 16
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 8192
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: d3_drill_wreck_sheet_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1abb897845da5a64dbb972f0cb1bda6f
+      internalID: 992453124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_drill_wreck_sheet_01
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8c643918a40e6a49bdce5003251a9a3
+      internalID: 638625020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_drill_wreck_sheet_02
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 658fb1a2ea11ba14c9e6ffb047670e83
+      internalID: -573569336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_drill_wreck_sheet_03
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: efca03a437242d54aba5b93b1c1bf120
+      internalID: 234975470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_drill_wreck_sheet_04
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ed367a5d43b8c044ac7ef514f987092
+      internalID: 1615379992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_drill_wreck_sheet_05
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2605958a7d2b4e04e8b62db28a2905d5
+      internalID: -87288397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_drill_wreck_sheet_06
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a3831ad3ae53b94eb8003926ed29403
+      internalID: -252100632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: d3_drill_wreck_sheet_07
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 128
+        height: 64
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8648f715c8e8c184ca95ce698072b632
+      internalID: -1660054416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 01cbda8d2dc0e024fb1400e1770cbc06
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      d3_drill_wreck_sheet_00: 992453124
+      d3_drill_wreck_sheet_01: 638625020
+      d3_drill_wreck_sheet_02: -573569336
+      d3_drill_wreck_sheet_03: 234975470
+      d3_drill_wreck_sheet_04: 1615379992
+      d3_drill_wreck_sheet_05: -87288397
+      d3_drill_wreck_sheet_06: -252100632
+      d3_drill_wreck_sheet_07: -1660054416
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

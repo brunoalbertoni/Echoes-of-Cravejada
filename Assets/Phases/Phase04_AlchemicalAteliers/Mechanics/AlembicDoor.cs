@@ -81,12 +81,7 @@ namespace EchoesOfCravejada
                 if (placed >= reagentIds.Length)
                 {
                     Sfx.AlembicBoil.Play(transform.position, delay: 0.5f);
-                    HudNotice.Show("O Grande Alambique ferve. A grade do mezanino se abriu.", 5f);
                     if (gate != null) gate.Open();
-                }
-                else
-                {
-                    HudNotice.Show($"{last} encaixado no alambique ({placed}/{reagentIds.Length})", 4f);
                 }
 
                 return;
@@ -95,7 +90,6 @@ namespace EchoesOfCravejada
             if (placed < reagentIds.Length && !_warned)
             {
                 _warned = true;
-                HudNotice.Show($"O Grande Alambique tem três encaixes. Faltam {reagentIds.Length - placed} reagentes.", 4f);
             }
         }
 

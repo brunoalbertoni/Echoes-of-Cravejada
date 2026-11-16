@@ -41,9 +41,7 @@ namespace EchoesOfCravejada
             KeyItems.Add(id);
             Sfx.KeyItem.Play();
 
-            string text = message;
-            if (!string.IsNullOrEmpty(group) && groupSize > 0) text += $" ({KeyItems.CountFound(group)}/{groupSize})";
-            if (!string.IsNullOrEmpty(text)) HudNotice.Show(text);
+            // Contada: sem aviso, so o som.
 
             gameObject.SetActive(false);
         }

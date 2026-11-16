@@ -55,6 +55,9 @@ namespace EchoesOfCravejada
         [SerializeField] private Sprite shardSprite;
         [SerializeField] private Sprite rewardSprite;
 
+        [Tooltip("A carcaca que fica no chao depois da queda (ver BossWreck). Vazio: nao fica nada.")]
+        [SerializeField] private GameObject wreck;
+
         [Header("Os quadros")]
         [Tooltip("Normal, na ordem das constantes.")]
         [SerializeField] private Sprite[] frames;
@@ -124,6 +127,14 @@ namespace EchoesOfCravejada
         private float _animSince;
         private float _hurtUntil = -1f;
         private int _deathFrame = -1;
+        private float _nextStep;
+
+        // O corpo, medido no desenho: os bracos e o martelo ficam na frente
+        // (ate 2,3 tiles), as costas quase rentes ao pivo.
+        private BoxCollider2D _body;
+        private const float BodyBack = 0.8f;
+        private const float BodyFront = 2.2f;
+        private const float BodyHeight = 3.5f;
 
         private static bool _defeated;
 
@@ -179,11 +190,20 @@ namespace EchoesOfCravejada
             hotFrames = newHotFrames;
         }
 
+        /// <summary>A carcaca que ele deixa ao cair. Usado pelo gerador.</summary>
+        public void ConfigureWreck(GameObject newWreck)
+        {
+            wreck = newWreck;
+        }
+
         private void Awake()
         {
             _sprite = GetComponent<SpriteRenderer>();
             _health = maxHealth;
             _home = transform.position;
+
+            _body = GetComponent<BoxCollider2D>();
+            if (_body != null) _body.size = new Vector2(BodyBack + BodyFront, BodyHeight);
             Face(-1);
             Play(Dormant, DormantFrames, 2.5f);
 
@@ -196,6 +216,7 @@ namespace EchoesOfCravejada
             if (_defeated || AreaPurifier.IsPurified)
             {
                 if (exitGate != null) exitGate.Open();
+                BossWreck.Show(wreck);
                 Destroy(gameObject);
                 return;
             }
@@ -259,6 +280,7 @@ namespace EchoesOfCravejada
             // Acorda: o visor acende, ele se ergue, as chamines tossem.
             FacePlayer();
             Play(Wake, WakeFrames, WakeFrames / 0.9f, false);
+            Sfx.BoilerMasterWake.Play(transform.position);
             yield return new WaitForSeconds(1.0f);
 
             while (!_dead)
@@ -285,6 +307,9 @@ namespace EchoesOfCravejada
                 {
                     FacePlayer();
                     Move(_facing * walkSpeed * Time.deltaTime);
+
+                    // Dois passos por volta da animacao de andar.
+                    Footstep(WalkFrames / 2f / (walkSpeed * 4f));
                     yield return null;
                 }
 
@@ -337,6 +362,7 @@ namespace EchoesOfCravejada
             FacePlayer();
             Play(Roar, RoarFrames, RoarFrames / 1.1f, false);
             if (oxideCloud != null) oxideCloud.Play();
+            Sfx.BoilerMasterOverpressure.Play(transform.position);
             ScrapCameraFollow.Shake(0.15f, 0.8f);
             yield return new WaitForSeconds(1.2f);
         }
@@ -346,13 +372,16 @@ namespace EchoesOfCravejada
             FacePlayer();
             float windup = _phaseTwo ? 0.45f : 0.65f;
             Play(HammerWindup, HammerWindupFrames, HammerWindupFrames / windup, false);
+            Sfx.BoilerMasterHammerWindup.Play(transform.position, pitch: 0.65f / windup);
             yield return Telegraph(windup);
             Play(HammerStrike, HammerStrikeFrames, 14f, false);
+            Sfx.BossSlam.Play(transform.position + Vector3.right * (_facing * 2.4f), pitch: 1.1f);
 
-            // A martelada pega quem estiver na frente, perto e baixo.
-            Vector2 center = (Vector2)transform.position + new Vector2(_facing * 2.4f, 1f);
+            // A martelada: do peito ate onde o martelo bate no chao (3,1 tiles
+            // na frente), e alta, porque ele desce de cima.
+            Vector2 center = (Vector2)transform.position + new Vector2(_facing * 1.9f, 1.5f);
 
-            foreach (Collider2D hit in Physics2D.OverlapBoxAll(center, new Vector2(3.4f, 2.4f), 0f))
+            foreach (Collider2D hit in Physics2D.OverlapBoxAll(center, new Vector2(2.4f, 3f), 0f))
             {
                 var health = hit.GetComponentInParent<ScrapHealth>();
                 if (health != null) health.TakeDamage(1, transform.position);
@@ -381,10 +410,12 @@ namespace EchoesOfCravejada
             FacePlayer();
             float windup = _phaseTwo ? 0.4f : 0.55f;
             Play(ChargeWindup, ChargeWindupFrames, ChargeWindupFrames / windup, false);
+            Sfx.BoilerMasterChargeWindup.Play(transform.position);
             yield return Telegraph(windup);
 
             // Atravessa ate a parede (ou ate cansar), soltando vapor pra tras.
             Play(ChargeRun, ChargeRunFrames, 12f);
+            Sfx.BoilerMasterChargeRun.Play(transform.position, pitch: _phaseTwo ? 1.15f : 1f);
             int direction = _facing;
             float speed = _phaseTwo ? 15f : 12f;
 
@@ -397,6 +428,7 @@ namespace EchoesOfCravejada
             }
 
             ScrapCameraFollow.Shake(0.1f, 0.25f);
+            Sfx.BossWallHit.Play(transform.position, pitch: 1.1f);
 
             // Bater na parede o deixa aberto um instante.
             _exposedUntil = Time.time + (_phaseTwo ? 1.0f : 1.4f);
@@ -409,6 +441,7 @@ namespace EchoesOfCravejada
             FacePlayer();
             float windup = _phaseTwo ? 0.4f : 0.55f;
             Play(BurstWindup, BurstWindupFrames, BurstWindupFrames / windup, false);
+            Sfx.BoilerMasterBurstWindup.Play(transform.position, pitch: 0.55f / windup);
             yield return Telegraph(windup);
 
             int volleys = _phaseTwo ? 2 : 1;
@@ -427,6 +460,7 @@ namespace EchoesOfCravejada
 
                     Vector3 muzzle = transform.position + new Vector3(_facing * 1.8f, heights[i], 0f);
                     SteamBolt.Fire(muzzle, _facing * 10f, 40f, boltSprite);
+                    Sfx.BoilerMasterBurstFire.Play(muzzle, pitch: 1.1f - 0.1f * i);
                     Play(BurstFire, BurstFireFrames, 15f, false);
                     yield return new WaitForSeconds(0.2f);
                 }
@@ -442,6 +476,7 @@ namespace EchoesOfCravejada
         {
             float windup = _phaseTwo ? 0.35f : 0.5f;
             Play(GeyserCast, 2, 2f / windup, false);
+            Sfx.BoilerMasterBurstWindup.Play(transform.position, pitch: 0.75f);
             yield return Telegraph(windup);
             Show(GeyserCast + 2);
 
@@ -451,7 +486,8 @@ namespace EchoesOfCravejada
 
             for (int i = 0; i < count; i++)
             {
-                SteamGeyser.Erupt(new Vector3(Mathf.Clamp(_player.position.x, minX, maxX), floorY, 0f), geyserSprite);
+                // O geiser sai embaixo do Scrap ate rente as grades: nao ha canto onde ele nao chegue.
+                SteamGeyser.Erupt(new Vector3(Mathf.Clamp(_player.position.x, minX - 1.5f, maxX + 1.5f), floorY, 0f), geyserSprite);
                 yield return new WaitForSeconds(0.38f);
             }
 
@@ -469,8 +505,10 @@ namespace EchoesOfCravejada
         {
             FacePlayer();
             Play(LeapCrouch, LeapCrouchFrames, LeapCrouchFrames / 0.45f, false);
+            Sfx.BoilerMasterHammerWindup.Play(transform.position, pitch: 0.9f);
             yield return Telegraph(0.45f);
 
+            Sfx.BossJump.Play(transform.position, pitch: 1.05f);
             Vector3 from = transform.position;
             float targetX = Mathf.Clamp(_player.position.x, minX, maxX);
 
@@ -499,6 +537,7 @@ namespace EchoesOfCravejada
 
             transform.position = new Vector3(targetX, floorY, 0f);
             ScrapCameraFollow.Shake(0.14f, 0.3f);
+            Sfx.BossSlam.Play(transform.position);
 
             ShockWave.Launch(transform.position + Vector3.right * 1.4f, 8f, minX - 1f, maxX + 1f, waveSprite);
             ShockWave.Launch(transform.position + Vector3.left * 1.4f, -8f, minX - 1f, maxX + 1f, waveSprite);
@@ -525,6 +564,15 @@ namespace EchoesOfCravejada
             }
         }
 
+        /// <summary>Um passo pesado, no maximo um a cada <paramref name="interval"/> segundos.</summary>
+        private void Footstep(float interval)
+        {
+            if (Time.time < _nextStep) return;
+
+            _nextStep = Time.time + interval;
+            Sfx.BossStep.Play(transform.position, pitch: 1.05f);
+        }
+
         private void FacePlayer()
         {
             if (_player == null) return;
@@ -538,6 +586,9 @@ namespace EchoesOfCravejada
 
             // A arte olha pra direita.
             if (_sprite != null) _sprite.flipX = _facing < 0;
+
+            // O corpo vai junto: mais comprido na frente que atras.
+            if (_body != null) _body.offset = new Vector2((BodyFront - BodyBack) * 0.5f * _facing, BodyHeight * 0.5f + 0.05f);
         }
 
         // ------------------------------------------------------------------
@@ -618,6 +669,7 @@ namespace EchoesOfCravejada
             }
 
             _hurtUntil = Time.time + 0.15f;
+            Sfx.BossHurtMetal.Play(transform.position, pitch: 1.2f, volume: IsExposed ? 1f : 0.8f);
 
             if (!_phaseTwo && _health <= maxHealth / 2)
             {
@@ -664,6 +716,9 @@ namespace EchoesOfCravejada
             _deathFrame = Death;
             yield return BossFall.Explode(transform, _sprite, oxideCloud, place, Hold, 2.2f,
                 k => _deathFrame = Death + Mathf.Min(DeathFrames - 1, (int)(k * DeathFrames)));
+
+            // Quando a nuvem abre, sobra a carcaca no chao.
+            BossWreck.Show(wreck, place);
 
             for (int i = 0; i < 16; i++)
             {

@@ -61,8 +61,9 @@ namespace EchoesOfCravejada
             }
 
             _used = true;
-            SceneTravel.PendingSpawnId = spawnId;
-            SceneManager.LoadScene(sceneName);
+
+            // A tela fecha, carrega com o loading no canto e abre do outro lado.
+            SceneLoader.Go(sceneName, spawnId);
         }
     }
 }

@@ -227,3 +227,28 @@ desde que respeitem o que está acima.
   - Ficam o que não é enigma: os três reagentes no fim de cada ala, o círculo do vapor (segurar E) que leva ao
     chassi, e os círculos da luta contra o Alquimista.
 - **O chassi volta** **[usuário]**, no nicho em cima da Destilaria.
+
+## 14. Reformulação (2026-11-15) **[usuário]**
+
+A fase estava a mais curta e mais reta do jogo. Mudou:
+
+- **Chegada pelo elevador:** a cabine do District 3 sobe por um poço embaixo do saguão, com
+  trilhos e lampiões, e para no andar (`ElevatorArrival`). Toca ao chegar do District 3 ou ao
+  dar Play direto na cena; não toca ao carregar um save.
+- **Destilaria em três andares, feita pra dar a volta:** Salão dos Alambiques (onde o poço cai)
+  → Serpentina (desce em zigue-zague) → Condensadores (corredor baixo, três fossos) → Torre do
+  Grande Destilador (reagente no alto) → passarela de volta ao salão por um patamar que de baixo
+  é alto demais (atalho). **Sem poças escorregadias** no caminho e sem o círculo do vapor.
+- **Espelhos de verdade na Óptica** (revê a seção 13, que tinha tirado os enigmas): luz-guia
+  fria (azulada, não queima) dobrada em espelhos que giram com E até fechaduras de cristal.
+  Sala das Lentes: um espelho, ensinado pelo quadro-negro. Câmara dos Espelhos: cinco espelhos
+  numa escalada; A, B, C e E virados abrem o nicho da Luz Engarrafada. Os raios-perigo (quentes,
+  piscando) continuam na entrada da Sala das Lentes e agora também na chaminé do pré-boss.
+- **Chassi:** num cofre atrás de um bloco falso de mármore na Câmara dos Espelhos. Virar o D no
+  lugar do E manda a luz pra uma fechadura escondida na parede leste.
+- **Incubação:** fossos de cacos sob dois tanques rachados e uma vala no biotério com uma gaiola
+  por cima; uma sentinela na Oficina de Protótipos.
+- **Inimigos do District 4 com o dobro de vida** (gosma 4, metades 2, arremessador 4,
+  experimento 10, sentinela 8). A sentinela (vidro que vira prata) tira **2** ao encostar.
+- **A gosma não se parte na hora:** treme, incha pros lados e só então estoura em duas (~0,6 s,
+  sem colisão); as metades assentam um instante antes de rastejar e de machucar.

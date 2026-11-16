@@ -48,6 +48,7 @@ namespace EchoesOfCravejada
                 if (t >= nextPuff)
                 {
                     if (cloud != null) cloud.Emit(8 + puff * 3);
+                    Sfx.BossFallJet.Play(home, volume: Mathf.Lerp(0.6f, 1f, k), pitch: Mathf.Lerp(0.85f, 1.25f, k));
                     ScrapCameraFollow.Shake(Mathf.Lerp(0.05f, 0.18f, k), 0.3f);
                     nextPuff = t + Mathf.Lerp(0.45f, 0.12f, k);
                     puff++;
@@ -59,6 +60,7 @@ namespace EchoesOfCravejada
             // O estouro.
             boss.position = home;
             if (cloud != null) cloud.Emit(110);
+            Sfx.BossFallBurst.Play(home);
             ScrapCameraFollow.Shake(0.45f, 0.9f);
             NoiseSystem.Emit(home, 14f, 1f);
 

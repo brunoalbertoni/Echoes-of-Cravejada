@@ -41,7 +41,12 @@ namespace EchoesOfCravejada
             transform.position += Vector3.right * step;
 
             _left -= Mathf.Abs(step);
-            if (_left <= 0f) Destroy(gameObject);
+            if (_left <= 0f)
+            {
+                // Acabou o alcance: o vapor se desfaz no ar, baixinho.
+                Sfx.SteamBoltHit.Play(transform.position, volume: 0.4f);
+                Destroy(gameObject);
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -50,6 +55,7 @@ namespace EchoesOfCravejada
             if (health == null) return;
 
             health.TakeDamage(1, transform.position);
+            Sfx.SteamBoltHit.Play(transform.position);
             Destroy(gameObject);
         }
     }

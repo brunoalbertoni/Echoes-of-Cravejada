@@ -70,19 +70,24 @@ namespace EchoesOfCravejada
         {
             if (_riding || _controller == null) return;
 
+            // Bloqueado: os escombros ja dizem tudo.
             if (blocker != null && blocker.activeInHierarchy)
             {
-                HudNotice.Show(blockedNotice, 0.2f);
+                HoldAction.Hide(this);
                 _held = 0f;
                 return;
             }
 
-            HudNotice.Show("Segure E para subir no elevador", 0.2f);
-
             if (InteractHeld() && _controller.IsGrounded) _held += Time.deltaTime;
             else _held = 0f;
 
-            if (_held >= holdTime) StartCoroutine(Ride());
+            HoldAction.Show(this, "Segure E para subir no elevador", _held / holdTime);
+
+            if (_held >= holdTime)
+            {
+                HoldAction.Hide(this);
+                StartCoroutine(Ride());
+            }
         }
 
         private IEnumerator Ride()
@@ -156,8 +161,9 @@ namespace EchoesOfCravejada
             // O estado de cena e estatico: tem que acabar aqui, senao a
             // proxima fase comeca com as faixas pretas e o Scrap imune.
             Cinematic.End();
-            SceneTravel.PendingSpawnId = spawnId;
-            SceneManager.LoadScene(sceneName);
+
+            // A tela ja esta preta: o loading entra direto e a fase nova abre com a transicao.
+            SceneLoader.Go(sceneName, spawnId, alreadyBlack: true);
         }
 
         private static bool InteractHeld()
@@ -182,6 +188,12 @@ namespace EchoesOfCravejada
 
             _controller = null;
             _held = 0f;
+            HoldAction.Hide(this);
+        }
+
+        private void OnDisable()
+        {
+            HoldAction.Hide(this);
         }
     }
 }

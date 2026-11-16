@@ -41,6 +41,9 @@ namespace EchoesOfCravejada
 
             _timer = interval;
             MercuryDrop.Fall(transform.position, fall, slowTime, dropSprite);
+
+            // A gota se soltando do teto: um plique fino, antes do estalo no chao.
+            Sfx.CeilingDrip.Play(transform.position);
         }
     }
 }

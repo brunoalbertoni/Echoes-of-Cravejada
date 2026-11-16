@@ -27,7 +27,17 @@ namespace EchoesOfCravejada
 
         private const float SmallScale = 0.65f;
 
+        // A divisao: tremer, inchar pros lados e so entao estourar em duas.
+        private const float QuiverTime = 0.38f;
+        private const float StretchTime = 0.24f;
+
+        // A pequena recem-nascida fica um instante parada antes de rastejar.
+        private const float HalfSettleTime = 0.35f;
+
         [SerializeField] private float speed = 1.4f;
+
+        [Tooltip("Vida de cada metade que nasce da divisao.")]
+        [SerializeField] private int halfHealth = 2;
 
         [Tooltip("Limites de onde ela rasteja, em x de mundo.")]
         [SerializeField] private float minX;
@@ -44,13 +54,15 @@ namespace EchoesOfCravejada
         private int _direction = 1;
         private float _baseY;
         private float _clock;
+        private float _bornAt = -100f;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(float newMinX, float newMaxX, Sprite[] newFrames = null)
+        public void Configure(float newMinX, float newMaxX, Sprite[] newFrames = null, int newHalfHealth = 2)
         {
             minX = newMinX;
             maxX = newMaxX;
             if (newFrames != null) frames = newFrames;
+            halfHealth = newHalfHealth;
         }
 
         private void Awake()
@@ -60,19 +72,24 @@ namespace EchoesOfCravejada
             _baseY = transform.position.y;
             _clock = Mathf.Abs(transform.position.x * 0.31f);
 
-            _damageable.DeathAnimation = Spread;
-
-            // A grande "morre" se partindo; as pequenas (acertadas no Split) se desfazem.
+            // A grande "morre" se partindo, devagar o bastante pra ver; as
+            // pequenas (acertadas no Split) se desfazem numa poca.
+            _damageable.DeathAnimation = small ? (System.Func<IEnumerator>)Spread : SplitApart;
             _damageable.DeathSound = small ? Sfx.DeathGoo : Sfx.SlimeSplit;
+            _damageable.Revived += ResetShape;
 
             if (small) ScrapHealth.Died += Vanish;
-            else _damageable.Died += Split;
         }
 
         private void OnDestroy()
         {
             if (small) ScrapHealth.Died -= Vanish;
-            else if (_damageable != null) _damageable.Died -= Split;
+            if (_damageable != null) _damageable.Revived -= ResetShape;
+        }
+
+        private void ResetShape()
+        {
+            transform.localScale = Vector3.one * (small ? SmallScale : 1f);
         }
 
         private void Vanish()
@@ -80,7 +97,45 @@ namespace EchoesOfCravejada
             Destroy(gameObject);
         }
 
-        /// <summary>A grande "morreu": nascem duas pequenas, uma pra cada lado.</summary>
+        /// <summary>
+        /// A grande "morreu", mas nao se parte na hora: treme, incha pros
+        /// lados, afina no meio e so entao estoura em duas. Sem colisao
+        /// durante isso (o Damageable ja a desligou): e a folga do Scrap.
+        /// </summary>
+        private IEnumerator SplitApart()
+        {
+            if (_sprite != null) _sprite.color = Color.white;
+            Show(Hurt);
+
+            Vector3 rest = Vector3.one;
+
+            // 1. Treme, cada vez mais rapido.
+            for (float t = 0f; t < QuiverTime; t += Time.deltaTime)
+            {
+                float k = t / QuiverTime;
+                float wobble = Mathf.Sin(t * Mathf.Lerp(30f, 60f, k)) * Mathf.Lerp(0.04f, 0.10f, k);
+                transform.localScale = new Vector3(rest.x + wobble, rest.y - wobble, 1f);
+                Show(Idle + (int)(t * 16f) % IdleFrames);
+                yield return null;
+            }
+
+            // 2. Incha pros lados e abaixa: vai se partir no meio.
+            for (float t = 0f; t < StretchTime; t += Time.deltaTime)
+            {
+                float k = Mathf.SmoothStep(0f, 1f, t / StretchTime);
+                transform.localScale = new Vector3(Mathf.Lerp(1f, 1.55f, k), Mathf.Lerp(1f, 0.62f, k), 1f);
+                yield return null;
+            }
+
+            // 3. Estoura: nascem as duas e a grande some.
+            Split();
+            transform.localScale = rest;
+            if (_sprite != null) _sprite.enabled = false;
+            yield return null;
+            if (_sprite != null) _sprite.enabled = true;
+        }
+
+        /// <summary>Nascem duas pequenas, uma pra cada lado, ainda moles.</summary>
         private void Split()
         {
             for (int side = -1; side <= 1; side += 2)
@@ -104,7 +159,7 @@ namespace EchoesOfCravejada
                 trigger.size = new Vector2(1.3f, 0.9f);
                 trigger.offset = new Vector2(0f, 0.45f);
 
-                half.AddComponent<Damageable>().Configure(1, 0, null);
+                half.AddComponent<Damageable>().Configure(halfHealth, 0, null);
 
                 var slime = half.AddComponent<QuicksilverSlime>();
                 slime.minX = minX;
@@ -113,9 +168,10 @@ namespace EchoesOfCravejada
                 slime.small = true;
                 slime.frames = frames;
                 slime._direction = side;
+                slime._bornAt = Time.time;
 
                 // O Awake rodou antes de "small" valer: acerta as inscricoes.
-                slime._damageable.Died -= slime.Split;
+                slime._damageable.DeathAnimation = slime.Spread;
                 slime._damageable.DeathSound = Sfx.DeathGoo;
                 ScrapHealth.Died += slime.Vanish;
             }
@@ -124,6 +180,18 @@ namespace EchoesOfCravejada
         private void Update()
         {
             if (_damageable.IsDead) return;
+
+            // Recem-nascida: assenta no chao e incha ate o tamanho dela antes de sair rastejando.
+            if (small && Time.time - _bornAt < HalfSettleTime)
+            {
+                float k = (Time.time - _bornAt) / HalfSettleTime;
+                float squash = Mathf.Sin(k * Mathf.PI) * 0.25f;
+                transform.localScale = new Vector3(SmallScale * (1f + squash), SmallScale * (1f - squash), 1f);
+                Show(Idle + (int)(k * 6f) % IdleFrames);
+                return;
+            }
+
+            if (small) transform.localScale = Vector3.one * SmallScale;
 
             // Apanhou: espirra, parada.
             if (Time.time - _damageable.LastHitTime < 0.2f)
@@ -179,6 +247,9 @@ namespace EchoesOfCravejada
         private void Touch(Collider2D other)
         {
             if (_damageable.IsDead) return;
+
+            // Ainda assentando depois da divisao: mole demais pra machucar.
+            if (small && Time.time - _bornAt < HalfSettleTime) return;
 
             var controller = other.GetComponentInParent<ScrapController>();
             if (controller == null) return;

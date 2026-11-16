@@ -189,7 +189,9 @@ namespace EchoesOfCravejada
             float t = 0f;
             float elapsed = 0f;
             bool skipped = false;
+            bool flashed = false;
             int last = shots.Length - 1;
+            ShotSound(shots[0], true);
 
             while (index < shots.Length)
             {
@@ -203,6 +205,7 @@ namespace EchoesOfCravejada
                     t = Mathf.Max(0f, shot.duration - 0.8f);
                     _particleCount = 0;
                     _cut = CutFrames;
+                    Sfx.CartoonShot.Play();
                 }
 
                 // O clarao do inicio desbota rapido; o do fim sobe ate o branco.
@@ -212,6 +215,13 @@ namespace EchoesOfCravejada
                 {
                     float rise = (t - (shot.duration - FinalFlashStart)) / FinalFlashRise;
                     if (rise > 0f) _white = Mathf.Max(_white, Mathf.Clamp01(rise));
+
+                    // O clarao: o som sobe junto com o branco.
+                    if (rise > 0f && !flashed)
+                    {
+                        flashed = true;
+                        Sfx.CartoonFlash.Play();
+                    }
                     if (rise >= 1f) PolishOnce();
                 }
 
@@ -229,7 +239,11 @@ namespace EchoesOfCravejada
                     index++;
                     t = 0f;
                     _particleCount = 0;
-                    if (index < shots.Length) _cut = CutFrames;
+                    if (index < shots.Length)
+                    {
+                        _cut = CutFrames;
+                        if (!skipped) ShotSound(shots[index], false);
+                    }
                 }
             }
 
@@ -245,6 +259,21 @@ namespace EchoesOfCravejada
             }
 
             Stop();
+        }
+
+        /// <summary>
+        /// O som de um quadro: a troca (menos no primeiro) e a luz passando,
+        /// esticada pra durar o tanto que a transformacao dura.
+        /// </summary>
+        private static void ShotSound(CartoonShot shot, bool first)
+        {
+            if (shot == null) return;
+
+            if (!first) Sfx.CartoonShot.Play();
+
+            const float clip = 2.2f;
+            float reveal = Mathf.Max(0.5f, shot.duration * RevealShare);
+            Sfx.CartoonReveal.Play(pitch: Mathf.Clamp(clip / reveal, 0.7f, 1.3f), delay: first ? 0.15f : 0.05f);
         }
 
         private void Stop()

@@ -119,8 +119,8 @@ namespace EchoesOfCravejada.EditorTools
 
         private static readonly Rgba Outline = new Rgba(22, 18, 22);
 
-        /// <summary>Tudo o que muda de um quadro pra outro.</summary>
-        private sealed class Pose
+        /// <summary>Tudo o que muda de um quadro pra outro. Publico pra cenas desenharem poses proprias (IntroFallArt).</summary>
+        public sealed class Pose
         {
             /// <summary>Deslocamento do tronco (positivo: pra frente e pra baixo).</summary>
             public float BodyX;
@@ -341,6 +341,9 @@ namespace EchoesOfCravejada.EditorTools
             public float GripX => BodyX + Pose.GripX;
             public float GripY => BodyY + Pose.GripY;
         }
+
+        /// <summary>Um quadro avulso numa pose qualquer, 48x48, pes embaixo no meio.</summary>
+        public static PixelCanvas DrawPose(Look look, Pose pose) => Draw(look, pose);
 
         private static PixelCanvas Draw(Look look, Pose pose)
         {

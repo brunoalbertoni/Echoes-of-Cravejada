@@ -328,21 +328,22 @@ namespace EchoesOfCravejada.EditorTools
         public static (int X, int Y, int Width, int Height) ElevatorRubble => (5, 14, 5, 8);
 
         /// <summary>O que aparece ao tentar subir com os escombros no lugar.</summary>
-        public const string ElevatorBlockedNotice = "O poço está entupido de escombros. Nada que você tem os move.";
+        public const string ElevatorBlockedNotice = "";
 
         public static (int X, int Y) CrisolTile => (140, 44);
 
         public static readonly string[] CrisolLines =
         {
             "Scrap. Você chegou até aqui. Admito que não apostei nisso.",
-            "Olhe em volta. Ametista, quartzo leitoso, cristal fumê... Isto aqui é o meu ofício. Aqui eu sei o nome de tudo.",
-            "Você reparou que eles só acendem com barulho? Era assim que os mineiros enxergavam: batiam na pedra e andavam enquanto ela brilhava.",
-            "Eu trabalhei para os 925 Nobres. Eu estava lá quando resolveram furar até o Coração de Quartzo. Eu VI a escavação.",
-            "Eu disse que era um erro. Disse na frente de todos. Sabe o que fazem com prata que fala demais? Riscam.",
-            "É por isso que sou arranhado assim, Scrap. Não foi o tempo. Foi de propósito. Riscaram-me e jogaram-me no Poço de Sucata.",
-            "O elevador que trouxe você? Ele seguia subindo, até os Ateliês dos Nobres. O poço desabou no dia em que a broca furou fundo demais.",
-            "Pedra assim não cede a cinzel. Cede a uma nota, a nota certa. E quem ainda canta essa nota é aquela máquina, lá em cima, na câmara de perfuração.",
-            "...Chega. O seu polimento está decente, aliás. Não conte a ninguém que eu disse isso.",
+            "Olha em volta. Ametista, quartzo leitoso, cristal fumê... Isso aqui é o meu ofício. Aqui eu sei o nome de tudo.",
+            "Reparou que eles só acendem com barulho? Era assim que os mineiros enxergavam: batiam na pedra e andavam enquanto ela brilhava.",
+            "Eu trabalhei pros 925 Nobres. Eu tava lá quando decidiram furar até o Coração de Quartzo. Eu VI a escavação.",
+            "Eu disse que era um erro. Disse na frente de todo mundo. Sabe o que fazem com prata que fala demais? Riscam.",
+            "É por isso que eu sou todo arranhado, Scrap. Não foi o tempo. Foi de propósito. Me riscaram e me jogaram no Poço de Sucata.",
+            "O elevador que te trouxe? Ele continuava subindo, até o Laboratório. Mas o poço desabou no dia em que a broca furou fundo demais.",
+            "Os escombros entupiram tudo. Pedra assim não cede a cinzel. Cede a uma nota, a nota certa.",
+            "E quem ainda canta essa nota é aquela máquina, lá em cima, na câmara de perfuração.",
+            "...Chega. O seu polimento tá decente, aliás. Não conta pra ninguém que eu disse isso.",
         };
 
         // O Capataz: espera ajoelhado no fundo leste da toca e, acordado, anda
@@ -374,7 +375,7 @@ namespace EchoesOfCravejada.EditorTools
         // The Geode Drill: onde aparece, ate onde corre, a area que a acorda e
         // a altura do chao de cada uma das tres camadas da arena.
         public static (int X, int Y) BossTile => (55, 92);
-        public static (int X0, int X1) BossRange => (36, 74);
+        public static (int X0, int X1) BossRange => (34, 76);
         public static (int X, int Y, int Width, int Height) BossWake => (42, 92, 28, 14);
         public static readonly int[] BossFloors = { 92, 80, 68 };
 
@@ -783,6 +784,43 @@ namespace EchoesOfCravejada.EditorTools
 
             Lamps.Add((9f, 12.5f, 5f));
 
+            // Depois da broca, quem sobrou espera aqui, na estacao: e o caminho
+            // de quem vai subir. O Crisol fica do lado do elevador.
+            Purified.Add(new LoreSpot
+            {
+                Kind = "miner", Name = "Tarnished_Miner_1", Title = "Mineiro", X = 17, Y = 11,
+                Lines = new[]
+                {
+                    "Escuta. ...Ouviu? Ela afinou. A pedra inteira afinou.",
+                    "A gente passou anos aqui embaixo sem poder dar um pio. Agora vamos fazer barulho de propósito.",
+                    "Vai ter festa, pequeno. Você é convidado. Foi você que desligou aquela coisa.",
+                },
+            });
+
+            Purified.Add(new LoreSpot
+            {
+                Kind = "miner", Name = "Tarnished_Miner_2", Title = "Mineira", X = 24, Y = 11,
+                Lines = new[]
+                {
+                    "Café? É de borra de caldeira, mas tá quente.",
+                    "Eu operava a broca, sabia? No começo, a gente era seis lá dentro. Depois, ela não precisou mais da gente.",
+                    "Ninguém contou o que tinha lá embaixo. Só mandavam: mais fundo.",
+                },
+            });
+
+            Purified.Add(new LoreSpot
+            {
+                Kind = "crisol", Name = "Npc_Crisol_Purified", Title = "Crisol", X = 13, Y = 11,
+                Lines = new[]
+                {
+                    "Você viu a placa. Então agora você sabe o que eu sabia.",
+                    "Eu avisei, e me riscaram. Você desceu lá, com esse corpo de sucata, e fez a máquina parar.",
+                    "...Obrigado, Scrap.",
+                    "Talvez você não seja só sucata, afinal. Não me faz repetir.",
+                    "E agora essa onda é sua. Usa nos escombros do elevador: eles não aguentam. Lá em cima fica o Laboratório.",
+                },
+            });
+
             Scatter(18, 11, 28, 21, 4, 11);
         }
 
@@ -852,7 +890,7 @@ namespace EchoesOfCravejada.EditorTools
 
             Tell("helmet", room, "Lore_Helmet", "um capacete amassado", 87, 15,
                 "Um capacete de mineiro, amassado, esquecido em cima da passarela.",
-                "Por dentro, riscado a prego: \"NÃO CORRA. ELES ESCUTAM.\"");
+                "Por dentro, riscado a prego: \"SHH!\"");
 
             Scatter(79, 11, 108, 20, 5, 31);
         }
@@ -1138,12 +1176,11 @@ namespace EchoesOfCravejada.EditorTools
                 "GELO · RUBI · MEL · SANGUE · CÉU",
                 "Embaixo, num bloco de notas pequeno: \"muito chato ter que ficar andando de um lado pro outro pra abrir uma porta\"");
 
-            Tell("board", room, "Lore_HunterRoster", "a lista de turno", 156, 44,
-                "Uma lista de turno pregada na rocha: doze nomes. O primeiro, entalhado maior que os outros: \"CAPATAZ — O PRIMEIRO A DESCER\".",
-                "Embaixo, em outra letra, tremida: \"Ele ouviu a pedra antes de todo mundo. Dizia que ela cantava pra ele.\"",
-                "\"Foi o primeiro a perder os olhos. Depois a voz. Depois parou de caber no capacete.\"",
-                "\"Desceu sozinho pra toca do fim do corredor e nunca mais subiu. Levou a chave do salão com ele.\"",
-                "A última linha está riscada com tanta força que a tábua rachou: \"Às vezes ainda dá pra ouvir ele chamando o turno.\"");
+            Tell("note", room, "Lore_HunterRoster", "uma folha de caderno", 156, 44,
+                "Uma folha arrancada de um caderno de turno, presa na rocha. A letra é de um colega:",
+                "\"O capataz foi o primeiro a descer. Ouviu a pedra antes de todo mundo. Dizia que ela cantava pra ele.\"",
+                "\"Primeiro ele perdeu os olhos. Depois a voz. Depois parou de caber no capacete.\"",
+                "\"Desceu sozinho pra toca do fim do corredor e nunca mais subiu. Às vezes ainda dá pra ouvir ele chamando o turno.\"");
 
             // A subida pra toca do Capataz, no comeco do corredor: uma chamine
             // estreita, quicando de parede em parede, ate a grade do teto que
@@ -1180,41 +1217,6 @@ namespace EchoesOfCravejada.EditorTools
             Foe(FoeKind.CrystalMite, "Mite_Chamber_1", 169, 202, 60, 171);
             Foe(FoeKind.CrystalMite, "Mite_Chamber_2", 169, 202, 60, 172);
             Foe(FoeKind.CrystalMite, "Mite_Chamber_3", 169, 202, 60, 187);
-
-            Purified.Add(new LoreSpot
-            {
-                Kind = "miner", Name = "Tarnished_Miner_1", Title = "Mineiro", X = 170, Y = 60,
-                Lines = new[]
-                {
-                    "Escute. ...Ouviu? Ela afinou. A pedra inteira afinou.",
-                    "A gente passou anos aqui embaixo sem poder dar um pio. Agora vamos fazer barulho de propósito.",
-                    "Vai haver concerto. Você é convidado, pequeno. Foi você que desligou aquela coisa.",
-                },
-            });
-
-            Purified.Add(new LoreSpot
-            {
-                Kind = "miner", Name = "Tarnished_Miner_2", Title = "Mineira", X = 190, Y = 60,
-                Lines = new[]
-                {
-                    "Café? É de borra de caldeira, mas está quente.",
-                    "Eu operei a broca, sabia? No começo, éramos seis lá dentro. Depois, ela não precisou mais da gente.",
-                    "Ninguém nos disse o que havia lá embaixo. Só disseram: mais fundo.",
-                },
-            });
-
-            Purified.Add(new LoreSpot
-            {
-                Kind = "crisol", Name = "Npc_Crisol_Purified", Title = "Crisol", X = 180, Y = 60,
-                Lines = new[]
-                {
-                    "Você viu a placa. Então agora você sabe o que eu sabia.",
-                    "Eu avisei, e riscaram-me. Você desceu lá, com esse corpo de sucata, e fez a máquina parar.",
-                    "...Obrigado, Scrap.",
-                    "Talvez você não seja só sucata, afinal. Não me faça repetir.",
-                    "E agora essa onda é sua. Volte à estação: os escombros do elevador não vão resistir a ela. Lá em cima ficam os Ateliês.",
-                },
-            });
 
             Scatter(164, 60, 202, 74, 5, 91);
         }
@@ -1326,7 +1328,7 @@ namespace EchoesOfCravejada.EditorTools
 
             Tell("note", room, "Lore_LoopNote", "um bilhete amassado", 191, 85,
                 "Um bilhete amassado, preso numa lasca de cristal:",
-                "\"Dei a volta pela direita, como o capataz mandou. Ninguém disse que lá em cima tinha um deles.\"");
+                "\"Dei a volta pela direita, como o capataz mandou. Que portão é aquele?\"");
 
             Scatter(163, 85, 201, 90, 5, 105);
             Scatter(195, 91, 201, 106, 4, 106);
@@ -1396,7 +1398,7 @@ namespace EchoesOfCravejada.EditorTools
 
             Tell("note", room, "Lore_MinerNote", "um bilhete de mineiro", 96, 92,
                 "Um papel dobrado, preso debaixo de um capacete.",
-                "\"Ela não para mais. Desligamos a chave, e ela não parou. Não há mais ninguém lá dentro, e ela não parou.\"",
+                "\"Ela não para mais. Desligamos a chave, e ela não parou. Não tem mais ninguém lá dentro, e ela não parou.\"",
                 "\"Se você está lendo isto: não faça barulho perto dela. Ela não enxerga. Ela escuta.\"",
                 "\"E tem a luz. Os pilares de cristal lá dentro acendem quando cantam, e ela corre atrás da luz como bicho atrás de lampião.\"",
                 "\"Mas a luz apaga rápido. Se o cristal ainda estiver brilhando forte quando ela chega, ela perde o controle e se crava nele. Foi a única vez que vi aquele motor parado.\"");

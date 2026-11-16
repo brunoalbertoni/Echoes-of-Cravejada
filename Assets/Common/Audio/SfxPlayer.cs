@@ -112,18 +112,7 @@ namespace EchoesOfCravejada
 
             float gain = 1f;
             float pan = 0f;
-
-            if (at.HasValue)
-            {
-                if (_camera == null || !_camera.isActiveAndEnabled) _camera = Camera.main;
-                if (_camera != null)
-                {
-                    Vector2 offset = at.Value - (Vector2)_camera.transform.position;
-                    float near = 1f - Mathf.Clamp01((offset.magnitude - Near) / (Far - Near));
-                    gain = near * near;
-                    pan = Mathf.Clamp(offset.x / 12f, -1f, 1f) * 0.5f;
-                }
-            }
+            if (at.HasValue) gain = Distance(at.Value, out pan);
 
             if (gain <= 0.01f) return;
 
@@ -144,6 +133,29 @@ namespace EchoesOfCravejada
 
             if (delay > 0f) voice.PlayDelayed(delay);
             else voice.Play();
+        }
+
+        /// <summary>
+        /// Quanto um som vindo de <paramref name="at"/> se ouve agora (0 a 1,
+        /// pela distancia da camera) e de que lado ele vem.
+        /// </summary>
+        public static float Distance(Vector2 at, out float pan)
+        {
+            pan = 0f;
+
+            Camera camera = _instance != null ? _instance._camera : null;
+            if (camera == null || !camera.isActiveAndEnabled)
+            {
+                camera = Camera.main;
+                if (_instance != null) _instance._camera = camera;
+            }
+
+            if (camera == null) return 1f;
+
+            Vector2 offset = at - (Vector2)camera.transform.position;
+            float near = 1f - Mathf.Clamp01((offset.magnitude - Near) / (Far - Near));
+            pan = Mathf.Clamp(offset.x / 12f, -1f, 1f) * 0.5f;
+            return near * near;
         }
 
         /// <summary>O arquivo desta vez: com variacoes, uma qualquer menos a ultima.</summary>

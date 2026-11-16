@@ -683,9 +683,8 @@ namespace EchoesOfCravejada.EditorTools
                         break;
 
                     default:
-                        // O mesmo reforco escondido dos outros distritos: o modulo, dourado.
-                        SpriteRenderer module = Sprite(pickup, Phase02Assets.DashModule, Phase01Assets.SortingActors, -1);
-                        module.color = new Color(1f, 0.85f, 0.45f);
+                        // O mesmo reforco escondido dos outros distritos: a placa de peito.
+                        Sprite(pickup, Phase02Assets.ChassisPlate, Phase01Assets.SortingActors, -1);
                         pickup.AddComponent<RewardPickup>().Configure(RewardPickup.Kind.Chassis, spec.Id);
                         glow = new Color(1f, 0.85f, 0.55f);
                         break;
@@ -791,8 +790,13 @@ namespace EchoesOfCravejada.EditorTools
                 Phase02Assets.LoadSprite(Phase02Assets.ShockWave),
                 Phase02Assets.LoadSprite(Phase02Assets.SteamColumn),
                 Phase02Assets.LoadSprite(Phase02Assets.Shard),
-                Phase02Assets.LoadSprite(Phase02Assets.DashModule),
+                Phase02Assets.LoadSprite(Phase02Assets.PressureJumpModule),
                 exitGate, purifier);
+
+            // A carcaca dele: aparece onde ele cair (ou, voltando, onde ele esperava).
+            master.ConfigureWreck(WreckAssets.Build(parent, "BoilerMasterWreck",
+                Phase02Assets.LoadSheet(Phase02Assets.MasterWreckSheet, MasterWreckArt.FrameCount),
+                bossObject.transform.position));
 
             // A nuvem em que ele explode ao cair.
             master.ConfigureCloud(Phase01Generator.CreateOxideCloud(bossObject.transform, _steam));

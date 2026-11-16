@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace EchoesOfCravejada
 {
@@ -12,7 +11,7 @@ namespace EchoesOfCravejada
     /// a ordem em que eles sao tocados.
     ///
     /// Um cristal corrompido tem um veio de Oxide dentro e nao soa: da so um
-    /// baque surdo. Raspar o veio (segurar E, vulneravel) o afina de volta.
+    /// baque surdo. Tres golpes de cinzel quebram o veio e o afinam de volta.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class ResonantCrystal : MonoBehaviour, IDamageable
@@ -28,7 +27,8 @@ namespace EchoesOfCravejada
         [Tooltip("Se comeca com um veio de Oxide, sem soar.")]
         [SerializeField] private bool corrupted;
 
-        [SerializeField] private float scrapeTime = 2.2f;
+        [Tooltip("Quantos golpes ate o veio de Oxide quebrar.")]
+        [SerializeField] private int hitsToCleanse = 3;
 
         [Tooltip("Quanto tempo ele fica aceso depois de golpeado. Os pilares da broca ficam mais.")]
         [SerializeField] private float litTime = 0.5f;
@@ -37,10 +37,7 @@ namespace EchoesOfCravejada
         [SerializeField] private SpriteRenderer vein;
         [SerializeField] private EchoCrystal echo;
 
-        private ScrapController _controller;
-        private ScrapHealth _health;
-        private float _progress;
-        private bool _scraping;
+        private int _veinHits;
         private float _flashUntil;
 
         public int Note => note;
@@ -90,12 +87,8 @@ namespace EchoesOfCravejada
         /// <summary>O veio de Oxide se dissolve: e o que a purificacao faz com todos de uma vez.</summary>
         public void Cleanse()
         {
-            if (_scraping && _controller != null) _controller.ControlLocked = false;
-
             corrupted = false;
-            _scraping = false;
             if (vein != null) vein.enabled = false;
-            HoldAction.Hide(this);
         }
 
         /// <summary>Usado pelos geradores de fase: quanto tempo fica aceso depois do golpe.</summary>
@@ -121,9 +114,12 @@ namespace EchoesOfCravejada
         {
             if (corrupted)
             {
-                // Desafinado: um baque curto, que mal se ouve.
+                // Desafinado: um baque curto, que mal se ouve. Cada golpe racha o veio.
                 NoiseSystem.Emit(transform.position, 3f, 0.3f);
                 Sfx.CrystalDull.Play(transform.position);
+                _veinHits++;
+                _flashUntil = Time.time + 0.08f;
+                if (_veinHits >= hitsToCleanse) Cleanse();
                 return;
             }
 
@@ -149,71 +145,6 @@ namespace EchoesOfCravejada
 
                 sprite.color = Time.time < _flashUntil ? noteColor : dim;
             }
-
-            if (!corrupted || _controller == null) return;
-
-            bool holding = InteractHeld() && _controller.IsGrounded;
-
-            // Apanhou no meio: perde o que tinha raspado.
-            if (_scraping && _health != null && Time.time - _health.LastHitTime < 0.1f)
-            {
-                _progress = 0f;
-                holding = false;
-            }
-
-            if (holding != _scraping)
-            {
-                _scraping = holding;
-                _controller.ControlLocked = holding;
-            }
-
-            if (_scraping)
-            {
-                _progress += Time.deltaTime;
-
-                // Raspar faz um barulhinho constante: quem esta perto escuta.
-                if (Time.frameCount % 20 == 0) NoiseSystem.Emit(transform.position, 4f, 0.3f);
-            }
-
-            HoldAction.Show(this, "Segure E para raspar o veio de Óxido", _progress / scrapeTime);
-
-            if (_progress < scrapeTime) return;
-
-            corrupted = false;
-            _scraping = false;
-            _controller.ControlLocked = false;
-            if (vein != null) vein.enabled = false;
-            HoldAction.Hide(this);
-        }
-
-        private static bool InteractHeld()
-        {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.eKey.isPressed || keyboard.kKey.isPressed)) return true;
-
-            Gamepad pad = Gamepad.current;
-            return pad != null && pad.buttonNorth.isPressed;
-        }
-
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            var controller = other.GetComponentInParent<ScrapController>();
-            if (controller == null) return;
-
-            _controller = controller;
-            _health = controller.GetComponent<ScrapHealth>();
-        }
-
-        private void OnTriggerExit2D(Collider2D other)
-        {
-            if (_controller == null || other.GetComponentInParent<ScrapController>() != _controller) return;
-
-            if (_scraping) _controller.ControlLocked = false;
-
-            _scraping = false;
-            _controller = null;
-            _health = null;
-            HoldAction.Hide(this);
         }
     }
 }

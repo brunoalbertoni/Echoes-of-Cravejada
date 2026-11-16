@@ -63,6 +63,9 @@ namespace EchoesOfCravejada
         {
             Clear();
 
+            // O sopro saindo: rugido verde que corre pros dois lados.
+            Sfx.KingBreath.Play(new Vector2(fromX, floorY + 1f));
+
             float left = fromX;
             float right = fromX;
             bool hit = false;

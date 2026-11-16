@@ -151,11 +151,15 @@ namespace EchoesOfCravejada
             StartCoroutine(Blink());
         }
 
+        /// <summary>
+        /// A morte: os fragmentos ficam no lugar da queda, o Scrap apaga e o
+        /// mundo congela atras da tela de morte. O renascimento so vem quando o
+        /// jogador escolhe voltar pra bancada (ver ReturnToBench).
+        /// </summary>
         private void Die()
         {
             LastDeathTime = Time.time;
             Sfx.Death.Play();
-            Sfx.Respawn.Play(delay: 0.9f);
 
             Vector3 deathPlace = _respawn != null ? (Vector3)_respawn.SafePosition : transform.position;
 
@@ -164,16 +168,39 @@ namespace EchoesOfCravejada
             _oldScrap = null;
 
             int shards = ScrapWallet.TakeAll();
+            int kept = 0;
 
             // Com a Bolsa forrada, da loja, metade fica com ele.
             if (Shop.KeepsHalfOnDeath)
             {
-                int kept = shards / 2;
+                kept = shards / 2;
                 ScrapWallet.Add(kept);
                 shards -= kept;
             }
 
             if (shards > 0) _oldScrap = OldScrap.Drop(deathPlace, shards, oldScrapSprite);
+
+            // Caido: parado, sem controle, apagado.
+            StopAllCoroutines();
+            _controller.ControlLocked = true;
+            _body.linearVelocity = Vector2.zero;
+            _body.simulated = false;
+            if (_sprite != null)
+            {
+                _sprite.enabled = true;
+                _sprite.color = new Color(0.32f, 0.28f, 0.28f);
+            }
+
+            DeathScreen.Show(ReturnToBench);
+        }
+
+        /// <summary>O jogador escolheu voltar: o Scrap renasce na ultima bancada, com a vida cheia.</summary>
+        private void ReturnToBench()
+        {
+            Sfx.Respawn.Play();
+
+            if (_sprite != null) _sprite.color = Color.white;
+            _body.simulated = true;
 
             Vector3 target = _hasCheckpoint ? _checkpoint : _startPosition;
 

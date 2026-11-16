@@ -1,23 +1,21 @@
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 namespace EchoesOfCravejada
 {
     /// <summary>
     /// Vai numa valvula do District 2 cujo efeito acontece longe da vista de
-    /// quem gira: as tres do fim das alas (que abrem as travas da Escadaria da
-    /// Praca) e as que religam um atalho em outra sala. Quando o volante gira,
-    /// o HUD avisa o que mudou e, nas de trava, conta quantas ja foram.
+    /// quem gira: as tres do fim das alas, que abrem as travas da Escadaria da
+    /// Praca. Quando o volante gira, uma cena curta e muda: o Scrap para, a
+    /// camera vai ate a trava, ela se abre, e a camera volta. Nada na tela.
     /// </summary>
     [RequireComponent(typeof(Valve))]
     public class LockValveNotice : MonoBehaviour
     {
-        private static readonly List<LockValveNotice> Locks = new List<LockValveNotice>();
-
-        [Tooltip("Se abre uma das travas da Escadaria e entra na contagem.")]
+        [Tooltip("Se abre uma das travas da Escadaria (e mostra a cena).")]
         [SerializeField] private bool countsAsLock = true;
 
-        [Tooltip("O que mais ela muda longe dali, dito no aviso. Vazio: nada.")]
+        [Tooltip("Sobra de quando havia aviso escrito. Nao vai mais pra tela.")]
         [SerializeField] private string extra;
 
         private Valve _valve;
@@ -32,40 +30,62 @@ namespace EchoesOfCravejada
         private void Awake()
         {
             _valve = GetComponent<Valve>();
+            if (countsAsLock) _valve.DeferGates = true;
         }
 
         private void OnEnable()
         {
-            if (countsAsLock) Locks.Add(this);
             _valve.Turned += OnTurned;
         }
 
         private void OnDisable()
         {
-            Locks.Remove(this);
             _valve.Turned -= OnTurned;
         }
 
         private void OnTurned(Valve valve)
         {
-            string text = extra;
+            if (countsAsLock) StartCoroutine(ShowLock());
+        }
 
-            if (countsAsLock)
+        private IEnumerator ShowLock()
+        {
+            Gate[] gates = _valve.Gates;
+            if (gates == null || gates.Length == 0) yield break;
+
+            Vector2 focus = Vector2.zero;
+            int count = 0;
+            foreach (Gate gate in gates)
             {
-                int open = 0;
-                foreach (LockValveNotice notice in Locks)
-                {
-                    if (notice._valve.IsTurned) open++;
-                }
-
-                string count = open < Locks.Count
-                    ? $"Uma trava da Escadaria se abriu ({open}/{Locks.Count})."
-                    : $"A última trava da Escadaria se abriu ({open}/{Locks.Count}). A sala das caldeiras espera.";
-
-                text = string.IsNullOrEmpty(extra) ? count : count + " " + extra;
+                if (gate == null) continue;
+                focus += (Vector2)gate.transform.position;
+                count++;
             }
 
-            if (!string.IsNullOrEmpty(text)) HudNotice.Show(text, 6f);
+            if (count == 0) yield break;
+            focus /= count;
+
+            ScrapController scrap = FindAnyObjectByType<ScrapController>();
+            if (scrap != null) scrap.ControlLocked = true;
+
+            // Deixa o volante terminar de girar antes de sair.
+            yield return new WaitForSeconds(0.5f);
+
+            ScrapCameraFollow.Direct(focus, 0.85f, 0.55f);
+            yield return new WaitForSeconds(1.3f);
+
+            foreach (Gate gate in gates)
+            {
+                if (gate != null) gate.Open();
+            }
+
+            ScrapCameraFollow.Shake(0.08f, 0.5f);
+            yield return new WaitForSeconds(1.6f);
+
+            ScrapCameraFollow.Release();
+            yield return new WaitForSeconds(0.9f);
+
+            if (scrap != null) scrap.ControlLocked = false;
         }
     }
 }

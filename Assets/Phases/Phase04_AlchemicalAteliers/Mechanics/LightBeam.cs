@@ -30,6 +30,9 @@ namespace EchoesOfCravejada
         [Tooltip("Se queima tambem os inimigos (os raios-perigo da Optica so queimam o Scrap).")]
         [SerializeField] private bool burnsFoes = true;
 
+        [Tooltip("Se queima o Scrap. A luz-guia dos enigmas de espelho e fria: so aponta o caminho.")]
+        [SerializeField] private bool burnsScrap = true;
+
         private LineRenderer _line;
         private readonly List<Vector3> _points = new List<Vector3>();
         private readonly RaycastHit2D[] _hits = new RaycastHit2D[32];
@@ -48,6 +51,20 @@ namespace EchoesOfCravejada
             offTime = newOffTime;
             offset = newOffset;
             burnsFoes = newBurnsFoes;
+        }
+
+        /// <summary>
+        /// Usado pelos geradores de fase: a luz-guia dos enigmas. Sempre acesa,
+        /// fria (nao queima ninguem): so serve pra ser dobrada nos espelhos ate
+        /// a fechadura de cristal.
+        /// </summary>
+        public void ConfigureGuide()
+        {
+            onTime = 0f;
+            offTime = 0f;
+            offset = 0f;
+            burnsFoes = false;
+            burnsScrap = false;
         }
 
         /// <summary>Se o raio esta aceso agora.</summary>
@@ -142,7 +159,7 @@ namespace EchoesOfCravejada
                 var health = hit.GetComponentInParent<ScrapHealth>();
                 if (health != null)
                 {
-                    health.TakeDamage(1, _hits[i].point);
+                    if (burnsScrap) health.TakeDamage(1, _hits[i].point);
                     continue;
                 }
 

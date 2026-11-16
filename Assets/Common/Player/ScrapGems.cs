@@ -53,6 +53,7 @@ namespace EchoesOfCravejada
 
             HasRuby = true;
             RubyGivenTime = Time.time;
+            ItemToast.ShowRuby();
             Sfx.Gem.Play();
         }
 
@@ -74,6 +75,9 @@ namespace EchoesOfCravejada
             {
                 RubySocketed = true;
                 RubySocketedTime = Time.time;
+
+                // Depois que a gravura da bancada sai do meio da tela.
+                ItemToast.Socket(1.7f);
                 socketed = true;
             }
 

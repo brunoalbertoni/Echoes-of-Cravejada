@@ -24,6 +24,7 @@ namespace EchoesOfCravejada
         private SpriteRenderer _bars;
         private Color _color;
         private float _shut;
+        private bool _wasFighting;
 
         private void Awake()
         {
@@ -55,6 +56,12 @@ namespace EchoesOfCravejada
         private void Update()
         {
             bool fighting = boss != null ? OwnBossFighting : AnyBossFighting;
+
+            if (fighting != _wasFighting)
+            {
+                _wasFighting = fighting;
+                (fighting ? Sfx.ArenaSealDown : Sfx.ArenaSealUp).Play(transform.position);
+            }
 
             float target = fighting ? 1f : 0f;
             _shut = Mathf.MoveTowards(_shut, target, Time.deltaTime / Mathf.Max(0.01f, slideTime));

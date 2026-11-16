@@ -80,6 +80,9 @@ namespace EchoesOfCravejada
         [SerializeField] private GameObject[] flood;
         [SerializeField] private SpriteRenderer whip;
         [SerializeField] private Sprite beadSprite;
+
+        [Tooltip("A carcaca que fica no chao depois da queda (ver BossWreck). Vazio: nao fica nada.")]
+        [SerializeField] private GameObject wreck;
         [SerializeField] private Gate exitGate;
 
         [Header("Quadros")]
@@ -160,6 +163,12 @@ namespace EchoesOfCravejada
         }
 
         /// <summary>Usado pelos geradores de fase: a folha do AlchemistArt.</summary>
+        /// <summary>A carcaca que fica no lugar dele depois da queda. Usado pelo gerador.</summary>
+        public void ConfigureWreck(GameObject newWreck)
+        {
+            wreck = newWreck;
+        }
+
         public void ConfigureFrames(Sprite[] newFrames)
         {
             frames = newFrames;
@@ -169,6 +178,14 @@ namespace EchoesOfCravejada
         {
             _sprite = GetComponent<SpriteRenderer>();
             _hp = maxHealth;
+
+            // O corpo do tamanho do desenho: 2 de largura (os bracos abertos) e 3,6 de altura.
+            var body = GetComponent<BoxCollider2D>();
+            if (body != null)
+            {
+                body.size = new Vector2(2f, 3.6f);
+                body.offset = new Vector2(0f, 1.8f);
+            }
             _home = transform.position;
             Play(Idle, IdleFrames, 3f);
             SetFlood(false);
@@ -198,6 +215,7 @@ namespace EchoesOfCravejada
             {
                 _dead = true;
                 ShowFrame(Death + DeathFrames - 1);
+                LeaveWreck();
                 if (exitGate != null) exitGate.Open();
                 SetFlood(true);
                 return;
@@ -243,7 +261,8 @@ namespace EchoesOfCravejada
             if (!_silver && !_vapor && Time.time >= _contactReady && _health != null)
             {
                 Vector2 offset = _player.position - transform.position;
-                if (Mathf.Abs(offset.x) < 0.9f && offset.y > -0.3f && offset.y < 3f)
+                // O corpo dele no desenho (1 tile pra cada lado), mais a metade do Scrap.
+                if (Mathf.Abs(offset.x) < 1.3f && offset.y > -0.9f && offset.y < 3.5f)
                 {
                     _health.TakeDamage(1, transform.position + Vector3.up);
                     _contactReady = Time.time + 0.8f;
@@ -266,6 +285,7 @@ namespace EchoesOfCravejada
             // Acorda rindo: ja sabe quem e.
             FacePlayer();
             Play(Laugh, LaughFrames, 7f);
+            Sfx.AlchemistLaugh.Play(transform.position);
             NoiseSystem.Emit(transform.position, 12f, 0.6f);
             yield return new WaitForSeconds(1.2f);
 
@@ -310,6 +330,7 @@ namespace EchoesOfCravejada
         private IEnumerator GlideToward(float seconds)
         {
             Play(Glide, GlideFrames, 8f);
+            Sfx.AlchemistGlide.Play(transform.position);
             float speed = _phaseTwo ? glideSpeed * 1.3f : glideSpeed;
 
             for (float t = 0f; t < seconds && _player != null; t += Time.deltaTime)
@@ -333,6 +354,7 @@ namespace EchoesOfCravejada
         {
             FacePlayer();
             Play(BellCall, BellCallFrames, 5f, false);
+            Sfx.AlchemistBellCall.Play(transform.position + Vector3.up * 3f);
             yield return new WaitForSeconds(0.6f);
 
             if (jar != null && _player != null) jar.Drop(Mathf.Clamp(_player.position.x, minX, maxX));
@@ -345,6 +367,7 @@ namespace EchoesOfCravejada
         {
             FacePlayer();
             Play(Distill, DistillFrames, 5f, false);
+            Sfx.AlchemistDistill.Play(transform.position);
             yield return new WaitForSeconds(0.65f);
 
             // Nuvem: sobe ao teto.
@@ -391,6 +414,7 @@ namespace EchoesOfCravejada
             }
 
             Play(Condense, CondenseFrames, 5f, false);
+            Sfx.AlchemistCondense.Play(transform.position);
             for (float t = 0f; t < 0.6f; t += Time.deltaTime)
             {
                 transform.position = new Vector3(transform.position.x, Mathf.Lerp(cloudY, floorY, t / 0.6f), 0f);
@@ -417,11 +441,13 @@ namespace EchoesOfCravejada
                 // O aviso: ele recolhe o braco, a gota cresce na luva e o fio fino aparece.
                 Play(WhipWindup, WhipWindupFrames, 4f, false);
                 ShowWhip(height, true);
+                Sfx.AlchemistWhipWindup.Play(transform.position, pitch: _phaseTwo && lash > 0 ? 1.4f : 1f);
                 yield return new WaitForSeconds(_phaseTwo && lash > 0 ? 0.45f : 0.7f);
 
                 // O golpe.
                 Play(Whip, WhipFrames, 10f, false);
                 ShowWhip(height, false);
+                Sfx.AlchemistWhip.Play(transform.position + Vector3.right * (_facing * 3f), pitch: high ? 1.1f : 0.9f);
                 for (float t = 0f; t < 0.35f; t += Time.deltaTime)
                 {
                     WhipHit();
@@ -475,6 +501,7 @@ namespace EchoesOfCravejada
             // O aviso: curva-se e derrama mercurio no chao.
             FacePlayer();
             Play(Smother, SmotherFrames, 4f);
+            Sfx.AlchemistPour.Play(transform.position);
             NoiseSystem.Emit(transform.position, 8f, 0.4f);
             yield return new WaitForSeconds(0.5f);
 
@@ -506,6 +533,7 @@ namespace EchoesOfCravejada
 
             // O aviso: o fio fino sobe do chao e treme.
             column.enabled = true;
+            Sfx.AlchemistGeyserWarn.Play(new Vector2(x, ground), pitch: 0.75f / warn);
             for (float t = 0f; t < warn; t += Time.deltaTime)
             {
                 float wobble = Mathf.Sin(t * 50f) * 0.05f;
@@ -515,6 +543,7 @@ namespace EchoesOfCravejada
 
             // A erupcao: sobe de uma vez e fica um instante.
             NoiseSystem.Emit(new Vector3(x, ground, 0f), 9f, 0.5f);
+            Sfx.AlchemistGeyserBurst.Play(new Vector2(x, ground));
             for (float t = 0f; t < GeyserBurst; t += Time.deltaTime)
             {
                 float reach = Mathf.Lerp(ground + 0.5f, top, Mathf.Clamp01(t / 0.1f));
@@ -601,6 +630,7 @@ namespace EchoesOfCravejada
         private IEnumerator Transmuted(ArenaCircle circle)
         {
             _silver = true;
+            Sfx.AlchemistTransmute.Play(transform.position);
             NoiseSystem.Emit(transform.position, 10f, 0.7f);
             Play(SilverPose, SilverFrames, 3f);
 
@@ -608,6 +638,7 @@ namespace EchoesOfCravejada
 
             // Se solta: racha, o mercurio vaza pelas fendas, e ele se sacode...
             Play(BreakFree, BreakFreeFrames, 5f, false);
+            Sfx.AlchemistCracking.Play(transform.position);
             NoiseSystem.Emit(transform.position, 8f, 0.4f);
             yield return new WaitForSeconds(0.6f);
             _silver = false;
@@ -625,6 +656,7 @@ namespace EchoesOfCravejada
             }
 
             circle.Smother(smotherTime);
+            Sfx.AlchemistPour.Play(circle.transform.position, pitch: 0.85f);
             yield return new WaitForSeconds(0.5f);
 
             yield return Loop();
@@ -633,6 +665,7 @@ namespace EchoesOfCravejada
         private void BurstFree()
         {
             NoiseSystem.Emit(transform.position, 12f, 0.7f);
+            Sfx.AlchemistBurst.Play(transform.position);
 
             if (_health != null && _player != null)
             {
@@ -663,8 +696,11 @@ namespace EchoesOfCravejada
                 // Liquido: o cinzel atravessa e so espirra.
                 if (_sprite != null) _sprite.color = new Color(0.8f, 0.9f, 1f, 0.75f);
                 NoiseSystem.Emit(transform.position, 4f, 0.2f);
+                Sfx.AlchemistSplash.Play(transform.position + Vector3.up);
                 return;
             }
+
+            Sfx.BossHurtSilver.Play(transform.position, pitch: 1.1f);
 
             _hp -= amount;
             _hurtUntil = Time.time + 0.15f;
@@ -688,9 +724,11 @@ namespace EchoesOfCravejada
             // Ri, e os tanques racham: o chao entre os estrados vira mercurio.
             FacePlayer();
             Play(Laugh, LaughFrames, 7f);
+            Sfx.AlchemistLaugh.Play(transform.position, pitch: 0.9f);
             NoiseSystem.Emit(transform.position, 14f, 0.8f);
             yield return new WaitForSeconds(0.7f);
             SetFlood(true);
+            Sfx.AlchemistFlood.Play(transform.position);
             yield return new WaitForSeconds(0.7f);
         }
 
@@ -716,10 +754,20 @@ namespace EchoesOfCravejada
         private IEnumerator DrainAway()
         {
             Play(Death, DeathFrames, 5f, false);
+            Sfx.AlchemistDrain.Play(transform.position);
             NoiseSystem.Emit(transform.position, 12f, 0.6f);
             yield return new WaitForSeconds(DeathFrames / 5f + 0.4f);
 
+            LeaveWreck();
             if (exitGate != null) exitGate.Open();
+        }
+
+        /// <summary>A poca vira a carcaca desenhada: o jaleco, a mascara, o tanque vazando, o vapor.</summary>
+        private void LeaveWreck()
+        {
+            if (wreck == null) return;
+            if (_sprite != null) _sprite.enabled = false;
+            BossWreck.Show(wreck, transform.position);
         }
 
         /// <summary>O Scrap morreu: a luta recomeca do zero.</summary>

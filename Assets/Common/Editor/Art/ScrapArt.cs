@@ -58,38 +58,8 @@ namespace EchoesOfCravejada.EditorTools
             return canvas;
         }
 
-        /// <summary>Um Opaque Shard, 8x10: um caco de cristal baço, cinza-azulado.</summary>
-        public static PixelCanvas Shard()
-        {
-            var canvas = new PixelCanvas(8, 10);
-
-            var body = new Rgba(150, 176, 190);
-            var light = new Rgba(208, 226, 234);
-            var dark = new Rgba(86, 106, 122);
-
-            // Losango alongado, linha a linha: (comeco, largura).
-            int[,] rows =
-            {
-                { 3, 2 }, { 2, 4 }, { 2, 4 }, { 1, 6 }, { 1, 6 },
-                { 1, 6 }, { 2, 4 }, { 2, 4 }, { 3, 2 }, { 3, 1 },
-            };
-
-            for (int py = 0; py < 10; py++)
-            {
-                int start = rows[py, 0];
-                int width = rows[py, 1];
-
-                for (int i = 0; i < width; i++)
-                {
-                    Rgba color = i == 0 ? light : (i >= width - 1 ? dark : body);
-                    canvas.Set(start + i, py, color);
-                }
-            }
-
-            canvas.Set(3, 2, light);
-            canvas.Set(3, 3, light);
-            return canvas;
-        }
+        /// <summary>Um fragmento, 8x10: uma pepita azul (a mesma do HUD, em pequeno). Ver HudIconArt.</summary>
+        public static PixelCanvas Shard() => HudIconArt.Nugget(8, 10, 1);
 
         /// <summary>
         /// A old scrap, 16x12: um montinho de ferrugem com um shard espetado.
@@ -568,35 +538,8 @@ namespace EchoesOfCravejada.EditorTools
         private static readonly Rgba GemMid = new Rgba(110, 200, 230);
         private static readonly Rgba GemDark = new Rgba(50, 120, 170);
 
-        /// <summary>
-        /// Uma gema lapidada, 12x12: um losango facetado azul-claro, com a
-        /// mesa (a face de cima) mais clara e um brilho no canto.
-        /// </summary>
-        public static PixelCanvas CutGem()
-        {
-            var canvas = new PixelCanvas(12, 12);
-
-            // A coroa: a faixa de cima, larga e baixa.
-            canvas.Fill(3, 2, 6, 1, GemLight);
-            canvas.Fill(2, 3, 8, 2, GemMid);
-            canvas.Fill(4, 3, 4, 1, GemLight);
-
-            // O pavilhao: afunila ate a ponta de baixo.
-            for (int row = 0; row < 5; row++)
-            {
-                int half = 4 - row;
-                canvas.Fill(6 - half, 5 + row, half * 2, 1, row % 2 == 0 ? GemMid : GemDark);
-                canvas.Set(6 - half, 5 + row, GemDark);
-            }
-
-            // As arestas da mesa e o brilho no canto de cima.
-            canvas.Fill(2, 4, 8, 1, GemDark);
-            canvas.Set(3, 3, BrassShine.WithAlpha(255));
-            canvas.Set(4, 3, Rgba.Lerp(GemLight, new Rgba(255, 255, 255), 0.6f));
-
-            AddOutline(canvas);
-            return canvas;
-        }
+        /// <summary>Uma gema lapidada, 12x12: o rubi lapidado em brilhante (o mesmo do HUD). Ver HudIconArt.</summary>
+        public static PixelCanvas CutGem() => HudIconArt.RedGem();
 
         /// <summary>
         /// Um cofre de fragmentos, 14x12: uma caixinha de latao com cintas de
@@ -618,8 +561,8 @@ namespace EchoesOfCravejada.EditorTools
             canvas.Fill(1, 2, 12, 1, BrassShine);
 
             // Os fragmentos pela fresta, azulados como os opacos.
-            var shard = new Rgba(150, 175, 190);
-            var shardLight = new Rgba(215, 230, 238);
+            var shard = new Rgba(70, 136, 230);
+            var shardLight = new Rgba(150, 210, 255);
             canvas.Fill(3, 4, 2, 1, shard);
             canvas.Fill(7, 4, 3, 1, shard);
             canvas.Set(8, 4, shardLight);

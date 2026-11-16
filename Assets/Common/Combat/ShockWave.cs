@@ -31,6 +31,9 @@ namespace EchoesOfCravejada
             var body = wave.AddComponent<Rigidbody2D>();
             body.bodyType = RigidbodyType2D.Kinematic;
 
+            // As duas ondas da pancada saem no mesmo quadro: o cue nao dobra.
+            Sfx.ShockWave.Play(from);
+
             var script = wave.AddComponent<ShockWave>();
             script._speed = speed;
             script._minX = minX;

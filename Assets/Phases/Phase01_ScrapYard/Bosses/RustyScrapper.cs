@@ -47,6 +47,9 @@ namespace EchoesOfCravejada
         [SerializeField] private Sprite chunkSprite;
         [SerializeField] private Sprite waveSprite;
         [SerializeField] private Sprite shardSprite;
+
+        [Tooltip("A carcaca que fica no chao depois da queda (ver BossWreck). Vazio: nao fica nada.")]
+        [SerializeField] private GameObject wreck;
         [SerializeField] private ParticleSystem oxideCloud;
 
         [Header("O que acontece quando ele cai")]
@@ -104,6 +107,14 @@ namespace EchoesOfCravejada
         private float _animSince;
         private float _hurtUntil = -1f;
         private int _deathFrame = -1;
+        private float _nextStep;
+
+        // O corpo (encostar machuca, e e nele que o cinzel bate), medido no
+        // desenho: de 1,2 atras a 1,5 na frente, e quase 3 de altura.
+        private BoxCollider2D _body;
+        private const float BodyBack = 1.2f;
+        private const float BodyFront = 1.5f;
+        private const float BodyHeight = 2.8f;
 
         /// <summary>O boss em luta, se houver. O HUD usa pra mostrar a barra de vida.</summary>
         public static RustyScrapper Fighting { get; private set; }
@@ -140,11 +151,20 @@ namespace EchoesOfCravejada
             cartoon = newCartoon;
         }
 
+        /// <summary>A carcaca que ele deixa ao cair. Usado pelo gerador.</summary>
+        public void ConfigureWreck(GameObject newWreck)
+        {
+            wreck = newWreck;
+        }
+
         private void Awake()
         {
             _sprite = GetComponent<SpriteRenderer>();
             _health = maxHealth;
             _home = transform.position;
+
+            _body = GetComponent<BoxCollider2D>();
+            if (_body != null) _body.size = new Vector2(BodyBack + BodyFront, BodyHeight);
             Face(-1);
             Play(Dormant, DormantFrames, 2.5f);
 
@@ -177,9 +197,10 @@ namespace EchoesOfCravejada
 
         private void Start()
         {
-            // Ja foi derrotado nesta sessao: a arena fica vazia.
+            // Ja foi derrotado nesta sessao: so a carcaca dele na arena.
             if (AreaPurifier.IsPurified)
             {
+                BossWreck.Show(wreck);
                 Destroy(gameObject);
                 return;
             }
@@ -213,6 +234,7 @@ namespace EchoesOfCravejada
             // Acorda: o olho tremula, ele se levanta, a chamine tosse.
             FacePlayer();
             Play(Wake, WakeFrames, WakeFrames / 0.9f, false);
+            Sfx.CollectorWake.Play(transform.position);
             yield return new WaitForSeconds(1.0f);
 
             while (!_dead)
@@ -233,6 +255,9 @@ namespace EchoesOfCravejada
                 {
                     FacePlayer();
                     Move(_facing * walkSpeed * Time.deltaTime);
+
+                    // Dois passos por volta da animacao de andar (8 quadros).
+                    Footstep(4f / (walkSpeed * 5f));
                     yield return null;
                 }
 
@@ -254,6 +279,7 @@ namespace EchoesOfCravejada
             // A nuvem de Oxide. Nao tem gatilho de dano nenhum de proposito:
             // e aqui que o jogador ve que o Scrap e imune.
             if (oxideCloud != null) oxideCloud.Play();
+            Sfx.CollectorRoar.Play(transform.position);
             ScrapCameraFollow.Shake(0.12f, 0.8f);
             NoiseSystem.Emit(transform.position, 10f, 0.6f);
 
@@ -265,14 +291,19 @@ namespace EchoesOfCravejada
             FacePlayer();
             float windup = _phaseTwo ? 0.4f : 0.6f;
             Play(ClawWindup, ClawWindupFrames, ClawWindupFrames / windup, false);
+            Sfx.CollectorClawWindup.Play(transform.position, pitch: 0.6f / windup);
             yield return Telegraph(windup);
 
             Play(ClawStrike, ClawStrikeFrames, ClawStrikeFrames / 0.35f, false);
+            Sfx.CollectorClawStrike.Play(transform.position);
 
             int direction = _facing;
             for (float t = 0f; t < 0.35f; t += Time.deltaTime)
             {
                 Move(direction * 9f * Time.deltaTime);
+
+                // A garra: na frente do corpo, onde ela aparece no desenho (ate 2,2 tiles).
+                HitBox(new Vector2(1.45f, 1.4f), new Vector2(1.5f, 2.4f));
                 yield return null;
             }
 
@@ -285,24 +316,23 @@ namespace EchoesOfCravejada
         {
             FacePlayer();
             Play(ThrowReach, ThrowReachFrames, ThrowReachFrames / 0.5f, false);
+            Sfx.CollectorThrowWindup.Play(transform.position);
             yield return Telegraph(0.5f);
 
             Play(ThrowRelease, ThrowReleaseFrames, 7f, false);
+            Sfx.CollectorThrow.Play(transform.position);
 
             const float gravity = 18f;
-            const float launch = 9.5f;
 
-            // Tempo de voo ate voltar a altura do chao, saindo de 2 tiles acima.
-            float flight = (launch + Mathf.Sqrt(launch * launch + 2f * gravity * 2f)) / gravity;
             // Sai da mao de tras, erguida por cima da cacamba.
             Vector3 hand = transform.position + new Vector3(_facing * 0.6f, 2.6f, 0f);
 
-            // Um no Scrap, um antes e um depois: ficar parado nao salva.
+            // Um no Scrap (no corpo dele, ate em cima de uma plataforma), um
+            // antes e um depois, no chao: ficar parado nao salva, subir tambem nao.
             for (int i = -1; i <= 1; i++)
             {
-                float targetX = _player.position.x + i * 2.5f;
-                var velocity = new Vector2((targetX - hand.x) / flight, launch);
-                ScrapChunk.Throw(hand, velocity, gravity, floorY, chunkSprite);
+                var target = new Vector2(_player.position.x + i * 2.5f, i == 0 ? _player.position.y + 0.5f : floorY);
+                ScrapChunk.Throw(hand, Lob(hand, target, gravity), gravity, floorY, chunkSprite);
             }
 
             yield return new WaitForSeconds(0.35f);
@@ -314,8 +344,10 @@ namespace EchoesOfCravejada
         {
             FacePlayer();
             Play(SlamCrouch, SlamCrouchFrames, SlamCrouchFrames / 0.6f, false);
+            Sfx.BoilerMasterHammerWindup.Play(transform.position, pitch: 0.8f);
             yield return Telegraph(0.6f);
 
+            Sfx.BossJump.Play(transform.position);
             Vector3 from = transform.position;
             float targetX = Mathf.Clamp(_player.position.x, minX, maxX);
 
@@ -347,6 +379,7 @@ namespace EchoesOfCravejada
             transform.position = new Vector3(targetX, floorY, 0f);
 
             Vector3 ground = transform.position;
+            Sfx.BossSlam.Play(ground);
             ShockWave.Launch(ground + Vector3.right * 1.2f, 7f, minX - 1f, maxX + 1f, waveSprite);
             ShockWave.Launch(ground + Vector3.left * 1.2f, -7f, minX - 1f, maxX + 1f, waveSprite);
 
@@ -373,6 +406,39 @@ namespace EchoesOfCravejada
             if (_sprite != null) _sprite.color = Color.white;
         }
 
+        /// <summary>
+        /// A velocidade de um arco que sai de <paramref name="from"/> e passa por
+        /// <paramref name="target"/> descendo. Sobe no minimo 9,5 (o arco de
+        /// sempre) e mais, se o alvo estiver alto.
+        /// </summary>
+        private static Vector2 Lob(Vector2 from, Vector2 target, float gravity)
+        {
+            float rise = target.y - from.y;
+            float launch = Mathf.Max(9.5f, Mathf.Sqrt(2f * gravity * Mathf.Max(0f, rise + 1.5f)));
+            float flight = (launch + Mathf.Sqrt(Mathf.Max(0f, launch * launch - 2f * gravity * rise))) / gravity;
+            return new Vector2((target.x - from.x) / Mathf.Max(0.3f, flight), launch);
+        }
+
+        /// <summary>Machuca o Scrap numa caixa medida a partir dos pes dele, olhando pra frente.</summary>
+        private void HitBox(Vector2 local, Vector2 size)
+        {
+            Vector2 center = (Vector2)transform.position + new Vector2(local.x * _facing, local.y);
+            foreach (Collider2D hit in Physics2D.OverlapBoxAll(center, size, 0f))
+            {
+                var health = hit.GetComponentInParent<ScrapHealth>();
+                if (health != null) health.TakeDamage(1, transform.position);
+            }
+        }
+
+        /// <summary>Um passo pesado, no maximo um a cada <paramref name="interval"/> segundos.</summary>
+        private void Footstep(float interval)
+        {
+            if (Time.time < _nextStep) return;
+
+            _nextStep = Time.time + interval;
+            Sfx.BossStep.Play(transform.position, pitch: 0.9f);
+        }
+
         private void FacePlayer()
         {
             if (_player == null) return;
@@ -386,6 +452,9 @@ namespace EchoesOfCravejada
 
             // A arte olha pra direita.
             if (_sprite != null) _sprite.flipX = _facing < 0;
+
+            // O corpo vai junto: mais comprido na frente que atras.
+            if (_body != null) _body.offset = new Vector2((BodyFront - BodyBack) * 0.5f * _facing, BodyHeight * 0.5f + 0.05f);
         }
 
         // ------------------------------------------------------------------
@@ -477,6 +546,7 @@ namespace EchoesOfCravejada
             }
 
             _hurtUntil = Time.time + 0.15f;
+            Sfx.BossHurtMetal.Play(transform.position, pitch: _phaseTwo ? 0.9f : 1f);
             StartCoroutine(Flash());
         }
 
@@ -529,6 +599,9 @@ namespace EchoesOfCravejada
             _deathFrame = Death;
             yield return BossFall.Explode(transform, _sprite, oxideCloud, home, Hold, 2.2f,
                 k => _deathFrame = Death + Mathf.Min(DeathFrames - 1, (int)(k * DeathFrames)));
+
+            // Quando a nuvem abre, sobra a carcaca no chao.
+            BossWreck.Show(wreck, home);
 
             // Os fragmentos se espalham de onde ele estava.
             for (int i = 0; i < 12; i++)
@@ -596,7 +669,6 @@ namespace EchoesOfCravejada
                 yield return play.Current;
             }
 
-            HudNotice.Show("A purificação arrancou a ferrugem do seu corpo");
         }
 
         /// <summary>
@@ -611,6 +683,7 @@ namespace EchoesOfCravejada
 
             Vector3 size = _player.localScale;
             var glare = new Color(1f, 0.95f, 0.75f);
+            Sfx.PolishShine.Play();
 
             const float shine = 1.2f;
             bool changed = false;
@@ -639,7 +712,6 @@ namespace EchoesOfCravejada
             _player.localScale = size;
             if (look != null) look.color = Color.white;
 
-            HudNotice.Show("A purificação arrancou a ferrugem do seu corpo");
         }
 
         private void OnTriggerEnter2D(Collider2D other)

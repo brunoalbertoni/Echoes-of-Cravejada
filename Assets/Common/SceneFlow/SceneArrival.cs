@@ -40,6 +40,14 @@ namespace EchoesOfCravejada
                 if (!found) Debug.LogWarning("[SceneArrival] Nao ha SpawnPoint com o id " + id + " nesta cena.", this);
             }
 
+            // Veio de um save: aparece de pe na bancada em que salvou, e ela e o checkpoint.
+            if (SaveSystem.TakePendingBench(out Vector3 bench))
+            {
+                position = bench;
+                var health = GetComponent<ScrapHealth>();
+                if (health != null) health.RestAt(bench);
+            }
+
             StartCoroutine(Settle(position));
         }
 

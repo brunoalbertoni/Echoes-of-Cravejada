@@ -3,7 +3,7 @@ using UnityEngine;
 namespace EchoesOfCravejada
 {
     /// <summary>
-    /// A nevoa densa de Oxide que tampa a Pista de Provas. O Scrap e imune ao
+    /// A nevoa densa de Oxide que tampa a obra abandonada. O Scrap e imune ao
     /// Oxide, mas esta e grossa demais: e parede ate a purificacao, quando o
     /// AreaPurifier a desliga. Esbarrar mostra o porque.
     /// </summary>
@@ -16,10 +16,8 @@ namespace EchoesOfCravejada
         {
             if (collision.collider.GetComponentInParent<ScrapController>() == null) return;
 
+            // So o som: a nevoa ja diz que nao passa.
             Sfx.OxideBump.Play();
-            if (HudNotice.Showing && HudNotice.Text == message) return;
-
-            HudNotice.Show(message, 3f);
         }
     }
 }

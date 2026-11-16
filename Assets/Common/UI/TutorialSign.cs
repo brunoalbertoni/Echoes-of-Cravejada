@@ -22,6 +22,7 @@ namespace EchoesOfCravejada
         private bool _inside;
         private float _shown;
         private float _openedAt;
+        private bool _open;
 
         /// <summary>Usado pelos geradores de fase.</summary>
         public void Configure(ScrapMove newMove, SpriteRenderer newArt)
@@ -57,6 +58,14 @@ namespace EchoesOfCravejada
         {
             float target = Wanted ? 1f : 0f;
             if (target > 0f && _shown <= 0.01f) _openedAt = Time.unscaledTime;
+
+            // O guia de movimentos abrindo e fechando.
+            bool open = target > 0f;
+            if (open != _open)
+            {
+                _open = open;
+                (open ? Sfx.SignOpen : Sfx.SignClose).Play();
+            }
 
             _shown = Mathf.MoveTowards(_shown, target, Time.unscaledDeltaTime * 4f);
 

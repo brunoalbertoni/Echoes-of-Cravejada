@@ -41,13 +41,17 @@ namespace EchoesOfCravejada
             var script = geyser.AddComponent<SteamGeyser>();
             script._sprite = renderer;
             script._trigger = trigger;
+
+            Sfx.GeyserWarn.Play(ground);
         }
 
         private void Update()
         {
+            bool wasBurning = _age >= WarnTime;
             _age += Time.deltaTime;
 
             bool burning = _age >= WarnTime;
+            if (burning && !wasBurning) Sfx.GeyserBurst.Play(transform.position);
             _trigger.enabled = burning;
 
             // No aviso ele pisca fraco; depois fica cheio.

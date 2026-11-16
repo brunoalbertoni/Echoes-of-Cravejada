@@ -44,7 +44,15 @@ namespace EchoesOfCravejada
             transform.position += (Vector3)(_velocity * Time.deltaTime);
             transform.Rotate(0f, 0f, 360f * Time.deltaTime);
 
-            if (transform.position.y <= _floorY || _age > 5f) Destroy(gameObject);
+            if (transform.position.y <= _floorY)
+            {
+                Sfx.ChunkLand.Play(transform.position);
+                Destroy(gameObject);
+            }
+            else if (_age > 5f)
+            {
+                Destroy(gameObject);
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)

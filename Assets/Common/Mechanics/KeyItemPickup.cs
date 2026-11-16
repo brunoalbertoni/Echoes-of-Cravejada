@@ -3,11 +3,12 @@ using UnityEngine;
 namespace EchoesOfCravejada
 {
     /// <summary>
-    /// Um item-chave flutuando no lugar: encostar guarda ele no KeyItems e
-    /// mostra o aviso. Depois de pego (ou entregue) nao volta mais.
+    /// Um item-chave flutuando no lugar: encostar guarda ele no KeyItems.
+    /// Depois de pego (ou entregue) nao volta mais.
     ///
-    /// Se faz parte de um conjunto (as tres ferramentas do ourives), o aviso
-    /// diz quantas ja foram achadas.
+    /// Item avulso (o motor, a chave) salta em cima do Scrap (ItemToast); os
+    /// de um conjunto (as ferramentas do ourives, os reagentes) so tilintam.
+    /// A mensagem fica guardada, mas nao vai mais pra tela.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public class KeyItemPickup : MonoBehaviour
@@ -58,14 +59,13 @@ namespace EchoesOfCravejada
 
             KeyItems.Add(id);
 
-            string text = message;
-            if (!string.IsNullOrEmpty(group) && groupSize > 0)
-            {
-                text += $" ({KeyItems.CountFound(group)}/{groupSize})";
-            }
-
             Sfx.KeyItem.Play();
-            if (!string.IsNullOrEmpty(text)) HudNotice.Show(text);
+
+            // Item avulso salta em cima do Scrap; os contados (ferramentas,
+            // reagentes) nao mostram nada alem do som.
+            bool counted = !string.IsNullOrEmpty(group) && groupSize > 0;
+            var art = GetComponentInChildren<SpriteRenderer>();
+            if (!counted && art != null) ItemToast.Show(art.sprite, new Color(1f, 0.88f, 0.55f));
 
             // Pegar algo assim tilinta: acende em volta.
             NoiseSystem.Emit(transform.position, 8f, 0.2f);

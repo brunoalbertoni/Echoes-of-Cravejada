@@ -297,9 +297,10 @@ namespace EchoesOfCravejada
             Vector2 center;
             Vector2 size;
 
-            if (direction.y > 0f) { center = new Vector2(0f, 1.9f); size = new Vector2(1.1f, 1.4f); }
-            else if (direction.y < 0f) { center = new Vector2(0f, -0.55f); size = new Vector2(1.0f, 1.3f); }
-            else { center = new Vector2(direction.x * 1.0f, 0.65f); size = new Vector2(1.5f, 1.1f); }
+            // Um pouco mais longe que o corpo do cinzel: pro lado, ate 2 tiles do pe.
+            if (direction.y > 0f) { center = new Vector2(0f, 2.05f); size = new Vector2(1.2f, 1.7f); }
+            else if (direction.y < 0f) { center = new Vector2(0f, -0.7f); size = new Vector2(1.1f, 1.6f); }
+            else { center = new Vector2(direction.x * 1.15f, 0.65f); size = new Vector2(1.8f, 1.2f); }
 
             Vector2 origin = transform.position;
             ShowSlash(center, direction);

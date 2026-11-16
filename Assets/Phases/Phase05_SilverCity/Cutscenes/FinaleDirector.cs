@@ -5,10 +5,13 @@ using UnityEngine.Rendering.Universal;
 namespace EchoesOfCravejada
 {
     /// <summary>
-    /// O fim do jogo: O Grande Polimento. Quando o Scrap entrega o nucleo no
-    /// Altar, a camera fecha na Coluna, a luz branca desce por ela, a
-    /// cutscene desenhada do final passa e por cima de tudo entra o cartao de
-    /// FIM.
+    /// Um fim do jogo, tocado por uma das escolhas do Altar: a camera fecha na
+    /// Coluna, a cutscene desenhada do final passa e por cima de tudo entra o
+    /// cartao de FIM com o nome e o texto daquele final.
+    ///
+    ///   O Nucleo            a luz branca desce pela Coluna (a sala clareia).
+    ///   O Grande Silencio   (silence) as luzes da sala se apagam uma a uma
+    ///                       antes da cutscene: a energia da cidade acabou.
     ///
     /// Depois disso o jogo fica no cartao: o controle nao volta.
     /// </summary>
@@ -19,6 +22,12 @@ namespace EchoesOfCravejada
         [SerializeField] private Sprite conduitClean;
         [SerializeField] private Light2D globalLight;
         [SerializeField] private Vector2 focus;
+
+        [Header("O cartao de FIM")]
+        [SerializeField] private string title = "O NÚCLEO";
+        [SerializeField, TextArea] private string story;
+        [SerializeField] private bool silence;
+        [SerializeField] private Color tint = new Color(1f, 0.95f, 0.8f);
 
         private bool _started;
         private bool _showCard;
@@ -49,6 +58,15 @@ namespace EchoesOfCravejada
             focus = newFocus;
         }
 
+        /// <summary>Usado pelos geradores de fase: o nome, o texto e o jeito deste final.</summary>
+        public void ConfigureEnding(string newTitle, string newStory, bool newSilence, Color newTint)
+        {
+            title = newTitle;
+            story = newStory;
+            silence = newSilence;
+            tint = newTint;
+        }
+
         public void Begin()
         {
             if (_started) return;
@@ -65,14 +83,40 @@ namespace EchoesOfCravejada
 
             ScrapCameraFollow.Direct(focus + Vector2.up * 3f, 0.9f, 0.8f);
 
-            // O nucleo acende; a luz branca toma a Coluna de cima pra baixo.
-            for (float t = 0f; t < 2.2f; t += Time.deltaTime)
+            if (silence)
             {
-                if (globalLight != null) globalLight.intensity = Mathf.Lerp(globalLight.intensity, 1.1f, Time.deltaTime);
-                yield return null;
-            }
+                // O golpe desce pela Coluna; depois, uma a uma, as luzes morrem.
+                ScrapCameraFollow.Shake(0.35f, 0.8f);
+                Sfx.HeartGive.Play(pitch: 0.55f);
+                yield return new WaitForSeconds(0.8f);
 
-            if (conduit != null && conduitClean != null) conduit.sprite = conduitClean;
+                Light2D[] lights = FindObjectsByType<Light2D>(FindObjectsSortMode.None);
+                System.Array.Sort(lights, (a, b) => Vector2.Distance(b.transform.position, focus).CompareTo(Vector2.Distance(a.transform.position, focus)));
+
+                float startGlobal = globalLight != null ? globalLight.intensity : 0f;
+                for (int i = 0; i < lights.Length; i++)
+                {
+                    if (lights[i] == null || lights[i] == globalLight) continue;
+                    lights[i].enabled = false;
+                    if (globalLight != null) globalLight.intensity = Mathf.Lerp(startGlobal, 0.05f, i / (float)Mathf.Max(1, lights.Length - 1));
+                    yield return new WaitForSeconds(Mathf.Lerp(0.18f, 0.05f, i / (float)Mathf.Max(1, lights.Length)));
+                }
+
+                if (globalLight != null) globalLight.intensity = 0.05f;
+                yield return new WaitForSeconds(1.2f);
+            }
+            else
+            {
+                // O nucleo acende; a luz branca toma a Coluna de cima pra baixo.
+                Sfx.FinaleLight.Play(delay: 0.3f);
+                for (float t = 0f; t < 2.2f; t += Time.deltaTime)
+                {
+                    if (globalLight != null) globalLight.intensity = Mathf.Lerp(globalLight.intensity, 1.1f, Time.deltaTime);
+                    yield return null;
+                }
+
+                if (conduit != null && conduitClean != null) conduit.sprite = conduitClean;
+            }
 
             if (polishCartoon != null && polishCartoon.IsReady) yield return polishCartoon.Play(null);
 
@@ -99,18 +143,12 @@ namespace EchoesOfCravejada
             GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture);
 
             float text = Mathf.Clamp01((Time.time - _cardSince - 1f) / 2f);
-            var tint = new Color(1f, 0.95f, 0.8f);
 
             GUI.color = new Color(tint.r, tint.g, tint.b, text);
             float w = Screen.width;
             float h = Screen.height;
 
-            GUI.Label(new Rect(w * 0.1f, h * 0.18f, w * 0.8f, 60f), "O GRANDE POLIMENTO", _title);
-
-            const string story =
-                "O Óxido deixou o Coração de Quartzo sem que ele se partisse. A fumaça verde subiu pelos poços e se foi. " +
-                "Nos telhados da Cidade de Prata, os Tarnished acenderam as primeiras lâmpadas. A cidade vai ser reconstruída — " +
-                "por mãos de cobre, de latão e de pedra. E por um protótipo que nunca foi polido.";
+            GUI.Label(new Rect(w * 0.1f, h * 0.18f, w * 0.8f, 60f), title, _title);
 
             GUI.Label(new Rect(w * 0.15f, h * 0.32f, w * 0.7f, h * 0.3f), story, _body);
 

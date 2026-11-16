@@ -81,26 +81,26 @@ namespace EchoesOfCravejada
         {
             "...Uma mancha. No meu palácio.",
             "Eu conheço você. O protótipo de sucata. Fui eu que assinei: \"que não se fale mais nisso\".",
-            "E agora a sucata sobe as minhas escadas e quer polir o meu reino?",
-            "A prata não se curva à ferrugem. Venha.",
+            "E agora a sucata sobe as minhas escadas achando que vai consertar o meu reino?",
+            "A prata não se curva à ferrugem. Vem.",
         };
 
         private static readonly string[] TransitionLines =
         {
-            "Não... A cidade não pode... escurecer.",
+            "Não... O meu brilho não pode... apagar.",
             "Se a minha luz não basta... que seja a do Coração inteiro.",
         };
 
         private static readonly string[] RisenLines =
         {
-            "Agora a Coluna inteira me ilumina, sucata. E nada que brilha pode me tocar.",
+            "Agora a Coluna inteira brilha só pra mim, sucata. E nada que brilha pode me tocar.",
         };
 
         private static readonly string[] LastLines =
         {
-            "...Eu só queria... que a cidade não escurecesse.",
-            "Cada ordem... um pouco pior que a outra. Até que eu era só a ordem.",
-            "Diga ao lapidário... que eram novecentas e vinte e cinco. Eu contei.",
+            "...O meu brilho... não podia apagar. Era só isso que importava.",
+            "Cada ordem um pouco pior que a outra... Até que eu era só a ordem.",
+            "Diz pro lapidário... que eram novecentas e vinte e cinco. Eu contei.",
         };
 
         [Header("Sala")]
@@ -111,8 +111,8 @@ namespace EchoesOfCravejada
         [SerializeField] private Rect wakeArea;
 
         [Header("Vida")]
-        [SerializeField] private int phaseOneHealth = 36;
-        [SerializeField] private int phaseTwoHealth = 48;
+        [SerializeField] private int phaseOneHealth = 60;
+        [SerializeField] private int phaseTwoHealth = 80;
 
         [Header("Pontos (em tiles a partir do pivo, olhando pra direita)")]
         [SerializeField] private Vector2 scepterTip = new Vector2(3.4f, 3.1f);
@@ -131,6 +131,9 @@ namespace EchoesOfCravejada
         [SerializeField] private Sprite facetCorruptSprite;
         [SerializeField] private Sprite glintSprite;
 
+        [Tooltip("A carcaca que fica no chao depois da queda (ver BossWreck). Vazio: nao fica nada.")]
+        [SerializeField] private GameObject wreck;
+
         [Header("A sala na fase 2")]
         [SerializeField] private GameObject[] phaseOneObjects;
         [SerializeField] private GameObject[] phaseTwoObjects;
@@ -143,6 +146,9 @@ namespace EchoesOfCravejada
         [SerializeField] private GameObject fallenCrown;
 
         [Header("Quadros")]
+        [Tooltip("As sacadas da sala: a luz e as lascas passam por elas.")]
+        [SerializeField] private Rect[] passThrough;
+
         [SerializeField] private Sprite[] regalFrames;
         [SerializeField] private Sprite[] corruptFrames;
 
@@ -164,6 +170,7 @@ namespace EchoesOfCravejada
         private float _exposedUntil;
         private float _hurtUntil = -1f;
         private float _skywardReady;
+        private float _nextStep;
 
         private int _animStart;
         private int _animCount = SeatedFrames;
@@ -189,6 +196,11 @@ namespace EchoesOfCravejada
 
         /// <summary>Verdadeiro durante as cenas (a entrada, a transformacao): o HUD esconde a barra.</summary>
         public bool IsTransforming => _scene;
+
+        /// <summary>Se ele esta puxando forca pro proximo golpe (o aviso): o Coracao, la embaixo, responde.</summary>
+        public bool IsDrawingPower => Time.time < _drawUntil;
+
+        private float _drawUntil = -100f;
 
         /// <summary>Verdadeiro enquanto ele esta exposto (apoiado no cetro ou arfando): o cinzel fere em dobro.</summary>
         public bool IsExposed => Time.time < _exposedUntil;
@@ -242,16 +254,49 @@ namespace EchoesOfCravejada
         }
 
         /// <summary>Usado pelos geradores de fase: as duas folhas do KingArt.</summary>
+        /// <summary>A carcaca que fica no lugar dele depois da queda. Usado pelo gerador.</summary>
+        public void ConfigureWreck(GameObject newWreck)
+        {
+            wreck = newWreck;
+        }
+
         public void ConfigureFrames(Sprite[] regal, Sprite[] corrupt)
         {
             regalFrames = regal;
             corruptFrames = corrupt;
         }
 
+        /// <summary>Usado pelos geradores de fase: as sacadas, que a luz e as lascas atravessam.</summary>
+        public void ConfigurePassThrough(Rect[] rects)
+        {
+            passThrough = rects;
+        }
+
+        /// <summary>
+        /// Se um ponto de batida e de sacada (plataforma): o raio e as lascas
+        /// seguem direto, so param em parede, chao e teto. Sacada nao e abrigo.
+        /// </summary>
+        public static bool Passable(Vector2 point)
+        {
+            if (_passThrough == null) return false;
+
+            foreach (Rect rect in _passThrough)
+            {
+                if (point.x >= rect.xMin - 0.05f && point.x <= rect.xMax + 0.05f &&
+                    point.y >= rect.yMin - 0.05f && point.y <= rect.yMax + 0.05f) return true;
+            }
+
+            return false;
+        }
+
+        private static Rect[] _passThrough;
+
         private void Awake()
         {
+            _passThrough = passThrough;
             _sprite = GetComponent<SpriteRenderer>();
             _collider = GetComponent<Collider2D>();
+            _body = _collider as BoxCollider2D;
             _home = transform.position;
             if (globalLight != null) _baseLight = globalLight.color;
 
@@ -272,6 +317,7 @@ namespace EchoesOfCravejada
                 SetActive(phaseTwoObjects, true);
                 if (globalLight != null) globalLight.color = phaseTwoLight;
                 Play(Death + DeathFrames - 1, 1, 1f, false);
+                LeaveWreck();
                 if (_collider != null) _collider.enabled = false;
                 if (fallenCrown != null) fallenCrown.SetActive(true);
                 if (altarGate != null) altarGate.Open();
@@ -344,6 +390,7 @@ namespace EchoesOfCravejada
 
             // Os olhos acendem, a cabeca sobe, ele encara.
             float[] wake = { 0.55f, 0.55f, 0.5f };
+            Sfx.KingWake.Play(transform.position + Vector3.up * 3f);
             for (int i = 0; i < wake.Length; i++)
             {
                 Play(Rise + i, 1, 1f, false);
@@ -362,6 +409,7 @@ namespace EchoesOfCravejada
             {
                 Play(Rise + 3 + i, 1, 1f, false);
                 if (i == 5) ScrapCameraFollow.Shake(0.15f, 0.3f);
+                RiseSound(i);
                 yield return new WaitForSeconds(rise[i]);
             }
 
@@ -372,6 +420,26 @@ namespace EchoesOfCravejada
 
             _skywardReady = Time.time + 1f;
             yield return Fight();
+        }
+
+        /// <summary>
+        /// Os sons da subida do trono, um por quadro: o cetro firmando, a
+        /// armadura rangendo, os passos nos degraus (o ultimo, que treme a
+        /// sala, mais pesado) e o cetro apontado.
+        /// </summary>
+        private void RiseSound(int step)
+        {
+            Vector2 at = transform.position;
+            switch (step)
+            {
+                case 0: Sfx.KingScepterPlant.Play(at); break;
+                case 1:
+                case 2: Sfx.KingArmor.Play(at); break;
+                case 3:
+                case 4: Sfx.KingStep.Play(at); break;
+                case 5: Sfx.KingStep.Play(at, pitch: 0.85f); Sfx.KingArmor.Play(at, volume: 0.7f); break;
+                default: Sfx.KingPoint.Play(at); break;
+            }
         }
 
         // ------------------------------------------------------------------
@@ -398,7 +466,7 @@ namespace EchoesOfCravejada
                 // O respiro entre um golpe e outro — curto, e cortado se o Scrap sobe nele.
                 Play(Idle, IdleFrames, 6f);
                 _flinchable = true;
-                float rest = _phaseTwo ? 0.3f : 0.5f;
+                float rest = _phaseTwo ? 0.25f : 0.3f;
                 for (float t = 0f; t < rest; t += Time.deltaTime)
                 {
                     if (PlayerAbove() && Time.time >= _skywardReady) break;
@@ -435,6 +503,14 @@ namespace EchoesOfCravejada
                 if (Distance() < 3f) break;
                 if (PlayerAbove() && Time.time >= _skywardReady) break;
                 if (!Move(_facing * speed * Time.deltaTime)) break;
+
+                // Corrompido ele flutua: so o Rei de pe faz barulho de passo.
+                if (!_phaseTwo && Time.time >= _nextStep)
+                {
+                    _nextStep = Time.time + 4f / (speed * 3.5f);
+                    Sfx.KingStep.Play(transform.position);
+                }
+
                 yield return null;
             }
 
@@ -459,9 +535,16 @@ namespace EchoesOfCravejada
 
             switch (attack)
             {
-                case 0: yield return ScepterSweep(); break;
-                case 1: yield return ScepterBeam(); break;
-                default: yield return CrownFacets(5, false); break;
+                case 0:
+                    // Metade das vezes ele emenda: a cetrada e, sem respiro, o raio.
+                    if (Random.value < 0.5f) yield return ScepterBeam();
+                    yield return ScepterSweep();
+                    break;
+                case 1:
+                    yield return ScepterBeam();
+                    if (!_dead && Random.value < 0.4f) yield return CrownFacets(4, false);
+                    break;
+                default: yield return CrownFacets(7, false); break;
             }
         }
 
@@ -490,18 +573,22 @@ namespace EchoesOfCravejada
             FacePlayer();
             float windup = _phaseTwo ? 0.34f : 0.48f;
             Play(SweepWindup, SweepWindupFrames, SweepWindupFrames / windup, false);
+            Sfx.KingSweepWindup.Play(transform.position, pitch: 0.48f / windup);
             yield return Warn(windup);
 
             Play(Sweep, SweepFrames, SweepFrames / 0.24f, false);
+            Sfx.KingSweep.Play(transform.position + Vector3.right * (_facing * 2f), pitch: _phaseTwo ? 0.85f : 1f);
             yield return new WaitForSeconds(0.08f);
 
-            Vector2 tip = new Vector2(transform.position.x + _facing * sweepReach * 0.75f, floorY + 0.9f);
-            Hit(tip, new Vector2(sweepReach * 1.4f, 1.8f), 2);
+            // A varrida rente ao chao: do corpo ate a ponta do cetro, como no desenho.
+            float near = -0.5f;
+            float far = sweepReach + 0.4f;
+            Hit(new Vector2(transform.position.x + _facing * (near + far) * 0.5f, floorY + 1.1f), new Vector2(far - near, 2.2f), 3);
             ScrapCameraFollow.Shake(0.12f, 0.3f);
             yield return new WaitForSeconds(0.2f);
 
             // Apoiado no cetro, arfando: a hora de bater.
-            _exposedUntil = Time.time + (_phaseTwo ? 0.8f : 1.1f);
+            _exposedUntil = Time.time + (_phaseTwo ? 0.7f : 0.8f);
             Play(Exposed, ExposedFrames, 4f);
             while (IsExposed && !_dead) yield return null;
         }
@@ -519,14 +606,17 @@ namespace EchoesOfCravejada
 
             float windup = _phaseTwo ? 0.26f : 0.36f;
             Play(Skyward, 1, 1f, false);
+            Sfx.KingSkyCharge.Play(transform.position, pitch: 0.36f / windup);
             yield return Warn(windup);
 
             Play(Skyward + 1, SkywardFrames - 1, 6f, false);
             Vector2 origin = Point(skywardTip);
+            Sfx.KingSkyLance.Play(origin, pitch: _phaseTwo ? 0.85f : 1f);
+            Sfx.FacetLaunch.Play(origin);
 
             // A coluna: tudo em cima dele, do peito ao teto.
             float bottom = floorY + 2f;
-            Hit(new Vector2(transform.position.x, (bottom + ceilingY) * 0.5f), new Vector2(3.6f, ceilingY - bottom), 2);
+            Hit(new Vector2(transform.position.x, (bottom + ceilingY) * 0.5f), new Vector2(3.6f, ceilingY - bottom), 3);
             ScrapCameraFollow.Shake(0.2f, 0.4f);
 
             for (int i = 0; i < 5; i++)
@@ -557,6 +647,7 @@ namespace EchoesOfCravejada
         {
             FacePlayer();
             Play(BeamRaise, BeamRaiseFrames, BeamRaiseFrames / 0.4f, false);
+            Sfx.KingSkyCharge.Play(transform.position, pitch: 0.75f);
             yield return new WaitForSeconds(0.4f);
 
             Play(BeamFire, 1, 1f, false);
@@ -590,9 +681,11 @@ namespace EchoesOfCravejada
         {
             FacePlayer();
             Play(Cast, CastFrames, CastFrames / 0.45f, false);
+            Sfx.KingCast.Play(transform.position + Vector3.up * 4f, pitch: corrupt ? 0.8f : 1f);
             yield return Warn(0.45f);
 
             Vector2 origin = Point(crownPoint);
+            Sfx.FacetLaunch.Play(origin);
             for (int i = 0; i < count; i++)
             {
                 float angle = Angle(Mathf.Lerp(15f, 75f, count == 1 ? 0.5f : i / (float)(count - 1)));
@@ -608,6 +701,7 @@ namespace EchoesOfCravejada
         private IEnumerator LightScissors()
         {
             Play(BeamRaise, BeamRaiseFrames, BeamRaiseFrames / 0.35f, false);
+            Sfx.KingSkyCharge.Play(transform.position, pitch: 0.65f);
             yield return new WaitForSeconds(0.35f);
 
             Play(BeamFire, 1, 1f, false);
@@ -640,6 +734,7 @@ namespace EchoesOfCravejada
         private IEnumerator FacetRain()
         {
             Play(Cast, CastFrames, CastFrames / 0.4f, false);
+            Sfx.KingCast.Play(transform.position + Vector3.up * 4f, pitch: 0.75f);
             yield return new WaitForSeconds(0.35f);
 
             for (int wave = 0; wave < 3; wave++)
@@ -655,10 +750,14 @@ namespace EchoesOfCravejada
                 }
 
                 foreach (float x in spots) glints.Add(Glint(new Vector2(x, ceilingY - 1.5f)));
+
+                // A sala inteira: o brilho e a chuva vem do teto todo, nao de um ponto.
+                Sfx.FacetGlint.Play();
                 yield return new WaitForSeconds(0.65f);
 
                 foreach (GameObject glint in glints) if (glint != null) Destroy(glint);
                 foreach (float x in spots) FacetShard.Launch(new Vector2(x, ceilingY - 1.5f), Vector2.down * 14f, 0, facetCorruptSprite);
+                Sfx.FacetRain.Play();
 
                 ScrapCameraFollow.Shake(0.1f, 0.3f);
                 yield return new WaitForSeconds(0.75f);
@@ -681,6 +780,7 @@ namespace EchoesOfCravejada
         {
             FacePlayer();
             Play(Inhale, InhaleFrames, InhaleFrames / 1f, false);
+            Sfx.KingInhale.Play(transform.position + Vector3.up * 3f);
             yield return Warn(1f);
 
             Play(Breath, BreathFrames, 7f);
@@ -697,11 +797,13 @@ namespace EchoesOfCravejada
         {
             FacePlayer();
             Play(SweepWindup, 1, 1f, false);
+            Sfx.KingSweepWindup.Play(transform.position, pitch: 0.8f);
             yield return Warn(0.4f);
 
             float wall = _facing > 0 ? maxX : minX;
             _charging = true;
             Play(Walk, WalkFrames, 16f);
+            Sfx.KingGlide.Play(transform.position);
 
             while (!Mathf.Approximately(transform.position.x, wall) && !_dead)
             {
@@ -717,6 +819,7 @@ namespace EchoesOfCravejada
         /// <summary>O aviso antes do golpe: pisca em branco.</summary>
         private IEnumerator Warn(float seconds)
         {
+            _drawUntil = Time.time + seconds + 0.15f;
             for (float t = 0f; t < seconds; t += Time.deltaTime)
             {
                 if (_sprite != null && Time.time >= _hurtUntil)
@@ -762,7 +865,18 @@ namespace EchoesOfCravejada
 
             // A arte olha pra direita.
             if (_sprite != null) _sprite.flipX = _facing < 0;
+
+            // O corpo do desenho: 1,2 atras, 1,45 na frente (o manto e o cetro), na altura de sempre.
+            if (_body != null)
+            {
+                const float back = 1.2f;
+                const float front = 1.45f;
+                _body.size = new Vector2(back + front, _body.size.y);
+                _body.offset = new Vector2((front - back) * 0.5f * _facing, _body.offset.y);
+            }
         }
+
+        private BoxCollider2D _body;
 
         private bool Move(float dx)
         {
@@ -785,9 +899,11 @@ namespace EchoesOfCravejada
             {
                 // Sentado, de cabeca baixa, ele nem sente: o cinzel tine na prata.
                 NoiseSystem.Emit(from, 6f, 0.3f);
+                Sfx.Block.Play(transform.position + Vector3.up * 2f);
                 return;
             }
 
+            Sfx.BossHurtSilver.Play(transform.position + Vector3.up * 2f, pitch: _phaseTwo ? 0.75f : 0.9f);
             _hp -= IsExposed ? amount * 2 : amount;
             _hurtUntil = Time.time + 0.14f;
             if (_sprite != null) _sprite.color = new Color(1f, 0.55f, 0.55f);
@@ -821,6 +937,7 @@ namespace EchoesOfCravejada
             ScrapCameraFollow.Direct((Vector2)transform.position + Vector2.up * 3f, 0.9f, 0.6f);
             Play(Fall, FallFrames, FallFrames / 1f, false);
             ScrapCameraFollow.Shake(0.3f, 1.4f);
+            Sfx.KingCrownCrack.Play(transform.position + Vector3.up * 2f);
             yield return new WaitForSeconds(1.5f);
 
             yield return ScriptedDialogue.Play(Name, _sprite, TransitionLines);
@@ -846,6 +963,7 @@ namespace EchoesOfCravejada
 
             // Ele se ergue, inteiro em Oxide, e a coroa acende verde.
             ScrapCameraFollow.Direct((Vector2)transform.position + Vector2.up * 3f, 1f, 0.5f);
+            Sfx.KingRise.Play(transform.position + Vector3.up * 2f);
             for (int i = FallFrames - 1; i >= 0; i--)
             {
                 Play(Fall + i, 1, 1f, false);
@@ -856,7 +974,7 @@ namespace EchoesOfCravejada
             ScrapCameraFollow.Shake(0.4f, 1.2f);
             yield return new WaitForSeconds(0.9f);
 
-            yield return ScriptedDialogue.Play(Name, _sprite, RisenLines);
+            yield return ScriptedDialogue.PlayAs("king_corrupt", Name, _sprite, RisenLines);
 
             ScrapCameraFollow.Release();
             if (controller != null) controller.ControlLocked = false;
@@ -869,6 +987,8 @@ namespace EchoesOfCravejada
 
         private void BecomeCorrupt()
         {
+            // A metade de luz estilhaca (e os espelhos da sala junto).
+            Sfx.KingShatter.Play(transform.position + Vector3.up * 2f);
             _hp = phaseTwoHealth;
             ApplyPhaseTwoLook();
             Play(Fall + FallFrames - 1, 1, 1f, false);
@@ -898,7 +1018,8 @@ namespace EchoesOfCravejada
             ScrapCameraFollow.Direct((Vector2)transform.position + Vector2.up * 2.5f, 0.85f, 0.7f);
             ScrapCameraFollow.Shake(0.45f, 2f);
 
-            // Cambaleia, larga o cetro, ajoelha, a coroa cai.
+            // Cambaleia, larga o cetro, ajoelha, a coroa cai: o som inteiro, casado com os quadros.
+            Sfx.KingFall.Play(transform.position + Vector3.up * 2f);
             float[] hold = { 0.3f, 0.45f, 0.6f, 0.7f, 0.9f, 0.7f };
             for (int i = 0; i < hold.Length; i++)
             {
@@ -906,12 +1027,15 @@ namespace EchoesOfCravejada
                 yield return new WaitForSeconds(hold[i]);
             }
 
-            yield return ScriptedDialogue.Play(Name, _sprite, LastLines);
+            yield return ScriptedDialogue.PlayAs("king_corrupt", Name, _sprite, LastLines);
 
             // E deita.
             Play(Death + 6, 1, 1f, false);
+            Sfx.KingLieDown.Play(transform.position);
             yield return new WaitForSeconds(0.8f);
             Play(Death + 7, 1, 1f, false);
+            yield return new WaitForSeconds(0.3f);
+            LeaveWreck();
 
             if (Fighting == this) Fighting = null;
             if (fallenCrown != null) fallenCrown.SetActive(true);
@@ -921,6 +1045,15 @@ namespace EchoesOfCravejada
             if (controller != null) controller.ControlLocked = false;
             if (began) Cinematic.End();
             _scene = false;
+        }
+
+        /// <summary>Deitado, troca pelo loop da carcaca: a armadura rachada e o Oxide saindo em fiapos.</summary>
+        private void LeaveWreck()
+        {
+            if (wreck == null || _sprite == null) return;
+            bool flip = _sprite.flipX;
+            _sprite.enabled = false;
+            BossWreck.Show(wreck, transform.position, flip);
         }
 
         private void StopAttacks()
@@ -968,7 +1101,7 @@ namespace EchoesOfCravejada
             if (_dead || !_awake || _scene || IsExposed) return;
 
             var health = other.GetComponentInParent<ScrapHealth>();
-            if (health != null) health.TakeDamage(_charging ? 2 : 1, transform.position);
+            if (health != null) health.TakeDamage(_charging ? 3 : 2, transform.position);
         }
 
         // ------------------------------------------------------------------

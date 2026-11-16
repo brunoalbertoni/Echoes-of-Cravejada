@@ -31,6 +31,8 @@ namespace EchoesOfCravejada
             script._sprite = renderer;
             script._velocity = new Vector2(Random.Range(-1.6f, 1.6f), Random.Range(5f, 7.5f));
             script._until = Time.time + 0.55f;
+
+            Sfx.PebblePop.Play(from);
         }
 
         private void Update()

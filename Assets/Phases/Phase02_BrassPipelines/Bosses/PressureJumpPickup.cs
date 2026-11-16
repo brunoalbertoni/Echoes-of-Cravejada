@@ -15,11 +15,10 @@ namespace EchoesOfCravejada
         public static void Drop(Vector3 position, Sprite sprite)
         {
             var pickup = new GameObject("PressureJumpModule");
-            pickup.transform.position = position + Vector3.up * 0.8f;
+            pickup.transform.position = DropSpot.Free(position + Vector3.up * 0.8f);
 
             var renderer = pickup.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
-            renderer.color = new Color(0.75f, 0.95f, 1f);
             renderer.sortingLayerName = "Actors";
             renderer.sortingOrder = -1;
 
@@ -28,6 +27,7 @@ namespace EchoesOfCravejada
             trigger.radius = 0.7f;
 
             pickup.AddComponent<PressureJumpPickup>();
+            Sfx.ModuleDrop.Play(position);
         }
 
         private void Awake()
@@ -41,10 +41,17 @@ namespace EchoesOfCravejada
             transform.position = _origin + Vector3.up * (Mathf.Sin(_age * 3f) * 0.15f);
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
-        {
-            if (other.GetComponentInParent<ScrapController>() == null) return;
+        // Fica um instante no ar antes de poder ser pego: nao entra sozinho no Scrap ao lado.
+        private const float ArmDelay = 1.2f;
 
+        private void OnTriggerEnter2D(Collider2D other) => Collect(other);
+        private void OnTriggerStay2D(Collider2D other) => Collect(other);
+
+        private void Collect(Collider2D other)
+        {
+            if (_age < ArmDelay || other.GetComponentInParent<ScrapController>() == null) return;
+
+            Sfx.SteamRefresh.Play();
             ScrapController.UnlockPressureJump();
             Destroy(gameObject);
         }

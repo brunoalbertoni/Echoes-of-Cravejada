@@ -64,6 +64,12 @@ namespace EchoesOfCravejada
         /// </summary>
         public SpriteRenderer Portrait { get; private set; }
 
+        /// <summary>
+        /// O busto de quem fala na caixa de dialogo (<see cref="SpeakerPortraits"/>),
+        /// pelo nome. Nulo pro que se le: pagina, placa e gravura nao tem rosto.
+        /// </summary>
+        public string PortraitId => facesPlayer ? SpeakerPortraits.IdFor(displayName) : null;
+
         /// <summary>O verbo do aviso: "conversar com" pra gente, "ler" pra coisa escrita.</summary>
         public string Prompt => prompt;
 

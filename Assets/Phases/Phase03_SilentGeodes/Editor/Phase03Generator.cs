@@ -38,6 +38,7 @@ namespace EchoesOfCravejada.EditorTools
         private const string ButtonDown = "statue_button_down";
         private const string SilverPlaque = "silver_plaque";
         private const string AncientKey = "ancient_key";
+        private const string DrillWreckSheet = "d3_drill_wreck_sheet";
         private const string ResonantPrism = "resonant_prism";
         private const string ResonantBase = "resonant_base";
         private const string CaveGate = "cave_gate";
@@ -326,7 +327,7 @@ namespace EchoesOfCravejada.EditorTools
 
             Phase02Assets.WriteSprite(ShardShot, CrystalArt.ShardShot(), middle);
             Phase02Assets.WriteSprite(GeodeDrill, CrystalArt.GeodeDrill(), feet);
-            Phase02Assets.WriteSprite(Sapphire, CrystalArt.Sapphire(), middle);
+            Phase02Assets.WriteSprite(Sapphire, LootArt.SapphireRaw(), middle, false, LootArt.PixelsPerUnit);
             Phase02Assets.WriteSprite(Barrier, CrystalArt.Barrier(), Vector2.zero, true);
 
             (int _, int _, int rubbleWidth, int rubbleHeight) = Phase03Layout.ElevatorRubble;
@@ -351,7 +352,14 @@ namespace EchoesOfCravejada.EditorTools
             Phase02Assets.WriteSheet(SentinelSheet, SentinelArt.Frames(), new Vector2(0.5f, SentinelArt.PivotY), SentinelArt.PixelsPerUnit);
             Phase02Assets.WriteSheet(ForemanSheet, CaveMinerArt.Frames(),
                 new Vector2(CaveMinerArt.PivotX, CaveMinerArt.PivotY), CaveMinerArt.PixelsPerUnit);
-            Phase02Assets.WriteSprite(AncientKey, CaveArt.AncientKey(), middle);
+            // Os mineiros que voltam depois da broca, no padrao dos NPCs do District 2.
+            for (int variant = 0; variant < District3NpcArt.Count; variant++)
+            {
+                Phase02Assets.WriteSheet(District3NpcArt.SheetName(variant), District3NpcArt.Frames(variant),
+                    new Vector2(0.5f, 0f), District3NpcArt.PixelsPerUnit);
+            }
+
+            Phase02Assets.WriteSprite(AncientKey, LootArt.AncientKey(), middle, false, LootArt.PixelsPerUnit);
             Phase02Assets.WriteSprite(KeyLock, CaveArt.Lock(), middle);
 
             // A broca animada, o ressonante com base, o portao de caverna, as
@@ -360,6 +368,9 @@ namespace EchoesOfCravejada.EditorTools
             {
                 Phase02Assets.WriteSprite(FrameName("drill", frame), GeodeArt.Drill(frame), feet);
             }
+
+            // A carcaca dela, no mesmo 16 px por tile da broca.
+            Phase02Assets.WriteSheet(DrillWreckSheet, DrillWreckArt.Frames(), feet, Phase01Assets.PixelsPerUnit);
 
             Phase02Assets.WriteSprite(ResonantPrism, GeodeArt.Resonant(), feet);
             Phase02Assets.WriteSprite(ResonantBase, GeodeArt.ResonantBase(), feet);
@@ -1253,7 +1264,7 @@ namespace EchoesOfCravejada.EditorTools
                 minX, maxX, hy, Phase03Layout.MonsterCeiling,
                 Phase02Assets.LoadSprite(ShardShot),
                 shard,
-                Phase02Assets.LoadSprite(Sapphire));
+                Phase02Assets.LoadSprite(Phase02Assets.CutGem));
             elite.ConfigureFrames(frames, CaveMinerArt.SlamReach);
             elite.ConfigureKey(Phase03Layout.AncientKeyId, "CHAVE ANTIGA obtida", Phase02Assets.LoadSprite(AncientKey));
             elite.ConfigureBrood(brood.ToArray(), spots.ToArray(), cracks.ToArray(), crackFrames);
@@ -1292,10 +1303,16 @@ namespace EchoesOfCravejada.EditorTools
                     minerObject.transform.SetParent(hall, false);
                     minerObject.transform.position = new Vector3(spot.X + 0.5f, spot.Y, 0f);
 
-                    // O mesmo corpo do Brass Welder, limpo: e um Tarnished, nao um corrompido.
-                    SpriteRenderer body = Sprite(minerObject, Phase02Assets.BrassWelder, Phase01Assets.SortingActors, -4);
-                    body.color = new Color(0.85f, 0.92f, 1f);
-                    body.flipX = LevelMap.Pick(spot.X, spot.Y, 2) == 0;
+                    // Corpo proprio, animado parado (respira, pisca), olhando pra quem chega do elevador.
+                    int variant = spot.Name.EndsWith("2") ? District3NpcArt.MinerWoman : District3NpcArt.Miner;
+                    Sprite[] idle = Phase02Assets.LoadSheet(District3NpcArt.SheetName(variant), District3NpcArt.IdleFrames);
+                    var bodyObject = new GameObject("Body");
+                    bodyObject.transform.SetParent(minerObject.transform, false);
+                    SpriteRenderer body = bodyObject.AddComponent<SpriteRenderer>();
+                    body.sprite = idle.Length > 0 ? idle[0] : null;
+                    body.sortingLayerName = Phase01Assets.SortingActors;
+                    body.sortingOrder = -4;
+                    bodyObject.AddComponent<SpriteLoop>().Configure(idle, 5f, District3NpcArt.BlinkFrame);
 
                     var area = minerObject.AddComponent<BoxCollider2D>();
                     area.isTrigger = true;
@@ -1382,9 +1399,12 @@ namespace EchoesOfCravejada.EditorTools
                 Pillars.ToArray(),
                 Phase02Assets.LoadSprite(ShardShot),
                 Phase02Assets.LoadSprite(Phase02Assets.Shard),
-                Phase02Assets.LoadSprite(Phase02Assets.DashModule),
+                Phase02Assets.LoadSprite(Phase02Assets.ResonanceTip),
                 purifier,
                 plaqueObject);
+
+            drill.ConfigureWreck(WreckAssets.Build(parent, "GeodeDrillWreck",
+                Phase02Assets.LoadSheet(DrillWreckSheet, DrillWreckArt.FrameCount), bossObject.transform.position));
 
             // As traças que a pancada no pilar solta: seis, desligadas, prontas pra brotar.
             Sprite debrisShard = Phase02Assets.LoadSprite(Phase02Assets.Shard);
@@ -1398,7 +1418,9 @@ namespace EchoesOfCravejada.EditorTools
                 brood.Add(mite);
             }
 
-            drill.ConfigureBrood(brood.ToArray());
+            var drillCracks = new Sprite[3];
+            for (int frame = 0; frame < 3; frame++) drillCracks[frame] = Phase02Assets.LoadSprite(CrackName(frame));
+            drill.ConfigureBrood(brood.ToArray(), drillCracks);
 
             // A entrada da camara fecha enquanto ela luta.
             (int X, int Y, int Width, int Height) seal = Phase03Layout.BossSeal;

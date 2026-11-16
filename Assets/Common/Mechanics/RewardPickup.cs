@@ -37,7 +37,10 @@ namespace EchoesOfCravejada
 
         private static readonly HashSet<string> Taken = new HashSet<string>();
 
+        private const float DropArmDelay = 1.2f;
+
         private float _age;
+        private float _armDelay;
         private Vector3 _origin;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
@@ -56,10 +59,20 @@ namespace EchoesOfCravejada
             amount = newAmount;
         }
 
-        public static void Drop(Vector3 position, Sprite sprite, Kind kind, Color tint)
+        /// <summary>Se a recompensa com esse id ja foi pega.</summary>
+        public static bool WasTaken(string rewardId) => !string.IsNullOrEmpty(rewardId) && Taken.Contains(rewardId);
+
+        /// <summary>Solta uma recompensa com id: depois de pega, nao volta mais.</summary>
+        public static void Drop(Vector3 position, Sprite sprite, Kind kind, Color tint, string rewardId)
+        {
+            if (WasTaken(rewardId)) return;
+            Drop(position, sprite, kind, tint).id = rewardId;
+        }
+
+        public static RewardPickup Drop(Vector3 position, Sprite sprite, Kind kind, Color tint)
         {
             var pickup = new GameObject("Reward_" + kind);
-            pickup.transform.position = position + Vector3.up * 0.8f;
+            pickup.transform.position = DropSpot.Free(position + Vector3.up * 0.8f);
 
             var renderer = pickup.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
@@ -71,7 +84,12 @@ namespace EchoesOfCravejada
             trigger.isTrigger = true;
             trigger.radius = 0.7f;
 
-            pickup.AddComponent<RewardPickup>().kind = kind;
+            var reward = pickup.AddComponent<RewardPickup>();
+            reward.kind = kind;
+            // Solta de um chefe: aparece e fica um instante no ar antes de
+            // poder ser pega, pra nao entrar sozinha no Scrap que esta ao lado.
+            reward._armDelay = DropArmDelay;
+            return reward;
         }
 
         private void Awake()
@@ -90,8 +108,15 @@ namespace EchoesOfCravejada
             transform.position = _origin + Vector3.up * (Mathf.Sin(_age * 3f) * 0.15f);
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D other) => Collect(other);
+
+        // Quem ja estava em cima quando ela armou pega sem precisar sair e voltar.
+        private void OnTriggerStay2D(Collider2D other) => Collect(other);
+
+        private void Collect(Collider2D other)
         {
+            if (_age < _armDelay) return;
+
             var controller = other.GetComponentInParent<ScrapController>();
             if (controller == null) return;
 
@@ -111,18 +136,19 @@ namespace EchoesOfCravejada
                     if (health != null) health.UpgradeChassis();
                     ChassisTime = Time.time;
                     Sfx.Chassis.Play();
+                    var art = GetComponentInChildren<SpriteRenderer>();
+                    if (art != null) ItemToast.Show(art.sprite, new Color(1f, 0.75f, 0.5f));
                     break;
 
                 case Kind.Gem:
                     GemPurse.Add(1);
                     Sfx.Gem.Play();
-                    HudNotice.Show("Gema lapidada encontrada");
                     break;
 
                 case Kind.ShardCache:
                     ScrapWallet.Add(amount);
                     Sfx.ShardsRecovered.Play();
-                    HudNotice.Show($"Cofre aberto: {amount} {Shop.CurrencyName(Currency.Shards, amount)}");
+                    ItemToast.Show(ItemToast.ShardSprite(), new Color(0.6f, 0.9f, 1f), amount);
                     break;
             }
 

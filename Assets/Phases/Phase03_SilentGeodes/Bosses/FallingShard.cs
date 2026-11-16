@@ -49,6 +49,7 @@ namespace EchoesOfCravejada
             Vector3 origin = transform.position;
 
             // O aviso: treme preso no teto, e solta po.
+            Sfx.ShardLoosen.Play(origin);
             for (float t = 0f; t < warning; t += Time.deltaTime)
             {
                 transform.position = origin + new Vector3(Mathf.Sin(t * 60f) * 0.06f, 0f, 0f);
@@ -78,6 +79,7 @@ namespace EchoesOfCravejada
 
             // O estalo no chao: baixo demais pra chamar alguem.
             NoiseSystem.Emit(transform.position, 3f, 0.2f);
+            Sfx.ShardLand.Play(transform.position);
             Destroy(gameObject);
         }
     }

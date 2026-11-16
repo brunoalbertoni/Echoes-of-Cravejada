@@ -67,6 +67,9 @@ namespace EchoesOfCravejada
         [SerializeField] private Sprite debrisSprite;
         [SerializeField] private Sprite shardSprite;
         [SerializeField] private Sprite rewardSprite;
+
+        [Tooltip("A carcaca que fica no chao depois da queda (ver BossWreck). Vazio: nao fica nada.")]
+        [SerializeField] private GameObject wreck;
         [SerializeField] private AreaPurifier purifier;
 
         [Tooltip("A placa do chassi: um objeto desligado, que aparece quando ela para.")]
@@ -76,6 +79,11 @@ namespace EchoesOfCravejada
         [Tooltip("Os mites que a pancada solta, desligados na cena.")]
         [SerializeField] private GameObject[] brood;
         [SerializeField] private int broodPerCrash = 3;
+        [Tooltip("A rachadura da parede de onde elas saem (os mesmos 3 quadros do Capataz).")]
+        [SerializeField] private Sprite[] crackFrames;
+
+        private readonly System.Collections.Generic.List<GameObject> _hatching = new System.Collections.Generic.List<GameObject>();
+        private SpriteRenderer[] _cracks;
 
         private SpriteRenderer _sprite;
         private Collider2D _collider;
@@ -93,6 +101,7 @@ namespace EchoesOfCravejada
         private ResonantCrystal _lure;
         private Transform _shaking;
         private Vector3 _shakingHome;
+        private SfxLoop _motor;
 
         private static bool _defeated;
 
@@ -139,9 +148,16 @@ namespace EchoesOfCravejada
         }
 
         /// <summary>Usado pelos geradores de fase: as traças que saem do chao a cada pilar cravado.</summary>
-        public void ConfigureBrood(GameObject[] newBrood)
+        /// <summary>A carcaca que fica no lugar dele depois da queda. Usado pelo gerador.</summary>
+        public void ConfigureWreck(GameObject newWreck)
+        {
+            wreck = newWreck;
+        }
+
+        public void ConfigureBrood(GameObject[] newBrood, Sprite[] newCrackFrames = null)
         {
             brood = newBrood;
+            crackFrames = newCrackFrames;
         }
 
         private void Awake()
@@ -149,6 +165,7 @@ namespace EchoesOfCravejada
             _sprite = GetComponent<SpriteRenderer>();
             _collider = GetComponent<Collider2D>();
             _health = maxHealth;
+            _motor = SfxLoop.Attach(gameObject, Sfx.DrillMotor);
 
             ScrapHealth.Died += ResetFight;
         }
@@ -211,6 +228,8 @@ namespace EchoesOfCravejada
 
         private void Update()
         {
+            UpdateMotor();
+
             if (_sprite != null && !_dead && _sprite.enabled)
             {
                 // Presa no pilar ela fica em brasa: e a deixa pra bater.
@@ -225,6 +244,21 @@ namespace EchoesOfCravejada
             Fighting = this;
             _heardX = _player.position.x;
             StartCoroutine(Brain());
+        }
+
+        /// <summary>
+        /// O motor roda o tempo todo: abafado enterrada, cheio fora da rocha,
+        /// mais agudo correndo e engasgando presa no pilar.
+        /// </summary>
+        private void UpdateMotor()
+        {
+            if (_motor == null) return;
+
+            bool running = _awake && !_dead;
+            bool visible = _sprite != null && _sprite.enabled;
+
+            _motor.Level = !running ? 0f : visible ? (IsExposed ? 0.7f : 1f) : 0.4f;
+            _motor.Pitch = (_charging ? 1.25f : IsExposed ? 0.75f : 1f) * (Frenzied ? 1.08f : 1f);
         }
 
         /// <summary>O Scrap morreu: a luta recomeca do zero, com o chao de volta.</summary>
@@ -261,41 +295,117 @@ namespace EchoesOfCravejada
 
         private void PutBroodBack()
         {
-            if (brood == null) return;
-            foreach (GameObject mite in brood)
+            _hatching.Clear();
+            if (brood != null)
             {
-                if (mite != null) mite.SetActive(false);
+                foreach (GameObject mite in brood)
+                {
+                    if (mite != null) mite.SetActive(false);
+                }
+            }
+
+            if (_cracks != null)
+            {
+                foreach (SpriteRenderer crack in _cracks)
+                {
+                    if (crack != null) crack.gameObject.SetActive(false);
+                }
             }
         }
 
-        /// <summary>A pancada no pilar acorda o chao: tres traças brotam em volta de onde ela cravou.</summary>
+        /// <summary>
+        /// A pancada no pilar acorda as paredes: as tracas racham a parede
+        /// (como no turno do Capataz) e saem dela, alternando os lados.
+        /// </summary>
         private void ReleaseBrood(float x)
         {
             if (brood == null) return;
 
-            float[] offsets = { -2.5f, 2f, 3.6f };
             int released = 0;
+            int side = Random.value < 0.5f ? 0 : 1;
 
             foreach (GameObject mite in brood)
             {
                 if (released >= broodPerCrash) break;
-                if (mite == null || mite.activeSelf) continue;
+                if (mite == null || mite.activeSelf || _hatching.Contains(mite)) continue;
 
-                float at = Mathf.Clamp(x + offsets[released % offsets.Length], minX, maxX);
-
-                mite.SetActive(true);
-                var body = mite.GetComponent<Damageable>();
-                if (body != null) body.Restore();
-
-                var crawler = mite.GetComponent<CrystalMite>();
-                if (crawler != null) crawler.Rehome(new Vector3(at, FloorY, 0f));
-                else mite.transform.position = new Vector3(at, FloorY, 0f);
-
+                StartCoroutine(Hatch(mite, (side + released) % 2, released * 0.25f));
                 released++;
             }
+        }
 
-            // O chao estourando acorda as traças (a broca nao se engana com o proprio estrondo).
-            if (released > 0) Rumble(new Vector2(x, FloorY + 0.5f), 6f, 0.6f);
+        /// <summary>A rachadura de cada parede, criada na primeira vez (a arte do Capataz).</summary>
+        private SpriteRenderer Crack(int side)
+        {
+            if (crackFrames == null || crackFrames.Length < 3) return null;
+
+            if (_cracks == null) _cracks = new SpriteRenderer[2];
+            if (_cracks[side] == null)
+            {
+                var host = new GameObject(side == 0 ? "WallCrack_Left" : "WallCrack_Right");
+                host.transform.SetParent(transform.parent, false);
+                var art = new GameObject("Art");
+                art.transform.SetParent(host.transform, false);
+                var renderer = art.AddComponent<SpriteRenderer>();
+                if (_sprite != null) renderer.sortingLayerID = _sprite.sortingLayerID;
+                renderer.sortingOrder = (_sprite != null ? _sprite.sortingOrder : 0) - 1;
+                renderer.flipX = side == 1;
+                _cracks[side] = renderer;
+            }
+
+            return _cracks[side];
+        }
+
+        private IEnumerator Hatch(GameObject mite, int side, float delay)
+        {
+            _hatching.Add(mite);
+            if (delay > 0f) yield return new WaitForSeconds(delay);
+
+            var spot = new Vector3(side == 0 ? minX + 1f : maxX - 1f, FloorY, 0f);
+            SpriteRenderer crack = Crack(side);
+            if (crack != null)
+            {
+                crack.transform.parent.position = spot;
+                crack.gameObject.SetActive(true);
+                crack.sprite = crackFrames[0];
+            }
+
+            Sfx.ForemanHatch.Play(spot);
+
+            // A parede treme, rachando.
+            for (float t = 0f; t < 0.7f; t += Time.deltaTime)
+            {
+                if (crack != null)
+                {
+                    crack.sprite = crackFrames[1];
+                    crack.transform.localPosition = new Vector3(Mathf.Sin(t * 70f) * 0.04f, 0f, 0f);
+                }
+
+                yield return null;
+            }
+
+            _hatching.Remove(mite);
+            if (crack != null)
+            {
+                crack.transform.localPosition = Vector3.zero;
+                crack.sprite = crackFrames[2];
+            }
+
+            if (_dead) yield break;
+
+            mite.SetActive(true);
+            var body = mite.GetComponent<Damageable>();
+            if (body != null) body.Restore();
+
+            var crawler = mite.GetComponent<CrystalMite>();
+            if (crawler != null) crawler.Rehome(spot);
+            else mite.transform.position = spot;
+
+            // A parede estourando acorda a traca (a broca nao se engana com o proprio estrondo).
+            Rumble(new Vector2(spot.x, FloorY + 0.5f), 6f, 0.6f);
+
+            yield return new WaitForSeconds(1.2f);
+            if (crack != null && !_hatching.Exists(m => m != null)) crack.gameObject.SetActive(false);
         }
 
         private void SetSlabs(bool present)
@@ -393,6 +503,9 @@ namespace EchoesOfCravejada
                 for (float t = 0f; t < buried; t += Time.deltaTime)
                 {
                     rumbleX = Mathf.MoveTowards(rumbleX, _heardX, 9f * Time.deltaTime);
+
+                    // Escondida, ela anda junto com o ronco: o motor soa de onde ela esta.
+                    transform.position = new Vector3(rumbleX, FloorY, 0f);
                     if (Time.frameCount % 12 == 0) Rumble(new Vector2(rumbleX, FloorY + 0.5f), 4f, 0.1f);
 
                     yield return null;
@@ -421,6 +534,7 @@ namespace EchoesOfCravejada
 
                 // O aviso: ela treme na boca do tunel, e a sala acende.
                 Rumble(new Vector2(startX, FloorY + 1f), 12f, 0.2f);
+                Sfx.DrillEmerge.Play(new Vector2(startX, FloorY + 1f));
 
                 for (float t = 0f; t < 0.7f; t += Time.deltaTime)
                 {
@@ -429,7 +543,6 @@ namespace EchoesOfCravejada
                     yield return null;
                 }
 
-                if (Frenzied) Debris();
 
                 // Com isca ela vai ate o pilar; sem, passa do alvo e some na outra parede.
                 float wallX = fromLeft ? maxX : minX;
@@ -474,6 +587,7 @@ namespace EchoesOfCravejada
                     // traças e ela fica presa com o motor a mostra.
                     lure.Targeted = false;
                     Rumble(new Vector2(x, FloorY + 1f), 18f, 0.2f);
+                    Sfx.DrillImpale.Play(new Vector2(x, FloorY + 1f));
                     ReleaseBrood(x);
 
                     _exposedUntil = Time.time + (Frenzied ? exposedTime * 0.8f : exposedTime);
@@ -497,11 +611,13 @@ namespace EchoesOfCravejada
             for (int i = 0; i < bursts; i++)
             {
                 float at = i == 0 || _player == null ? _heardX : _player.position.x;
-                at = Mathf.Clamp(at, minX + 1f, maxX - 1f);
+                // Ate as paredes: nao ha canto da camada onde ela nao fure.
+                at = Mathf.Clamp(at, minX, maxX);
 
                 // O aviso: o chao estala e cospe lascas onde ela vai sair.
                 float warn = Frenzied ? 0.65f : 0.85f;
                 float nextPebble = 0f;
+                Sfx.DrillRumble.Play(new Vector2(at, FloorY), pitch: 0.85f / warn);
                 for (float t = 0f; t < warn; t += Time.deltaTime)
                 {
                     if (t >= nextPebble)
@@ -520,6 +636,7 @@ namespace EchoesOfCravejada
                 transform.rotation = Quaternion.Euler(0f, 0f, 90f);
                 _charging = true;
                 Rumble(new Vector2(at, FloorY + 1f), 14f, 0.3f);
+                Sfx.DrillErupt.Play(new Vector2(at, FloorY + 1f));
 
                 // Comeca com a metade de baixo dentro da laje (2 tiles de
                 // grossura): mais fundo, apareceria no vao da camada de baixo.
@@ -556,6 +673,7 @@ namespace EchoesOfCravejada
         {
             _shaking = pillar.transform;
             _shakingHome = _shaking.position;
+            Sfx.DrillPillarCrack.Play(_shakingHome);
 
             for (float t = 0f; t < 0.35f; t += Time.deltaTime)
             {
@@ -579,6 +697,7 @@ namespace EchoesOfCravejada
             if (debrisSprite == null) return;
 
             var from = new Vector2(pillarX + direction * 0.6f, FloorY + 0.5f);
+            Sfx.PillarShatter.Play(from);
             ShardShot.Fire(from, new Vector2(direction * 12f, 0f), 10f, debrisSprite);
             ShardShot.Fire(from, new Vector2(direction, 1f).normalized * 12f, 8f, debrisSprite);
         }
@@ -586,6 +705,8 @@ namespace EchoesOfCravejada
         /// <summary>Se solta do pilar: ronca em brasa, e gira — quem ficou colado apanha.</summary>
         private IEnumerator ShakeFree(float x)
         {
+            Sfx.DrillShakeFree.Play(new Vector2(x, FloorY + 1f));
+
             for (float t = 0f; t < 0.45f; t += Time.deltaTime)
             {
                 transform.position = new Vector3(x + Mathf.Sin(t * 90f) * 0.1f, FloorY, 0f);
@@ -604,24 +725,7 @@ namespace EchoesOfCravejada
                     _scrapHealth.TakeDamage(1, transform.position + Vector3.up);
             }
 
-            // Lascas rente ao chao, pros dois lados.
-            if (debrisSprite != null)
-            {
-                ShardShot.Fire(new Vector2(x + 2.2f, FloorY + 0.4f), new Vector2(11f, 0f), 8f, debrisSprite);
-                ShardShot.Fire(new Vector2(x - 2.2f, FloorY + 0.4f), new Vector2(-11f, 0f), 8f, debrisSprite);
-            }
-
             yield return new WaitForSeconds(0.3f);
-        }
-
-        /// <summary>Estilhacos soltos do teto, caindo em volta de onde ela ouviu o Scrap.</summary>
-        private void Debris()
-        {
-            for (int i = -1; i <= 1; i++)
-            {
-                float x = Mathf.Clamp(_heardX + i * 2.6f + Random.Range(-0.6f, 0.6f), minX, maxX);
-                ShardShot.Fire(new Vector2(x, FloorY + 9f), Vector2.down * 8f, 9f, debrisSprite);
-            }
         }
 
         /// <summary>Perdeu o controle: fura o chao, e a arena desce uma camada.</summary>
@@ -633,6 +737,7 @@ namespace EchoesOfCravejada
 
             float x = transform.position.x;
             Show(x, 1);
+            Sfx.DrillCollapse.Play(new Vector2(x, FloorY));
 
             // Ela gira no lugar, apontada pra baixo. E o tempo de entender o que vem.
             for (float t = 0f; t < 1.3f; t += Time.deltaTime)
@@ -672,8 +777,11 @@ namespace EchoesOfCravejada
             if (!IsExposed)
             {
                 if (_sprite != null) _sprite.color = new Color(0.7f, 0.8f, 1f);
+                Sfx.Block.Play(transform.position, pitch: 0.8f);
                 return;
             }
+
+            Sfx.DrillHurt.Play(transform.position);
 
             // Cada terco de vida e uma camada: um golpe forte nao pula nenhuma.
             int layers = floors.Length;
@@ -701,6 +809,7 @@ namespace EchoesOfCravejada
             if (Fighting == this) Fighting = null;
 
             Vector3 place = new Vector3(transform.position.x, FloorY, 0f);
+            Sfx.DrillDie.Play(place);
 
             for (int i = 0; i < 20; i++)
             {
@@ -721,7 +830,15 @@ namespace EchoesOfCravejada
         {
             transform.position = place;
 
-            if (_sprite != null)
+            if (wreck != null)
+            {
+                // A carcaca desenhada toma o lugar dela: a broca arrancada, a esteira partida, fumaca.
+                if (_sprite != null) _sprite.enabled = false;
+                var motion = GetComponent<MotionFrames>();
+                if (motion != null) motion.enabled = false;
+                BossWreck.Show(wreck, place);
+            }
+            else if (_sprite != null)
             {
                 _sprite.enabled = true;
                 _sprite.color = new Color(0.55f, 0.55f, 0.62f);
@@ -735,7 +852,7 @@ namespace EchoesOfCravejada
         {
             // Atras dela, pra nao ficar em cima da placa.
             RewardPickup.Drop(transform.position + Vector3.left * 3.5f, rewardSprite,
-                RewardPickup.Kind.ResonanceStrike, new Color(0.80f, 0.90f, 1f));
+                RewardPickup.Kind.ResonanceStrike, Color.white);
         }
 
         private void OnTriggerEnter2D(Collider2D other)

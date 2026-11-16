@@ -30,6 +30,9 @@ namespace EchoesOfCravejada
         /// <summary>O desenho de quem fala, pro retrato na caixa.</summary>
         public static SpriteRenderer Portrait { get; private set; }
 
+        /// <summary>O busto de quem fala na caixa (<see cref="SpeakerPortraits"/>).</summary>
+        public static string PortraitId { get; private set; }
+
         /// <summary>A linha na tela agora.</summary>
         public static string CurrentLine => Active ? _lines[_index] : null;
 
@@ -40,13 +43,24 @@ namespace EchoesOfCravejada
             _index = 0;
             Speaker = null;
             Portrait = null;
+            PortraitId = null;
         }
 
         /// <summary>Mostra as falas, uma por vez, e termina quando o Scrap passou a ultima.</summary>
         public static IEnumerator Play(string speaker, SpriteRenderer portrait, params string[] lines)
         {
+            return PlayAs(SpeakerPortraits.IdFor(speaker), speaker, portrait, lines);
+        }
+
+        /// <summary>
+        /// O mesmo, escolhendo o busto (o Rei corrompido fala com o rosto
+        /// tomado pelo Oxide, com o mesmo nome).
+        /// </summary>
+        public static IEnumerator PlayAs(string portraitId, string speaker, SpriteRenderer portrait, params string[] lines)
+        {
             if (lines == null || lines.Length == 0) yield break;
 
+            PortraitId = portraitId;
             Speaker = speaker;
             Portrait = portrait;
             _lines = lines;
@@ -71,6 +85,7 @@ namespace EchoesOfCravejada
             _lines = null;
             Speaker = null;
             Portrait = null;
+            PortraitId = null;
 
             // Esse mesmo aperto nao vale pra mais nada.
             yield return null;
@@ -82,6 +97,7 @@ namespace EchoesOfCravejada
             _lines = null;
             Speaker = null;
             Portrait = null;
+            PortraitId = null;
         }
 
         private static bool InteractPressed()

@@ -29,6 +29,7 @@ namespace EchoesOfCravejada.EditorTools
 
         private const string KingRegalSheet = "king_regal_sheet";
         private const string KingCorruptSheet = "king_corrupt_sheet";
+        private const string KingWreckSheet = "d5_king_wreck_sheet";
         private const string StairDoor = "palace_stair_door";
         private const string Facet = "king_facet";
         private const string FacetCorrupt = "king_facet_corrupt";
@@ -37,6 +38,7 @@ namespace EchoesOfCravejada.EditorTools
 
         private const string CartoonKing = "king";
         private const string CartoonPolish = "polish";
+        private const string CartoonCrown = "crown_end";
 
         private static readonly Color Night = new Color(0.07f, 0.07f, 0.11f);
         private static readonly Color LampGlow = new Color(1f, 0.92f, 0.78f);
@@ -116,13 +118,12 @@ namespace EchoesOfCravejada.EditorTools
             var root = new GameObject("Mechanics").transform;
             BuildWorkbenches(Child(root, "Workbenches"));
             BuildCrisol(root);
+            BuildLore(Child(root, "Lore"));
 
-            Gate altarGate = BuildGate(root, "Gate_Altar", Phase05Layout.AltarGate);
             (int sx, int sy, int sh) = Phase05Layout.ArenaSeal;
             Phase01Generator.CreateArenaSeal(root, _groundLayer, new RectInt(sx, sy, 1, sh));
 
-            BuildKing(Child(root, "ThroneRoom"), global, oxideLights, altarGate);
-            BuildAltar(Child(root, "HeartAltar"), global);
+            BuildKing(Child(root, "ThroneRoom"), global, oxideLights);
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -162,7 +163,8 @@ namespace EchoesOfCravejada.EditorTools
             foreach ((string name, System.Func<PixelCanvas> draw, bool hanging, bool tiled) in PalaceArt.Sprites())
             {
                 // O trono a 24 px por tile: o Rei sentado nele fica do tamanho certo (ver KingArt.SeatHeight).
-                int ppu = name.StartsWith("palace_throne") ? KingArt.ThronePixelsPerUnit : Phase01Assets.PixelsPerUnit;
+                int ppu = name.StartsWith("palace_throne") ? KingArt.ThronePixelsPerUnit
+                    : name == "palace_crown" ? LootArt.PixelsPerUnit : Phase01Assets.PixelsPerUnit;
                 Phase02Assets.WriteSprite(name, draw(), tiled ? Vector2.zero : (hanging ? top : feet), tiled, ppu);
             }
 
@@ -180,15 +182,22 @@ namespace EchoesOfCravejada.EditorTools
             Phase02Assets.WriteSprite(Puff, KingArt.Puff(0), middle);
             Phase02Assets.WriteSprite(Glint, KingArt.Glint(), middle);
 
+            // O Coracao de Quartzo, visto pelo janelao da cratera atras do trono.
+            Phase02Assets.WriteSprite(HeartWindowClean, QuartzHeartArt.Window(false), feet);
+            Phase02Assets.WriteSprite(HeartWindowCorrupt, QuartzHeartArt.Window(true), feet);
+            Phase02Assets.WriteSprite(HeartVeins, QuartzHeartArt.Veins(), feet);
+
             // O Rei, no traco dos outros chefes: duas folhas com os mesmos quadros, 32 px por tile.
             var kingPivot = new Vector2(KingArt.PivotX, KingArt.PivotY);
             Phase02Assets.WriteSheet(KingRegalSheet, KingArt.Frames(false), kingPivot, KingArt.PixelsPerUnit);
             Phase02Assets.WriteSheet(KingCorruptSheet, KingArt.Frames(true), kingPivot, KingArt.PixelsPerUnit);
+            Phase02Assets.WriteSheet(KingWreckSheet, KingWreckArt.Frames(), new Vector2(KingWreckArt.PivotX, KingWreckArt.PivotY), KingWreckArt.PixelsPerUnit);
 
 
             // As cutscenes desenhadas: a transformacao e o final.
             CartoonAssets.EnsureSet(CartoonKing, FinaleCartoonArt.Transformation());
             CartoonAssets.EnsureSet(CartoonPolish, FinaleCartoonArt.EndingA());
+            CartoonAssets.EnsureSet(CartoonCrown, FinaleCartoonArt.EndingB());
 
             return Phase01Assets.SliceGrid(MarblePath, MarblePrefix);
         }
@@ -350,6 +359,39 @@ namespace EchoesOfCravejada.EditorTools
             }
         }
 
+        /// <summary>
+        /// O que se le com E no palacio: os retratos da nobreza no corredor.
+        /// A arte (no mapa e na leitura) vem do LoreArt.Phase05.
+        /// </summary>
+        private static void BuildLore(Transform parent)
+        {
+            LoreArtAssets.Write(LoreArt.Phase05.Values);
+
+            foreach (Phase05Layout.LoreSpot spot in Phase05Layout.Lore)
+            {
+                var loreObject = new GameObject(spot.Name);
+                loreObject.transform.SetParent(parent, false);
+                loreObject.transform.position = new Vector3(spot.X, spot.Y, 0f);
+
+                var area = loreObject.AddComponent<BoxCollider2D>();
+                area.isTrigger = true;
+                area.size = new Vector2(2.6f, 2.5f);
+                area.offset = new Vector2(0f, 1.25f);
+
+                var artObject = new GameObject("Art");
+                artObject.transform.SetParent(loreObject.transform, false);
+                artObject.AddComponent<SpriteRenderer>();
+
+                var readable = loreObject.AddComponent<Npc>();
+                readable.ConfigureReadable(spot.Title, spot.Lines);
+
+                if (LoreArt.Phase05.TryGetValue(spot.Name, out LoreArt.Piece piece))
+                {
+                    LoreArtAssets.Apply(piece, artObject, readable, Phase01Assets.SortingTerrain);
+                }
+            }
+        }
+
         private static void BuildCrisol(Transform parent)
         {
             (int X, int Y) tile = Phase05Layout.CrisolTile;
@@ -392,6 +434,37 @@ namespace EchoesOfCravejada.EditorTools
         // O Rei de Prata
         // ------------------------------------------------------------------
 
+        private const string HeartWindowClean = "palace_heart_window_0";
+        private const string HeartWindowCorrupt = "palace_heart_window_1";
+        private const string HeartVeins = "palace_heart_veins";
+
+        /// <summary>
+        /// O janelao atras do trono: a cratera, com o Coracao de Quartzo la no
+        /// fundo, e os veios que sobem dele ate o trono. So cenario; quem o faz
+        /// pulsar e esverdear junto com a luta e o QuartzHeartView.
+        /// </summary>
+        private static void BuildHeartWindow(Transform parent, SilverKing king, float x, float y)
+        {
+            var root = new GameObject("QuartzHeartWindow");
+            root.transform.SetParent(parent, false);
+
+            GameObject clean = Prop(root.transform, HeartWindowClean, x, y, 1);
+            GameObject corrupt = Prop(root.transform, HeartWindowCorrupt, x, y, 1);
+            GameObject veins = Prop(root.transform, HeartVeins, x, y, 2);
+
+            // As duas por cima uma da outra: o verde entra por transparencia.
+            corrupt.GetComponent<SpriteRenderer>().sortingOrder = 1;
+            corrupt.transform.position += new Vector3(0f, 0f, -0.01f);
+            if (_unlit != null) veins.GetComponent<SpriteRenderer>().sharedMaterial = _unlit;
+
+            // O Coracao fica a uns 9,8 tiles acima do pe do janelao (164 px de 320, de cima pra baixo).
+            float heartY = y + (QuartzHeartArt.Size - 164f) / Phase01Assets.PixelsPerUnit;
+            Light2D glow = Phase01Generator.CreatePointLight(root.transform, "HeartLight", (x, heartY), new Color(0.78f, 0.90f, 1f), 0.5f, 7f);
+
+            root.AddComponent<QuartzHeartView>().Configure(clean.GetComponent<SpriteRenderer>(), corrupt.GetComponent<SpriteRenderer>(),
+                veins.GetComponent<SpriteRenderer>(), glow, king);
+        }
+
         private static GameObject Prop(Transform parent, string sprite, float x, float y, int order, string layer = null)
         {
             var propObject = new GameObject(sprite);
@@ -423,7 +496,7 @@ namespace EchoesOfCravejada.EditorTools
         /// de pe diante do trono, com as duas folhas, os raios, o sopro, a
         /// cutscene da transformacao e a coroa que cai.
         /// </summary>
-        private static void BuildKing(Transform parent, Light2D global, List<Light2D> oxideLights, Gate altarGate)
+        private static void BuildKing(Transform parent, Light2D global, List<Light2D> oxideLights)
         {
             (float kx, float ky) = Phase05Layout.KingTile;
             (float tx, float ty) = Phase05Layout.ThroneTile;
@@ -435,8 +508,9 @@ namespace EchoesOfCravejada.EditorTools
             var phaseOne = new List<GameObject>();
             var phaseTwo = new List<GameObject>();
 
-            phaseOne.Add(Prop(parent, "palace_throne", tx, ty, 1));
-            phaseTwo.Add(Prop(parent, "palace_throne_broken", tx, ty, 1));
+            // O trono na frente do janelao da cratera (1) e dos veios (2).
+            phaseOne.Add(Prop(parent, "palace_throne", tx, ty, 3));
+            phaseTwo.Add(Prop(parent, "palace_throne_broken", tx, ty, 3));
 
             foreach (float x in Phase05Layout.ThroneMirrors)
             {
@@ -479,6 +553,7 @@ namespace EchoesOfCravejada.EditorTools
             area.offset = new Vector2(0f, tall * 0.5f);
 
             var king = kingObject.AddComponent<SilverKing>();
+            BuildHeartWindow(parent, king, tx, ty);
 
             // Os golpes.
             KingBeam beamA = Beam(parent, "ScepterBeam_A");
@@ -487,7 +562,7 @@ namespace EchoesOfCravejada.EditorTools
             var breathObject = new GameObject("OxideBreath");
             breathObject.transform.SetParent(parent, false);
             var breath = breathObject.AddComponent<OxideBreath>();
-            breath.Configure(ax0 + 1f, ax1 - 1f, Phase05Layout.ArenaFloorY, Phase02Assets.LoadSprite(Puff), covers.ToArray());
+            breath.Configure(ax0, ax1 + 1f, Phase05Layout.ArenaFloorY, Phase02Assets.LoadSprite(Puff), covers.ToArray());
 
             // A cutscene da transformacao.
             var cartoonObject = new GameObject("KingTransformation");
@@ -495,8 +570,9 @@ namespace EchoesOfCravejada.EditorTools
             var cartoon = cartoonObject.AddComponent<PurificationCartoon>();
             cartoon.Configure(CartoonAssets.LoadSet(CartoonKing, FinaleCartoonArt.Transformation()));
 
-            // A coroa caida, que aparece quando ele tomba de vez (so enfeite: nada de interagir na fase 5).
-            GameObject crown = Prop(parent, "palace_crown", kx + 5.5f, ky, 24, Phase01Assets.SortingActors);
+            // A coroa caida, que aparece quando ele tomba de vez: uma das duas escolhas do fim.
+            (float crx, float cry) = Phase05Layout.CrownTile;
+            GameObject crown = Prop(parent, "palace_crown", crx, cry, 24, Phase01Assets.SortingActors);
             crown.SetActive(false);
 
             (float sx, float sy) = KingArt.ScepterTip;
@@ -508,53 +584,85 @@ namespace EchoesOfCravejada.EditorTools
                 new Rect(wx, wy, ww, wh), new Vector2(sx, sy), new Vector2(ux, uy), new Vector2(cx, cy), new Vector2(mx, my), KingArt.SweepReach);
             king.ConfigureAttacks(beamA, beamB, breath,
                 Phase02Assets.LoadSprite(Facet), Phase02Assets.LoadSprite(FacetCorrupt), Phase02Assets.LoadSprite(Glint));
-            king.ConfigureStage(phaseOne.ToArray(), phaseTwo.ToArray(), global, cartoon, altarGate, crown);
+            king.ConfigureStage(phaseOne.ToArray(), phaseTwo.ToArray(), global, cartoon, null, crown);
             king.ConfigureFrames(regal, corrupt);
+            king.ConfigurePassThrough(Phase05Layout.ArenaLedges.Select(l => new Rect(l.X0, l.Y, l.X1 - l.X0 + 1, 1f)).ToArray());
+
+            // Deitado de vez, ele vira o loop da carcaca: a armadura rachada e o Oxide indo embora.
+            king.ConfigureWreck(WreckAssets.Build(parent, "SilverKingWreck",
+                Phase02Assets.LoadSheet(KingWreckSheet, KingWreckArt.FrameCount), kingObject.transform.position, -2));
 
             // A luz da coroa e a do peito, que vao junto com ele.
             (float hx, float hy) = KingArt.Chest;
             Phase01Generator.CreatePointLight(kingObject.transform, "CrownGlow", (kx, ky + cy), new Color(1f, 0.96f, 0.85f), 0.8f, 5f);
             Phase01Generator.CreatePointLight(kingObject.transform, "HeartGlow", (kx + hx, ky + hy), OxideGreen, 0.5f, 4f);
+
+            BuildFinale(parent, global, crown, tx, ty);
         }
 
         // ------------------------------------------------------------------
-        // O Altar e o final
+        // O final, na propria Sala do Trono
         // ------------------------------------------------------------------
 
-        private static void BuildAltar(Transform parent, Light2D global)
+        /// <summary>
+        /// O Crisol que chega correndo depois do Rei, e as duas escolhas: a
+        /// Coluna atras do trono (o nucleo, a cura, o Scrap se apaga) e a coroa
+        /// caida (as 925 facetas quebradas, a luz volta, o Scrap fica).
+        /// </summary>
+        private static void BuildFinale(Transform parent, Light2D global, GameObject crown, float tx, float ty)
         {
-            (int cx, int cy) = Phase05Layout.ConduitTile;
-            GameObject conduit = Prop(parent, "palace_conduit", cx + 0.5f, cy - 1, 1);
+            float floor = Phase05Layout.FloorY;
 
-            var polishObject = new GameObject("EndingPolishCartoon");
-            polishObject.transform.SetParent(parent, false);
-            var polish = polishObject.AddComponent<PurificationCartoon>();
-            polish.Configure(CartoonAssets.LoadSet(CartoonPolish, FinaleCartoonArt.EndingA()));
+            // Os dois fins.
+            FinaleDirector column = Director(parent, "Finale_Column", CartoonPolish, FinaleCartoonArt.EndingA(), global, new Vector2(tx, ty),
+                Phase05Layout.EndingColumnTitle, Phase05Layout.EndingColumnStory, new Color(1f, 0.97f, 0.88f));
+            FinaleDirector crowned = Director(parent, "Finale_Crown", CartoonCrown, FinaleCartoonArt.EndingB(), global, new Vector2(crown.transform.position.x, floor),
+                Phase05Layout.EndingCrownTitle, Phase05Layout.EndingCrownStory, new Color(0.86f, 0.95f, 1f));
 
-            var directorObject = new GameObject("FinaleDirector");
+            // A Coluna: o janelao atras do trono, de alto a baixo.
+            var columnObject = new GameObject("Choice_Column");
+            columnObject.transform.SetParent(parent, false);
+            columnObject.transform.position = new Vector3(tx, ty, 0f);
+            var columnArea = columnObject.AddComponent<BoxCollider2D>();
+            columnArea.isTrigger = true;
+            columnArea.size = new Vector2(3f, 5f);
+            columnArea.offset = new Vector2(0f, 2.5f);
+            Light2D columnGlow = Phase01Generator.CreatePointLight(columnObject.transform, "Glow", (tx, ty + 4f), new Color(0.9f, 0.96f, 1f), 0f, 6f);
+            columnObject.AddComponent<FinaleChoice>().Configure(column, null, columnGlow);
+
+            // A coroa: o desenho dela pulsa junto.
+            var crownArea = crown.AddComponent<BoxCollider2D>();
+            crownArea.isTrigger = true;
+            crownArea.size = new Vector2(1.8f, 1.4f);
+            crownArea.offset = new Vector2(0f, 0.7f);
+            Light2D crownGlow = Phase01Generator.CreatePointLight(crown.transform, "Glow",
+                (crown.transform.position.x, floor + 0.8f), new Color(1f, 0.95f, 0.8f), 0f, 3.5f);
+            crown.AddComponent<FinaleChoice>().Configure(crowned, crown.GetComponent<SpriteRenderer>(), crownGlow);
+
+            // O Crisol que vem correndo.
+            (float from, float to) = Phase05Layout.FinaleCrisolRun;
+            var crisolObject = new GameObject("Finale_Crisol");
+            crisolObject.transform.SetParent(parent, false);
+            crisolObject.transform.position = new Vector3(from, floor, 0f);
+            SpriteRenderer body = Phase02Assets.AddCrisol(crisolObject, -3);
+            crisolObject.AddComponent<FinaleCrisol>().Configure(body, GameObject.Find("Npc_Crisol"), from, to, floor,
+                Phase05Layout.FinaleCrisolLines);
+        }
+
+        private static FinaleDirector Director(Transform parent, string name, string set, PurificationCartoonArt.Shot[] shots,
+            Light2D global, Vector2 focus, string title, string story, Color tint)
+        {
+            var cartoonObject = new GameObject(name + "_Cartoon");
+            cartoonObject.transform.SetParent(parent, false);
+            var cartoon = cartoonObject.AddComponent<PurificationCartoon>();
+            cartoon.Configure(CartoonAssets.LoadSet(set, shots));
+
+            var directorObject = new GameObject(name);
             directorObject.transform.SetParent(parent, false);
             var director = directorObject.AddComponent<FinaleDirector>();
-            director.Configure(polish, conduit.GetComponent<SpriteRenderer>(),
-                Phase02Assets.LoadSprite("palace_conduit_clean"), global, new Vector2(cx + 0.5f, cy));
-
-            // O encaixe do nucleo: o unico final (ninguem chega aqui sem ter purificado tudo).
-            CoreSocket(parent, director, Phase05Layout.CoreSocketTile);
-        }
-
-        private static void CoreSocket(Transform parent, FinaleDirector director, (int X, int Y) tile)
-        {
-            var choiceObject = new GameObject("CoreSocket");
-            choiceObject.transform.SetParent(parent, false);
-            choiceObject.transform.position = new Vector3(tile.X + 0.5f, tile.Y, 0f);
-
-            var area = choiceObject.AddComponent<BoxCollider2D>();
-            area.isTrigger = true;
-            area.size = new Vector2(2.4f, 2.5f);
-            area.offset = new Vector2(0f, 1.25f);
-
-            choiceObject.AddComponent<HeartChoice>().Configure(director);
-
-            Phase01Generator.CreatePointLight(choiceObject.transform, "Glow", (tile.X + 0.5f, tile.Y + 1f), new Color(0.9f, 0.96f, 1f), 0.6f, 3f);
+            director.Configure(cartoon, null, null, global, focus);
+            director.ConfigureEnding(title, story, false, tint);
+            return director;
         }
     }
 }

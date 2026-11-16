@@ -6,9 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Common/Scenes/MainMenu.unity
+    guid: de01d64a733a13046aad0d396f9329b5
+  - enabled: 1
     path: Assets/Phases/Phase01_ScrapYard/Scene/Phase01_ScrapYard.unity
     guid: ecc1996173b2ecd40b6b422a81ea261d
-  - enabled: 1
+  - enabled: 0
     path: Assets/Common/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1

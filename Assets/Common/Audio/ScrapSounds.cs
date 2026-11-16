@@ -137,17 +137,7 @@ namespace EchoesOfCravejada
             Object owner = null;
             float progress = 0f;
 
-            if (RustyLever.Nearby != null)
-            {
-                owner = RustyLever.Nearby;
-                progress = RustyLever.Nearby.Progress;
-            }
-            else if (Valve.Nearby != null)
-            {
-                owner = Valve.Nearby;
-                progress = Valve.Nearby.Progress;
-            }
-            else if (HoldAction.Owner != null && !(HoldAction.Owner is HeartChoice))
+            if (HoldAction.Owner != null)
             {
                 // A escolha do final se segura, mas nao se raspa.
                 owner = HoldAction.Owner;

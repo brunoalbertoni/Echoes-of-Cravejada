@@ -153,6 +153,16 @@ namespace EchoesOfCravejada.EditorTools
         public const string CutGem = "cut_gem";
         public const string ShardCache = "shard_cache";
 
+        /// <summary>O que os chefes largam e o reforco de chassi, cada um com o desenho proprio (ver LootArt).</summary>
+        public const string ColetorMotor = "loot_coletor_motor";
+        public const string ChassisPlate = "loot_chassis";
+        public const string PressureJumpModule = "loot_pressure_jump";
+        public const string ResonanceTip = "loot_resonance_strike";
+
+        /// <summary>As carcacas dos chefes do District 1 e 2: folhas em loop de fumaca e brasa (ver WreckKit).</summary>
+        public const string ColetorWreckSheet = "coletor_wreck_sheet";
+        public const string MasterWreckSheet = "d2_master_wreck_sheet";
+
         public static string NozzleName(int widthTiles) => "nozzle_" + widthTiles;
 
         public static string SpritePath(string name) => $"{BrassFolder}/{name}.png";
@@ -274,15 +284,21 @@ namespace EchoesOfCravejada.EditorTools
 
             WriteSprite(ScrapPolished, BrassArt.ScrapPolished(), feet);
             WriteSprite(ChiselSlash, ScrapArt.ChiselSlash(), new Vector2(0.5f, 0.5f));
-            WriteSprite(Shard, ScrapArt.Shard(), new Vector2(0.5f, 0.5f));
-            WriteSprite(OldScrap, ScrapArt.OldScrap(), feet);
+            // O que fica caido no mundo: desenho proprio, 32 px por tile (LootArt).
+            int loot = LootArt.PixelsPerUnit;
+            WriteSprite(Shard, LootArt.Shard(), new Vector2(0.5f, 0.5f), false, loot);
+            WriteSprite(OldScrap, LootArt.OldScrap(), feet, false, loot);
             WriteSprite(LeverRusty, ScrapArt.Lever(false), feet);
             WriteSprite(LeverClean, ScrapArt.Lever(true), feet);
             WriteSprite(GateBars, ScrapArt.GateBars(), Vector2.zero, true);
             WriteSprite(Workbench, BrassArt.Workbench(), Vector2.zero);
             WriteSprite(ScrapChunk, ScrapArt.ScrapChunk(), new Vector2(0.5f, 0.5f));
             WriteSprite(ShockWave, ScrapArt.ShockWave(), feet);
-            WriteSprite(DashModule, ScrapArt.DashModule(), new Vector2(0.5f, 0.5f));
+            WriteSprite(DashModule, LootArt.DashModule(), new Vector2(0.5f, 0.5f), false, loot);
+            WriteSprite(ColetorMotor, LootArt.ColetorMotor(), new Vector2(0.5f, 0.5f), false, loot);
+            WriteSprite(ChassisPlate, LootArt.Chassis(), new Vector2(0.5f, 0.5f), false, loot);
+            WriteSprite(PressureJumpModule, LootArt.PressureJump(), new Vector2(0.5f, 0.5f), false, loot);
+            WriteSprite(ResonanceTip, LootArt.ResonanceStrike(), new Vector2(0.5f, 0.5f), false, loot);
             PixelCanvas[] scrapFrames = HeroArt.Frames(HeroArt.Scrap());
             PixelCanvas[] polishedFrames = HeroArt.Frames(HeroArt.Polished());
 
@@ -308,11 +324,11 @@ namespace EchoesOfCravejada.EditorTools
 
             for (int kind = 0; kind < ScrapArt.MasterToolCount; kind++)
             {
-                WriteSprite(MasterToolName(kind), ScrapArt.MasterTool(kind), middle);
+                WriteSprite(MasterToolName(kind), LootArt.MasterTool(kind), middle, false, loot);
             }
 
-            WriteSprite(CutGem, ScrapArt.CutGem(), middle);
-            WriteSprite(ShardCache, ScrapArt.ShardCache(), middle);
+            WriteSprite(CutGem, LootArt.CutGem(), middle, false, loot);
+            WriteSprite(ShardCache, LootArt.ShardCache(), middle, false, loot);
 
             // O bocal do vapor que leva da arena de volta a Antessala, de 3 tiles.
             WriteSprite(NozzleName(3), BrassArt.Nozzle(3), Vector2.zero);
@@ -368,6 +384,7 @@ namespace EchoesOfCravejada.EditorTools
             var soles = new Vector2(0.5f, ColetorArt.PivotY);
             WriteSheet(ColetorSheet, ColetorArt.Frames(false), soles, ColetorArt.PixelsPerUnit);
             WriteSheet(ColetorCrackedSheet, ColetorArt.Frames(true), soles, ColetorArt.PixelsPerUnit);
+            WriteSheet(ColetorWreckSheet, ColetorWreckArt.Frames(), new Vector2(ColetorWreckArt.PivotX, ColetorWreckArt.PivotY), ColetorWreckArt.PixelsPerUnit);
         }
 
         /// <summary>
@@ -391,6 +408,7 @@ namespace EchoesOfCravejada.EditorTools
             var bossPivot = new Vector2(BoilerMasterArt.PivotX, BoilerMasterArt.PivotY);
             WriteSheet(MasterSheet, BoilerMasterArt.Frames(false), bossPivot, BoilerMasterArt.PixelsPerUnit);
             WriteSheet(MasterHotSheet, BoilerMasterArt.Frames(true), bossPivot, BoilerMasterArt.PixelsPerUnit);
+            WriteSheet(MasterWreckSheet, MasterWreckArt.Frames(), new Vector2(MasterWreckArt.PivotX, MasterWreckArt.PivotY), MasterWreckArt.PixelsPerUnit);
 
             for (int variant = 0; variant < District2NpcArt.Count; variant++)
             {
