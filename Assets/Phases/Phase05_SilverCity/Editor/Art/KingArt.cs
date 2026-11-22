@@ -614,7 +614,6 @@ namespace EchoesOfCravejada.EditorTools
             DrawHead(f);
             if (!pose.ScepterDropped) DrawScepter(f);
             else DrawDroppedScepter(f);
-            if (pose.CrownOff) DrawFallenCrown(f, f.HX + 40f, Ground - 4f);
             DrawFrontArm(f);
 
             if (_measure) return f.Canvas;
@@ -1076,7 +1075,6 @@ namespace EchoesOfCravejada.EditorTools
             Taper(c, 136f, g - 16f, 146f, g - 22f, 4f, 0.6f, f.Metal, 0.2f);
             Line(c, 132, (int)g - 15, 136, (int)g - 15, f.Metal[0]);
 
-            DrawFallenCrown(f, 160f, g - 3f);
             DrawDroppedScepter(new Frame { Canvas = c, Pose = f.Pose, Corrupt = f.Corrupt, HX = -8f });
         }
 

@@ -70,6 +70,12 @@ namespace EchoesOfCravejada.EditorTools
         public const string Chain = "decor_chain";
         public const string ElevatorCage = "elevator_cage";
         public const string ElevatorRail = "elevator_rail";
+        public const string WorkCrate = "decor_crate";
+        public const string Toolbox = "decor_toolbox";
+        public const string PipePallet = "decor_pipe_pallet";
+        public const string CoalPile = "decor_coal_pile";
+        public const string Sack = "decor_sack";
+        public const string CoalCart = "decor_coal_cart";
         public const string SkylineFar = "skyline_far";
         public const string SkylineNear = "skyline_near";
 
@@ -229,6 +235,12 @@ namespace EchoesOfCravejada.EditorTools
             WriteSprite(Chain, BrassArt.Chain(), corner, true);
             WriteSprite(ElevatorCage, BrassArt.ElevatorCage(), corner);
             WriteSprite(ElevatorRail, BrassArt.ElevatorRail(), corner, true);
+            WriteSprite(WorkCrate, BrassArt.WorkCrate(), corner);
+            WriteSprite(Toolbox, BrassArt.Toolbox(), corner);
+            WriteSprite(PipePallet, BrassArt.PipePallet(), corner);
+            WriteSprite(CoalPile, BrassArt.CoalPile(), corner);
+            WriteSprite(Sack, BrassArt.Sack(), corner);
+            WriteSprite(CoalCart, BrassArt.CoalCart(), corner);
 
             foreach (int width in nozzleWidths.Distinct())
             {

@@ -37,10 +37,18 @@ namespace EchoesOfCravejada.EditorTools
         {
             yield return ("palace_column", Column, false, false);
             yield return ("palace_window", Window, false, false);
-            for (int i = 0; i < PortraitCount; i++)
+            // Os quadros sem gente: a cidade acesa (1) e a coroa na almofada (2).
+            // O retrato (0) deu lugar aos NoblePortrait.
+            for (int i = 1; i < PortraitCount; i++)
             {
                 int kind = i;
                 yield return ("palace_portrait_" + i, () => Portrait(kind), false, false);
+            }
+
+            for (int i = 0; i < NobleCount; i++)
+            {
+                int who = i;
+                yield return (NobleName(i), () => NoblePortrait(who), false, false);
             }
 
             yield return ("palace_vase", Vase, false, false);
@@ -267,6 +275,160 @@ namespace EchoesOfCravejada.EditorTools
                 }
 
                 c.Fill(10, 28, 17, 2, Gold[2]);
+            }
+
+            ArtKit.AddOutline(c);
+            return c;
+        }
+
+        /// <summary>Quantos retratos de Nobre ha: os quatro que se leem e os da galeria.</summary>
+        public const int NobleCount = 12;
+
+        /// <summary>O nome do retrato de um Nobre (0 a NobleCount-1).</summary>
+        public static string NobleName(int who) => "palace_noble_" + who;
+
+        /// <summary>
+        /// O retrato de um dos 925 Nobres, 36x46, na moldura de ouro: o busto
+        /// de prata polida sobre veludo, cada um com o que o distingue.
+        ///   0 o Mestre de Fundicao: gola alta, olhando de cima.
+        ///   1 a Tesoureira da Coroa: coberta de joias, a mao num cofre.
+        ///   2 Crisol jovem: prata lisa, sem um arranhao, de monoculo.
+        ///   3 o Alquimista-Chefe: jaleco e mascara de bico, o frasco de mercurio contra a luz.
+        ///   4 em diante: os outros Nobres da galeria, cada um com a sua
+        ///   cabeleira, colarinho, insignia e o fundo de uma cor.
+        /// </summary>
+        public static PixelCanvas NoblePortrait(int who)
+        {
+            const int w = 36;
+            const int h = 46;
+            var c = new PixelCanvas(w, h);
+            var rng = new Random(5100 + who * 37);
+
+            // A moldura, como a dos outros quadros.
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    int edge = Math.Min(Math.Min(x, y), Math.Min(w - 1 - x, h - 1 - y));
+                    if (edge > 4) continue;
+                    float light = edge == 0 ? -0.4f : (edge == 1 ? 0.7f : (edge == 4 ? -0.6f : 0.2f));
+                    if (edge == 2 && (x + y) % 3 == 0) light = 0.8f;
+                    c.Set(x, y, ArtKit.Tone(Gold, light));
+                }
+            }
+
+            foreach ((int x, int y) in new[] { (2, 2), (w - 3, 2), (2, h - 3), (w - 3, h - 3) }) ArtKit.Ball(c, x, y, 3f, 3f, Gold, 0.4f);
+
+            // O fundo: veludo, ou um verde/azul de salao nos da galeria.
+            Rgba[][] backs =
+            {
+                Velvet,
+                new[] { new Rgba(20, 40, 34), new Rgba(30, 62, 52), new Rgba(46, 88, 74), new Rgba(70, 120, 100) },
+                new[] { new Rgba(20, 24, 50), new Rgba(32, 40, 78), new Rgba(50, 60, 108), new Rgba(76, 90, 146) },
+                new[] { new Rgba(46, 30, 20), new Rgba(70, 46, 30), new Rgba(100, 68, 44), new Rgba(130, 94, 62) },
+            };
+
+            Rgba[] back = who < 4 ? Velvet : backs[who % backs.Length];
+            for (int y = 5; y < h - 5; y++)
+            {
+                for (int x = 5; x < w - 5; x++)
+                {
+                    float light = (y - 5) / (float)(h - 10) * -1.2f + 0.3f - Math.Abs(x - 18f) * 0.02f;
+                    c.Set(x, y, ArtKit.Tone(back, light));
+                }
+            }
+
+            Rgba[] cloth = who == 3 ? new[] { new Rgba(130, 130, 124), new Rgba(176, 176, 168), new Rgba(214, 214, 206), new Rgba(242, 242, 236) }
+                : (who < 4 ? new[] { new Rgba(30, 20, 34), new Rgba(48, 34, 56), new Rgba(70, 52, 84), new Rgba(96, 76, 112) } : backs[(who + 1) % backs.Length]);
+
+            // Os ombros e o peito.
+            ArtKit.Ball(c, 18f, 38f, 11f, 7f, cloth, 0.3f);
+
+            // O pescoco e o rosto de prata, mais polido no alto a esquerda.
+            ArtKit.Ball(c, 18f, 28f, 3f, 3f, Silver, 0.2f);
+            float faceY = 20f;
+            ArtKit.Ball(c, 18f, faceY, 5.5f, 6.5f, Silver, 0.45f);
+
+            // Os olhos: dois riscos frios, olhando de lado.
+            c.Fill(15, (int)faceY, 2, 1, ArtKit.Outline);
+            c.Fill(20, (int)faceY, 2, 1, ArtKit.Outline);
+            c.Set(18, (int)faceY + 3, Silver[0]);
+            c.Fill(17, (int)faceY + 4, 3, 1, Silver[0]);
+
+            switch (who)
+            {
+                case 0:
+                    // A gola alta, dura, ate as orelhas.
+                    for (int y = 25; y < 32; y++)
+                    {
+                        c.Fill(11, y, 4, 1, ArtKit.Tone(Silver, 0.6f - (y - 25) * 0.1f));
+                        c.Fill(21, y, 4, 1, ArtKit.Tone(Silver, 0.2f - (y - 25) * 0.1f));
+                    }
+
+                    ArtKit.Ball(c, 18f, 13.5f, 6f, 3f, Silver, 0.1f);
+                    c.Fill(15, 19, 2, 1, Silver[1]);
+                    c.Fill(20, 19, 2, 1, Silver[1]);
+                    break;
+
+                case 1:
+                    // O cabelo preso, os brincos, o colar de tres voltas e o cofre.
+                    ArtKit.Ball(c, 18f, 12.5f, 6.5f, 4f, new[] { new Rgba(60, 50, 60), new Rgba(90, 76, 86), new Rgba(130, 112, 120), new Rgba(170, 150, 156) }, 0.2f);
+                    c.Set(12, 22, Crystal[3]);
+                    c.Set(24, 22, Crystal[3]);
+                    for (int row = 0; row < 3; row++)
+                    {
+                        for (int i = 0; i < 9 - row * 2; i++) c.Set(14 + row + i, 30 + row * 2, i % 2 == 0 ? Crystal[3] : Gold[3]);
+                    }
+
+                    c.Fill(23, 34, 7, 6, Gold[1]);
+                    c.Fill(23, 34, 7, 1, Gold[3]);
+                    c.Set(26, 37, ArtKit.Outline);
+                    ArtKit.Ball(c, 24f, 34f, 2f, 1.5f, Silver, 0.4f);
+                    break;
+
+                case 2:
+                    // Crisol jovem: liso, sem arranhao, de monoculo e corrente.
+                    for (int i = 0; i < 12; i++)
+                    {
+                        double a = i * Math.PI / 6.0;
+                        c.Set((int)Math.Round(21 + Math.Cos(a) * 2), (int)Math.Round(faceY + Math.Sin(a) * 2), Gold[3]);
+                    }
+
+                    c.Set(21, (int)faceY, new Rgba(200, 230, 255));
+                    ArtKit.Line(c, 23, (int)faceY + 1, 25, 30, Gold[2]);
+                    c.Set(18, 17, Silver[3]);
+                    c.Set(16, 16, Silver[3]);
+                    break;
+
+                case 3:
+                    // A mascara de bico e o frasco de mercurio contra a luz.
+                    ArtKit.Taper(c, 19f, faceY + 1f, 27f, faceY + 5f, 2.5f, 0.6f, ArtKit.Plain(Walnut), 0.2f);
+                    c.Fill(15, (int)faceY - 1, 3, 3, new Rgba(60, 160, 140));
+                    c.Fill(20, (int)faceY - 1, 3, 3, new Rgba(60, 160, 140));
+                    ArtKit.Ball(c, 9f, 30f, 3f, 3.5f, Silver, 0.6f);
+                    c.Fill(8, 25, 2, 2, Gold[2]);
+                    c.Set(8, 29, Crystal[3]);
+                    break;
+
+                default:
+                {
+                    // Os da galeria: cabeleira, coroa de Nobre ou nada; colarinho; insignia.
+                    int hair = rng.Next(3);
+                    if (hair == 0) ArtKit.Ball(c, 18f, 13.5f, 6.5f, 4f, Silver, 0.1f);
+                    else if (hair == 1) ArtKit.Ball(c, 18f, 13f, 7.5f, 4.5f, new[] { new Rgba(60, 50, 60), new Rgba(90, 76, 86), new Rgba(130, 112, 120), new Rgba(170, 150, 156) }, 0.2f);
+                    else
+                    {
+                        for (int i = 0; i < 4; i++) ArtKit.Polygon(c, new[] { (13f + i * 3f, 15f), (14.5f + i * 3f, 10f), (16f + i * 3f, 15f) }, (x, y) => Gold[3]);
+                        c.Fill(13, 14, 11, 2, Gold[2]);
+                    }
+
+                    for (int i = 0; i < 9; i++) c.Set(14 + i, 31, Silver[3]);
+                    int badge = rng.Next(3);
+                    if (badge == 0) ArtKit.Ball(c, 13f, 36f, 1.6f, 1.6f, Gold, 0.4f);
+                    else if (badge == 1) c.Fill(22, 35, 3, 3, Crystal[2]);
+                    else ArtKit.Line(c, 10, 33, 26, 41, Gold[2]);
+                    break;
+                }
             }
 
             ArtKit.AddOutline(c);

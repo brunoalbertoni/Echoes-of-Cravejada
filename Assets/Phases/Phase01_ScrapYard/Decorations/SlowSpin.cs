@@ -17,9 +17,22 @@ namespace EchoesOfCravejada
             degreesPerSecond = newDegreesPerSecond;
         }
 
+        private float _boost;
+
+        /// <summary>
+        /// Um tranco (a onda da purificacao passando): a engrenagem dispara,
+        /// times vezes mais rapido, e volta devagar ao ritmo dela.
+        /// </summary>
+        public void Kick(float times)
+        {
+            _boost = Mathf.Max(_boost, times);
+        }
+
         private void Update()
         {
-            transform.Rotate(0f, 0f, degreesPerSecond * Time.deltaTime);
+            float speed = degreesPerSecond * (1f + _boost);
+            if (_boost > 0.01f) _boost *= Mathf.Exp(-0.9f * Time.deltaTime);
+            transform.Rotate(0f, 0f, speed * Time.deltaTime);
         }
     }
 }

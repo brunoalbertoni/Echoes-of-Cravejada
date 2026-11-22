@@ -4,7 +4,8 @@ namespace EchoesOfCravejada.EditorTools
 {
     /// <summary>
     /// O que se le no palacio: os retratos da nobreza no corredor, limpos,
-    /// como a Corte se via.
+    /// como a Corte se via. No mapa, cada um mostra o proprio Nobre
+    /// (PalaceDecorArt.NoblePortrait).
     /// </summary>
     public static partial class LoreArt
     {
@@ -16,10 +17,10 @@ namespace EchoesOfCravejada.EditorTools
         {
             return Index(new[]
             {
-                Make("Lore_Portrait_1", "palace_noble_portrait_0", () => PalaceDecorArt.Portrait(0), 4.5f, true, PortraitDoc(0, 0, "MESTRE DE FUNDIÇÃO", 4411)),
-                Make("Lore_Portrait_2", "palace_noble_portrait_1", () => PalaceDecorArt.Portrait(1), 4.5f, true, PortraitDoc(1, 0, "TESOUREIRA DA COROA", 4412)),
-                Make("Lore_Portrait_Crisol", "palace_noble_portrait_2", () => PalaceDecorArt.Portrait(2), 4.5f, true, PortraitDoc(2, 0, "CRISOL. LAPIDÁRIO DA CORTE.", 4413)),
-                Make("Lore_Portrait_3", "palace_noble_portrait_0", () => PalaceDecorArt.Portrait(0), 4.5f, true, PortraitDoc(3, 0, "ALQUIMISTA-CHEFE", 4414)),
+                Make("Lore_Portrait_1", "palace_noble_portrait_0", () => PalaceDecorArt.NoblePortrait(0), 4.5f, true, PortraitDoc(0, 0, "MESTRE DE FUNDIÇÃO", 4411)),
+                Make("Lore_Portrait_2", "palace_noble_portrait_1", () => PalaceDecorArt.NoblePortrait(1), 4.5f, true, PortraitDoc(1, 0, "TESOUREIRA DA COROA", 4412)),
+                Make("Lore_Portrait_Crisol", "palace_noble_portrait_2", () => PalaceDecorArt.NoblePortrait(2), 4.5f, true, PortraitDoc(2, 0, "CRISOL. LAPIDÁRIO DA CORTE.", 4413)),
+                Make("Lore_Portrait_3", "palace_noble_portrait_3", () => PalaceDecorArt.NoblePortrait(3), 4.5f, true, PortraitDoc(3, 0, "ALQUIMISTA-CHEFE", 4414)),
             });
         }
     }

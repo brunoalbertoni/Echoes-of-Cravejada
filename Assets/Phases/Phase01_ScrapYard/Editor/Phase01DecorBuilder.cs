@@ -12,8 +12,8 @@ namespace EchoesOfCravejada.EditorTools
     /// Quatro raizes, uma por camada, mais duas que a purificacao usa:
     ///   Decor_Wall    — na parede, pintada pela cor do TM_Background (TintFollower).
     ///   Decor_Back    — no chao, atras do terreno.
-    ///   Decor_Middle  — no chao, na frente do terreno.
-    ///   Decor_Front   — na frente do Scrap, em silhueta.
+    ///   Decor_Middle  — no chao, logo atras do terreno (o chao e as plataformas passam na frente).
+    ///   Decor_Front   — vai pro fundo tambem: nada que nao se toca fica na frente do Scrap.
     ///   Decor_Oxide   — pocas e respiros: somem com a purificacao.
     /// As luzes vao pra raiz "Lighting": as verdes com nome OxideGlow_ (a
     /// purificacao apaga) e as dos postes com nome DecorLamp_ (a purificacao acende).
@@ -26,11 +26,10 @@ namespace EchoesOfCravejada.EditorTools
 
         private const int WallOrder = 2;
         private const int BackOrder = 7;
-        private const int MiddleOrder = 21;
+        private const int MiddleOrder = 9;
 
         // Escura o bastante pra os inimigos (do mesmo metal) nao sumirem na frente dela.
         private static readonly Color BackTint = new Color(0.60f, 0.67f, 0.65f);
-        private static readonly Color FrontTint = new Color(0.30f, 0.36f, 0.36f);
         private static readonly Color WallTint = new Color(0.52f, 0.63f, 0.60f);
         private static readonly Color OxideGreen = new Color(0.36f, 0.95f, 0.60f);
         private static readonly Color LampWarm = new Color(1f, 0.82f, 0.55f);
@@ -170,15 +169,18 @@ namespace EchoesOfCravejada.EditorTools
                     renderer.color = BackTint;
                     break;
 
+                // Nada fica na frente do Scrap: o que nao se toca e fundo.
                 case Phase01Decor.Layer.Front:
-                    renderer.sortingLayerName = Phase01Assets.SortingForeground;
-                    renderer.sortingOrder = 1;
-                    renderer.color = FrontTint;
+                    renderer.sortingLayerName = Phase01Assets.SortingTerrain;
+                    renderer.sortingOrder = BackOrder;
+                    renderer.color = BackTint;
                     break;
 
+                // Na frente do terreno, mas ainda em segundo plano: apagado.
                 default:
                     renderer.sortingLayerName = Phase01Assets.SortingTerrain;
                     renderer.sortingOrder = MiddleOrder;
+                    renderer.color = Phase01Generator.DecorTint;
                     break;
             }
         }

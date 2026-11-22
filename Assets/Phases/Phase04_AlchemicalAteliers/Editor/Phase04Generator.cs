@@ -298,6 +298,10 @@ namespace EchoesOfCravejada.EditorTools
                 Phase02Assets.WriteSprite(name, draw(), hanging ? top : feet);
             }
 
+            // O que sobrou largado (LabClutterArt) e os marcadores do que se usa.
+            foreach ((string name, PixelCanvas canvas) in LabClutterArt.All()) Phase02Assets.WriteSprite(name, canvas, feet);
+            Phase01Generator.EnsureCueArt();
+
             for (int lit = 0; lit <= 3; lit++) Phase02Assets.WriteSprite(LabArt.GreatAlembicName(lit), LabArt.GreatAlembic(lit), feet);
             for (int i = 0; i < 3; i++) Phase02Assets.WriteSprite(LabArt.ReagentName(i), LootArt.Reagent(i), middle, false, LootArt.PixelsPerUnit);
             for (int cracks = 0; cracks <= 3; cracks++) Phase02Assets.WriteSprite(BellName(cracks), LabArt.BellJar(cracks), feet);
@@ -319,10 +323,8 @@ namespace EchoesOfCravejada.EditorTools
             Phase02Assets.WriteSprite(StairDoor, StairArt.Doorway(), feet);
 
             // A Assistente, que aparece na plateia depois da purificacao.
-            for (int f = 0; f < LabFoeArt.IdleFrames; f++)
-            {
-                Phase02Assets.WriteSprite(FrameName("assistant", f), LabFoeArt.Assistant(f), feet);
-            }
+            Phase02Assets.WriteSheet(District4NpcArt.SheetName, District4NpcArt.Frames(),
+                new Vector2(0.5f, 0f), District4NpcArt.PixelsPerUnit);
 
             // Os corrompidos, no detalhe das outras fases: uma folha cada, 32 px
             // por tile, com todas as poses e a morte. A sentinela tem duas: a de
@@ -469,7 +471,18 @@ namespace EchoesOfCravejada.EditorTools
                 propObject.transform.SetParent(root.transform, false);
 
                 propObject.transform.position = new Vector3(prop.X, prop.Y, 0f);
-                Sprite(propObject, prop.Sprite, Phase01Assets.SortingTerrain, prop.Order);
+                SpriteRenderer propSprite = Sprite(propObject, prop.Sprite, Phase01Assets.SortingTerrain, prop.Order);
+
+                // O que o Scrap nao toca fica em segundo plano: atras do chao (as
+                // ordens daqui sao todas menores que a do TM_Ground) e apagado. O
+                // lustre, que tem luz, so escurece um pouco.
+                if (propSprite != null)
+                {
+                    propSprite.sortingOrder = Mathf.Min(propSprite.sortingOrder, 9);
+                    propSprite.color = prop.Sprite == "lab_chandelier"
+                        ? Color.Lerp(Color.white, Phase01Generator.DecorTint, 0.4f)
+                        : Phase01Generator.DecorTint;
+                }
 
                 // O lustre balanca devagar, preso no teto.
                 if (prop.Sprite == "lab_chandelier") propObject.AddComponent<Sway>().Configure(1.5f, 4.5f, (prop.X * 0.37f) % 1f);
@@ -773,8 +786,11 @@ namespace EchoesOfCravejada.EditorTools
 
                 mirrorObject.AddComponent<SilverMirror>().Configure(spec.Slash, face, sprite);
 
-                Phase01Generator.CreatePointLight(mirrorObject.transform, "Shine",
+                Light2D shine = Phase01Generator.CreatePointLight(mirrorObject.transform, "Shine",
                     (spec.X + 0.5f, spec.Y + 0.5f), new Color(0.85f, 0.92f, 1f), 0.35f, 1.8f);
+
+                // A setinha: o espelho gira no golpe.
+                Phase01Generator.AddCue(mirrorObject, CueArt.Use, spec.Y + 1.2f, shine);
             }
 
             foreach (Phase04Layout.LockSpec spec in Phase04Layout.Locks)
@@ -846,8 +862,9 @@ namespace EchoesOfCravejada.EditorTools
                     Phase04Layout.ReagentPrefix, Phase04Layout.Reagents.Count);
                 pickup.AddComponent<Sway>();
 
-                Phase01Generator.CreatePointLight(pickup.transform, "Glow",
-                    (reagent.X + 0.5f, reagent.Y + 1f), new Color(1f, 0.96f, 0.85f), 0.7f, 3.5f);
+                Light2D reagentGlow = Phase01Generator.CreatePointLight(pickup.transform, "Glow",
+                    (reagent.X + 0.5f, reagent.Y + 1f), new Color(1f, 0.96f, 0.85f), 0.9f, 4f);
+                Phase01Generator.AddCue(pickup, CueArt.Item, TopOf(pickup, reagent.Y + 1.6f), reagentGlow);
             }
         }
 
@@ -881,8 +898,11 @@ namespace EchoesOfCravejada.EditorTools
                 Phase04Layout.Reagents.Select(r => r.Name).ToArray(),
                 gate, body, stages);
 
-            Phase01Generator.CreatePointLight(alembicObject.transform, "Glow",
+            Light2D alembicGlow = Phase01Generator.CreatePointLight(alembicObject.transform, "Glow",
                 (ax + 0.5f, ay + 3f), new Color(0.90f, 0.94f, 1f), 0.6f, 5f);
+
+            // A setinha em cima do Grande Alambique: e nele que os reagentes vao.
+            Phase01Generator.AddCue(alembicObject, CueArt.Use, TopOf(alembicObject, ay + 5f), alembicGlow);
         }
 
         private static void BuildSecrets(Transform parent)
@@ -901,6 +921,19 @@ namespace EchoesOfCravejada.EditorTools
             trigger.radius = 0.7f;
 
             pickup.AddComponent<RewardPickup>().Configure(RewardPickup.Kind.Chassis, "D4_Secret_Chassis");
+            Phase01Generator.AddCue(pickup, CueArt.Item, TopOf(pickup, pickup.transform.position.y + 0.6f), null);
+        }
+
+        /// <summary>O alto do desenho de algo (em mundo), pra pendurar o marcador em cima.</summary>
+        private static float TopOf(GameObject target, float fallback)
+        {
+            float top = float.MinValue;
+            foreach (SpriteRenderer renderer in target.GetComponentsInChildren<SpriteRenderer>())
+            {
+                if (renderer.sprite != null && renderer.gameObject.name != "Cue") top = Mathf.Max(top, renderer.bounds.max.y);
+            }
+
+            return top > float.MinValue ? top : fallback;
         }
 
         /// <summary>
@@ -1078,6 +1111,10 @@ namespace EchoesOfCravejada.EditorTools
 
             // O rubi foi no District 2. Aqui ele so conversa e vende.
             crisol.ConfigureGivesRuby(false);
+
+            Light2D crisolGlow = Phase01Generator.CreatePointLight(crisolObject.transform, "Glow",
+                (crisolObject.transform.position.x, crisolObject.transform.position.y + 1f), new Color(0.80f, 0.95f, 0.90f), 0.8f, 3.8f);
+            Phase01Generator.AddCue(crisolObject, CueArt.Talk, TopOf(crisolObject, crisolObject.transform.position.y + 3f), crisolGlow);
             return crisolObject;
         }
 
@@ -1128,9 +1165,12 @@ namespace EchoesOfCravejada.EditorTools
                     }
                 }
 
-                // Uma luz fraca, pra dar pra achar.
-                Phase01Generator.CreatePointLight(loreObject.transform, "Glow",
-                    (spot.X + 0.5f, spot.Y + 1.6f), new Color(0.95f, 0.92f, 0.80f), 0.45f, 3.5f);
+                // Uma luz, pra dar pra achar, e o marcador que flutua: balao pra
+                // quem fala, folhinha pro que se le.
+                bool talks = spot.Kind == "assistant";
+                Light2D loreGlow = Phase01Generator.CreatePointLight(loreObject.transform, "Glow",
+                    (spot.X + 0.5f, spot.Y + 1.6f), new Color(0.95f, 0.92f, 0.80f), 0.7f, 3.8f);
+                Phase01Generator.AddCue(loreObject, talks ? CueArt.Talk : CueArt.Read, TopOf(loreObject, spot.Y + 2f), loreGlow);
             }
 
             return cabinet;
@@ -1167,8 +1207,15 @@ namespace EchoesOfCravejada.EditorTools
                     npcObject.transform.SetParent(audience, false);
                     npcObject.transform.position = new Vector3(spot.X + 0.5f, spot.Y, 0f);
 
-                    Sprite(npcObject, FrameName("assistant", 0), Phase01Assets.SortingActors, -4);
-                    npcObject.AddComponent<SpriteLoop>().Configure(LoadFrames("assistant", LabFoeArt.IdleFrames), 1.5f, -1);
+                    // Corpo proprio, no padrao dos outros NPCs: respira e pisca.
+                    Sprite[] idle = Phase02Assets.LoadSheet(District4NpcArt.SheetName, District4NpcArt.IdleFrames);
+                    var bodyObject = new GameObject("Body");
+                    bodyObject.transform.SetParent(npcObject.transform, false);
+                    SpriteRenderer body = bodyObject.AddComponent<SpriteRenderer>();
+                    body.sprite = idle.Length > 0 ? idle[0] : null;
+                    body.sortingLayerName = Phase01Assets.SortingActors;
+                    body.sortingOrder = -4;
+                    bodyObject.AddComponent<SpriteLoop>().Configure(idle, 5f, District4NpcArt.BlinkFrame);
 
                     var area = npcObject.AddComponent<BoxCollider2D>();
                     area.isTrigger = true;
@@ -1176,6 +1223,7 @@ namespace EchoesOfCravejada.EditorTools
                     area.offset = new Vector2(0f, 1.25f);
 
                     npcObject.AddComponent<Npc>().Configure(spot.Title, spot.Lines);
+                    Phase01Generator.AddCue(npcObject, CueArt.Talk, TopOf(npcObject, spot.Y + 3f), null);
                 }
 
                 if (lighting != null)

@@ -672,8 +672,10 @@ namespace EchoesOfCravejada
         }
 
         /// <summary>
-        /// A troca de aparencia: o Scrap pisca em branco, incha um pouco e volta
-        /// ao tamanho ja polido.
+        /// A troca de aparencia: um facho de luz desce sobre o Scrap, a
+        /// ferrugem vai descascando do corpo dele em lascas que caem; no auge
+        /// do brilho ele troca pro polido, num estalo de faiscas, e volta ao
+        /// tamanho ja limpo.
         /// </summary>
         private IEnumerator Polish(ScrapController controller)
         {
@@ -685,22 +687,64 @@ namespace EchoesOfCravejada
             var glare = new Color(1f, 0.95f, 0.75f);
             Sfx.PolishShine.Play();
 
-            const float shine = 1.2f;
+            const float shine = 2.0f;
             bool changed = false;
+            var rustLight = new Color(0.78f, 0.46f, 0.24f);
+            var rustDark = new Color(0.40f, 0.21f, 0.13f);
+            Vector2 chest = (Vector2)_player.position + Vector2.up * 0.6f;
+
+            // A camera chega perto dele.
+            ScrapCameraFollow.Direct(chest + Vector2.up * 0.4f, 0.55f, 0.4f);
+
+            // O facho: uma luz forte em cima, descendo sobre ele.
+            var beamObject = new GameObject("PolishBeam");
+            beamObject.transform.position = new Vector3(chest.x, chest.y + 3f, 0f);
+            var beam = beamObject.AddComponent<UnityEngine.Rendering.Universal.Light2D>();
+            beam.lightType = UnityEngine.Rendering.Universal.Light2D.LightType.Point;
+            beam.color = glare;
+            beam.intensity = 0f;
+            beam.pointLightOuterRadius = 4f;
+
+            float carry = 0f;
 
             for (float t = 0f; t < shine; t += Time.deltaTime)
             {
                 if (controller != null) controller.ControlLocked = true;
 
                 float k = t / shine;
+                beam.intensity = Mathf.Sin(k * Mathf.PI) * 2.4f;
+                beam.transform.position = new Vector3(chest.x, chest.y + Mathf.Lerp(3f, 0.4f, Mathf.Min(1f, k * 1.6f)), 0f);
+
+                // A ferrugem descascando, cada vez mais, ate a troca; dali pra
+                // frente so uns pontinhos de brilho subindo.
+                if (!changed)
+                {
+                    carry += Mathf.Lerp(10f, 60f, k * 2f) * Time.deltaTime;
+                    int flakes = (int)carry;
+                    carry -= flakes;
+                    for (int i = 0; i < flakes; i++)
+                    {
+                        Vector2 at = chest + new Vector2(Random.Range(-0.45f, 0.45f), Random.Range(-0.5f, 0.5f));
+                        Motes.Burst(at, 1, rustLight, rustDark, 0.6f, 2.2f, -9f, 1.2f, 2f, 0.6f);
+                    }
+                }
+                else if (Random.value < 0.4f)
+                {
+                    Motes.Rise(chest + Random.insideUnitCircle * 0.4f, 1, Color.white, glare, 0.2f, 1.2f);
+                }
 
                 // Troca no meio do brilho, quando ele esta mais claro.
                 if (!changed && k >= 0.5f)
                 {
                     appearance.Polish();
-                    ScrapCameraFollow.Shake(0.1f, 0.3f);
+                    ScrapCameraFollow.Shake(0.12f, 0.35f);
+                    Cinematic.Flash = 0.6f;
+                    Motes.Burst(chest, 60, Color.white, glare, 3f, 8f, -3f, 1f, 1f, 1.2f);
+                    Motes.Burst(chest, 30, rustLight, rustDark, 2f, 5f, -12f, 1.4f, 2f, 0.6f);
                     changed = true;
                 }
+
+                if (changed) Cinematic.Flash = Mathf.Max(0f, Cinematic.Flash - Time.deltaTime * 2f);
 
                 float swell = 1f + 0.18f * Mathf.Sin(k * Mathf.PI);
                 _player.localScale = new Vector3(size.x * swell, size.y * swell, size.z);
@@ -711,6 +755,9 @@ namespace EchoesOfCravejada
 
             _player.localScale = size;
             if (look != null) look.color = Color.white;
+            Cinematic.Flash = 0f;
+            Destroy(beamObject);
+            ScrapCameraFollow.Release();
 
         }
 

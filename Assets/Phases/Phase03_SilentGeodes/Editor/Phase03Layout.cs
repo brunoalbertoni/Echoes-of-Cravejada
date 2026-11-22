@@ -320,6 +320,9 @@ namespace EchoesOfCravejada.EditorTools
         /// </summary>
         public const float ElevatorTopY = 116f;
 
+        /// <summary>O fundo do poco embaixo da cabine, de onde ela parte na chegada.</summary>
+        public const int ElevatorShaftBottom = 1;
+
         /// <summary>
         /// Os escombros que entopem o poco logo acima da cabine. Pro mapa sao
         /// rocha ate a broca cair (como as barreiras); quem os desenha e os
@@ -351,20 +354,20 @@ namespace EchoesOfCravejada.EditorTools
         // o trecho de chao onde caem os estilhacos e nascem os bichos;
         // EliteWake, a area que o acorda (e onde ele escuta).
         public static (int X, int Y) EliteTile => (182, 60);
-        public static (int X0, int X1) EliteRange => (169, 202);
-        public static (int X, int Y, int Width, int Height) EliteWake => (169, 60, 33, 14);
+        public static (int X0, int X1) EliteRange => (171, 202);
+        public static (int X, int Y, int Width, int Height) EliteWake => (171, 60, 31, 14);
 
-        /// <summary>A grade que fecha a boca da chamine (por onde se sobe pra toca) enquanto o Capataz luta.</summary>
-        public static (int X, int Y, int Width, int Height) EliteSeal => (165, 59, 4, 1);
+        /// <summary>A porta lateral, entre a saleta da chamine e a toca: fecha enquanto o Capataz luta.</summary>
+        public static (int X, int Y, int Width, int Height) EliteSeal => (170, 60, 1, 4);
 
         /// <summary>Onde ele espera, ajoelhado (os pes), no fundo leste da toca.</summary>
         public static (float X, float Y) ForemanHome => (197f, 60f);
 
         /// <summary>
-        /// Ate onde ele anda, em x de mundo: da beira da grade do chao (a
-        /// oeste, por onde o Scrap sobe) ate rente a parede leste.
+        /// Ate onde ele anda, em x de mundo: a toca inteira, da porta lateral
+        /// (a oeste) ate rente a parede leste.
         /// </summary>
-        public static (float X0, float X1) ForemanRange => (170.2f, 202.2f);
+        public static (float X0, float X1) ForemanRange => (171.2f, 202.2f);
 
         /// <summary>O teto da toca: de onde caem os estilhacos quando ele grita ou bate na parede.</summary>
         public const float MonsterCeiling = 74.5f;
@@ -446,6 +449,125 @@ namespace EchoesOfCravejada.EditorTools
             BuildDrillChamber();
 
             BuildMineDressing();
+            Furnish();
+        }
+
+        /// <summary>
+        /// O que cada sala tem largado no chao, pela historia dela. O tunel e
+        /// as galerias tem ferramenta e pedregulho de escavacao; a Fenda (a
+        /// mineracao privada da Coroa) tem geodo cortado e caixote com o selo;
+        /// a gruta do Crisol, os sacos que nunca subiram. Fora da lista ficam o
+        /// Poco Fragil e o Poco do Bilhete (so descida), o Campanario (o templo)
+        /// e a Camara de Perfuracao (a arena).
+        /// </summary>
+        private static readonly Dictionary<string, string[]> Clutter = new Dictionary<string, string[]>
+        {
+            ["01_Arrival"] = new[] { "decor_crate", "decor_sack" },
+            ["02_DarkTunnel"] = new[] { MineDressArt.Pickaxe, MineDressArt.Rubble, MineDressArt.Lantern, MineDressArt.Stalagmite },
+            ["03_FirstHunter"] = new[] { MineDressArt.Rubble, MineDressArt.Pickaxe, MineDressArt.OreSack },
+            ["04b_Rift"] = new[] { MineDressArt.CutGeode, MineDressArt.OreSack, "decor_crate", MineDressArt.Rubble },
+            ["05_Grotto"] = new[] { MineDressArt.OreSack, MineDressArt.Lantern, "decor_crate" },
+            ["06_EngravingGallery"] = new[] { MineDressArt.Stalagmite, MineDressArt.Rubble, MineDressArt.Lantern },
+            ["07_EchoChamber"] = new[] { MineDressArt.Stalagmite, MineDressArt.CutGeode },
+            ["07b_Ruins"] = new[] { MineDressArt.Rubble, MineDressArt.Stalagmite },
+            ["08_HunterGallery"] = new[] { MineDressArt.Pickaxe, MineDressArt.Lantern, MineDressArt.OreSack },
+            ["09_ResonantChamber"] = new[] { MineDressArt.Stalagmite, MineDressArt.CutGeode },
+            ["10_FragileVault"] = new[] { MineDressArt.Rubble },
+            ["10b_EastLoop"] = new[] { MineDressArt.Pickaxe, MineDressArt.OreSack },
+            ["12_PreBoss"] = new[] { "decor_crate", "decor_toolbox", MineDressArt.OreSack },
+        };
+
+        /// <summary>
+        /// Espalha o material da mina pelo chao livre de cada sala: um grupinho
+        /// a cada tantos tiles, sempre em chao de rocha, com ar em cima, longe
+        /// (pelo menos um ou dois tiles) de tudo o que se usa, dos cristais, das
+        /// plataformas frageis, dos espinhos e dos portoes. O CheckDecorPhysics
+        /// confere o resultado.
+        /// </summary>
+        private static void Furnish()
+        {
+            var blocked = new HashSet<(int, int)>();
+
+            void Block(int x, int y, int margin)
+            {
+                for (int dy = -margin; dy <= margin; dy++)
+                {
+                    for (int dx = -margin; dx <= margin; dx++) blocked.Add((x + dx, y + dy));
+                }
+            }
+
+            void BlockRect(int x, int y, int w, int h, int margin)
+            {
+                for (int yy = y - margin; yy < y + h + margin; yy++)
+                {
+                    for (int xx = x - margin; xx < x + w + margin; xx++) blocked.Add((xx, yy));
+                }
+            }
+
+            foreach (Marker marker in Markers) Block(marker.X, marker.Y, 2);
+            foreach (LoreSpot lore in Lore) Block(lore.X, lore.Y, 2);
+            foreach (LoreSpot lore in Purified) Block(lore.X, lore.Y, 2);
+            foreach (RewardSpot reward in Rewards) Block(reward.X, reward.Y, 2);
+            foreach (EchoSpot echo in Echoes) Block(echo.X, echo.Y, 1);
+            foreach (ResonantSpot resonant in Resonants) Block(resonant.X, resonant.Y, 2);
+            foreach (StatueSpot statue in Statues) Block(statue.X, statue.Y, 2);
+            foreach (GateSpec gate in Gates) BlockRect(gate.X, gate.Y, gate.Width, gate.Height, 2);
+            foreach ((int x0, int x1, int y) in Fragiles) BlockRect(x0, y, x1 - x0 + 1, 1, 2);
+            foreach ((string _, int x0, int x1, int y0, int y1) in Slabs) BlockRect(x0, y0, x1 - x0 + 1, y1 - y0 + 1, 2);
+            foreach ((string _, int x, int y, int h) in Barriers) BlockRect(x, y, 1, h, 2);
+            foreach ((int x, int y) in SpawnCracks) Block(x, y, 2);
+            foreach ((string _, int x, int y) in Workbenches) BlockRect(x - 2, y, 7, 3, 0);
+            Block(SpawnTile.X, SpawnTile.Y, 3);
+
+            foreach (DecorSpot spot in Decor)
+            {
+                if (spot.Sprite == "mine_post" || spot.Sprite == "mine_rail") continue;
+                int w = Math.Max(1, (int)Math.Ceiling(spot.Tiled ? spot.Width : 2f));
+                int h = Math.Max(1, (int)Math.Ceiling(spot.Tiled ? spot.Height : 2f));
+                BlockRect((int)Math.Floor(spot.X), (int)Math.Floor(spot.Y), w, h, 1);
+            }
+
+            bool Fits(int x, int y, int w, int h)
+            {
+                for (int dx = 0; dx < w; dx++)
+                {
+                    if (!Map.IsRock(x + dx, y - 1)) return false;
+                    for (int dy = 0; dy <= h; dy++)
+                    {
+                        if (Map[x + dx, y + dy] != LevelMap.Air) return false;
+                        if (blocked.Contains((x + dx, y + dy))) return false;
+                    }
+
+                    // Nada colado num espinho do lado.
+                    if (Map.IsSpike(x + dx - 1, y) || Map.IsSpike(x + dx + 1, y)) return false;
+                }
+
+                return true;
+            }
+
+            foreach ((string name, int rx0, int ry0, int rx1, int ry1) in Rooms)
+            {
+                if (!Clutter.TryGetValue(name, out string[] palette)) continue;
+
+                int pick = 0;
+                for (int y = ry0; y <= ry1; y++)
+                {
+                    int sinceLast = 5;
+                    for (int x = rx0; x <= rx1; x++, sinceLast++)
+                    {
+                        if (sinceLast < 6) continue;
+
+                        string sprite = palette[(pick + LevelMap.Pick(x, y, 7)) % palette.Length];
+                        GroundedSize(sprite, out int w, out int h);
+                        if (!Fits(x, y, w, h)) continue;
+
+                        Put(sprite, x, y, 4);
+                        BlockRect(x, y, w, h, 1);
+                        pick++;
+                        sinceLast = 0;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -767,6 +889,12 @@ namespace EchoesOfCravejada.EditorTools
             Carve(carX, 22, carX + carWidth - 1, (int)ElevatorTopY + 4);
             Decor.Add(new DecorSpot("elevator_rail", carX, carY + 3, 4, carWidth, ElevatorTopY + 5 - (carY + 3)));
 
+            // O poco tambem desce: a cabine veio subindo do District 2 e parou
+            // aqui. O chao dela (celula logo abaixo do andar) e o objeto da
+            // cabine, nao tile; pro mapa continua sendo chao.
+            Carve(carX, ElevatorShaftBottom, carX + carWidth - 1, carY - 2);
+            for (int x = carX; x < carX + carWidth; x++) FragileCells.Add((x, carY - 1));
+
             // O ombro de rocha a direita do poco: e nele (e na parede oeste)
             // que a viga dos escombros ficou entalada. Sem ele, a pilha
             // parecia pendurada no ar.
@@ -986,7 +1114,7 @@ namespace EchoesOfCravejada.EditorTools
 
             Barrel(144, 44);
             Barrel(145, 44);
-            Shelf(141, 48);
+            Shelf(147, 44);
             Sign(113, 46);
 
             // A porta da Galeria dos Cacadores.
@@ -1003,8 +1131,6 @@ namespace EchoesOfCravejada.EditorTools
         private static void BuildNoteShaft()
         {
             Carve(128, 55, 134, 91);
-            HangChain(131, 91, 6);
-            HangChain(129, 80, 4);
             Scatter(128, 55, 134, 91, 3, 55);
         }
 
@@ -1210,15 +1336,21 @@ namespace EchoesOfCravejada.EditorTools
             Room(room, 164, 60, 202, 74);
 
             Carve(164, 60, 202, 74);
+
+            // A saleta da chamine, a oeste: sobe-se pela grade do chao e
+            // entra-se na toca pela porta lateral, que tranca na luta. Assim
+            // o Capataz tem o chao inteiro da toca, sem buraco nenhum.
+            Solid(164, 66, 169, 74);
+            Solid(170, 64, 170, 74);
             Ledge(172, 177, 63);
 
             Mark(room, "Elite_TheResonant", EliteTile.X, EliteTile.Y);
 
-            Foe(FoeKind.CrystalMite, "Mite_Chamber_1", 169, 202, 60, 171);
-            Foe(FoeKind.CrystalMite, "Mite_Chamber_2", 169, 202, 60, 172);
-            Foe(FoeKind.CrystalMite, "Mite_Chamber_3", 169, 202, 60, 187);
+            Foe(FoeKind.CrystalMite, "Mite_Chamber_1", 171, 202, 60, 171);
+            Foe(FoeKind.CrystalMite, "Mite_Chamber_2", 171, 202, 60, 172);
+            Foe(FoeKind.CrystalMite, "Mite_Chamber_3", 171, 202, 60, 187);
 
-            Scatter(164, 60, 202, 74, 5, 91);
+            Scatter(171, 60, 202, 74, 5, 91);
         }
 
         // ------------------------------------------------------------------
@@ -1405,7 +1537,7 @@ namespace EchoesOfCravejada.EditorTools
 
             Barrel(90, 92);
             Barrel(91, 92);
-            Shelf(104, 95);
+            Shelf(104, 92);
             Sign(110, 95);
 
             Scatter(92, 92, 126, 98, 5, 121);
@@ -1768,7 +1900,86 @@ namespace EchoesOfCravejada.EditorTools
                 }
             }
 
+            CheckDecorPhysics(problems);
             return problems;
+        }
+
+        /// <summary>
+        /// O tamanho, em tiles, de cada peca de cenario que fica no chao, e
+        /// se ela fica no chao (as outras ficam na parede ou penduradas).
+        /// </summary>
+        private static bool GroundedSize(string sprite, out int w, out int h)
+        {
+            switch (sprite)
+            {
+                case "decor_barrel": w = 1; h = 2; return true;
+                case "decor_shelf": w = 2; h = 2; return true;
+                case "decor_crate": w = 1; h = 1; return true;
+                case "decor_toolbox": w = 1; h = 1; return true;
+                case "decor_sack": w = 1; h = 1; return true;
+                case "mine_cart": w = 3; h = 2; return true;
+                case MineDressArt.Pickaxe:
+                case MineDressArt.OreSack:
+                case MineDressArt.Lantern:
+                case MineDressArt.CutGeode:
+                case MineDressArt.Stalagmite:
+                case MineDressArt.Rubble:
+                    (w, h) = MineDressArt.Size(sprite);
+                    return true;
+                default: w = 1; h = 1; return false;
+            }
+        }
+
+        /// <summary>
+        /// A fisica de quem esta parado: o que fica no chao tem apoio embaixo
+        /// de toda a largura e nao entra na rocha; a placa da parede nao entra
+        /// na rocha; a corrente sai do teto.
+        /// </summary>
+        private static void CheckDecorPhysics(List<string> problems)
+        {
+            var occupied = new Dictionary<(int, int), string>();
+
+            foreach (DecorSpot spot in Decor)
+            {
+                int x0 = (int)Math.Floor(spot.X);
+                int y0 = (int)Math.Floor(spot.Y);
+
+                if (GroundedSize(spot.Sprite, out int w, out int h))
+                {
+                    if (Math.Abs(spot.Y - y0) > 0.01f) problems.Add($"{spot.Sprite} em ({spot.X}, {spot.Y}) nao assenta numa linha de chao.");
+
+                    for (int x = x0; x < x0 + w; x++)
+                    {
+                        bool onCrate = occupied.TryGetValue((x, y0 - 1), out string under) && under == "decor_crate";
+                        if (!Map.IsSolid(x, y0 - 1) && !onCrate)
+                        {
+                            problems.Add($"{spot.Sprite} em ({spot.X}, {spot.Y}) tem a base no ar em x={x}.");
+                            break;
+                        }
+                    }
+
+                    for (int y = y0; y < y0 + h; y++)
+                    {
+                        for (int x = x0; x < x0 + w; x++)
+                        {
+                            if (Map.IsRock(x, y)) problems.Add($"{spot.Sprite} em ({spot.X}, {spot.Y}) entra na rocha em ({x}, {y}).");
+                            else if (occupied.TryGetValue((x, y), out string other)) problems.Add($"{spot.Sprite} em ({spot.X}, {spot.Y}) fica em cima de {other}.");
+                            occupied[(x, y)] = spot.Sprite;
+                        }
+                    }
+                }
+                else if (spot.Sprite == "decor_sign")
+                {
+                    for (int x = x0; x < x0 + 3; x++)
+                    {
+                        if (Map.IsRock(x, y0)) problems.Add($"A placa em ({spot.X}, {spot.Y}) entra na rocha em x={x}.");
+                    }
+                }
+                else if (spot.Sprite == "decor_chain")
+                {
+                    if (!Map.IsSolid(x0, (int)Math.Round(spot.Y + spot.Height))) problems.Add($"A corrente em ({spot.X}, {spot.Y}) nao sai do teto.");
+                }
+            }
         }
 
         /// <summary>

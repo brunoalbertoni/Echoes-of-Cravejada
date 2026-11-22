@@ -384,6 +384,15 @@ namespace EchoesOfCravejada.EditorTools
             Phase02Assets.WriteSprite("mine_rail", GeodeArt.MineRail(), Vector2.zero, true);
             Phase02Assets.WriteSprite("mine_cart", GeodeArt.MineCart(), Vector2.zero);
 
+            // O que os mineiros largaram (no chao, pivo no canto de baixo) e os
+            // marcadores que flutuam em cima do que da pra usar.
+            foreach ((string name, PixelCanvas canvas) in MineDressArt.All())
+            {
+                Phase02Assets.WriteSprite(name, canvas, Vector2.zero);
+            }
+
+            Phase01Generator.EnsureCueArt();
+
             // O que se le: o desenho do mapa e o grande, da leitura (LoreArt).
             LoreArtAssets.Write(LoreArt.Phase03.Values);
 
@@ -844,6 +853,28 @@ namespace EchoesOfCravejada.EditorTools
             ride.Configure(Phase03Layout.ElevatorTopY, Phase04Layout.SceneName, Phase04Layout.FromDistrict3SpawnId);
             ride.ConfigureBlocker(rubbleObject, Phase03Layout.ElevatorBlockedNotice);
 
+            // A chegada: a cabine parte do fundo do poco e sobe com o Scrap.
+            var body = car.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Kinematic;
+
+            // O chao fica num filho na camada do terreno: o gatilho da cabine nao vira chao.
+            var floorObject = new GameObject("Floor") { layer = _groundLayer };
+            floorObject.transform.SetParent(car.transform, false);
+            var floor = floorObject.AddComponent<BoxCollider2D>();
+            floor.size = new Vector2(carWidth, 1f);
+            floor.offset = new Vector2(carWidth * 0.5f, plate - 0.5f);
+
+            car.AddComponent<ElevatorArrival>().Configure(Phase03Layout.FromDistrict2SpawnId,
+                Phase03Layout.ElevatorShaftBottom - plate, 6f);
+
+            // Os trilhos do poco de baixo.
+            var rails = new GameObject("ElevatorRailsBelow");
+            rails.transform.SetParent(parent, false);
+            rails.transform.position = new Vector3(carX, Phase03Layout.ElevatorShaftBottom, 0f);
+            SpriteRenderer rail = Sprite(rails, Phase02Assets.ElevatorRail, Phase01Assets.SortingTerrain, 4);
+            rail.drawMode = SpriteDrawMode.Tiled;
+            rail.size = new Vector2(carWidth, carY + 3 - Phase03Layout.ElevatorShaftBottom);
+
             // O poco atravessa o mapa inteiro: sobe depressa.
             ride.ConfigureSpeed(14f);
         }
@@ -925,6 +956,18 @@ namespace EchoesOfCravejada.EditorTools
         // Bolsas e enfeites
         // ------------------------------------------------------------------
 
+        /// <summary>O alto do desenho de algo (em mundo), pra pendurar o marcador em cima.</summary>
+        private static float TopOf(GameObject target, float fallback)
+        {
+            float top = float.MinValue;
+            foreach (SpriteRenderer renderer in target.GetComponentsInChildren<SpriteRenderer>())
+            {
+                if (renderer.sprite != null && renderer.gameObject.name != "Cue") top = Mathf.Max(top, renderer.bounds.max.y);
+            }
+
+            return top > float.MinValue ? top : fallback;
+        }
+
         /// <summary>Os sacos de fragmentos escondidos.</summary>
         private static void BuildRewards(Transform parent)
         {
@@ -941,8 +984,9 @@ namespace EchoesOfCravejada.EditorTools
                 Sprite(pickup, Phase02Assets.ShardCache, Phase01Assets.SortingActors, -1);
                 pickup.AddComponent<RewardPickup>().Configure(RewardPickup.Kind.ShardCache, spot.Id, spot.Amount);
 
-                Phase01Generator.CreatePointLight(pickup.transform, "Glow",
-                    (spot.X + 0.5f, spot.Y + 0.8f), new Color(0.95f, 0.85f, 0.6f), 0.45f, 3f);
+                Light2D glow = Phase01Generator.CreatePointLight(pickup.transform, "Glow",
+                    (spot.X + 0.5f, spot.Y + 0.8f), new Color(0.95f, 0.85f, 0.6f), 0.9f, 4f);
+                Phase01Generator.AddCue(pickup, CueArt.Item, TopOf(pickup, spot.Y + 1.4f), glow);
             }
         }
 
@@ -959,6 +1003,11 @@ namespace EchoesOfCravejada.EditorTools
 
                 SpriteRenderer renderer = Sprite(decorObject, spot.Sprite, Phase01Assets.SortingTerrain, spot.Order);
 
+                // O que o Scrap nao toca fica em segundo plano: atras do chao (ordem
+                // menor que a do TM_Ground) e apagado. O piso e a verga do templo
+                // (ordem 11) sao terreno e ficam como estao.
+                if (spot.Order < 10) renderer.color = Phase01Generator.DecorTint;
+
                 if (spot.Tiled)
                 {
                     renderer.drawMode = SpriteDrawMode.Tiled;
@@ -970,6 +1019,13 @@ namespace EchoesOfCravejada.EditorTools
         // ------------------------------------------------------------------
         // Inimigos
         // ------------------------------------------------------------------
+
+        /// <summary>
+        /// A vida do minerador que corre atras do barulho. Aqui o golpe do
+        /// Scrap ja tira 2 (cinzel + rubi) ou 3 (com o engaste de ouro da
+        /// loja): com 8, ele cai em 4 ou 3 golpes, e nao em 2.
+        /// </summary>
+        private const int HunterHealth = 8;
 
         private static void BuildFoes(Transform parent)
         {
@@ -986,7 +1042,7 @@ namespace EchoesOfCravejada.EditorTools
                     {
                         GameObject foe = Foe(parent, spot.Name, new Vector3(spot.HomeX + 0.5f, spot.Y, 0f), hunter, EchoHunter.Idle,
                             new Vector2(0.9f, 1.3f), new Vector2(0f, 0.7f));
-                        foe.AddComponent<Damageable>().Configure(4, 5, shard);
+                        foe.AddComponent<Damageable>().Configure(HunterHealth, 5, shard);
                         foe.AddComponent<EchoHunter>().Configure(spot.X0 + 0.5f, spot.X1 + 0.5f, hunter);
                         break;
                     }
@@ -1093,6 +1149,9 @@ namespace EchoesOfCravejada.EditorTools
                 var statue = statueObject.AddComponent<StatueButton>();
                 statue.Configure(spot.Order, button, up, down, glow, light);
                 statues.Add(statue);
+
+                // A setinha em cima do botao da estatua: da pra acionar.
+                Phase01Generator.AddCue(statueObject, CueArt.Use, TopOf(statueObject, spot.Y + 3f), null);
             }
 
             // No Salao das Estatuas nao nasce bicho nenhum: o clangor dos botoes
@@ -1119,6 +1178,7 @@ namespace EchoesOfCravejada.EditorTools
                 area.size = new Vector2(2.5f, 3f);
 
                 keyhole.AddComponent<KeyGate>().Configure(Phase03Layout.AncientKeyId, "A CHAVE ANTIGA", entrance, lockSprite);
+                Phase01Generator.AddCue(keyhole, CueArt.Use, at.y + 3f, null);
             }
             else
             {
@@ -1185,6 +1245,10 @@ namespace EchoesOfCravejada.EditorTools
 
             // O rubi foi no District 2. Aqui ele so conversa e vende.
             crisol.ConfigureGivesRuby(false);
+
+            Light2D glow = Phase01Generator.CreatePointLight(crisolObject.transform, "Glow", (tile.X + 0.5f, tile.Y + 1f),
+                new Color(0.80f, 0.95f, 0.90f), 0.8f, 3.8f);
+            Phase01Generator.AddCue(crisolObject, CueArt.Talk, TopOf(crisolObject, tile.Y + 3f), glow);
             return crisolObject;
         }
 
@@ -1320,6 +1384,7 @@ namespace EchoesOfCravejada.EditorTools
                     area.offset = new Vector2(0f, 1.25f);
 
                     minerObject.AddComponent<Npc>().Configure(spot.Title, spot.Lines);
+                    Phase01Generator.AddCue(minerObject, CueArt.Talk, TopOf(minerObject, spot.Y + 3f), null);
                 }
 
                 if (lighting != null)
@@ -1387,8 +1452,9 @@ namespace EchoesOfCravejada.EditorTools
                 plaque.ConfigureDocument(Phase02Assets.LoadSprite(LoreArt.ViewSprite(plaqueArt.Lore)));
             }
 
-            Phase01Generator.CreatePointLight(plaqueObject.transform, "Glow",
+            Light2D plaqueGlow = Phase01Generator.CreatePointLight(plaqueObject.transform, "Glow",
                 (tile.X + 0.5f, tile.Y + 1.2f), new Color(0.90f, 0.92f, 1f), 0.6f, 4f);
+            Phase01Generator.AddCue(plaqueObject, CueArt.Read, TopOf(plaqueObject, tile.Y + 2f), plaqueGlow);
 
             var drill = bossObject.AddComponent<GeodeDrill>();
             drill.Configure(
@@ -1515,11 +1581,16 @@ namespace EchoesOfCravejada.EditorTools
                     LoreArtAssets.Apply(own, artObject, readable, Phase01Assets.SortingTerrain);
                 }
 
+                // Uma luz (quando o que se le nao e escuro de proposito) e a
+                // folhinha que flutua: da pra ler.
+                Light2D loreGlow = null;
                 if (lit)
                 {
-                    Phase01Generator.CreatePointLight(loreObject.transform, "Glow",
-                        (spot.X + 0.5f, spot.Y + 1.2f), new Color(0.95f, 0.90f, 0.75f), 0.4f, 3f);
+                    loreGlow = Phase01Generator.CreatePointLight(loreObject.transform, "Glow",
+                        (spot.X + 0.5f, spot.Y + 1.2f), new Color(0.95f, 0.90f, 0.75f), 0.6f, 3.5f);
                 }
+
+                Phase01Generator.AddCue(loreObject, CueArt.Read, TopOf(loreObject, spot.Y + 2f), loreGlow);
             }
         }
     }

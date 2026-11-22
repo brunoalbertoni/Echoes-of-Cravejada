@@ -174,6 +174,9 @@ namespace EchoesOfCravejada.EditorTools
                 Phase02Assets.WriteSprite(name, draw(), tiled ? Vector2.zero : (hanging ? top : feet), tiled);
             }
 
+            // Os marcadores que flutuam em cima do que da pra usar.
+            Phase01Generator.EnsureCueArt();
+
             // A porta da Grande Escadaria, por onde o Scrap chega (a mesma do alto da escada, nos Ateliers).
             Phase02Assets.WriteSprite(StairDoor, StairArt.Doorway(), feet);
 
@@ -193,11 +196,6 @@ namespace EchoesOfCravejada.EditorTools
             Phase02Assets.WriteSheet(KingCorruptSheet, KingArt.Frames(true), kingPivot, KingArt.PixelsPerUnit);
             Phase02Assets.WriteSheet(KingWreckSheet, KingWreckArt.Frames(), new Vector2(KingWreckArt.PivotX, KingWreckArt.PivotY), KingWreckArt.PixelsPerUnit);
 
-
-            // As cutscenes desenhadas: a transformacao e o final.
-            CartoonAssets.EnsureSet(CartoonKing, FinaleCartoonArt.Transformation());
-            CartoonAssets.EnsureSet(CartoonPolish, FinaleCartoonArt.EndingA());
-            CartoonAssets.EnsureSet(CartoonCrown, FinaleCartoonArt.EndingB());
 
             return Phase01Assets.SliceGrid(MarblePath, MarblePrefix);
         }
@@ -291,6 +289,9 @@ namespace EchoesOfCravejada.EditorTools
                 SpriteRenderer renderer = Sprite(stripObject, strip.Sprite, Phase01Assets.SortingTerrain, strip.Order);
                 renderer.drawMode = SpriteDrawMode.Tiled;
                 renderer.size = new Vector2(strip.X1 - strip.X0 + 1, strip.Height);
+
+                // O lambri e o friso sao parede: segundo plano.
+                renderer.color = Phase01Generator.DecorTint;
             }
 
             foreach (Phase05Layout.Prop prop in Phase05Layout.Props)
@@ -300,7 +301,7 @@ namespace EchoesOfCravejada.EditorTools
                 var propObject = new GameObject($"{prop.Sprite}_{prop.X:0.#}_{prop.Y:0.#}");
                 propObject.transform.SetParent(root.transform, false);
                 propObject.transform.position = new Vector3(prop.X, prop.Y, 0f);
-                Sprite(propObject, prop.Sprite, Phase01Assets.SortingTerrain, prop.Order);
+                StyleProp(Sprite(propObject, prop.Sprite, Phase01Assets.SortingTerrain, prop.Order), prop.Sprite);
 
                 if (prop.Hanging) propObject.AddComponent<Sway>().Configure(1.5f, 4.5f, (prop.X * 0.37f) % 1f);
             }
@@ -389,7 +390,44 @@ namespace EchoesOfCravejada.EditorTools
                 {
                     LoreArtAssets.Apply(piece, artObject, readable, Phase01Assets.SortingTerrain);
                 }
+
+                // O retrato que se le tem luz e a folhinha em cima; os da galeria, nao.
+                Light2D glow = Phase01Generator.CreatePointLight(loreObject.transform, "Glow",
+                    (spot.X, spot.Y + 5.5f), new Color(0.95f, 0.92f, 0.80f), 0.6f, 3.5f);
+                Phase01Generator.AddCue(loreObject, CueArt.Read, TopOf(loreObject, spot.Y + 7.5f), glow);
             }
+        }
+
+        /// <summary>
+        /// O que e do Rei e da luta (o trono, os espelhos que viram escudo), a
+        /// porta da escadaria e o que se pega ficam com a cor cheia. O resto do
+        /// palacio e fundo: apagado e atras do chao. O que tem luz propria
+        /// (lustres, arandelas, candelabros) so escurece um pouco.
+        /// </summary>
+        private static void StyleProp(SpriteRenderer renderer, string sprite)
+        {
+            if (renderer == null) return;
+            if (sprite.StartsWith("palace_mirror") || sprite.StartsWith("palace_throne") || sprite == "palace_stair_door"
+                || sprite == "palace_core_socket" || sprite == "palace_crown")
+            {
+                return;
+            }
+
+            renderer.sortingOrder = Mathf.Min(renderer.sortingOrder, 9);
+            bool lit = sprite == "palace_chandelier" || sprite == "palace_sconce" || sprite == "palace_candelabra";
+            renderer.color = lit ? Color.Lerp(Color.white, Phase01Generator.DecorTint, 0.4f) : Phase01Generator.DecorTint;
+        }
+
+        /// <summary>O alto do desenho de algo (em mundo), pra pendurar o marcador em cima.</summary>
+        private static float TopOf(GameObject target, float fallback)
+        {
+            float top = float.MinValue;
+            foreach (SpriteRenderer renderer in target.GetComponentsInChildren<SpriteRenderer>())
+            {
+                if (renderer.sprite != null && renderer.gameObject.name != "Cue") top = Mathf.Max(top, renderer.bounds.max.y);
+            }
+
+            return top > float.MinValue ? top : fallback;
         }
 
         private static void BuildCrisol(Transform parent)
@@ -408,6 +446,10 @@ namespace EchoesOfCravejada.EditorTools
             var crisol = crisolObject.AddComponent<Crisol>();
             crisol.Configure("Crisol", Phase05Layout.CrisolLines);
             crisol.ConfigureGivesRuby(false);
+
+            Light2D glow = Phase01Generator.CreatePointLight(crisolObject.transform, "Glow", (tile.X + 0.5f, tile.Y + 1f),
+                new Color(0.80f, 0.95f, 0.90f), 0.8f, 3.8f);
+            Phase01Generator.AddCue(crisolObject, CueArt.Talk, TopOf(crisolObject, tile.Y + 3f), glow);
         }
 
         private static Gate BuildGate(Transform parent, string name, (int X, int Y, int Height) cells)
@@ -564,11 +606,11 @@ namespace EchoesOfCravejada.EditorTools
             var breath = breathObject.AddComponent<OxideBreath>();
             breath.Configure(ax0, ax1 + 1f, Phase05Layout.ArenaFloorY, Phase02Assets.LoadSprite(Puff), covers.ToArray());
 
-            // A cutscene da transformacao.
+            // O filme da transformacao: termina no branco, e no pico ele ja e o outro.
             var cartoonObject = new GameObject("KingTransformation");
             cartoonObject.transform.SetParent(parent, false);
-            var cartoon = cartoonObject.AddComponent<PurificationCartoon>();
-            cartoon.Configure(CartoonAssets.LoadSet(CartoonKing, FinaleCartoonArt.Transformation()));
+            var cartoon = cartoonObject.AddComponent<FilmCutscene>();
+            FilmAssets.Build(cartoon, CartoonKing, FinaleFilms.King(), true);
 
             // A coroa caida, que aparece quando ele tomba de vez: uma das duas escolhas do fim.
             (float crx, float cry) = Phase05Layout.CrownTile;
@@ -614,12 +656,15 @@ namespace EchoesOfCravejada.EditorTools
             float floor = Phase05Layout.FloorY;
 
             // Os dois fins.
-            FinaleDirector column = Director(parent, "Finale_Column", CartoonPolish, FinaleCartoonArt.EndingA(), global, new Vector2(tx, ty),
-                Phase05Layout.EndingColumnTitle, Phase05Layout.EndingColumnStory, new Color(1f, 0.97f, 0.88f));
-            FinaleDirector crowned = Director(parent, "Finale_Crown", CartoonCrown, FinaleCartoonArt.EndingB(), global, new Vector2(crown.transform.position.x, floor),
-                Phase05Layout.EndingCrownTitle, Phase05Layout.EndingCrownStory, new Color(0.86f, 0.95f, 1f));
+            HudIconAssets.RedrawEnd("column", FinaleFilms.ColumnEmblem(), Phase05Layout.EndingColumnTitle, Phase05Layout.EndingColumnStory);
+            HudIconAssets.RedrawEnd("crown", FinaleFilms.CrownEmblem(), Phase05Layout.EndingCrownTitle, Phase05Layout.EndingCrownStory);
 
-            // A Coluna: o janelao atras do trono, de alto a baixo.
+            FinaleDirector column = Director(parent, "Finale_Column", CartoonPolish, FinaleFilms.Column(), global, new Vector2(tx, ty),
+                "column", Phase05Layout.EndingColumnStory.Length, false);
+            FinaleDirector crowned = Director(parent, "Finale_Crown", CartoonCrown, FinaleFilms.Crown(), global, new Vector2(crown.transform.position.x, floor),
+                "crown", Phase05Layout.EndingCrownStory.Length, true);
+
+            // O trono: ligado ao Coracao pela Coluna; quebra-lo entrega o nucleo.
             var columnObject = new GameObject("Choice_Column");
             columnObject.transform.SetParent(parent, false);
             columnObject.transform.position = new Vector3(tx, ty, 0f);
@@ -649,19 +694,19 @@ namespace EchoesOfCravejada.EditorTools
                 Phase05Layout.FinaleCrisolLines);
         }
 
-        private static FinaleDirector Director(Transform parent, string name, string set, PurificationCartoonArt.Shot[] shots,
-            Light2D global, Vector2 focus, string title, string story, Color tint)
+        private static FinaleDirector Director(Transform parent, string name, string set, FilmDraft film,
+            Light2D global, Vector2 focus, string endId, int lines, bool spores)
         {
             var cartoonObject = new GameObject(name + "_Cartoon");
             cartoonObject.transform.SetParent(parent, false);
-            var cartoon = cartoonObject.AddComponent<PurificationCartoon>();
-            cartoon.Configure(CartoonAssets.LoadSet(set, shots));
+            var cartoon = cartoonObject.AddComponent<FilmCutscene>();
+            FilmAssets.Build(cartoon, set, film, false);
 
             var directorObject = new GameObject(name);
             directorObject.transform.SetParent(parent, false);
             var director = directorObject.AddComponent<FinaleDirector>();
             director.Configure(cartoon, null, null, global, focus);
-            director.ConfigureEnding(title, story, false, tint);
+            director.ConfigureEnding(endId, lines, spores);
             return director;
         }
     }

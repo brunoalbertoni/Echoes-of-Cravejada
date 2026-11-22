@@ -451,6 +451,15 @@ namespace EchoesOfCravejada
                 bool dim = soldOut || !affordable;
 
                 var row = new Rect(list.x + 6f, list.y + 6f + i * rowHeight, list.width - 12f, rowHeight - 6f);
+
+                // O mouse: passar por cima marca a fileira, clicar compra.
+                if (ShopMouse(row, out bool clicked))
+                {
+                    if (clicked) shop.ClickBuy(i);
+                    else shop.Hover(i);
+                    selected = i == shop.Selected;
+                }
+
                 if (selected)
                 {
                     Fill(row, ShopBrass);
@@ -514,12 +523,18 @@ namespace EchoesOfCravejada
                     GUI.Label(new Rect(detail.x + 12f, detail.yMax - 34f, detail.width - 24f, 26f), shop.LastMessage, _shopReply);
             }
 
-            // -- Rodape: as teclas como teclinhas.
+            // -- Rodape: as teclas como teclinhas. "comprar" e "sair" tambem
+            // se clicam com o mouse.
             float keyY = y + height - footerH + 6f;
             float keyX = x + 20f;
             keyX = KeyHint(keyX, keyY, "W/S", "escolher");
-            keyX = KeyHint(keyX + 22f, keyY, "Espaço", "comprar");
-            KeyHint(keyX + 22f, keyY, "E", "sair");
+            float buyX = keyX + 22f;
+            keyX = KeyHint(buyX, keyY, "Espaço", "comprar");
+            if (ShopMouse(new Rect(buyX, keyY, keyX - buyX, 32f), out bool buyClick) && buyClick) shop.ClickBuy(shop.Selected);
+            float quitX = keyX + 22f;
+            float quitEnd = KeyHint(quitX, keyY, "E", "sair");
+            if (ShopMouse(new Rect(quitX, keyY, quitEnd - quitX, 32f), out bool quitClick) && quitClick) shop.ClickClose();
+            GUI.Label(new Rect(quitEnd + 22f, keyY + 4f, 260f, 24f), "ou clique no item", _shopSub);
 
             GUI.contentColor = previous;
         }
@@ -593,29 +608,104 @@ namespace EchoesOfCravejada
             float h = icon != null ? icon.height * IconScale : 0f;
             float left = right - size.x - w - 8f;
 
-            if (icon != null) GUI.DrawTexture(new Rect(left, y + (size.y - h) * 0.5f, w, h), icon);
+            if (icon != null) DrawCentered(icon, new Rect(left, y + (size.y - h) * 0.5f, w, h));
             _shopCoin.normal.textColor = tint;
             GUI.Label(new Rect(left + w + 6f, y, size.x + 4f, size.y), text, _shopCoin);
             return left;
         }
 
-        /// <summary>O preco de uma fileira, com o icone da moeda, alinhado a direita.</summary>
+        /// <summary>
+        /// O preco de uma fileira: o icone da moeda numa casinha fixa na
+        /// direita e o numero numa coluna fixa colada nela, os dois centrados
+        /// na mesma linha. Assim os precos de todas as fileiras ficam um
+        /// embaixo do outro, seja em fragmento (o cristal torto, com a linha
+        /// de baixo vazia) ou em gema.
+        /// </summary>
         private void Price(float right, float centerY, Currency currency, int price, bool affordable)
         {
             Texture2D icon = currency == Currency.Gems ? _gemIcon : _shardIcon;
-            string text = price.ToString();
-            Vector2 size = _shopPrice.CalcSize(new GUIContent(text));
-            float w = icon != null ? icon.width * 1.5f : 0f;
-            float h = icon != null ? icon.height * 1.5f : 0f;
+            const float box = 20f;
+            const float column = 52f;
 
             _shopPrice.normal.textColor = affordable ? ShopText : new Color(0.85f, 0.42f, 0.38f);
-            GUI.Label(new Rect(right - w - size.x - 6f, centerY - size.y * 0.5f, size.x, size.y), text, _shopPrice);
+            GUI.Label(new Rect(right - box - 6f - column, centerY - 15f, column, 30f), price.ToString(), _shopPrice);
+
             if (icon != null)
             {
                 GUI.color = affordable ? Color.white : new Color(1f, 1f, 1f, 0.5f);
-                GUI.DrawTexture(new Rect(right - w, centerY - h * 0.5f, w, h), icon);
+                DrawCentered(icon, new Rect(right - box, centerY - box * 0.5f, box, box));
                 GUI.color = Color.white;
             }
+        }
+
+        private Vector2 _lastMouse = new Vector2(-1f, -1f);
+
+        /// <summary>
+        /// O mouse em cima de uma area da loja. So conta como "passou por
+        /// cima" quando ele de fato se mexe (senao o mouse parado brigaria com
+        /// W/S); o clique do botao esquerdo vale sempre.
+        /// </summary>
+        private bool ShopMouse(Rect area, out bool clicked)
+        {
+            Event e = Event.current;
+            clicked = false;
+            if (!area.Contains(e.mousePosition)) return false;
+
+            if (e.type == EventType.MouseDown && e.button == 0)
+            {
+                clicked = true;
+                e.Use();
+                return true;
+            }
+
+            if (e.type == EventType.Repaint && (e.mousePosition - _lastMouse).sqrMagnitude > 0.5f)
+            {
+                _lastMouse = e.mousePosition;
+                return true;
+            }
+
+            return false;
+        }
+
+        private readonly Dictionary<Texture2D, Rect> _visible = new Dictionary<Texture2D, Rect>();
+
+        /// <summary>
+        /// Desenha um icone de pixel com a parte desenhada (sem a borda
+        /// transparente) no meio da caixa, em escala inteira.
+        /// </summary>
+        private void DrawCentered(Texture2D icon, Rect box)
+        {
+            if (!_visible.TryGetValue(icon, out Rect used))
+            {
+                used = new Rect(0f, 0f, icon.width, icon.height);
+                if (icon.isReadable)
+                {
+                    int x0 = icon.width, y0 = icon.height, x1 = -1, y1 = -1;
+                    Color32[] pixels = icon.GetPixels32();
+                    for (int y = 0; y < icon.height; y++)
+                    {
+                        for (int x = 0; x < icon.width; x++)
+                        {
+                            if (pixels[x + y * icon.width].a == 0) continue;
+                            x0 = Mathf.Min(x0, x); x1 = Mathf.Max(x1, x);
+                            y0 = Mathf.Min(y0, y); y1 = Mathf.Max(y1, y);
+                        }
+                    }
+
+                    if (x1 >= 0) used = new Rect(x0, y0, x1 - x0 + 1, y1 - y0 + 1);
+                }
+
+                _visible[icon] = used;
+            }
+
+            float scale = Mathf.Max(1f, Mathf.Floor(Mathf.Min(box.width / used.width, box.height / used.height)));
+            float w = icon.width * scale;
+            float h = icon.height * scale;
+
+            // A parte desenhada no centro da caixa (y da textura cresce pra cima).
+            float vx = box.center.x - (used.x + used.width * 0.5f) * scale;
+            float vy = box.center.y - (icon.height - used.y - used.height * 0.5f) * scale;
+            GUI.DrawTexture(new Rect(Mathf.Round(vx), Mathf.Round(vy), w, h), icon);
         }
 
         /// <summary>Uma teclinha de latao com o que ela faz ao lado. Devolve onde terminou.</summary>

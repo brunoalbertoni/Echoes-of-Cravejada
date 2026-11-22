@@ -10,7 +10,7 @@ namespace EchoesOfCravejada
     /// corrompido tambem destrava coisa.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    public class RustyLever : MonoBehaviour, IDamageable
+    public class RustyLever : MonoBehaviour, IDamageable, ICueDone
     {
         [Tooltip("Quantos golpes ate soltar.")]
         [SerializeField] private int hitsToFree = 3;
@@ -32,6 +32,8 @@ namespace EchoesOfCravejada
         public float Progress => Mathf.Clamp01(_hits / (float)Mathf.Max(1, hitsToFree));
 
         public bool IsDone => _done;
+
+        bool ICueDone.CueDone => _done;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetOnPlay()

@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 namespace EchoesOfCravejada
@@ -19,6 +21,28 @@ namespace EchoesOfCravejada
         [SerializeField] private float openTime = 1.2f;
 
         private bool _open;
+        private string _key;
+
+        /// <summary>Os portoes ja abertos (cena + posicao). Vai no save.</summary>
+        public static readonly HashSet<string> Opened = new HashSet<string>();
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetOnPlay() => Opened.Clear();
+
+        private void Awake()
+        {
+            Vector3 p = transform.position;
+            _key = $"{SceneManager.GetActiveScene().name}/{Mathf.RoundToInt(p.x * 4)}_{Mathf.RoundToInt(p.y * 4)}";
+        }
+
+        private void Start()
+        {
+            // Aberto num save anterior: ja comeca no teto, calado.
+            if (_open || !Opened.Contains(_key)) return;
+            _open = true;
+            transform.position += (Vector3)(direction.normalized * rise);
+            GetComponent<Collider2D>().enabled = false;
+        }
 
         /// <summary>Usado pelos geradores de fase.</summary>
         public void Configure(float newRise)
@@ -37,6 +61,7 @@ namespace EchoesOfCravejada
         {
             if (_open) return;
             _open = true;
+            if (_key != null) Opened.Add(_key);
 
             // Grade de ferro correndo na pedra: quem esta perto escuta.
             NoiseSystem.Emit(transform.position, 8f, 0.6f);

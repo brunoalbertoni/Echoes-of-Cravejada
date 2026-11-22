@@ -14,14 +14,18 @@ namespace EchoesOfCravejada
     /// Ao vivo, e uma cena com camera dirigida:
     ///
     ///   1. O coracao. A camera fecha no ponto de onde a purificacao parte, o
-    ///      mundo escurece e um nucleo de luz cresce, pulsando, com a tela
-    ///      tremendo de leve.
-    ///   2. O estouro. Um clarao branco, um tremor forte e uma onda de luz que
-    ///      se abre em circulo a partir dali.
+    ///      mundo escurece e o Oxide da area inteira e sugado pra la — fios de
+    ///      particulas verdes vindo de todo lado, girando — enquanto um nucleo
+    ///      de luz cresce, pulsando, com a tela tremendo cada vez mais.
+    ///   2. O estouro. Um clarao branco, um tremor forte, a ferrugem estourando
+    ///      em lascas que caem e faiscas douradas, e uma onda de luz que se abre
+    ///      em circulo a partir dali.
     ///   3. A onda. A camera abre devagar enquanto a onda corre o mapa, e cada
     ///      coisa muda quando a onda passa por ela — nao tudo de uma vez: os
-    ///      verdes apagam, os lampioes acendem, a nevoa para, o acido seca, os
-    ///      corrompidos se desfazem num brilho, do centro pra fora.
+    ///      verdes evaporam virando ouro, os lampioes acendem soltando faisca,
+    ///      as correntes balancam, as engrenagens disparam, a nevoa para, o
+    ///      acido seca, os corrompidos se desfazem, do centro pra fora.
+    ///      Depois dela, uma poeira de luz cai devagar sobre tudo.
     ///   4. O passeio. A camera vai ate quem aparece com a purificacao (a
     ///      Solda, os mineiros) e mostra a chegada.
     ///   5. A volta. A camera volta pro Scrap e devolve o controle.
@@ -56,7 +60,7 @@ namespace EchoesOfCravejada
         [SerializeField] private AcidPool[] poolsToDrain;
 
         // As marcas da cerimonia, em segundos.
-        private const float HeartTime = 1.5f;
+        private const float HeartTime = 2.2f;
         private const float WaveTime = 4.4f;
         private const float TourStop = 1.6f;
         private const float ReturnTime = 1.0f;
@@ -199,7 +203,14 @@ namespace EchoesOfCravejada
             public readonly List<(GameObject Target, float Distance)> Vanish = new List<(GameObject, float)>();
             public readonly List<(GameObject Target, float Distance)> Appear = new List<(GameObject, float)>();
             public readonly List<(AcidPool Pool, float Distance)> Pools = new List<(AcidPool, float)>();
+            public readonly List<(Sway Swing, float Distance)> Swings = new List<(Sway, float)>();
+            public readonly List<(SlowSpin Gear, float Distance)> Gears = new List<(SlowSpin, float)>();
         }
+
+        private static readonly Color OxideMote = new Color(0.45f, 1f, 0.62f);
+        private static readonly Color RustLight = new Color(0.78f, 0.46f, 0.24f);
+        private static readonly Color RustDark = new Color(0.40f, 0.21f, 0.13f);
+        private Color Glint => Color.Lerp(purifiedColor, Color.white, 0.55f);
 
         private IEnumerator Ceremony(Vector3 source)
         {
@@ -238,12 +249,21 @@ namespace EchoesOfCravejada
                 // O tremor cresce junto, em batidas.
                 if (Mathf.Repeat(t, 0.35f) < Time.deltaTime) ScrapCameraFollow.Shake(0.03f + 0.08f * k, 0.25f);
 
+                // O Oxide da area sendo sugado pro coracao: cada vez mais, e
+                // chegando antes do estouro.
+                float travel = Mathf.Lerp(1.1f, 0.45f, k);
+                if (t + travel < HeartTime) Inhale(wave, center, Mathf.Lerp(40f, 170f, k) * Time.deltaTime, travel);
+
                 yield return null;
             }
 
-            // 2. O estouro.
+            // 2. O estouro: a ferrugem arrancada em lascas que caem, faiscas
+            //    douradas e o resto do verde se desfazendo.
             Cinematic.Flash = 1f;
             ScrapCameraFollow.Shake(0.45f, 1.1f);
+            Motes.Burst(center, 150, RustLight, RustDark, 3f, 10f, -12f, 1.9f, 2f, 0.8f);
+            Motes.Burst(center, 90, Color.white, purifiedColor, 6f, 14f, -2f, 1.1f, 1f, 1.4f);
+            Motes.Burst(center, 40, OxideMote, purifiedColor, 2f, 6f, 1f, 1.4f, 1f, 1f);
             SpriteRenderer ring = CreateRing(center);
             Light2D front = CreateLight("PurificationFront", center, purifiedColor);
 
@@ -293,6 +313,9 @@ namespace EchoesOfCravejada
 
             // O aviso do HUD ("Area purificada") entra quando a onda termina.
             PurifiedTime = Time.time;
+
+            // A poeira de luz que fica caindo, mesmo depois de a camera voltar.
+            StartCoroutine(Afterglow(7f));
 
             Destroy(core.gameObject);
             Destroy(front.gameObject);
@@ -402,6 +425,17 @@ namespace EchoesOfCravejada
                 }
             }
 
+            // O que balanca e o que gira no cenario reage quando a onda passa.
+            foreach (Sway swing in FindObjectsByType<Sway>(FindObjectsSortMode.None))
+            {
+                wave.Swings.Add((swing, Vector2.Distance(center, swing.transform.position)));
+            }
+
+            foreach (SlowSpin gear in FindObjectsByType<SlowSpin>(FindObjectsSortMode.None))
+            {
+                wave.Gears.Add((gear, Vector2.Distance(center, gear.transform.position)));
+            }
+
             wave.MaxRadius = Mathf.Clamp(farthest + 6f, 24f, 220f);
             return wave;
         }
@@ -413,12 +447,43 @@ namespace EchoesOfCravejada
 
             foreach ((Light2D light, float from, float distance) in wave.Fading)
             {
-                if (light != null) light.intensity = from * (1f - Mathf.Clamp01((r - distance) / WaveSoftness));
+                if (light == null) continue;
+                bool wasLit = light.intensity > from * 0.98f;
+                light.intensity = from * (1f - Mathf.Clamp01((r - distance) / WaveSoftness));
+
+                // O verde evapora virando ouro, na hora que a beirada passa.
+                if (wasLit && r >= distance) Motes.Rise(light.transform.position, 18, OxideMote, purifiedColor, 1f, 2f);
             }
 
             foreach ((Light2D light, float target, float distance) in wave.Rising)
             {
-                if (light != null) light.intensity = target * Mathf.Clamp01((r - distance) / WaveSoftness);
+                if (light == null) continue;
+                bool wasOff = light.intensity <= 0.001f;
+                light.intensity = target * Mathf.Clamp01((r - distance) / WaveSoftness);
+
+                // O lampiao acende soltando faisca.
+                if (wasOff && r >= distance) Motes.Burst(light.transform.position, 12, Color.white, Glint, 1f, 3.5f, -4f, 0.9f, 1f, 1f);
+            }
+
+            for (int i = wave.Swings.Count - 1; i >= 0; i--)
+            {
+                (Sway swing, float distance) = wave.Swings[i];
+                if (r < distance) continue;
+                if (swing != null) swing.Kick(14f);
+                wave.Swings.RemoveAt(i);
+            }
+
+            for (int i = wave.Gears.Count - 1; i >= 0; i--)
+            {
+                (SlowSpin gear, float distance) = wave.Gears[i];
+                if (r < distance) continue;
+                if (gear != null)
+                {
+                    gear.Kick(9f);
+                    Motes.Burst(gear.transform.position, 8, Glint, purifiedColor, 1f, 2.5f, -6f, 0.8f, 1f, 1f);
+                }
+
+                wave.Gears.RemoveAt(i);
             }
 
             for (int i = wave.Fog.Count - 1; i >= 0; i--)
@@ -439,6 +504,8 @@ namespace EchoesOfCravejada
                 if (target != null && target.activeInHierarchy)
                 {
                     StartCoroutine(Puff(target.transform.position + Vector3.up * 0.6f, new Color(0.55f, 1f, 0.7f)));
+                    Motes.Burst((Vector2)target.transform.position + Vector2.up * 0.6f, 24, RustLight, RustDark, 1.5f, 4.5f, -10f, 1.2f, 2f, 0.8f);
+                    Motes.Rise(target.transform.position, 10, OxideMote, purifiedColor, 0.5f, 1.4f);
                     target.SetActive(false);
                 }
 
@@ -464,7 +531,12 @@ namespace EchoesOfCravejada
                 (AcidPool pool, float distance) = wave.Pools[i];
                 if (r < distance) continue;
 
-                if (pool != null) pool.Drain();
+                if (pool != null)
+                {
+                    pool.Drain();
+                    Motes.Rise(pool.transform.position, 20, OxideMote, purifiedColor, 1.5f, 2f);
+                }
+
                 wave.Pools.RemoveAt(i);
             }
         }
@@ -500,6 +572,58 @@ namespace EchoesOfCravejada
         // ------------------------------------------------------------------
         // Efeitos da cerimonia
         // ------------------------------------------------------------------
+
+        /// <summary>
+        /// O Oxide sendo sugado pro coracao: particulas verdes saindo das
+        /// luzes verdes por perto (de onde o Oxide esta) e de qualquer canto em
+        /// volta, todas chegando ao centro em travel segundos. amount e
+        /// quantas soltar neste quadro (a fracao vira chance).
+        /// </summary>
+        private void Inhale(Wave wave, Vector2 center, float amount, float travel)
+        {
+            int count = (int)amount + (Random.value < amount - (int)amount ? 1 : 0);
+            for (int n = 0; n < count; n++)
+            {
+                Vector2 from;
+                if (wave.Fading.Count > 0 && Random.value < 0.45f)
+                {
+                    (Light2D light, float _, float distance) = wave.Fading[Random.Range(0, wave.Fading.Count)];
+                    from = light != null && distance < 22f
+                        ? (Vector2)light.transform.position + Random.insideUnitCircle * 1.2f
+                        : center + Random.insideUnitCircle.normalized * Random.Range(7f, 14f);
+                }
+                else
+                {
+                    from = center + Random.insideUnitCircle.normalized * Random.Range(6f, 14f);
+                }
+
+                Motes.Attract(from, center, OxideMote, Color.Lerp(OxideMote, Color.white, 0.6f), travel, Random.value < 0.3f ? 2f : 1f);
+            }
+        }
+
+        /// <summary>A poeira de luz caindo devagar em volta da camera, rareando ate parar.</summary>
+        private IEnumerator Afterglow(float seconds)
+        {
+            Camera camera = viewCamera != null ? viewCamera : Camera.main;
+            float carry = 0f;
+
+            for (float t = 0f; t < seconds; t += Time.deltaTime)
+            {
+                if (camera == null) yield break;
+
+                float height = camera.orthographicSize * 2f;
+                float width = height * camera.aspect;
+                Vector3 c = camera.transform.position;
+                var area = new Rect(c.x - width * 0.5f, c.y + height * 0.1f, width, height * 0.45f);
+
+                carry += Mathf.Lerp(30f, 0f, t / seconds) * Time.deltaTime;
+                int count = (int)carry;
+                carry -= count;
+                if (count > 0) Motes.Drift(area, count, Glint, purifiedColor, 4f);
+
+                yield return null;
+            }
+        }
 
         private Light2D CreateLight(string name, Vector2 position, Color color)
         {

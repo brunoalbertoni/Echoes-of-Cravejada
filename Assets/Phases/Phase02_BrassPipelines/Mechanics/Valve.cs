@@ -9,7 +9,7 @@ namespace EchoesOfCravejada
     /// ultimo ele gira e muda a sala — liga vapor, seca acido, abre passagem.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    public class Valve : MonoBehaviour, IDamageable
+    public class Valve : MonoBehaviour, IDamageable, ICueDone
     {
         [Tooltip("Quantos golpes ate o volante girar.")]
         [SerializeField] private int hitsToTurn = 3;
@@ -43,6 +43,8 @@ namespace EchoesOfCravejada
         public Gate[] Gates => gatesToOpen;
 
         public bool IsTurned => _turned;
+
+        bool ICueDone.CueDone => _turned;
 
         /// <summary>Avisa quando o volante gira. O Boiler Master escuta as valvulas da arena.</summary>
         public event System.Action<Valve> Turned;

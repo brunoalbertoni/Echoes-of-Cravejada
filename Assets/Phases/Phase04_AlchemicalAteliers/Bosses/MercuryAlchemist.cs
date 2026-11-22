@@ -68,11 +68,11 @@ namespace EchoesOfCravejada
         [SerializeField] private Rect wakeArea;
 
         [Header("Luta")]
-        [SerializeField] private int maxHealth = 30;
-        [SerializeField] private float silverTime = 3.4f;
+        [SerializeField] private int maxHealth = 40;
+        [SerializeField] private float silverTime = 2.6f;
         [SerializeField] private float smotherTime = 9f;
         [SerializeField] private float transmuteRange = 4.2f;
-        [SerializeField] private float glideSpeed = 3.2f;
+        [SerializeField] private float glideSpeed = 4.2f;
 
         [Header("Pecas")]
         [SerializeField] private ArenaCircle[] circles;
@@ -311,7 +311,7 @@ namespace EchoesOfCravejada
                 else yield return GeyserAttack();
 
                 // Entre um golpe e outro, ele desliza atras do Scrap.
-                yield return GlideToward(_phaseTwo ? 1.1f : 1.6f);
+                yield return GlideToward(_phaseTwo ? 0.7f : 1.1f);
             }
         }
 
@@ -343,7 +343,7 @@ namespace EchoesOfCravejada
             }
 
             Play(Idle, IdleFrames, 6f);
-            yield return new WaitForSeconds(_phaseTwo ? 0.25f : 0.45f);
+            yield return new WaitForSeconds(_phaseTwo ? 0.12f : 0.28f);
         }
 
         // ------------------------------------------------------------------
@@ -360,7 +360,7 @@ namespace EchoesOfCravejada
             if (jar != null && _player != null) jar.Drop(Mathf.Clamp(_player.position.x, minX, maxX));
 
             Play(Idle, IdleFrames, 6f);
-            yield return new WaitForSeconds(_phaseTwo ? 1.0f : 1.6f);
+            yield return new WaitForSeconds(_phaseTwo ? 0.6f : 1.0f);
         }
 
         private IEnumerator DistillAttack()
@@ -382,7 +382,7 @@ namespace EchoesOfCravejada
             }
 
             // Passeia pingando.
-            float rain = _phaseTwo ? 3.4f : 2.8f;
+            float rain = _phaseTwo ? 4.0f : 3.2f;
             float nextBead = 0f;
             for (float t = 0f; t < rain && _player != null; t += Time.deltaTime)
             {
@@ -391,7 +391,7 @@ namespace EchoesOfCravejada
 
                 if (Time.time >= nextBead)
                 {
-                    nextBead = Time.time + (_phaseTwo ? 0.22f : 0.3f);
+                    nextBead = Time.time + (_phaseTwo ? 0.16f : 0.23f);
                     float x = transform.position.x + Random.Range(-1.4f, 1.4f);
                     MercuryBead.Fall(new Vector3(x, cloudY + 0.3f, 0f), floorY, beadSprite);
                 }
@@ -430,7 +430,7 @@ namespace EchoesOfCravejada
 
         private IEnumerator WhipAttack()
         {
-            int lashes = _phaseTwo ? 2 : 1;
+            int lashes = _phaseTwo ? 3 : 2;
             bool high = Random.value < 0.5f;
 
             for (int lash = 0; lash < lashes; lash++)
@@ -442,7 +442,7 @@ namespace EchoesOfCravejada
                 Play(WhipWindup, WhipWindupFrames, 4f, false);
                 ShowWhip(height, true);
                 Sfx.AlchemistWhipWindup.Play(transform.position, pitch: _phaseTwo && lash > 0 ? 1.4f : 1f);
-                yield return new WaitForSeconds(_phaseTwo && lash > 0 ? 0.45f : 0.7f);
+                yield return new WaitForSeconds(lash > 0 ? 0.42f : 0.58f);
 
                 // O golpe.
                 Play(Whip, WhipFrames, 10f, false);
@@ -619,6 +619,9 @@ namespace EchoesOfCravejada
         {
             if (!_awake || _dead || _silver || _vapor) return;
             if (Mathf.Abs(circle.transform.position.x - transform.position.x) > transmuteRange) return;
+
+            // A runa estoura e o raio dela desce ate ele.
+            circle.Strike(transform.position + Vector3.up * 1.4f);
 
             StopAllCoroutines();
             HideWhip();

@@ -28,7 +28,28 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>Os bustos da caixa de dialogo (PortraitArt): mesma regra.</summary>
         public const string PortraitFolder = "Assets/Common/UI/Resources/Portraits";
 
-        public override uint GetVersion() => 3;
+        /// <summary>A tela de fim de cada final (EndScreen): mesma regra.</summary>
+        public const string EndFolder = "Assets/Common/UI/Resources/EndScreen";
+
+        public override uint GetVersion() => 4;
+
+        /// <summary>
+        /// Desenha a tela de fim de um final: {id}_emblem, {id}_title,
+        /// {id}_line0.., e as pecas comuns (friso, credito, placa de voltar).
+        /// </summary>
+        public static void RedrawEnd(string id, PixelCanvas emblem, string title, string[] lines)
+        {
+            Directory.CreateDirectory(EndFolder);
+            Write(id + "_emblem", emblem, EndFolder);
+            Write(id + "_title", DeathScreenArt.Title(title, 3, false), EndFolder);
+            for (int i = 0; i < lines.Length; i++) Write($"{id}_line{i}", EndScreenArt.Line(lines[i]), EndFolder);
+
+            Write("divider", DeathScreenArt.Divider(), EndFolder);
+            Write("credit", EndScreenArt.Line(EndScreenArt.Credit, true), EndFolder);
+            Write("button_menu_off", DeathScreenArt.Button(EndScreenArt.MenuLabel, false), EndFolder);
+            Write("button_menu_on", DeathScreenArt.Button(EndScreenArt.MenuLabel, true), EndFolder);
+            AssetDatabase.Refresh();
+        }
 
         // A pausa e nova: se a pasta ainda nao existe, desenha sozinha ao abrir o Editor.
         [InitializeOnLoadMethod]
@@ -49,7 +70,8 @@ namespace EchoesOfCravejada.EditorTools
         private void OnPreprocessTexture()
         {
             if (!assetPath.StartsWith(Folder + "/") && !assetPath.StartsWith(DeathFolder + "/") && !assetPath.StartsWith(MenuFolder + "/")
-                && !assetPath.StartsWith(PauseFolder + "/") && !assetPath.StartsWith(PortraitFolder + "/")) return;
+                && !assetPath.StartsWith(PauseFolder + "/") && !assetPath.StartsWith(PortraitFolder + "/")
+                && !assetPath.StartsWith(EndFolder + "/")) return;
 
             var importer = (TextureImporter)assetImporter;
             importer.textureType = TextureImporterType.Default;
@@ -59,6 +81,9 @@ namespace EchoesOfCravejada.EditorTools
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.mipmapEnabled = false;
             importer.alphaIsTransparency = true;
+
+            // A loja centraliza os icones pela parte desenhada (GameHud.DrawCentered): precisa ler os pixels.
+            importer.isReadable = true;
         }
 
         [MenuItem("Echoes/Redesenhar os ícones do HUD", false, 91)]

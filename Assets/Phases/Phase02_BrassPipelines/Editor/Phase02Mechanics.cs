@@ -363,6 +363,11 @@ namespace EchoesOfCravejada.EditorTools
                     valveObject.AddComponent<LockValveNotice>().Configure(spec.Lock, spec.Notice);
                 }
 
+                // A setinha em cima do volante, ate ele ser girado.
+                Light2D valveGlow = Phase01Generator.CreatePointLight(valveObject.transform, "Glow",
+                    (spec.X + 1f, spec.Y + 1f), new Color(1f, 0.85f, 0.6f), 0.55f, 3f);
+                Phase01Generator.AddCue(valveObject, CueArt.Use, TopOf(valveObject, spec.Y + 2f), valveGlow);
+
                 Valves[spec.Name] = valve;
             }
         }
@@ -505,6 +510,9 @@ namespace EchoesOfCravejada.EditorTools
 
                 boilerObject.AddComponent<PressureBoiler>()
                     .Configure(Lookup(Walls, spec.Walls), sprite, blast);
+
+                // A setinha em cima da caldeira que se estoura, ate ela estourar.
+                Phase01Generator.AddCue(boilerObject, CueArt.Use, TopOf(boilerObject, spec.Y + 6f), null);
             }
         }
 
@@ -551,6 +559,22 @@ namespace EchoesOfCravejada.EditorTools
             crisol.ConfigureRepeat(Phase02Layout.CrisolRepeatLines);
             crisol.ConfigurePurified(Phase02Layout.CrisolPurifiedLines);
             crisol.ConfigureMemory(Phase02Layout.CrisolMemoryLines);
+
+            Light2D glow = Phase01Generator.CreatePointLight(crisolObject.transform, "Glow", (tile.X + 0.5f, tile.Y + 1f),
+                new Color(0.80f, 0.95f, 0.90f), 0.8f, 3.8f);
+            Phase01Generator.AddCue(crisolObject, CueArt.Talk, TopOf(crisolObject, tile.Y + 3f), glow);
+        }
+
+        /// <summary>O alto do desenho de algo (em mundo), pra pendurar o marcador em cima.</summary>
+        private static float TopOf(GameObject target, float fallback)
+        {
+            float top = float.MinValue;
+            foreach (SpriteRenderer renderer in target.GetComponentsInChildren<SpriteRenderer>())
+            {
+                if (renderer.sprite != null) top = Mathf.Max(top, renderer.bounds.max.y);
+            }
+
+            return top > float.MinValue ? top : fallback;
         }
 
         /// <summary>
@@ -642,9 +666,13 @@ namespace EchoesOfCravejada.EditorTools
                     LoreArtAssets.Apply(own, artObject, npc, Phase01Assets.SortingTerrain);
                 }
 
-                // Uma luz fraca, pra dar pra achar no escuro.
-                Phase01Generator.CreatePointLight(loreObject.transform, "Glow",
-                    (spec.X + 0.5f, spec.Y + 1.2f), new Color(0.95f, 0.90f, 0.75f), 0.5f, 3.5f);
+                // Uma luz, pra dar pra achar no escuro, e o marcador que flutua:
+                // balao pra quem fala, folhinha pro que se le.
+                bool talks = spec.Kind == Phase02Layout.LoreKind.Tarnished;
+                Light2D loreGlow = Phase01Generator.CreatePointLight(loreObject.transform, "Glow",
+                    (spec.X + 0.5f, spec.Y + 1.2f), talks ? new Color(0.80f, 0.95f, 0.90f) : new Color(0.95f, 0.90f, 0.75f),
+                    0.75f, 3.8f);
+                Phase01Generator.AddCue(loreObject, talks ? CueArt.Talk : CueArt.Read, TopOf(loreObject, spec.Y + 2f), loreGlow);
 
                 // Quem so aparece depois da purificacao fica guardado pra ela acender.
                 if (spec.AfterPurification) AppearOnPurify.Add(loreObject);
@@ -690,8 +718,9 @@ namespace EchoesOfCravejada.EditorTools
                         break;
                 }
 
-                Phase01Generator.CreatePointLight(pickup.transform, "Glow",
-                    (spec.X + 0.5f, spec.Y + 0.8f), glow, 0.5f, 3f);
+                Light2D pickupGlow = Phase01Generator.CreatePointLight(pickup.transform, "Glow",
+                    (spec.X + 0.5f, spec.Y + 0.8f), glow, 0.9f, 4f);
+                Phase01Generator.AddCue(pickup, CueArt.Item, TopOf(pickup, spec.Y + 1.4f), pickupGlow);
             }
         }
 

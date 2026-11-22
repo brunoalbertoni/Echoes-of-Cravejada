@@ -26,9 +26,27 @@ namespace EchoesOfCravejada
             phase = newPhase;
         }
 
+        private float _kick;
+
+        /// <summary>
+        /// Um empurrao (a onda da purificacao passando): balanca forte, em
+        /// graus, e vai acalmando sozinho.
+        /// </summary>
+        public void Kick(float degrees)
+        {
+            _kick = Mathf.Max(_kick, degrees);
+        }
+
         private void Update()
         {
             float angle = Mathf.Sin((Time.time / Mathf.Max(0.1f, period) + phase) * Mathf.PI * 2f) * amplitude;
+
+            if (_kick > 0.05f)
+            {
+                angle += Mathf.Sin(Time.time * 7f + phase * 6f) * _kick;
+                _kick *= Mathf.Exp(-1.6f * Time.deltaTime);
+            }
+
             transform.localRotation = Quaternion.Euler(0f, 0f, angle);
         }
     }

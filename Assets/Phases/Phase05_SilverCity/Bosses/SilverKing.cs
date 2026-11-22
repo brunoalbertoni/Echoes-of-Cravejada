@@ -98,9 +98,9 @@ namespace EchoesOfCravejada
 
         private static readonly string[] LastLines =
         {
-            "...O meu brilho... não podia apagar. Era só isso que importava.",
-            "Cada ordem um pouco pior que a outra... Até que eu era só a ordem.",
-            "Diz pro lapidário... que eram novecentas e vinte e cinco. Eu contei.",
+            "...Uma sucata. Derrubado por uma sucata. Que desperdício de rei.",
+            "Essa cidade nunca me mereceu. Eu fui a coisa mais bonita que ela já teve.",
+            "Pode apagar a luz, sucata... Quem viu o meu brilho nunca vai esquecer.",
         };
 
         [Header("Sala")]
@@ -111,8 +111,8 @@ namespace EchoesOfCravejada
         [SerializeField] private Rect wakeArea;
 
         [Header("Vida")]
-        [SerializeField] private int phaseOneHealth = 60;
-        [SerializeField] private int phaseTwoHealth = 80;
+        [SerializeField] private int phaseOneHealth = 80;
+        [SerializeField] private int phaseTwoHealth = 110;
 
         [Header("Pontos (em tiles a partir do pivo, olhando pra direita)")]
         [SerializeField] private Vector2 scepterTip = new Vector2(3.4f, 3.1f);
@@ -141,7 +141,7 @@ namespace EchoesOfCravejada
         [SerializeField] private Color phaseTwoLight = new Color(0.55f, 0.85f, 0.65f);
 
         [Header("A cutscene e o fim")]
-        [SerializeField] private PurificationCartoon cartoon;
+        [SerializeField] private FilmCutscene cartoon;
         [SerializeField] private Gate altarGate;
         [SerializeField] private GameObject fallenCrown;
 
@@ -243,7 +243,7 @@ namespace EchoesOfCravejada
 
         /// <summary>Usado pelos geradores de fase: o que muda na sala, a cutscene e o fim.</summary>
         public void ConfigureStage(GameObject[] objectsOne, GameObject[] objectsTwo, Light2D global,
-            PurificationCartoon newCartoon, Gate gate, GameObject crown)
+            FilmCutscene newCartoon, Gate gate, GameObject crown)
         {
             phaseOneObjects = objectsOne;
             phaseTwoObjects = objectsTwo;
@@ -466,7 +466,7 @@ namespace EchoesOfCravejada
                 // O respiro entre um golpe e outro — curto, e cortado se o Scrap sobe nele.
                 Play(Idle, IdleFrames, 6f);
                 _flinchable = true;
-                float rest = _phaseTwo ? 0.25f : 0.3f;
+                float rest = _phaseTwo ? 0.12f : 0.2f;
                 for (float t = 0f; t < rest; t += Time.deltaTime)
                 {
                     if (PlayerAbove() && Time.time >= _skywardReady) break;
@@ -494,7 +494,7 @@ namespace EchoesOfCravejada
         {
             _flinchable = true;
             float time = Random.Range(0.4f, _phaseTwo ? 0.6f : 0.9f);
-            float speed = _phaseTwo ? 3.2f : 2.3f;
+            float speed = _phaseTwo ? 3.9f : 2.9f;
             Play(Walk, WalkFrames, speed * 3.5f);
 
             for (float t = 0f; t < time; t += Time.deltaTime)
@@ -537,14 +537,14 @@ namespace EchoesOfCravejada
             {
                 case 0:
                     // Metade das vezes ele emenda: a cetrada e, sem respiro, o raio.
-                    if (Random.value < 0.5f) yield return ScepterBeam();
+                    if (Random.value < 0.7f) yield return ScepterBeam();
                     yield return ScepterSweep();
                     break;
                 case 1:
                     yield return ScepterBeam();
-                    if (!_dead && Random.value < 0.4f) yield return CrownFacets(4, false);
+                    if (!_dead && Random.value < 0.65f) yield return CrownFacets(5, false);
                     break;
-                default: yield return CrownFacets(7, false); break;
+                default: yield return CrownFacets(9, false); break;
             }
         }
 
@@ -571,7 +571,7 @@ namespace EchoesOfCravejada
         private IEnumerator ScepterSweep()
         {
             FacePlayer();
-            float windup = _phaseTwo ? 0.34f : 0.48f;
+            float windup = _phaseTwo ? 0.3f : 0.42f;
             Play(SweepWindup, SweepWindupFrames, SweepWindupFrames / windup, false);
             Sfx.KingSweepWindup.Play(transform.position, pitch: 0.48f / windup);
             yield return Warn(windup);
@@ -588,7 +588,7 @@ namespace EchoesOfCravejada
             yield return new WaitForSeconds(0.2f);
 
             // Apoiado no cetro, arfando: a hora de bater.
-            _exposedUntil = Time.time + (_phaseTwo ? 0.7f : 0.8f);
+            _exposedUntil = Time.time + (_phaseTwo ? 0.5f : 0.6f);
             Play(Exposed, ExposedFrames, 4f);
             while (IsExposed && !_dead) yield return null;
         }
@@ -657,7 +657,7 @@ namespace EchoesOfCravejada
             float from = Angle(35f);
             float to = Angle(-32f);
 
-            for (float t = 0f; t < 0.6f; t += Time.deltaTime)
+            for (float t = 0f; t < 0.45f; t += Time.deltaTime)
             {
                 if (beamA != null) beamA.Aim(origin, from);
                 yield return null;
@@ -708,7 +708,7 @@ namespace EchoesOfCravejada
             Vector2 origin = Point(scepterTip);
             Vector2 crown = Point(crownPoint);
 
-            for (float t = 0f; t < 0.65f; t += Time.deltaTime)
+            for (float t = 0f; t < 0.5f; t += Time.deltaTime)
             {
                 if (beamA != null) beamA.Aim(origin, 50f);
                 if (beamB != null) beamB.Aim(crown, 130f);
@@ -737,7 +737,7 @@ namespace EchoesOfCravejada
             Sfx.KingCast.Play(transform.position + Vector3.up * 4f, pitch: 0.75f);
             yield return new WaitForSeconds(0.35f);
 
-            for (int wave = 0; wave < 3; wave++)
+            for (int wave = 0; wave < 4; wave++)
             {
                 var glints = new List<GameObject>();
                 var spots = new List<float>();
@@ -753,7 +753,7 @@ namespace EchoesOfCravejada
 
                 // A sala inteira: o brilho e a chuva vem do teto todo, nao de um ponto.
                 Sfx.FacetGlint.Play();
-                yield return new WaitForSeconds(0.65f);
+                yield return new WaitForSeconds(0.55f);
 
                 foreach (GameObject glint in glints) if (glint != null) Destroy(glint);
                 foreach (float x in spots) FacetShard.Launch(new Vector2(x, ceilingY - 1.5f), Vector2.down * 14f, 0, facetCorruptSprite);
@@ -787,7 +787,7 @@ namespace EchoesOfCravejada
             ScrapCameraFollow.Shake(0.2f, 1.1f);
             if (breath != null) yield return breath.Blow(transform.position.x);
 
-            _exposedUntil = Time.time + 1f;
+            _exposedUntil = Time.time + 0.75f;
             Play(Exposed, ExposedFrames, 4f);
             while (IsExposed && !_dead) yield return null;
         }
@@ -1024,7 +1024,19 @@ namespace EchoesOfCravejada
             for (int i = 0; i < hold.Length; i++)
             {
                 Play(Death + i, 1, 1f, false);
+
+                // No quadro em que ela sai da cabeca, a coroa de verdade voa.
+                if (i == 3) StartCoroutine(CrownFlight());
                 yield return new WaitForSeconds(hold[i]);
+            }
+
+            // A camera vai ate a coroa, la longe do trono, e volta.
+            if (fallenCrown != null)
+            {
+                ScrapCameraFollow.Direct((Vector2)fallenCrown.transform.position + Vector2.up * 1.5f, 0.85f, 0.7f);
+                yield return new WaitForSeconds(1.4f);
+                ScrapCameraFollow.Direct((Vector2)transform.position + Vector2.up * 2.5f, 0.85f, 0.7f);
+                yield return new WaitForSeconds(0.6f);
             }
 
             yield return ScriptedDialogue.PlayAs("king_corrupt", Name, _sprite, LastLines);
@@ -1038,13 +1050,67 @@ namespace EchoesOfCravejada
             LeaveWreck();
 
             if (Fighting == this) Fighting = null;
-            if (fallenCrown != null) fallenCrown.SetActive(true);
             if (altarGate != null) altarGate.Open();
 
             ScrapCameraFollow.Release();
             if (controller != null) controller.ControlLocked = false;
             if (began) Cinematic.End();
             _scene = false;
+        }
+
+        /// <summary>
+        /// A coroa sai da cabeca dele, sobe girando, cai longe do trono, quica
+        /// duas vezes e para no lugar dela (onde o gerador a deixou).
+        /// </summary>
+        private IEnumerator CrownFlight()
+        {
+            if (fallenCrown == null) yield break;
+
+            Transform crown = fallenCrown.transform;
+            Vector3 target = crown.position;
+            Vector3 start = transform.position + new Vector3(crownPoint.x * _facing, crownPoint.y * 0.8f, 0f);
+            crown.position = start;
+            crown.rotation = Quaternion.identity;
+            fallenCrown.SetActive(true);
+            Sfx.KingCrownCrack.Play(start, pitch: 1.3f, volume: 0.6f);
+
+            // O arco: sobe acima da cabeca e desce no lugar, girando.
+            const float time = 1.1f;
+            float apex = Mathf.Max(start.y, target.y) + 3f;
+            float spin = Mathf.Sign(target.x - start.x) * -720f;
+            for (float t = 0f; t < time; t += Time.deltaTime)
+            {
+                float k = t / time;
+                float x = Mathf.Lerp(start.x, target.x, k);
+                float y = k < 0.5f
+                    ? Mathf.Lerp(start.y, apex, 1f - (1f - k * 2f) * (1f - k * 2f))
+                    : Mathf.Lerp(apex, target.y, (k - 0.5f) * 2f * ((k - 0.5f) * 2f));
+                crown.position = new Vector3(x, y, target.z);
+                crown.rotation = Quaternion.Euler(0f, 0f, spin * k);
+                yield return null;
+            }
+
+            // Quica duas vezes, cada vez mais baixo, e assenta reta.
+            float[] hops = { 0.7f, 0.25f };
+            foreach (float hop in hops)
+            {
+                crown.position = target;
+                Sfx.Block.Play(target, pitch: 0.8f + hop * 0.3f);
+                ScrapCameraFollow.Shake(0.06f * hop, 0.2f);
+                float span = 0.18f + hop * 0.25f;
+                float from = crown.eulerAngles.z;
+                for (float t = 0f; t < span; t += Time.deltaTime)
+                {
+                    float k = t / span;
+                    crown.position = target + Vector3.up * (hop * 4f * k * (1f - k));
+                    crown.rotation = Quaternion.Euler(0f, 0f, Mathf.LerpAngle(from, 0f, k));
+                    yield return null;
+                }
+            }
+
+            crown.position = target;
+            crown.rotation = Quaternion.identity;
+            Sfx.Block.Play(target, pitch: 0.7f, volume: 0.6f);
         }
 
         /// <summary>Deitado, troca pelo loop da carcaca: a armadura rachada e o Oxide saindo em fiapos.</summary>

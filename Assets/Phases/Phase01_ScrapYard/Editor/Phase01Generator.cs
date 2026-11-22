@@ -51,6 +51,14 @@ namespace EchoesOfCravejada.EditorTools
         private static readonly Color BackWallTint = new Color(0.45f, 0.55f, 0.52f);
 
         /// <summary>
+        /// A regra de todas as fases: o que o Scrap nao toca (nao usa, nao bate,
+        /// nao pisa) fica em segundo plano — mais escuro e apagado que o chao,
+        /// os inimigos e o que se usa, mesmo quando esta na frente do terreno.
+        /// So a luz propria (fogo, vidro aceso, Oxide) escapa dessa tinta.
+        /// </summary>
+        internal static readonly Color DecorTint = new Color(0.60f, 0.66f, 0.66f);
+
+        /// <summary>
         /// Se a queda do Coletor termina na cutscene desenhada da troca de
         /// visual. Desligada por enquanto: as cutscenes entram quando o jogo
         /// estiver completo. Sem ela, o Scrap brilha e troca de visual na hora.
@@ -162,6 +170,9 @@ namespace EchoesOfCravejada.EditorTools
             // A cenografia: vigas, canos, calha, montes de sucata, carcacas, postes...
             Phase01DecorBuilder.EnsureArt();
 
+            // Os marcadores que flutuam em cima do que da pra usar.
+            EnsureCueArt();
+
             // O que se le: o desenho do mapa e o grande, da leitura, de cada um.
             WriteLoreArt();
 
@@ -227,17 +238,17 @@ namespace EchoesOfCravejada.EditorTools
             Tilemap ground = CreateTilemap(gridObject.transform, "TM_Ground",
                 Phase01Assets.SortingTerrain, 10);
 
-            // A decoracao fica na frente do chao, mas a camada Terrain inteira
-            // fica atras de Actors — entao a sucata e os veios de minerio ficam
-            // atras do Scrap, e nao colados na frente dele.
+            // A sucata, as pedras e as cercas que nao se tocam: atras do chao e
+            // das plataformas (ordem menor que a do TM_Ground) e apagadas.
             Tilemap decoration = CreateTilemap(gridObject.transform, "TM_Decoration",
-                Phase01Assets.SortingTerrain, 20);
+                Phase01Assets.SortingTerrain, 9);
+            decoration.color = DecorTint;
 
-            // O que passa na frente do Scrap fica quase em silhueta, senao
-            // disputa a atencao com ele.
-            Tilemap foreground = CreateTilemap(gridObject.transform, "TM_Foreground",
-                Phase01Assets.SortingForeground, 0);
-            foreground.color = new Color(0.30f, 0.36f, 0.36f);
+            // O que e do proprio terreno e fica por cima dele, com a cor cheia:
+            // os espinhos (machucam) e os veios de minerio (incrustados na
+            // rocha; atras do chao, sumiriam).
+            Tilemap surface = CreateTilemap(gridObject.transform, "TM_Surface",
+                Phase01Assets.SortingTerrain, 11);
 
             GameObject groundObject = ground.gameObject;
             groundObject.layer = groundLayer;
@@ -257,16 +268,16 @@ namespace EchoesOfCravejada.EditorTools
             // ela chegava sem chao.
             groundObject.AddComponent<GroundColliderRefresh>();
 
-            PaintRoom(background, backProps, ground, decoration, foreground, tiles);
+            PaintRoom(background, backProps, ground, decoration, surface, tiles);
 
             // As plataformas baixas da arena: o Scrap passa por baixo delas.
-            CreateThinSteps(ground, decoration, Phase01Layout.ThinSteps);
+            CreateThinSteps(ground, surface, Phase01Layout.ThinSteps);
 
             FinishTilemap(background);
             FinishTilemap(backProps);
             FinishTilemap(ground);
             FinishTilemap(decoration);
-            FinishTilemap(foreground);
+            FinishTilemap(surface);
 
             // O collider so existe depois que ha tiles, entao a geometria e
             // gerada agora, e nao na hora em que o componente foi adicionado.
@@ -337,7 +348,7 @@ namespace EchoesOfCravejada.EditorTools
         /// pode nao ter sido consolidada na hora de salvar a cena.
         /// </summary>
         private static void PaintRoom(Tilemap background, Tilemap backProps, Tilemap ground,
-            Tilemap decoration, Tilemap foreground, Dictionary<string, TileBase> tiles)
+            Tilemap decoration, Tilemap surface, Dictionary<string, TileBase> tiles)
         {
             int width = Phase01Layout.Width;
             int height = Phase01Layout.Height;
@@ -346,7 +357,7 @@ namespace EchoesOfCravejada.EditorTools
             var backPropsBuffer = new TileBase[width * height];
             var groundBuffer = new TileBase[width * height];
             var decorationBuffer = new TileBase[width * height];
-            var foregroundBuffer = new TileBase[width * height];
+            var surfaceBuffer = new TileBase[width * height];
 
             for (int y = 0; y < height; y++)
             {
@@ -372,7 +383,7 @@ namespace EchoesOfCravejada.EditorTools
                 for (int x = 0; x < width; x++)
                 {
                     if (!Phase01Layout.IsSpike(x, y)) continue;
-                    decorationBuffer[Index(x, y, width)] = Resolve(tiles, Phase01Layout.SpikeTileName(x, y));
+                    surfaceBuffer[Index(x, y, width)] = Resolve(tiles, Phase01Layout.SpikeTileName(x, y));
                 }
             }
 
@@ -380,10 +391,12 @@ namespace EchoesOfCravejada.EditorTools
             {
                 if (prop.X < 0 || prop.X >= width || prop.Y < 0 || prop.Y >= height) continue;
 
-                TileBase[] buffer = prop.Layer switch
+                TileBase[] buffer = Phase01Layout.IsRock(prop.X, prop.Y) ? surfaceBuffer : prop.Layer switch
                 {
+                    // O que ficava na frente do Scrap vai pro fundo: nao se
+                    // toca, entao nao pode parecer que esta no caminho.
                     Phase01Layout.PropLayer.Back => backPropsBuffer,
-                    Phase01Layout.PropLayer.Front => foregroundBuffer,
+                    Phase01Layout.PropLayer.Front => backPropsBuffer,
                     _ => decorationBuffer,
                 };
 
@@ -395,7 +408,7 @@ namespace EchoesOfCravejada.EditorTools
             backProps.SetTilesBlock(bounds, backPropsBuffer);
             ground.SetTilesBlock(bounds, groundBuffer);
             decoration.SetTilesBlock(bounds, decorationBuffer);
-            foreground.SetTilesBlock(bounds, foregroundBuffer);
+            surface.SetTilesBlock(bounds, surfaceBuffer);
         }
 
         /// <summary>
@@ -1375,9 +1388,11 @@ namespace EchoesOfCravejada.EditorTools
             npc.Configure(spot.Name, spot.Lines);
             if (spot.PurifiedLines != null) npc.ConfigurePurified(spot.PurifiedLines);
 
-            // Uma luz fraca em cima dele, pra dar pra achar no escuro.
-            CreatePointLight(npcObject.transform, "Glow", (spot.X + 0.5f, spot.Y + 1f),
-                new Color(0.80f, 0.95f, 0.90f), 0.55f, 3.5f);
+            // Uma luz em cima dele, pra dar pra achar no escuro, e o balao que
+            // flutua: da pra conversar.
+            Light2D npcGlow = CreatePointLight(npcObject.transform, "Glow", (spot.X + 0.5f, spot.Y + 1f),
+                new Color(0.80f, 0.95f, 0.90f), 0.8f, 3.8f);
+            AddCue(npcObject, CueArt.Talk, renderer.bounds.max.y, npcGlow);
 
             return npcObject;
         }
@@ -1423,7 +1438,8 @@ namespace EchoesOfCravejada.EditorTools
                     break;
             }
 
-            CreatePointLight(item.transform, "Glow", (spot.X + 0.5f, spot.Y + 0.8f), glow, 0.5f, 3f);
+            Light2D itemGlow = CreatePointLight(item.transform, "Glow", (spot.X + 0.5f, spot.Y + 0.8f), glow, 0.9f, 4f);
+            AddCue(item, CueArt.Item, renderer.sprite != null ? renderer.bounds.max.y : spot.Y + 1.4f, itemGlow);
             return item;
         }
 
@@ -1486,9 +1502,12 @@ namespace EchoesOfCravejada.EditorTools
                     break;
             }
 
-            // Uma luz fraca, pra dar pra achar no escuro.
-            CreatePointLight(loreObject.transform, "Glow", (spot.X + 0.5f, spot.Y + 1.2f),
-                new Color(0.95f, 0.90f, 0.75f), 0.5f, 3.5f);
+            // Uma luz, pra dar pra achar no escuro, e a folhinha que flutua: da
+            // pra ler.
+            Light2D loreGlow = CreatePointLight(loreObject.transform, "Glow", (spot.X + 0.5f, spot.Y + 1.2f),
+                new Color(0.95f, 0.90f, 0.75f), 0.75f, 3.8f);
+            float loreTop = art.sprite != null ? art.bounds.max.y : spot.Y + 2f;
+            AddCue(loreObject, CueArt.Read, loreTop, loreGlow);
 
             return loreObject;
         }
@@ -1647,6 +1666,46 @@ namespace EchoesOfCravejada.EditorTools
 
             leverObject.AddComponent<RustyLever>().Configure(gate, leverSprite,
                 Phase02Assets.LoadSprite(Phase02Assets.LeverClean));
+
+            // A setinha que flutua: da pra acionar (no golpe do cinzel).
+            Light2D leverGlow = CreatePointLight(leverObject.transform, "Glow", (leverTile.X + 0.5f, leverTile.Y + 1f),
+                new Color(1f, 0.85f, 0.6f), 0.6f, 3f);
+            AddCue(leverObject, CueArt.Use, leverSprite.sprite != null ? leverSprite.bounds.max.y : leverTile.Y + 1.5f, leverGlow);
+        }
+
+        /// <summary>Grava os marcadores do CueArt, com o pivo no meio da base.</summary>
+        internal static void EnsureCueArt()
+        {
+            foreach ((string name, PixelCanvas canvas) in CueArt.All())
+            {
+                Phase02Assets.WriteSprite(name, canvas, new Vector2(0.5f, 0f), false, CueArt.PixelsPerUnit);
+            }
+        }
+
+        /// <summary>
+        /// O destaque de algo que da pra usar: o marcador flutuando um pouco
+        /// acima do topo (em mundo) e o InteractCue, que faz ele subir, descer
+        /// e pulsar junto com a luz.
+        /// </summary>
+        internal static void AddCue(GameObject target, string cue, float worldTop, Light2D glow)
+        {
+            Sprite sprite = Phase02Assets.LoadSprite(cue);
+            if (sprite == null) return;
+
+            var markerObject = new GameObject("Cue");
+            markerObject.transform.SetParent(target.transform, false);
+            markerObject.transform.position = new Vector3(target.transform.position.x, worldTop + 0.35f, 0f);
+
+            // Do mesmo tamanho pra todo mundo, mesmo em quem e menor (a Pequena).
+            Vector3 scale = target.transform.lossyScale;
+            markerObject.transform.localScale = new Vector3(1f / Mathf.Max(0.01f, scale.x), 1f / Mathf.Max(0.01f, scale.y), 1f);
+
+            var renderer = markerObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.sortingLayerName = Phase01Assets.SortingForeground;
+            renderer.sortingOrder = 20;
+
+            target.AddComponent<InteractCue>().Configure(renderer, glow);
         }
 
         private static void BuildWorkbenches(Transform parent)

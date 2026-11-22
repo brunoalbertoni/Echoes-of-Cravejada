@@ -10,7 +10,7 @@ namespace EchoesOfCravejada
     /// quem estiver perto, inimigo ou Scrap.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
-    public class PressureBoiler : MonoBehaviour, IDamageable
+    public class PressureBoiler : MonoBehaviour, IDamageable, ICueDone
     {
         [Tooltip("Quantos golpes ate ela disparar.")]
         [SerializeField] private int hitsToBurst = 3;
@@ -31,6 +31,8 @@ namespace EchoesOfCravejada
 
         /// <summary>Quao cheia de pressao ela esta, de 0 a 1. O ponteiro do manometro dela pode usar.</summary>
         public float Pressure => Mathf.Clamp01(_hits / (float)Mathf.Max(1, hitsToBurst));
+
+        bool ICueDone.CueDone => _burst;
 
         /// <summary>Usado pelos geradores de fase.</summary>
         public void Configure(GameObject[] newWalls, SpriteRenderer newSprite, ParticleSystem newBlast)

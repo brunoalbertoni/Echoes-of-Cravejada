@@ -98,6 +98,14 @@ namespace EchoesOfCravejada.EditorTools
         public const string Bolts = "d1_bolts";
         public const string BoilerWreck = "d1_boiler_wreck";
         public const string PipePile = "d1_pipe_pile";
+        public const string Crate = "d1_crate";
+        public const string CrateOpen = "d1_crate_open";
+        public const string ToolRack = "d1_tool_rack";
+
+        public const int LoosePartVariants = 3;
+
+        /// <summary>Uma peca de descartado solta no chao (0 cabeca, 1 braco, 2 perna).</summary>
+        public static string LoosePart(int variant) => "d1_part_" + variant;
 
         /// <summary>Todas as pecas, desenhadas, pelo nome.</summary>
         public static Dictionary<string, PixelCanvas> All()
@@ -145,6 +153,9 @@ namespace EchoesOfCravejada.EditorTools
                 [Bolts] = DrawBolts(),
                 [BoilerWreck] = DrawBoilerWreck(),
                 [PipePile] = DrawPipePile(),
+                [Crate] = DrawCrate(false),
+                [CrateOpen] = DrawCrate(true),
+                [ToolRack] = DrawToolRack(),
             };
 
             int[] heapW = { 32, 52, 84 };
@@ -158,6 +169,7 @@ namespace EchoesOfCravejada.EditorTools
             }
 
             for (int variant = 0; variant < CarcassVariants; variant++) all[Carcass(variant)] = DrawCarcass(variant);
+            for (int variant = 0; variant < LoosePartVariants; variant++) all[LoosePart(variant)] = DrawLooseParts(variant);
 
             return all;
         }
@@ -914,24 +926,42 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>Uma arandela de cristal quebrada, 16x16, presa na rocha.</summary>
         private static PixelCanvas DrawWallLamp()
         {
-            var c = new PixelCanvas(16, 16);
-            c.Fill(2, 6, 3, 6, ArtKit.Brass[1]);
-            c.Fill(2, 6, 1, 6, ArtKit.Brass[3]);
-            ArtKit.Limb(c, 4f, 9f, 9f, 9f, 0.9f, ArtKit.Brass, 0.2f);
+            // 16x24: a chapa presa na rocha com dois rebites, o braco de ferro
+            // e a lanterna de servico pendurada: chapeu, gaiola de arame e o
+            // vidro apagado, rachado, com um caco faltando.
+            var c = new PixelCanvas(16, 24);
+            c.Fill(1, 4, 4, 10, ArtKit.Iron[1]);
+            c.Fill(1, 4, 1, 10, ArtKit.Iron[3]);
+            ArtKit.Rivet(c, 2, 5, ArtKit.Iron);
+            ArtKit.Rivet(c, 2, 11, ArtKit.Iron);
+            ArtKit.Limb(c, 4f, 7f, 11f, 7f, 0.8f, ArtKit.Iron, 0.3f);
+            ArtKit.Limb(c, 5f, 11f, 9f, 7.5f, 0.6f, ArtKit.Iron, 0.1f);
+            ArtKit.Limb(c, 11f, 7f, 11f, 9f, 0.5f, ArtKit.Brass, 0.3f);
 
-            // O vidro rachado, apagado, com um caco faltando.
-            for (int py = 3; py < 13; py++)
+            // O chapeu.
+            ArtKit.Drum(c, 11f, 10.5f, 4f, 1.5f, 3f, ArtKit.Plain(ArtKit.Brass), 0.2f);
+
+            // A gaiola com o vidro.
+            for (int py = 12; py < 21; py++)
             {
-                for (int px = 8; px < 14; px++)
+                for (int px = 8; px < 15; px++)
                 {
-                    if (px > 11 && py < 6) continue;
-                    bool frame = px == 8 || px == 13 || py == 3 || py == 12;
-                    c.Set(px, py, frame ? ArtKit.Brass[1] : new Rgba(60, 80, 84));
+                    bool bar = px == 8 || px == 14 || px == 11 || py == 12 || py == 20;
+                    Rgba glass = Rgba.Lerp(new Rgba(70, 92, 96), new Rgba(40, 54, 58), (py - 12) / 8f);
+                    c.Set(px, py, bar ? ArtKit.Tone(ArtKit.Brass, px == 8 ? 0.7f : 0.1f) : glass);
                 }
             }
 
-            ArtKit.Line(c, 9, 4, 12, 11, new Rgba(30, 40, 44));
-            c.Set(10, 5, new Rgba(170, 200, 200));
+            ArtKit.Line(c, 9, 14, 10, 18, new Rgba(26, 34, 38));
+            ArtKit.Line(c, 12, 13, 13, 16, new Rgba(26, 34, 38));
+            c.Set(9, 13, new Rgba(180, 210, 210));
+            c.Set(12, 18, Rgba.Clear);
+            c.Set(13, 18, Rgba.Clear);
+            c.Set(13, 19, Rgba.Clear);
+
+            // A base e a argola de baixo.
+            c.Fill(9, 21, 5, 1, ArtKit.Brass[1]);
+            c.Set(11, 22, ArtKit.Brass[2]);
             ArtKit.AddOutline(c, Ink);
             return c;
         }
@@ -1203,20 +1233,238 @@ namespace EchoesOfCravejada.EditorTools
             return c;
         }
 
-        /// <summary>Um barril de chapa, 16x20, amassado e verde embaixo.</summary>
+        /// <summary>
+        /// Um barril de chapa, 16x20: a tampa vista de cima, dois aros
+        /// rebitados, um amassado de lado, o brilho de cima a baixo, a etiqueta
+        /// de perigo descascada e o verde escorrendo pela costura ate o chao.
+        /// </summary>
         private static PixelCanvas DrawBarrel()
         {
             var c = new PixelCanvas(16, 20);
-            ArtKit.Drum(c, 8f, 10.5f, 6.5f, 9f, 3.5f, ArtKit.Corroded(ArtKit.Rust, 0.3f, 441, 0.35f), 0.05f);
-            foreach (int y in new[] { 4, 16 })
+            ArtKit.Skin skin = ArtKit.Corroded(ArtKit.Rust, 0.3f, 441, 0.35f);
+            for (int py = 2; py < 20; py++)
             {
-                for (int px = 2; px < 15; px++) c.Set(px, y, ArtKit.Tone(ArtKit.Iron, 0.5f - (px - 8) * 0.15f));
+                for (int px = 1; px < 15; px++)
+                {
+                    float u = (px + 0.5f - 8f) / 7f;
+                    float bulge = 1f - 0.12f * (float)Math.Pow((py - 11f) / 9f, 2);
+                    if (Math.Abs(u) > bulge) continue;
+                    float light = 0.75f - (u + 0.35f) * (u + 0.35f) * 1.6f;
+                    if (px >= 11 && py >= 7 && py <= 10) light -= 0.6f;
+                    c.Set(px, py, skin(px, py, light));
+                }
             }
 
-            // O simbolo de perigo, meio apagado.
-            c.Fill(6, 9, 4, 3, new Rgba(190, 160, 70));
-            c.Set(7, 10, Ink);
-            c.Set(8, 10, Ink);
+            // A tampa: a elipse de cima, com o bocal.
+            for (int px = 2; px < 14; px++)
+            {
+                c.Set(px, 2, ArtKit.Tone(ArtKit.Rust, 0.5f - Math.Abs(px - 7.5f) * 0.08f));
+                c.Set(px, 3, ArtKit.Rust[0]);
+            }
+
+            c.Fill(9, 1, 2, 2, ArtKit.Iron[2]);
+            c.Set(9, 1, ArtKit.Iron[3]);
+
+            // Os aros, com rebites.
+            foreach (int y in new[] { 5, 15 })
+            {
+                for (int px = 1; px < 15; px++)
+                {
+                    if (c.Get(px, y).A == 0) continue;
+                    c.Set(px, y, ArtKit.Tone(ArtKit.Iron, 0.7f - Math.Abs(px - 5f) * 0.18f));
+                    c.Set(px, y + 1, ArtKit.Iron[0]);
+                }
+
+                for (int px = 3; px < 14; px += 4) c.Set(px, y, ArtKit.Iron[3]);
+            }
+
+            // A etiqueta de perigo: um triangulo amarelo, descascado.
+            for (int i = 0; i < 4; i++)
+            {
+                for (int px = 6 - i; px <= 6 + i; px++) c.Set(px, 8 + i, new Rgba(204, 172, 74));
+            }
+
+            c.Set(6, 9, Ink);
+            c.Set(6, 10, Ink);
+            c.Set(4, 11, ArtKit.Rust[1]);
+            c.Set(8, 10, ArtKit.Rust[2]);
+
+            // O verde escorrendo da costura ate a base.
+            for (int py = 6; py < 19; py++) c.Set(12, py, py % 4 == 0 ? ArtKit.OxideGlow : ArtKit.Verdigris[1]);
+            c.Set(12, 19, ArtKit.OxideDeep);
+
+            ArtKit.AddOutline(c, Ink);
+            return c;
+        }
+
+        private static readonly Rgba[] Wood =
+            { new Rgba(58, 38, 28), new Rgba(96, 64, 40), new Rgba(138, 96, 58), new Rgba(176, 132, 84) };
+
+        /// <summary>
+        /// Um caixote da Coroa, 24x20, das "caixas de peca nova" da obra:
+        /// tabuas pregadas, cantoneiras de latao, a coroa estampada a
+        /// estencil e o "925" embaixo. Nao e sucata: chegou novo e ficou.
+        /// open: a tampa deslocada e as pecas novas aparecendo por cima.
+        /// </summary>
+        private static PixelCanvas DrawCrate(bool open)
+        {
+            var c = new PixelCanvas(24, 20);
+            int top = open ? 6 : 2;
+
+            if (open)
+            {
+                // Pecas novas, brilhando: uma engrenagem, um cano, uma mola.
+                DrawPart(c, 8f, 6f, 0, 0.9f, 0f, 901);
+                DrawPart(c, 15f, 5f, 2, 0.8f, -30f, 902);
+                DrawPart(c, 18f, 7f, 6, 0.8f, -10f, 903);
+            }
+
+            for (int py = top; py < 20; py++)
+            {
+                for (int px = 0; px < 24; px++)
+                {
+                    int plank = (py - top) / 4;
+                    bool seam = (py - top) % 4 == 3;
+                    float grain = ArtKit.Noise(px * 0.5f, py * 2f, 911 + plank) - 0.5f;
+                    float light = 0.35f - (py - top) * 0.03f + grain * 0.5f - (px > 20 ? 0.6f : 0f);
+                    c.Set(px, py, seam ? Wood[0] : ArtKit.Tone(Wood, light));
+                }
+            }
+
+            // As cantoneiras de latao e os pregos.
+            foreach (int x in new[] { 0, 21 })
+            {
+                for (int py = top; py < 20; py++) c.Set(x + (x == 0 ? 0 : 2), py, ArtKit.Brass[x == 0 ? 3 : 1]);
+                c.Fill(x, top, 3, 2, ArtKit.Brass[2]);
+                c.Fill(x, 18, 3, 2, ArtKit.Brass[1]);
+            }
+
+            for (int py = top + 1; py < 20; py += 4)
+            {
+                c.Set(4, py, ArtKit.Iron[3]);
+                c.Set(19, py, ArtKit.Iron[2]);
+            }
+
+            // A coroa a estencil e o 925, desbotados.
+            var paint = new Rgba(224, 214, 186, 210);
+            int cy = top + 3;
+            foreach (int x in new[] { 8, 11, 14 })
+            {
+                c.Blend(x, cy, paint);
+                c.Blend(x, cy + 1, paint);
+            }
+
+            for (int x = 8; x <= 14; x++)
+            {
+                c.Blend(x, cy + 2, paint);
+                c.Blend(x, cy + 3, paint);
+            }
+
+            if (!open) DrawDigits(c, "925", 6, cy + 6, paint);
+
+            if (open)
+            {
+                // A tampa, encostada torta na frente.
+                ArtKit.Line(c, 1, top - 1, 9, top - 4, Wood[3]);
+                ArtKit.Line(c, 1, top, 9, top - 3, Wood[1]);
+            }
+
+            ArtKit.AddOutline(c, Ink);
+            return c;
+        }
+
+        /// <summary>
+        /// Pecas de descartado soltas no chao, 16x10: 0 uma cabeca caida de
+        /// lado, de olho apagado; 1 um braco com a mao aberta; 2 uma perna e
+        /// a engrenagem do joelho.
+        /// </summary>
+        private static PixelCanvas DrawLooseParts(int variant)
+        {
+            var c = new PixelCanvas(16, 10);
+            Rgba[] metal = variant == 1 ? ArtKit.Copper : (variant == 2 ? ArtKit.Brass : ArtKit.Tin);
+            ArtKit.Skin skin = ArtKit.Corroded(metal, 0.3f, 921 + variant, 0.5f);
+
+            switch (variant)
+            {
+                case 0:
+                    ArtKit.Ball(c, 8f, 6f, 5f, 4f, skin, 0.15f);
+                    c.Fill(5, 5, 2, 1, Ink);
+                    c.Fill(10, 5, 2, 1, Ink);
+                    c.Set(10, 5, new Rgba(70, 90, 96));
+                    c.Fill(6, 8, 5, 1, metal[0]);
+                    ArtKit.Line(c, 12, 3, 14, 1, ArtKit.Iron[2]);
+                    c.Set(14, 1, ArtKit.Brass[3]);
+                    break;
+
+                case 1:
+                    ArtKit.Limb(c, 2f, 7f, 9f, 6f, 1.4f, skin, 0.1f);
+                    ArtKit.Ball(c, 9.5f, 6f, 1.6f, 1.6f, ArtKit.Iron, 0.2f);
+                    ArtKit.Limb(c, 10f, 6f, 13f, 7.5f, 1f, metal, 0.1f);
+                    c.Set(14, 6, metal[2]);
+                    c.Set(14, 8, metal[2]);
+                    c.Set(15, 7, metal[1]);
+                    c.Set(1, 6, new Rgba(170, 60, 40));
+                    c.Set(1, 8, new Rgba(60, 90, 140));
+                    break;
+
+                default:
+                    ArtKit.Limb(c, 2f, 7.5f, 8f, 7.5f, 1.5f, skin, 0.1f);
+                    ArtKit.Limb(c, 9f, 7.5f, 13f, 6f, 1.3f, metal, 0.1f);
+                    DrawPart(c, 8.5f, 6.5f, 0, 0.3f, 15f, 931);
+                    c.Fill(13, 7, 3, 2, ArtKit.Rubber[2]);
+                    break;
+            }
+
+            ArtKit.AddOutline(c, Ink);
+            return c;
+        }
+
+        /// <summary>
+        /// O quadro de ferramentas do ourives, 32x20, pregado na parede junto
+        /// da bancada: uma tabua com os contornos pintados de cada ferramenta.
+        /// Tres contornos estao vazios — o buril, a lupa e a pinca que o
+        /// Rebite procura. Os outros ainda tem a ferramenta pendurada.
+        /// </summary>
+        private static PixelCanvas DrawToolRack()
+        {
+            var c = new PixelCanvas(32, 20);
+            for (int py = 1; py < 19; py++)
+            {
+                for (int px = 1; px < 31; px++)
+                {
+                    float grain = ArtKit.Noise(px * 0.4f, py * 1.6f, 941) - 0.5f;
+                    c.Set(px, py, ArtKit.Tone(Wood, 0.1f + grain * 0.6f - (py > 15 ? 0.4f : 0f)));
+                }
+            }
+
+            foreach ((int X, int Y) nail in new[] { (2, 2), (29, 2), (2, 17), (29, 17) }) c.Set(nail.X, nail.Y, ArtKit.Iron[3]);
+
+            var outline = new Rgba(222, 206, 160);
+
+            // Os contornos vazios: o buril (fino e comprido), a lupa (aro e
+            // cabo) e a pinca (um V).
+            ArtKit.Line(c, 5, 4, 5, 14, outline);
+            ArtKit.Line(c, 7, 4, 7, 14, outline);
+            ArtKit.Line(c, 5, 4, 7, 4, outline);
+            ArtKit.Line(c, 5, 14, 6, 16, outline);
+            ArtKit.Line(c, 7, 14, 6, 16, outline);
+
+            for (int i = 0; i < 20; i++)
+            {
+                double a = i * Math.PI / 10.0;
+                c.Set((int)Math.Round(13 + Math.Cos(a) * 3.2), (int)Math.Round(7 + Math.Sin(a) * 3.2), outline);
+            }
+
+            ArtKit.Line(c, 13, 11, 13, 16, outline);
+            ArtKit.Line(c, 19, 4, 21, 16, outline);
+            ArtKit.Line(c, 23, 4, 21, 16, outline);
+
+            // O que ainda esta la: um martelinho e uma lima, nos ganchos.
+            ArtKit.Limb(c, 26.5f, 6f, 26.5f, 15f, 0.8f, ArtKit.Leather, 0.2f);
+            c.Fill(25, 4, 4, 3, ArtKit.Iron[2]);
+            c.Set(25, 4, ArtKit.Iron[3]);
+            ArtKit.Limb(c, 29f, 5f, 29f, 14f, 0.6f, ArtKit.Iron, 0.3f);
+
             ArtKit.AddOutline(c, Ink);
             return c;
         }
@@ -1389,42 +1637,51 @@ namespace EchoesOfCravejada.EditorTools
             return c;
         }
 
-        /// <summary>Parafusos, porcas, molinhas e engrenagenzinhas espalhados no chao, 32x8.</summary>
+        /// <summary>
+        /// Parafusos, porcas, arruelas, molinhas e engrenagenzinhas espalhados
+        /// no chao, 32x8, cada um com contorno e brilho, todos deitados na
+        /// linha de baixo (nada solto no ar).
+        /// </summary>
         private static PixelCanvas DrawBolts()
         {
             var c = new PixelCanvas(32, 8);
             var rng = new Random(481);
+            int x = 1;
 
-            for (int i = 0; i < 14; i++)
+            while (x < 29)
             {
-                int x = rng.Next(1, 31);
-                int y = rng.Next(4, 8);
-                Rgba[] ramp = i % 3 == 0 ? ArtKit.Brass : (i % 3 == 1 ? ArtKit.Iron : ArtKit.Copper);
-
-                switch (i % 4)
+                Rgba[] ramp = rng.Next(3) switch { 0 => ArtKit.Brass, 1 => ArtKit.Tin, _ => ArtKit.Copper };
+                switch (rng.Next(4))
                 {
                     case 0:
-                        c.Set(x, y, ramp[3]);
-                        c.Set(x + 1, y, ramp[1]);
-                        c.Set(x, y - 1, ramp[2]);
+                        // Uma porca sextavada, com o furo.
+                        c.Fill(x, 5, 3, 3, ramp[2]);
+                        c.Set(x + 1, 6, Ink);
+                        c.Set(x, 5, ramp[3]);
+                        c.Set(x + 2, 7, ramp[0]);
+                        x += 4;
                         break;
                     case 1:
-                        c.Set(x, y, ramp[2]);
-                        c.Set(x + 1, y, ramp[2]);
-                        c.Set(x + 2, y, ramp[1]);
+                        // Um parafuso deitado: cabeca e rosca.
+                        c.Fill(x, 5, 2, 3, ramp[2]);
+                        c.Set(x, 5, ramp[3]);
+                        for (int i = 2; i < 6; i++) c.Set(x + i, 6, i % 2 == 0 ? ArtKit.Iron[3] : ArtKit.Iron[1]);
+                        x += 7;
                         break;
                     case 2:
-                        c.Set(x, y, ramp[1]);
-                        c.Set(x, y - 1, ramp[3]);
-                        c.Set(x + 1, y - 1, ramp[1]);
-                        c.Set(x - 1, y - 1, ramp[2]);
+                        // Uma engrenagenzinha de lado.
+                        DrawPart(c, x + 2.5f, 5f, 0, 0.1f, rng.Next(360), 482 + x);
+                        x += 6;
                         break;
                     default:
-                        c.Set(x, y, ramp[2]);
+                        // Uma molinha.
+                        for (int i = 0; i < 5; i++) c.Set(x + i, 6 + (i % 2), ArtKit.Brass[i % 2 == 0 ? 3 : 1]);
+                        x += 6;
                         break;
                 }
             }
 
+            ArtKit.AddOutline(c, Ink);
             return c;
         }
 

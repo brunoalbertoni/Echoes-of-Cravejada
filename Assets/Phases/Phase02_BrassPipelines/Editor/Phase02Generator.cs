@@ -119,6 +119,9 @@ namespace EchoesOfCravejada.EditorTools
                 return;
             }
 
+            // Os marcadores que flutuam em cima do que da pra usar.
+            Phase01Generator.EnsureCueArt();
+
             // Os inimigos, o Mestre das Caldeiras e quem se conversa, no detalhe do Scrap.
             Phase02Assets.EnsureDistrict2Art();
 
@@ -204,15 +207,19 @@ namespace EchoesOfCravejada.EditorTools
             backProps.color = new Color(0.50f, 0.62f, 0.60f);
 
             Tilemap ground = Phase01Generator.CreateTilemap(root, "TM_Ground", terrain, 10);
-            Tilemap midPipes = Phase01Generator.CreateTilemap(root, "TM_PipesMid", terrain, 19);
-            Tilemap decoration = Phase01Generator.CreateTilemap(root, "TM_Decoration", terrain, 20);
+            // O que o Scrap nao toca fica em segundo plano (Phase01Generator.DecorTint):
+            // apagado e atras do chao e das plataformas (ordem menor que a do TM_Ground).
+            Tilemap midPipes = Phase01Generator.CreateTilemap(root, "TM_PipesMid", terrain, 8);
+            Tilemap decoration = Phase01Generator.CreateTilemap(root, "TM_Decoration", terrain, 9);
+            midPipes.color = Phase01Generator.DecorTint;
+            decoration.color = Phase01Generator.DecorTint;
 
             Tilemap glow = Phase01Generator.CreateTilemap(root, "TM_Glow", terrain, 7);
             SetUnlit(glow, unlitMaterial);
 
-            Tilemap foreground = Phase01Generator.CreateTilemap(root, "TM_Foreground",
-                Phase01Assets.SortingForeground, 0);
-            foreground.color = new Color(0.30f, 0.36f, 0.36f);
+            // O que e do proprio terreno e fica por cima dele, com a cor cheia:
+            // os veios de minerio (incrustados na rocha) e o desenho dos degraus finos.
+            Tilemap surface = Phase01Generator.CreateTilemap(root, "TM_Surface", terrain, 11);
 
             GameObject groundObject = ground.gameObject;
             groundObject.layer = groundLayer;
@@ -269,21 +276,25 @@ namespace EchoesOfCravejada.EditorTools
                 switch (prop.Layer)
                 {
                     case Phase02Layout.PropLayer.Back: target = backProps; break;
-                    case Phase02Layout.PropLayer.Front: target = foreground; break;
+                    // O que ficava na frente do Scrap vai pro fundo: nao se toca.
+                    case Phase02Layout.PropLayer.Front: target = backProps; break;
                     case Phase02Layout.PropLayer.Glow: target = glow; break;
                     default: target = decoration; break;
                 }
+
+                // Minerio incrustado: atras do chao ele sumiria.
+                if (Phase02Layout.IsRock(prop.X, prop.Y) && prop.Layer == Phase02Layout.PropLayer.Middle) target = surface;
 
                 target.SetTile(new Vector3Int(prop.X, prop.Y, 0), Phase01Generator.Resolve(tiles, prop.Tile));
             }
 
             // As plataformas baixas da arena do Mestre: o Scrap passa por baixo delas.
-            Phase01Generator.CreateThinSteps(ground, decoration, Phase02Layout.ThinSteps);
+            Phase01Generator.CreateThinSteps(ground, surface, Phase02Layout.ThinSteps);
 
             foreach (Tilemap tilemap in new[]
                      {
                          backCave, back, farPipes, backPipes, backProps,
-                         ground, midPipes, decoration, glow, foreground,
+                         ground, midPipes, decoration, glow, surface,
                      })
             {
                 Phase01Generator.FinishTilemap(tilemap);
@@ -450,6 +461,31 @@ namespace EchoesOfCravejada.EditorTools
                         AddSprite(fixtureObject, Phase02Assets.RoomSign, 5);
                         break;
 
+                    // O material largado dos operarios: no chao, atras do Scrap.
+                    case Phase02Layout.FixtureKind.Crate:
+                        AddSprite(fixtureObject, Phase02Assets.WorkCrate, 6);
+                        break;
+
+                    case Phase02Layout.FixtureKind.Toolbox:
+                        AddSprite(fixtureObject, Phase02Assets.Toolbox, 7);
+                        break;
+
+                    case Phase02Layout.FixtureKind.Pallet:
+                        AddSprite(fixtureObject, Phase02Assets.PipePallet, 6);
+                        break;
+
+                    case Phase02Layout.FixtureKind.CoalPile:
+                        AddSprite(fixtureObject, Phase02Assets.CoalPile, 6);
+                        break;
+
+                    case Phase02Layout.FixtureKind.Sack:
+                        AddSprite(fixtureObject, Phase02Assets.Sack, 6);
+                        break;
+
+                    case Phase02Layout.FixtureKind.Cart:
+                        AddSprite(fixtureObject, Phase02Assets.CoalCart, 6);
+                        break;
+
                     case Phase02Layout.FixtureKind.ElevatorRail:
                     {
                         SpriteRenderer rail = AddSprite(fixtureObject, Phase02Assets.ElevatorRail, 4);
@@ -463,7 +499,7 @@ namespace EchoesOfCravejada.EditorTools
                     {
                         bool railing = fixture.Kind == Phase02Layout.FixtureKind.Railing;
                         SpriteRenderer tiled = AddSprite(fixtureObject,
-                            railing ? Phase02Assets.Railing : Phase02Assets.Chain, railing ? 20 : 5);
+                            railing ? Phase02Assets.Railing : Phase02Assets.Chain, railing ? 8 : 5);
                         tiled.drawMode = SpriteDrawMode.Tiled;
                         tiled.size = railing ? new Vector2(fixture.Size, 1f) : new Vector2(1f, fixture.Size);
                         break;
@@ -480,6 +516,19 @@ namespace EchoesOfCravejada.EditorTools
                             : new Vector3(fixture.X, fixture.Y + fixture.Size, 0f);
                         break;
                     }
+                }
+
+                // O cenario que o Scrap nao toca fica em segundo plano. Os bocais
+                // de vapor (onde o vapor que ele monta nasce) ficam como estao, e
+                // o que tem luz propria (o fogo da caldeira, o vidro do
+                // lampiao) so escurece um pouco.
+                if (fixture.Kind == Phase02Layout.FixtureKind.NozzleUp || fixture.Kind == Phase02Layout.FixtureKind.NozzleSide) continue;
+
+                bool lit = fixture.Kind == Phase02Layout.FixtureKind.Lamp;
+                foreach (SpriteRenderer renderer in fixtureObject.GetComponentsInChildren<SpriteRenderer>())
+                {
+                    if (renderer.gameObject.name == "Glow") continue;
+                    renderer.color = lit ? Color.Lerp(Color.white, Phase01Generator.DecorTint, 0.4f) : Phase01Generator.DecorTint;
                 }
             }
         }

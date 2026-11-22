@@ -407,6 +407,24 @@ namespace EchoesOfCravejada.EditorTools
 
             /// <summary>Os trilhos do poco do elevador, 3 de largura. Size e a altura em tiles.</summary>
             ElevatorRail,
+
+            /// <summary>Caixote de peca da Coroa, 1x1. Empilha.</summary>
+            Crate,
+
+            /// <summary>Caixa de ferramentas de operario, aberta, 1x1. Empilha em caixote.</summary>
+            Toolbox,
+
+            /// <summary>Palete com canos novos amarrados, que nunca foram instalados, 2x1.</summary>
+            Pallet,
+
+            /// <summary>Monte de carvao das fornalhas, 2x1, com a pa fincada.</summary>
+            CoalPile,
+
+            /// <summary>Saco de areia de vedacao, 1x1. Empilha.</summary>
+            Sack,
+
+            /// <summary>Carrinho de carvao, 2x2, de mao, tombado de lado.</summary>
+            Cart,
         }
 
         /// <summary>Um objeto de cenario que nao cabe num tile. X e Y sao o canto de baixo, a esquerda.</summary>
@@ -837,6 +855,217 @@ namespace EchoesOfCravejada.EditorTools
             BuildHighGallery();
             BuildElevatorClimb();
             BuildElevatorStation();
+
+            Furnish();
+        }
+
+        // ------------------------------------------------------------------
+        // O material largado dos operarios
+        // ------------------------------------------------------------------
+
+        /// <summary>
+        /// O que cada sala tem largado pelo chao, pela historia dela. Fora da
+        /// lista, a sala fica como esta: o poco dos Primeiros Canos e a Escalada
+        /// sao so subida, e a Sala das Caldeiras e a arena. O Deposito nao tem
+        /// caixote: a ficha diz que as caixas sairam as pressas, so ficaram
+        /// sacos e um palete esquecido.
+        /// </summary>
+        private static readonly Dictionary<string, FixtureKind[]> Clutter = new Dictionary<string, FixtureKind[]>
+        {
+            ["01_Gallery"] = new[] { FixtureKind.Sack, FixtureKind.Crate, FixtureKind.Locker },
+            ["03_StuckValve"] = new[] { FixtureKind.Toolbox, FixtureKind.Pallet },
+            ["04_Cistern"] = new[] { FixtureKind.Sack, FixtureKind.Crate },
+            ["05_WelderHall"] = new[] { FixtureKind.Toolbox, FixtureKind.Locker, FixtureKind.Crate, FixtureKind.Pallet },
+            ["06_SteamChain"] = new[] { FixtureKind.Sack },
+            ["07_ValveMaze"] = new[] { FixtureKind.Toolbox, FixtureKind.Sack },
+            ["08_PreBoss"] = new[] { FixtureKind.CoalPile, FixtureKind.Cart },
+            ["A_Sewer"] = new[] { FixtureKind.Sack, FixtureKind.Toolbox },
+            ["B_MachineHall"] = new[] { FixtureKind.CoalPile, FixtureKind.Cart, FixtureKind.Toolbox },
+            ["C_GaugeAttic"] = new[] { FixtureKind.Toolbox, FixtureKind.Locker, FixtureKind.Crate },
+            ["D_Depot"] = new[] { FixtureKind.Sack, FixtureKind.Pallet },
+            ["E_ValveTower"] = new[] { FixtureKind.Toolbox, FixtureKind.Sack },
+            ["F_HighGallery"] = new[] { FixtureKind.Pallet, FixtureKind.Crate, FixtureKind.Sack },
+            ["H_ElevatorStation"] = new[] { FixtureKind.Crate, FixtureKind.Pallet, FixtureKind.Sack },
+        };
+
+        /// <summary>
+        /// Espalha o material de trabalho pelo chao livre de cada sala: um
+        /// grupinho a cada tantos tiles, sempre em chao de rocha, com ar em
+        /// cima, longe (pelo menos dois tiles) de tudo o que se usa, das
+        /// colunas de vapor, do acido, das portas e das saidas. O
+        /// CheckDecorPhysics confere o resultado.
+        /// </summary>
+        private static void Furnish()
+        {
+            var blocked = new HashSet<(int, int)>();
+
+            void Block(int x, int y, int margin)
+            {
+                for (int dy = -margin; dy <= margin; dy++)
+                {
+                    for (int dx = -margin; dx <= margin; dx++) blocked.Add((x + dx, y + dy));
+                }
+            }
+
+            void BlockArea(Area area, int margin)
+            {
+                for (int y = area.Y - margin; y < area.Y + area.Height + margin; y++)
+                {
+                    for (int x = area.X - margin; x < area.X + area.Width + margin; x++) blocked.Add((x, y));
+                }
+            }
+
+            foreach (Marker marker in Markers) Block(marker.X, marker.Y, 2);
+            foreach (LoreSpec lore in Lore) Block(lore.X, lore.Y, 2);
+            foreach (RewardSpec reward in Rewards) Block(reward.X, reward.Y, 2);
+            foreach ((string _, int x, int y) in Workbenches)
+            {
+                for (int dx = -2; dx <= 4; dx++) Block(x + dx, y, 1);
+            }
+
+            foreach (ValveSpec valve in Valves)
+            {
+                Block(valve.StandX, valve.StandY, 2);
+                Block(valve.X, valve.Y, 2);
+            }
+
+            foreach (BoilerSpec boiler in PressureBoilers)
+            {
+                Block(boiler.StandX, boiler.StandY, 2);
+                BlockArea(Area.Between(boiler.X, boiler.Y, boiler.X + 3, boiler.Y + 5), 1);
+            }
+
+            foreach (Vent vent in Vents) BlockArea(vent.Zone, 1);
+            foreach ((string _, Area area) in AcidPools) BlockArea(area, 2);
+            foreach (GateSpec gate in Gates) BlockArea(gate.Area, 2);
+            foreach (Exit exit in Exits) BlockArea(exit.Area, 2);
+            foreach ((string _, Area area) in Veils) BlockArea(area, 2);
+            foreach ((string _, Area area) in BreakableWalls) BlockArea(area, 2);
+            foreach (Prop prop in Props) Block(prop.X, prop.Y, 0);
+            foreach (Fixture fixture in Fixtures)
+            {
+                if (fixture.Kind == FixtureKind.Lamp || fixture.Kind == FixtureKind.Chain || fixture.Kind == FixtureKind.Railing) continue;
+                (int w, int h) = FixtureSize(fixture);
+                BlockArea(new Area(fixture.X, fixture.Y, w, h), 1);
+            }
+
+            Block(SpawnTile.X, SpawnTile.Y, 3);
+
+            bool Fits(int x, int y, int w, int h)
+            {
+                for (int dx = 0; dx < w; dx++)
+                {
+                    if (!Map.IsSolid(x + dx, y - 1)) return false;
+                    for (int dy = 0; dy <= h; dy++)
+                    {
+                        if (Map[x + dx, y + dy] != LevelMap.Air || Map.IsAcid(x + dx, y + dy)) return false;
+                        if (blocked.Contains((x + dx, y + dy))) return false;
+                    }
+                }
+
+                return true;
+            }
+
+            void Place(FixtureKind kind, int x, int y)
+            {
+                // Um armario em cada tres esta aberto e vazio, como os de sempre.
+                bool open = kind == FixtureKind.Locker && LevelMap.Pick(x, y, 3) == 1;
+                Fixtures.Add(new Fixture(kind, DecorName(kind.ToString()), x, y, 0, open));
+                (int w, int h) = FixtureSize(new Fixture(kind, "", x, y));
+                BlockArea(new Area(x, y, w, h), 1);
+            }
+
+            foreach ((string name, Area room) in Rooms)
+            {
+                if (!Clutter.TryGetValue(name, out FixtureKind[] palette)) continue;
+
+                int pick = 0;
+                for (int y = room.Y; y < room.Y + room.Height; y++)
+                {
+                    int sinceLast = 6;
+                    for (int x = room.X; x < room.X + room.Width; x++, sinceLast++)
+                    {
+                        if (sinceLast < 7) continue;
+
+                        FixtureKind kind = palette[(pick + LevelMap.Pick(x, y, 7)) % palette.Length];
+                        (int w, int h) = FixtureSize(new Fixture(kind, "", x, y));
+                        if (!Fits(x, y, w, h)) continue;
+
+                        Place(kind, x, y);
+                        pick++;
+                        sinceLast = 0;
+
+                        // Um caixote ganha outro em cima ou uma caixa de
+                        // ferramentas; um saco, um vizinho.
+                        if (kind == FixtureKind.Crate && Map[x, y + 2] == LevelMap.Air && !blocked.Contains((x, y + 2)))
+                        {
+                            Fixtures.Add(new Fixture(LevelMap.Pick(x, y, 2) == 0 ? FixtureKind.Crate : FixtureKind.Toolbox,
+                                DecorName("Stack"), x, y + 1));
+                        }
+                        else if (kind == FixtureKind.Sack && Fits(x + 1, y, 1, 1))
+                        {
+                            Place(FixtureKind.Sack, x + 1, y);
+                        }
+                    }
+                }
+            }
+
+            LightDarkCeilings();
+        }
+
+        /// <summary>
+        /// Os tetos compridos sem nenhuma luz ganham lampioes de turno, um a
+        /// cada tantos tiles, longe dos que ja existem e fora das colunas de
+        /// vapor (o vapor sobe por onde ele ficaria pendurado).
+        /// </summary>
+        private static void LightDarkCeilings()
+        {
+            const int spacing = 13;
+            var lamps = new List<int[]>();
+            foreach (Fixture fixture in Fixtures)
+            {
+                if (fixture.Kind == FixtureKind.Lamp) lamps.Add(new[] { fixture.X, fixture.Y });
+            }
+
+            bool NearLamp(int x, int y)
+            {
+                foreach (int[] lamp in lamps)
+                {
+                    if (Math.Abs(lamp[0] - x) < spacing && Math.Abs(lamp[1] - y) < 8) return true;
+                }
+
+                return false;
+            }
+
+            bool InVent(int x, int y)
+            {
+                foreach (Vent vent in Vents)
+                {
+                    Area zone = vent.Zone;
+                    if (x >= zone.X - 1 && x <= zone.X + zone.Width && y >= zone.Y - 1 && y <= zone.Y + zone.Height) return true;
+                }
+
+                return false;
+            }
+
+            foreach ((string name, Area room) in Rooms)
+            {
+                if (name == "09_BoilerRoom") continue;
+
+                for (int y = room.Y + 3; y < room.Y + room.Height + 1; y++)
+                {
+                    for (int x = room.X + 1; x < room.X + room.Width - 1; x++)
+                    {
+                        // O lampiao ocupa (x, y-2) e (x, y-1), pendurado da rocha em y.
+                        if (!Map.IsRock(x, y) || Map[x, y - 1] != LevelMap.Air || Map[x, y - 2] != LevelMap.Air) continue;
+                        if (Map[x, y - 3] != LevelMap.Air || Map.IsAcid(x, y - 3)) continue;
+                        if (NearLamp(x, y - 2) || InVent(x, y - 2)) continue;
+
+                        Lamp(x, y - 1, 0.65f);
+                        lamps.Add(new[] { x, y - 2 });
+                    }
+                }
+            }
         }
 
         // ------------------------------------------------------------------
@@ -1068,7 +1297,8 @@ namespace EchoesOfCravejada.EditorTools
             };
 
             Valves.Add(valve);
-            Fix(FixtureKind.GaugeSmall, name + "_Gauge", x + 2, y + 1);
+            // O manometro fica do lado do volante; se ali e parede, do outro lado.
+            Fix(FixtureKind.GaugeSmall, name + "_Gauge", Map.IsRock(x + 2, y + 1) ? x - 1 : x + 2, y + 1);
             return valve;
         }
 
@@ -1658,9 +1888,9 @@ namespace EchoesOfCravejada.EditorTools
             Mark(room, "Crisol", CrisolTile.X, CrisolTile.Y);
 
             // O estoque de Crisol, no canto dele.
-            Decor(FixtureKind.Shelf, 87, 28);
-            Put(Crate(0), 91, 25);
-            Put(Crate(2), 92, 26);
+            Decor(FixtureKind.Shelf, 87, 25);
+            Put(Crate(0), 90, 25);
+            Put(Crate(2), 90, 26);
 
             // O alcapao da Ala Baixa: so desce.
             Carve(102, 15, 103, 24);
@@ -2080,16 +2310,13 @@ namespace EchoesOfCravejada.EditorTools
             }
 
             // Os pedacos dos lances que faltam, pendurados nas paredes.
-            Put(Debris(1), 114, 72, PropLayer.Back);
-            Put(Debris(0), 126, 80, PropLayer.Back);
-            Put(Debris(1), 114, 88, PropLayer.Back);
-            HangChain(117, 98, 6);
+            HangChain(121, 98, 6);
             HangChain(124, 98, 9);
-            HangChain(120, 88, 4);
+            HangChain(122, 88, 4);
             Lamp(126, 98, 0.5f);
 
-            Fix(FixtureKind.GaugeBig, "Gauge_Stairway_1", 113, 78);
-            Fix(FixtureKind.GaugeBig, "Gauge_Stairway_2", 126, 92);
+            Fix(FixtureKind.GaugeBig, "Gauge_Stairway_1", 114, 79);
+            Fix(FixtureKind.GaugeBig, "Gauge_Stairway_2", 115, 92);
             RunPipe(PipeLayer.Back, true, (113, 66), (113, 98));
             RunPipe(PipeLayer.Back, false, (127, 66), (127, 98));
             Hazes.Add(new Haze("Steam_Stairway", 120f, 94f, 12f, 5f, 0.07f, 1.5f, false, Glow.Steam));
@@ -2176,7 +2403,7 @@ namespace EchoesOfCravejada.EditorTools
             Carve(183, 63, 186, 77);
             Lift("Lift_ToHighGallery", 183, 184, 59, 80);
 
-            Decor(FixtureKind.Sign, 185, 66);
+            Decor(FixtureKind.Sign, 183, 66);
             Decor(FixtureKind.Barrel, 187, 59);
             Lamp(187, 62, 0.6f);
             Shine(184f, 70f, 5f, 0.6f, Glow.Steam);
@@ -2348,7 +2575,7 @@ namespace EchoesOfCravejada.EditorTools
             Boiler("Boiler_Machine_3", 76, 52);
             Furnace("Furnace_Machine_1", 66, 52);
             Furnace("Furnace_Machine_2", 84, 62);
-            Decor(FixtureKind.Sign, 79, 57);
+            Decor(FixtureKind.Sign, 80, 57);
             Decor(FixtureKind.Poster, 86, 74);
             Fix(FixtureKind.GaugeBig, "Gauge_Machine_1", 57, 64);
             Fix(FixtureKind.GaugeBig, "Gauge_Machine_2", 88, 66);
@@ -2416,7 +2643,7 @@ namespace EchoesOfCravejada.EditorTools
             }
 
             Decor(FixtureKind.Shelf, 13, 62);
-            Decor(FixtureKind.Poster, 33, 67);
+            Decor(FixtureKind.Poster, 34, 66);
             Furnace("Furnace_Attic", 30, 62);
             Lamp(9, 69, 0.8f);
             Lamp(26, 72, 0.6f);
@@ -2473,13 +2700,13 @@ namespace EchoesOfCravejada.EditorTools
             Leech("Leech_Depot", 172, 19, 6, 162, 177);
 
             // As prateleiras vazias, de onde as caixas sairam as pressas.
-            for (int x = 163; x <= 177; x += 3) Decor(FixtureKind.Shelf, x, 12);
-            Decor(FixtureKind.Shelf, 142, 16);
+            foreach (int x in new[] { 166, 169, 177 }) Decor(FixtureKind.Shelf, x, 6);
+            Decor(FixtureKind.Shelf, 141, 15);
             Decor(FixtureKind.Barrel, 150, 6);
             Decor(FixtureKind.Barrel, 157, 6);
             Decor(FixtureKind.Barrel, 158, 6);
-            Put(Crate(0), 177, 6);
-            Put(Debris(0), 166, 6);
+            Put(Debris(1), 171, 6);
+            Put(Debris(0), 168, 6);
             Decor(FixtureKind.Sign, 152, 15);
             Lamp(144, 19, 0.7f);
             Lamp(156, 19);
@@ -3213,7 +3440,154 @@ namespace EchoesOfCravejada.EditorTools
                 }
             }
 
+            CheckDecorPhysics(problems);
             return problems;
+        }
+
+        /// <summary>O tamanho, em tiles, que cada objeto de cenario ocupa (largura, altura).</summary>
+        public static (int W, int H) FixtureSize(Fixture fixture)
+        {
+            switch (fixture.Kind)
+            {
+                case FixtureKind.Boiler: return (4, 6);
+                case FixtureKind.GaugeBig: return (2, 2);
+                case FixtureKind.GaugeSmall: return (1, 1);
+                case FixtureKind.Valve: return (2, 2);
+                case FixtureKind.Furnace: return (2, 2);
+                case FixtureKind.Hatch: return (2, 3);
+                case FixtureKind.Workbench: return (3, 2);
+                case FixtureKind.NozzleUp: return (fixture.Size, 1);
+                case FixtureKind.NozzleSide: return (1, fixture.Size);
+                case FixtureKind.Lamp: return (1, 2);
+                case FixtureKind.Locker: return (1, 2);
+                case FixtureKind.MaskRack: return (2, 2);
+                case FixtureKind.Shelf: return (2, 2);
+                case FixtureKind.Barrel: return (1, 2);
+                case FixtureKind.Railing: return (fixture.Size, 1);
+                case FixtureKind.Poster: return (2, 2);
+                case FixtureKind.Sign: return (3, 1);
+                case FixtureKind.Chain: return (1, fixture.Size);
+                case FixtureKind.ElevatorRail: return (3, fixture.Size);
+                case FixtureKind.Crate: return (1, 1);
+                case FixtureKind.Toolbox: return (1, 1);
+                case FixtureKind.Pallet: return (2, 1);
+                case FixtureKind.CoalPile: return (2, 1);
+                case FixtureKind.Sack: return (1, 1);
+                case FixtureKind.Cart: return (2, 2);
+                default: return (1, 1);
+            }
+        }
+
+        /// <summary>
+        /// A fisica de quem esta parado. O que fica no chao tem apoio embaixo
+        /// de toda a largura e nao entra na rocha; o que pende (lampiao,
+        /// corrente) sai do teto e desce por ar; o que fica na parede nao entra
+        /// na rocha; e duas pecas da mesma camada nao ocupam o mesmo lugar.
+        /// </summary>
+        private static void CheckDecorPhysics(List<string> problems)
+        {
+            var occupied = new Dictionary<(int, int), string>();
+
+            foreach (Fixture fixture in Fixtures)
+            {
+                (int w, int h) = FixtureSize(fixture);
+                bool grounded = fixture.Kind == FixtureKind.Locker || fixture.Kind == FixtureKind.Barrel
+                    || fixture.Kind == FixtureKind.Boiler || fixture.Kind == FixtureKind.Shelf
+                    || fixture.Kind == FixtureKind.Workbench || fixture.Kind == FixtureKind.Crate
+                    || fixture.Kind == FixtureKind.Toolbox || fixture.Kind == FixtureKind.Pallet
+                    || fixture.Kind == FixtureKind.CoalPile || fixture.Kind == FixtureKind.Sack
+                    || fixture.Kind == FixtureKind.Cart || fixture.Kind == FixtureKind.Railing;
+
+                bool stackable = fixture.Kind == FixtureKind.Crate || fixture.Kind == FixtureKind.Sack
+                    || fixture.Kind == FixtureKind.Toolbox;
+
+                if (grounded)
+                {
+                    for (int x = fixture.X; x < fixture.X + w; x++)
+                    {
+                        bool onCrate = stackable && occupied.TryGetValue((x, fixture.Y - 1), out string under)
+                            && (under.StartsWith("Crate") || under.StartsWith("Pallet"));
+                        if (!Map.IsSolid(x, fixture.Y - 1) && !onCrate)
+                        {
+                            problems.Add($"{fixture.Name} ({fixture.X}, {fixture.Y}) tem a base no ar em x={x}.");
+                            break;
+                        }
+                    }
+                }
+
+                // Nada entra na rocha. Os canos-bocal e os trilhos sim: saem dela.
+                if (fixture.Kind != FixtureKind.NozzleUp && fixture.Kind != FixtureKind.NozzleSide
+                    && fixture.Kind != FixtureKind.ElevatorRail)
+                {
+                    for (int y = fixture.Y; y < fixture.Y + h; y++)
+                    {
+                        for (int x = fixture.X; x < fixture.X + w; x++)
+                        {
+                            if (fixture.Kind == FixtureKind.Lamp && y == fixture.Y + h) continue;
+                            if (Map.IsRock(x, y))
+                            {
+                                problems.Add($"{fixture.Name} ({fixture.X}, {fixture.Y}) entra na rocha em ({x}, {y}).");
+                                y = int.MaxValue - 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (fixture.Kind == FixtureKind.Chain)
+                {
+                    if (!Map.IsSolid(fixture.X, fixture.Y + fixture.Size))
+                    {
+                        problems.Add($"{fixture.Name} ({fixture.X}, {fixture.Y}) nao sai do teto.");
+                    }
+                }
+
+                // Pecas do chao e da parede que se sobrepoem. Lampioes,
+                // correntes, guarda-corpos e bocais ficam de fora: passam por
+                // cima de tudo de proposito.
+                if (fixture.Kind == FixtureKind.Lamp || fixture.Kind == FixtureKind.Chain
+                    || fixture.Kind == FixtureKind.Railing || fixture.Kind == FixtureKind.NozzleUp
+                    || fixture.Kind == FixtureKind.NozzleSide || fixture.Kind == FixtureKind.ElevatorRail)
+                {
+                    continue;
+                }
+
+                for (int y = fixture.Y; y < fixture.Y + h; y++)
+                {
+                    for (int x = fixture.X; x < fixture.X + w; x++)
+                    {
+                        if (occupied.TryGetValue((x, y), out string other))
+                        {
+                            problems.Add($"{fixture.Name} ({fixture.X}, {fixture.Y}) fica em cima de {other}.");
+                            y = int.MaxValue - 1;
+                            break;
+                        }
+
+                        occupied[(x, y)] = fixture.Name;
+                    }
+                }
+            }
+
+            // Os tiles de cenario do pack (caixote, pedra, cerca) tambem
+            // assentam: em chao ou em outro caixote.
+            var propCells = new HashSet<(int, int)>();
+            foreach (Prop prop in Props) propCells.Add((prop.X, prop.Y));
+
+            foreach (Prop prop in Props)
+            {
+                if (prop.Layer == PropLayer.Glow) continue;
+                if (!prop.Tile.StartsWith("misc_") && !prop.Tile.StartsWith("bgobj_")) continue;
+                if (Map.IsRock(prop.X, prop.Y))
+                {
+                    problems.Add($"O tile {prop.Tile} em ({prop.X}, {prop.Y}) esta dentro da rocha.");
+                    continue;
+                }
+
+                if (!Map.IsSolid(prop.X, prop.Y - 1) && !propCells.Contains((prop.X, prop.Y - 1)))
+                {
+                    problems.Add($"O tile {prop.Tile} em ({prop.X}, {prop.Y}) esta flutuando.");
+                }
+            }
         }
 
         /// <summary>

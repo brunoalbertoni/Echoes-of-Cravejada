@@ -46,6 +46,7 @@ namespace EchoesOfCravejada
             (typeof(Shop), "Bought"),
             (typeof(CrystalBarrier), "Broken"),
             (typeof(KeyGate), "Opened"),
+            (typeof(Gate), "Opened"),
             (typeof(WakeUpCutscene), "_played"),
             (typeof(BoilerMaster), "_defeated"),
             (typeof(TheResonant), "_defeated"),

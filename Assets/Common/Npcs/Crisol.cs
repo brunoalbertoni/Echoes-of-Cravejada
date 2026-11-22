@@ -155,6 +155,30 @@ namespace EchoesOfCravejada
             }
         }
 
+        /// <summary>O mouse passou por cima de uma fileira: ela fica marcada.</summary>
+        public void Hover(int index)
+        {
+            if (ShopOpen != this || index < 0 || index >= _items.Count || index == Selected) return;
+            Selected = index;
+            Sfx.ShopMove.Play();
+        }
+
+        /// <summary>Clique numa fileira: marca e compra, como o numero do item.</summary>
+        public void ClickBuy(int index)
+        {
+            if (ShopOpen != this || index < 0 || index >= _items.Count) return;
+            Selected = index;
+            Buy();
+        }
+
+        /// <summary>Clique em "sair" ou fora da loja.</summary>
+        public void ClickClose()
+        {
+            if (ShopOpen != this) return;
+            Sfx.DialogueClose.Play();
+            Close();
+        }
+
         private void Buy()
         {
             if (_items.Count == 0) return;

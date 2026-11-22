@@ -191,8 +191,8 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>A grade da entrada da sala (fecha durante a luta).</summary>
         public static (int X, int Y, int Height) ArenaSeal => (99, FloorY, 4);
 
-        /// <summary>Onde a coroa cai, quando o Rei tomba de vez.</summary>
-        public static (float X, float Y) CrownTile => (KingTile.X + 5.5f, FloorY);
+        /// <summary>Onde a coroa cai, quando o Rei tomba de vez: do outro lado da sala, longe do trono, pra nao confundir as duas escolhas.</summary>
+        public static (float X, float Y) CrownTile => (KingTile.X + 15.5f, FloorY);
 
         /// <summary>De onde o Crisol sai correndo (o fim do corredor) e onde ele para, do lado do Scrap.</summary>
         public static (float From, float To) FinaleCrisolRun => (92f, 116f);
@@ -202,25 +202,36 @@ namespace EchoesOfCravejada.EditorTools
         {
             "Scrap! Espera! ...Ufa. Desci essa escadaria correndo.",
             "Olha a coroa. Mesmo com ele caído, ela ainda puxa a luz do Coração pela Coluna.",
-            "Você tem dois caminhos. Se entregar o seu núcleo à Coluna, a luz desce limpa e cura o Coração de uma vez. Mas você se apaga.",
-            "Se quebrar a coroa, a luz que ele prendia volta pra cidade inteira. O Coração continua doente... mas você fica. E você é a prova de que um corpo bruto não apodrece.",
+            "São dois jeitos de acabar com isso. Um golpe só, e não tem volta.",
+            "Quebra o trono. Ele tá ligado direto no Coração de Quartzo. Teu núcleo desce por ali e limpa o Coração de vez... mas você se apaga.",
+            "Ou quebra a coroa, lá no chão. A luz que ele prendia volta pra cidade. O Coração continua doente, mas você fica. E você é a prova de que um corpo bruto não apodrece.",
             "Não vou escolher por você. Eu fiquei quieto a vida inteira, Scrap. Essa escolha é sua.",
-            "A Coluna, atrás do trono. Ou a coroa, ali no chão. Um golpe basta.",
+            "O trono ou a coroa. Bate num dos dois.",
         };
 
-        /// <summary>O cartao de cada fim: o titulo e o texto.</summary>
-        public const string EndingColumnTitle = "A COLUNA";
-        public const string EndingColumnStory =
-            "O Scrap entregou o próprio núcleo à Coluna. A luz desceu limpa por Cravejada inteira e lavou o Coração de Quartzo.\n\n" +
-            "O verde foi embora. As luzes dos distritos acenderam, uma por uma.\n\n" +
-            "No Poço de Sucata, embaixo de \"COLETOR N.º 1\", a Pequena riscou um nome novo: SCRAP.";
+        /// <summary>
+        /// A tela de fim de cada final: o titulo e a historia curta, uma linha
+        /// por vez (cada uma cabe numa linha da tela). Nenhum dos dois e feliz.
+        /// </summary>
+        public const string EndingColumnTitle = "O NÚCLEO";
+        public static readonly string[] EndingColumnStory =
+        {
+            "O núcleo do Scrap desceu e limpou o Coração.",
+            "As luzes de Cravejada voltaram, uma por uma.",
+            "Lá em cima, ninguém sabe quem pagou por isso.",
+            "No Poço, a Pequena riscou mais um nome no muro.",
+            "Ela ainda passa lá. Ele não responde mais.",
+        };
 
         public const string EndingCrownTitle = "A COROA";
-        public const string EndingCrownStory =
-            "O Scrap quebrou a coroa de 925 facetas. A luz que o palácio prendia voltou pra cidade.\n\n" +
-            "O Coração continua verde, mas o Óxido parou de avançar.\n\n" +
-            "No velho ateliê, o Crisol e a Assistente montam corpos brutos copiando o protótipo n.º 7. Um por um, os descartados sobem do poço.\n\n" +
-            "Cravejada vai ser salva por sucata.";
+        public static readonly string[] EndingCrownStory =
+        {
+            "A coroa quebrou. A luz presa voltou pra cidade.",
+            "Mas o Coração segue verde. O Óxido só parou.",
+            "O Crisol monta corpos brutos, um por dia.",
+            "Os descartados subiram e respiram a fumaça.",
+            "Cravejada não foi salva. Só ganhou tempo.",
+        };
 
         // ------------------------------------------------------------------
         // Ferramentas
@@ -297,6 +308,9 @@ namespace EchoesOfCravejada.EditorTools
         /// bancada e Crisol, e a porta da Sala do Trono. Nada de interagir no
         /// caminho, alem deles.
         /// </summary>
+        /// <summary>A altura da fileira de retratos da galeria, rente ao friso dourado.</summary>
+        private const float GalleryY = FloorY + 8.5f;
+
         private static void BuildCorridor()
         {
             const string room = "01_RoyalCorridor";
@@ -345,6 +359,11 @@ namespace EchoesOfCravejada.EditorTools
                     Lore.Add(new LoreSpot { Name = name, Title = title, X = between, Y = FloorY, Lines = lines });
                 }
                 else Put("palace_banner", between, FloorY + 5f, 3);
+
+                // A galeria dos 925 Nobres: uma fileira de retratos rente ao
+                // friso, um em cima de cada janelao (em cima dos quadros de
+                // baixo fica o lustre). Nao se leem: sao fundo, a Corte se olhando.
+                Put(PalaceDecorArt.NobleName(4 + section % 6), x, GalleryY, 2);
 
                 Lamp(x, FloorY + 6f, 7f);
                 section++;
@@ -397,6 +416,13 @@ namespace EchoesOfCravejada.EditorTools
             Strips.Add(new Strip("palace_frieze", x0 + 4, x1 - 4, y1 + 1 - 10f / 16f, 10f / 16f, 6));
 
             foreach (float x in new[] { 101.5f, 145.5f }) Put("palace_column", x, FloorY, 3);
+
+            // No alto das paredes, longe do Rei e das sacadas: dois Nobres e os
+            // dois quadros da Corte, a cidade acesa e a coroa na almofada.
+            Put(PalaceDecorArt.NobleName(10), 106f, 19.5f, 2);
+            Put("palace_portrait_1", 117f, 19.5f, 2);
+            Put("palace_portrait_2", 130f, 19.5f, 2);
+            Put(PalaceDecorArt.NobleName(11), 141f, 19.5f, 2);
             Put("palace_banner", 110f, FloorY + 9f, 2);
             Put("palace_banner", 137f, FloorY + 9f, 2);
             Hang("palace_chandelier", 112f, y1 + 1, 4);
@@ -471,7 +497,94 @@ namespace EchoesOfCravejada.EditorTools
                 else if (!after.CanStand(marker.X, marker.Y)) problems.Add($"{marker.Group}/{marker.Name} fora de alcance.");
             }
 
+            CheckPropPhysics(problems);
             return problems;
+        }
+
+        /// <summary>O que fica de pe no chao do palacio. O resto e de parede ou pendurado.</summary>
+        private static readonly HashSet<string> Standing = new HashSet<string>
+        {
+            "palace_column", "palace_bust", "palace_vase", "palace_bench", "palace_statue", "palace_candelabra",
+            "palace_mirror", "palace_throne", "palace_stair_door",
+        };
+
+        /// <summary>
+        /// A fisica de quem esta parado, com o pivo de cada peca no meio da
+        /// base (a pendurada, no meio do alto): o que fica de pe tem o chao
+        /// embaixo da base inteira; nada entra na rocha; o que pende sai do
+        /// teto; dois quadros da parede nao se sobrepoem.
+        /// </summary>
+        private static void CheckPropPhysics(List<string> problems)
+        {
+            const float ppu = 16f;
+            var art = new Dictionary<string, PixelCanvas>();
+            foreach ((string name, Func<PixelCanvas> draw, bool _, bool tiled) in PalaceArt.Sprites())
+            {
+                if (!tiled) art[name] = draw();
+            }
+
+            foreach ((string name, Func<PixelCanvas> draw, bool _, bool tiled) in PalaceDecorArt.Sprites())
+            {
+                if (!tiled) art[name] = draw();
+            }
+
+            var walls = new List<(string Sprite, float X0, float X1, float Y0, float Y1)>();
+
+            foreach (Prop prop in Props)
+            {
+                if (!art.TryGetValue(prop.Sprite, out PixelCanvas c)) continue;
+                float w = c.Width / ppu;
+                float h = c.Height / ppu;
+                float x0 = prop.X - w / 2f;
+                float y0 = prop.Hanging ? prop.Y - h : prop.Y;
+
+                if (prop.Hanging)
+                {
+                    if (!Map.IsSolid((int)Math.Floor(prop.X), (int)Math.Round(prop.Y)))
+                    {
+                        problems.Add($"{prop.Sprite} em ({prop.X}, {prop.Y}) nao esta preso no teto.");
+                    }
+                }
+                else if (Standing.Contains(prop.Sprite))
+                {
+                    if (Math.Abs(prop.Y - Math.Round(prop.Y)) > 0.01f) problems.Add($"{prop.Sprite} em ({prop.X}, {prop.Y}) nao assenta no chao.");
+                    for (int px = 0; px < c.Width; px++)
+                    {
+                        if (c.Get(px, c.Height - 1).A == 0 && c.Get(px, c.Height - 2).A == 0) continue;
+                        float wx = x0 + (px + 0.5f) / ppu;
+                        if (!Map.IsSolid((int)Math.Floor(wx), (int)Math.Round(prop.Y) - 1))
+                        {
+                            problems.Add($"{prop.Sprite} em ({prop.X}, {prop.Y}) tem a base no ar em x={wx:0.0}.");
+                            break;
+                        }
+                    }
+                }
+
+                if (!Standing.Contains(prop.Sprite))
+                {
+                    foreach ((string other, float ox0, float ox1, float oy0, float oy1) in walls)
+                    {
+                        bool overlap = x0 < ox1 - 0.05f && x0 + w > ox0 + 0.05f && y0 < oy1 - 0.05f && y0 + h > oy0 + 0.05f;
+                        if (overlap) problems.Add($"{prop.Sprite} em ({prop.X}, {prop.Y}) fica em cima de {other}.");
+                    }
+
+                    walls.Add((prop.Sprite, x0, x0 + w, y0, y0 + h));
+                }
+
+                int buried = 0;
+                for (int py = 0; py < c.Height - 1; py++)
+                {
+                    for (int px = 0; px < c.Width; px++)
+                    {
+                        if (c.Get(px, py).A == 0) continue;
+                        float wx = x0 + (px + 0.5f) / ppu;
+                        float wy = y0 + (c.Height - py - 0.5f) / ppu;
+                        if (Map.IsRock((int)Math.Floor(wx), (int)Math.Floor(wy))) buried++;
+                    }
+                }
+
+                if (buried > 2 && !prop.Hanging) problems.Add($"{prop.Sprite} em ({prop.X}, {prop.Y}) entra na rocha ({buried}px).");
+            }
         }
 
         public static string[] ToRows() => Map.ToRows();

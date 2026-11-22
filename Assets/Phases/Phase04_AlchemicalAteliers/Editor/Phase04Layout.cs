@@ -423,6 +423,134 @@ namespace EchoesOfCravejada.EditorTools
             BuildGuardCorridor();
             BuildAmphitheater();
             BuildGrandStair();
+
+            Furnish();
+        }
+
+        /// <summary>
+        /// O que cada sala tem largado no chao, pela historia dela: livros de
+        /// formula onde se estudava (o saguao, a galeria dos mestres, o ateliê
+        /// do Crisol, as lentes), garrafoes e caixotes de reagente na
+        /// destilaria, cacos onde os testes deram errado (tanques, viveiro). O
+        /// Grande Laboratorio (a arena), o anfiteatro e a escadaria ficam como
+        /// estao.
+        /// </summary>
+        private static readonly Dictionary<string, string[]> Clutter = new Dictionary<string, string[]>
+        {
+            ["01_Lobby"] = new[] { LabClutterArt.Books, LabClutterArt.Stool },
+            ["02_MastersGallery"] = new[] { LabClutterArt.Books, LabClutterArt.Carboy },
+            ["03_Atelier"] = new[] { LabClutterArt.Books, LabClutterArt.Stool, LabClutterArt.ReagentCrate },
+            ["04a_StillHall"] = new[] { LabClutterArt.Carboy, LabClutterArt.ReagentCrate, LabClutterArt.Shards },
+            ["04b_Serpentine"] = new[] { LabClutterArt.Carboy, LabClutterArt.Shards },
+            ["04c_Condensers"] = new[] { LabClutterArt.Carboy, LabClutterArt.ReagentCrate },
+            ["04d_GreatStill"] = new[] { LabClutterArt.ReagentCrate, LabClutterArt.Carboy },
+            ["05a_Lenses"] = new[] { LabClutterArt.Books, LabClutterArt.Shards },
+            ["05b_MirrorChamber"] = new[] { LabClutterArt.Stool, LabClutterArt.Shards },
+            ["06a_Tanks"] = new[] { LabClutterArt.Shards, LabClutterArt.ReagentCrate },
+            ["06b_Vivarium"] = new[] { LabClutterArt.Shards, LabClutterArt.Stool },
+            ["06c_PrototypeWorkshop"] = new[] { LabClutterArt.ReagentCrate, LabClutterArt.Stool },
+            ["07_PreBoss"] = new[] { LabClutterArt.Carboy, LabClutterArt.Books },
+            ["09_GuardCorridor"] = new[] { LabClutterArt.Shards },
+        };
+
+        /// <summary>
+        /// Espalha o que sobrou pelo chao livre de cada sala: um grupinho a cada
+        /// tantos tiles, em chao de marmore, com ar em cima, longe de tudo o que
+        /// se usa, do mercurio, dos circulos, espelhos, fechaduras, portoes,
+        /// colunas de vapor e espinhos. O CheckPropPhysics confere o resultado.
+        /// </summary>
+        private static void Furnish()
+        {
+            var blocked = new HashSet<(int, int)>();
+
+            void Block(int x, int y, int margin)
+            {
+                for (int dy = -margin; dy <= margin; dy++)
+                {
+                    for (int dx = -margin; dx <= margin; dx++) blocked.Add((x + dx, y + dy));
+                }
+            }
+
+            void BlockCells(Cells area, int margin)
+            {
+                for (int y = area.Y0 - margin; y <= area.Y1 + margin; y++)
+                {
+                    for (int x = area.X0 - margin; x <= area.X1 + margin; x++) blocked.Add((x, y));
+                }
+            }
+
+            foreach (Marker marker in Markers) Block(marker.X, marker.Y, 2);
+            foreach (LoreSpot lore in Lore) Block(lore.X, lore.Y, 2);
+            foreach (LoreSpot lore in Purified) Block(lore.X, lore.Y, 2);
+            foreach (Reagent reagent in Reagents) Block(reagent.X, reagent.Y, 2);
+            foreach ((string _, int x, int y) in Workbenches)
+            {
+                for (int dx = -2; dx <= 4; dx++) Block(x + dx, y, 1);
+            }
+
+            foreach (Pool pool in Pools) BlockCells(pool.Area, 2);
+            foreach (Block block in Blocks) BlockCells(block.Area, 1);
+            foreach (Circle circle in Circles) Block(circle.X, circle.Y, 2);
+            foreach (MirrorSpec mirror in Mirrors) Block(mirror.X, mirror.Y, 2);
+            foreach (LockSpec lockSpec in Locks) Block(lockSpec.X, lockSpec.Y, 2);
+            foreach (GateSpec gate in Gates) BlockCells(new Cells(gate.X, gate.Y, gate.X + gate.Width - 1, gate.Y + gate.Height - 1), 2);
+            foreach ((string _, Cells area) in VaporLifts) BlockCells(area, 1);
+            foreach ((string _, int x, int y) in ArenaCircles) Block(x, y, 2);
+            foreach ((int x, int y) in ObjectCells) Block(x, y, 1);
+            foreach ((int _, int x, int y) in Windows) Block(x + 1, y, 1);
+
+            foreach (Prop prop in Props)
+            {
+                PixelCanvas c = LabCanvas(prop.Sprite);
+                int w = c != null ? (int)Math.Ceiling(c.Width / 16f) : 2;
+                int h = c != null ? (int)Math.Ceiling(c.Height / 16f) : 2;
+                int x0 = (int)Math.Floor(prop.X - w / 2f);
+                int y0 = (int)Math.Floor(prop.Hanging ? prop.Y - h : prop.Y);
+                BlockCells(new Cells(x0, y0, x0 + w - 1, y0 + h - 1), 1);
+            }
+
+            bool Fits(int x, int y, int w, int h)
+            {
+                for (int dx = 0; dx < w; dx++)
+                {
+                    if (!Map.IsRock(x + dx, y - 1) || ObjectCells.Contains((x + dx, y - 1))) return false;
+                    for (int dy = 0; dy <= h; dy++)
+                    {
+                        if (Map[x + dx, y + dy] != LevelMap.Air || blocked.Contains((x + dx, y + dy))) return false;
+                    }
+
+                    if (Map.IsSpike(x + dx - 1, y) || Map.IsSpike(x + dx + 1, y)) return false;
+                }
+
+                return true;
+            }
+
+            foreach ((string name, int rx0, int ry0, int rx1, int ry1) in Rooms)
+            {
+                if (!Clutter.TryGetValue(name, out string[] palette)) continue;
+
+                int pick = 0;
+                for (int y = ry0; y <= ry1; y++)
+                {
+                    int sinceLast = 5;
+                    for (int x = rx0; x <= rx1; x++, sinceLast++)
+                    {
+                        if (sinceLast < 6) continue;
+
+                        string sprite = palette[(pick + LevelMap.Pick(x, y, 7)) % palette.Length];
+                        PixelCanvas c = LabCanvas(sprite);
+                        int w = (int)Math.Ceiling(c.Width / 16f);
+                        int h = (int)Math.Ceiling(c.Height / 16f);
+                        if (!Fits(x, y, w, h)) continue;
+
+                        // O pivo do laboratorio e o meio da base.
+                        Put(sprite, x + w / 2f, y, 4);
+                        BlockCells(new Cells(x, y, x + w - 1, y + h - 1), 1);
+                        pick++;
+                        sinceLast = 0;
+                    }
+                }
+            }
         }
 
         private static void Carve(int x0, int y0, int x1, int y1) => Map.Fill(x0, y0, x1, y1, LevelMap.Air);
@@ -1022,7 +1150,9 @@ namespace EchoesOfCravejada.EditorTools
             Carve(130, 38, 133, 40);
             Spikes(130, 133, 38);
 
-            for (int i = 0; i < 7; i++) Put("lab_tank_" + (i % 3), 108.5f + i * 6.5f, 41, 3);
+            // Os tanques ficam no chao firme: o da beira do fosso leste chega
+            // meio tile pro lado, senao a base dele fica no ar.
+            for (int i = 0; i < 7; i++) Put("lab_tank_" + (i % 3), 108.5f + i * 6.5f + (i == 4 ? 0.5f : 0f), 41, 3);
 
             Ledge(118, 121, 44);
             Ledge(138, 141, 44);
@@ -1179,9 +1309,12 @@ namespace EchoesOfCravejada.EditorTools
             for (int i = 0; i < daises.Length; i++)
             {
                 int x = daises[i];
+                // A runa fica no alto, numa prateleira em cima do estrado:
+                // nunca na altura dele. Sobe-se pelo estrado.
                 Solid(x, 62, x + 4, 63);
-                ArenaCircles.Add(("ArenaCircle_" + (i + 1), x + 2, 64));
-                Mark(room, "ArenaCircle_" + (i + 1), x + 2, 64);
+                Ledge(x, x + 4, 67);
+                ArenaCircles.Add(("ArenaCircle_" + (i + 1), x + 2, 68));
+                Mark(room, "ArenaCircle_" + (i + 1), x + 2, 68);
             }
 
             ArenaFloodPools.Add(new Cells(129, 61, 131, 61));
@@ -1645,7 +1778,115 @@ namespace EchoesOfCravejada.EditorTools
                 if (!Gates.Exists(gate => gate.Name == spec.Gate)) problems.Add($"A fechadura {spec.Name} abre {spec.Gate}, que nao existe.");
             }
 
+            CheckPropPhysics(problems);
             return problems;
+        }
+
+        /// <summary>O desenho de cada peca do laboratorio, pelo nome (pra medir).</summary>
+        private static Dictionary<string, PixelCanvas> _labArt;
+
+        private static PixelCanvas LabCanvas(string sprite)
+        {
+            if (_labArt == null)
+            {
+                _labArt = new Dictionary<string, PixelCanvas>();
+                foreach ((string name, Func<PixelCanvas> draw, bool _) in LabArt.Sprites()) _labArt[name] = draw();
+                foreach ((string name, PixelCanvas canvas) in ExtraLabArt()) _labArt[name] = canvas;
+            }
+
+            return _labArt.TryGetValue(sprite, out PixelCanvas c) ? c : null;
+        }
+
+        /// <summary>As pecas novas do laboratorio (ver LabClutterArt), pra medir junto.</summary>
+        private static IEnumerable<(string Name, PixelCanvas Canvas)> ExtraLabArt() => LabClutterArt.All();
+
+        /// <summary>
+        /// A fisica de quem esta parado, com o pivo de cada peca no meio da
+        /// base (o do teto, no meio do alto). O que fica no chao tem apoio
+        /// embaixo de toda a base — chao, ou o tampo de outra peca (o frasco
+        /// em cima da bancada) — e nao entra na rocha; o que pende sai do teto.
+        /// </summary>
+        private static void CheckPropPhysics(List<string> problems)
+        {
+            const float ppu = 16f;
+            var boxes = new List<(string Sprite, float X0, float X1, float Y0, float Y1)>();
+
+            foreach (Prop prop in Props)
+            {
+                PixelCanvas c = LabCanvas(prop.Sprite);
+                if (c == null) continue;
+                float w = c.Width / ppu;
+                float h = c.Height / ppu;
+                float y0 = prop.Hanging ? prop.Y - h : prop.Y;
+                boxes.Add((prop.Sprite, prop.X - w / 2f, prop.X + w / 2f, y0, y0 + h));
+            }
+
+            for (int i = 0; i < Props.Count; i++)
+            {
+                Prop prop = Props[i];
+                PixelCanvas c = LabCanvas(prop.Sprite);
+                if (c == null) continue;
+
+                float left = prop.X - c.Width / ppu / 2f;
+                float bottom = prop.Hanging ? prop.Y - c.Height / ppu : prop.Y;
+
+                if (prop.Hanging)
+                {
+                    int cx = (int)Math.Floor(prop.X);
+                    int cy = (int)Math.Round(prop.Y);
+                    if (!Map.IsSolid(cx, cy) || Map.IsRock(cx, cy - 1))
+                    {
+                        problems.Add($"{prop.Sprite} em ({prop.X}, {prop.Y}) nao esta preso no teto.");
+                    }
+
+                    continue;
+                }
+
+                // A base: as colunas com pixel nas duas linhas de baixo.
+                int unsupported = 0;
+                int baseWidth = 0;
+                for (int px = 0; px < c.Width; px++)
+                {
+                    bool foot = c.Get(px, c.Height - 1).A > 0 || c.Get(px, c.Height - 2).A > 0;
+                    if (!foot) continue;
+                    baseWidth++;
+
+                    float wx = left + (px + 0.5f) / ppu;
+                    bool onGround = Math.Abs(bottom - Math.Round(bottom)) < 0.02f
+                        && Map.IsSolid((int)Math.Floor(wx), (int)Math.Round(bottom) - 1);
+
+                    bool onProp = false;
+                    for (int j = 0; j < boxes.Count && !onGround && !onProp; j++)
+                    {
+                        if (j == i) continue;
+                        (string _, float bx0, float bx1, float by0, float by1) = boxes[j];
+                        onProp = wx >= bx0 && wx <= bx1 && Math.Abs(by1 - bottom) < 0.35f && by0 < bottom;
+                    }
+
+                    if (!onGround && !onProp) unsupported++;
+                }
+
+                if (unsupported > Math.Max(1, baseWidth / 8))
+                {
+                    problems.Add($"{prop.Sprite} em ({prop.X}, {prop.Y}) tem {unsupported} de {baseWidth}px da base no ar.");
+                }
+
+                int buried = 0;
+                int total = 0;
+                for (int py = 0; py < c.Height - 2; py++)
+                {
+                    for (int px = 0; px < c.Width; px++)
+                    {
+                        if (c.Get(px, py).A == 0) continue;
+                        total++;
+                        float wx = left + (px + 0.5f) / ppu;
+                        float wy = bottom + (c.Height - py - 0.5f) / ppu;
+                        if (Map.IsRock((int)Math.Floor(wx), (int)Math.Floor(wy))) buried++;
+                    }
+                }
+
+                if (buried > Math.Max(2, total / 20)) problems.Add($"{prop.Sprite} em ({prop.X}, {prop.Y}) entra na rocha ({buried}px).");
+            }
         }
 
         /// <summary>
