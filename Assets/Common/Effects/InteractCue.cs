@@ -9,7 +9,7 @@ namespace EchoesOfCravejada
     /// </summary>
     public interface ICueDone
     {
-        bool CueDone { get; }
+        bool ProntoDeixa { get; }
     }
 
     /// <summary>
@@ -21,88 +21,88 @@ namespace EchoesOfCravejada
     /// </summary>
     public class InteractCue : MonoBehaviour
     {
-        [SerializeField] private SpriteRenderer marker;
-        [SerializeField] private Light2D glow;
+        [UnityEngine.Serialization.FormerlySerializedAs("marker")] [SerializeField] private SpriteRenderer marcador;
+        [UnityEngine.Serialization.FormerlySerializedAs("glow")] [SerializeField] private Light2D brilho;
 
-        [Tooltip("Quanto o marcador sobe e desce, em unidades de mundo.")]
-        [SerializeField] private float bob = 0.12f;
+        [UnityEngine.Serialization.FormerlySerializedAs("bob")] [Tooltip("Quanto o marcador sobe e desce, em unidades de mundo.")]
+        [SerializeField] private float balanco = 0.12f;
 
-        [Tooltip("Segundos de uma subida e descida.")]
-        [SerializeField] private float period = 1.6f;
+        [UnityEngine.Serialization.FormerlySerializedAs("period")] [Tooltip("Segundos de uma subida e descida.")]
+        [SerializeField] private float periodo = 1.6f;
 
-        [Tooltip("Mais perto que isso, o marcador esmaece.")]
-        [SerializeField] private float nearDistance = 2.2f;
+        [UnityEngine.Serialization.FormerlySerializedAs("nearDistance")] [Tooltip("Mais perto que isso, o marcador esmaece.")]
+        [SerializeField] private float distanciaPerto = 2.2f;
 
-        private Vector3 _basePosition;
-        private Vector3 _baseScale = Vector3.one;
-        private Color _baseColor;
-        private float _baseIntensity;
-        private float _phase;
-        private float _near;
-        private Transform _scrap;
-        private ICueDone _done;
+        private Vector3 _posicaoBase;
+        private Vector3 _escalaBase = Vector3.one;
+        private Color _corBase;
+        private float _intensidadeBase;
+        private float _fase;
+        private float _perto;
+        private Transform _sucata;
+        private ICueDone _pronto;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(SpriteRenderer newMarker, Light2D newGlow)
+        public void Configurar(SpriteRenderer novoMarcador, Light2D novoBrilho)
         {
-            marker = newMarker;
-            glow = newGlow;
+            marcador = novoMarcador;
+            brilho = novoBrilho;
         }
 
         private void Awake()
         {
-            if (marker != null)
+            if (marcador != null)
             {
-                _basePosition = marker.transform.localPosition;
-                _baseColor = marker.color;
-                _baseScale = marker.transform.localScale;
+                _posicaoBase = marcador.transform.localPosition;
+                _corBase = marcador.color;
+                _escalaBase = marcador.transform.localScale;
             }
 
-            if (glow != null) _baseIntensity = glow.intensity;
-            _phase = Mathf.Repeat(transform.position.x * 0.37f, 1f);
-            _done = GetComponent<ICueDone>();
+            if (brilho != null) _intensidadeBase = brilho.intensity;
+            _fase = Mathf.Repeat(transform.position.x * 0.37f, 1f);
+            _pronto = GetComponent<ICueDone>();
         }
 
         private void Update()
         {
-            if (_done != null && _done.CueDone)
+            if (_pronto != null && _pronto.ProntoDeixa)
             {
-                if (marker != null) marker.enabled = false;
-                if (glow != null) glow.intensity = _baseIntensity;
+                if (marcador != null) marcador.enabled = false;
+                if (brilho != null) brilho.intensity = _intensidadeBase;
                 enabled = false;
                 return;
             }
 
-            if (_scrap == null)
+            if (_sucata == null)
             {
-                ScrapController scrap = FindAnyObjectByType<ScrapController>();
-                if (scrap != null) _scrap = scrap.transform;
+                ScrapController sucata = ScrapRef.Controlador;
+                if (sucata != null) _sucata = sucata.transform;
             }
 
-            float target = 0f;
-            if (_scrap != null)
+            float alvo = 0f;
+            if (_sucata != null)
             {
-                Vector2 delta = _scrap.position - transform.position;
-                target = delta.sqrMagnitude < nearDistance * nearDistance ? 1f : 0f;
+                Vector2 delta = _sucata.position - transform.position;
+                alvo = delta.sqrMagnitude < distanciaPerto * distanciaPerto ? 1f : 0f;
             }
 
-            _near = Mathf.MoveTowards(_near, target, Time.deltaTime * 4f);
+            _perto = Mathf.MoveTowards(_perto, alvo, Time.deltaTime * 4f);
 
-            float wave = Mathf.Sin((Time.time / Mathf.Max(0.1f, period) + _phase) * Mathf.PI * 2f);
+            float onda = Mathf.Sin((Time.time / Mathf.Max(0.1f, periodo) + _fase) * Mathf.PI * 2f);
 
-            if (marker != null)
+            if (marcador != null)
             {
                 // Pixel art: a subida anda de pixel em pixel, sem borrar.
-                float y = Mathf.Round(wave * bob * 16f) / 16f;
-                marker.transform.localPosition = _basePosition + new Vector3(0f, y, 0f);
+                float y = Mathf.Round(onda * balanco * 16f) / 16f;
+                marcador.transform.localPosition = _posicaoBase + new Vector3(0f, y, 0f);
 
-                Color color = _baseColor;
-                color.a = _baseColor.a * Mathf.Lerp(0.85f + 0.15f * wave, 0.25f, _near);
-                marker.color = color;
-                marker.transform.localScale = _baseScale * Mathf.Lerp(1f, 0.75f, _near);
+                Color cor = _corBase;
+                cor.a = _corBase.a * Mathf.Lerp(0.85f + 0.15f * onda, 0.25f, _perto);
+                marcador.color = cor;
+                marcador.transform.localScale = _escalaBase * Mathf.Lerp(1f, 0.75f, _perto);
             }
 
-            if (glow != null) glow.intensity = _baseIntensity * (1f + 0.35f * wave);
+            if (brilho != null) brilho.intensity = _intensidadeBase * (1f + 0.35f * onda);
         }
     }
 }

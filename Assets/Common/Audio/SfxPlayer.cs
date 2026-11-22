@@ -16,172 +16,172 @@ namespace EchoesOfCravejada
     /// </summary>
     public class SfxPlayer : MonoBehaviour
     {
-        private const int VoiceCount = 24;
+        private const int QuantidadeVoz = 24;
 
         /// <summary>Ate esta distancia da camera (em tiles) um som do mapa soa cheio.</summary>
-        private const float Near = 9f;
+        private const float Perto = 9f;
 
         /// <summary>A partir desta, silencio.</summary>
-        private const float Far = 22f;
+        private const float Longe = 22f;
 
-        private static SfxPlayer _instance;
-        private static readonly Dictionary<string, AudioClip> Clips = new Dictionary<string, AudioClip>();
+        private static SfxPlayer _instancia;
+        private static readonly Dictionary<string, AudioClip> Clipes = new Dictionary<string, AudioClip>();
 
-        private readonly AudioSource[] _voices = new AudioSource[VoiceCount];
-        private readonly float[] _startedAt = new float[VoiceCount];
-        private readonly Dictionary<SfxCue, float> _lastPlayed = new Dictionary<SfxCue, float>();
-        private readonly Dictionary<SfxCue, int> _lastVariant = new Dictionary<SfxCue, int>();
+        private readonly AudioSource[] _vozes = new AudioSource[QuantidadeVoz];
+        private readonly float[] _iniciadoEm = new float[QuantidadeVoz];
+        private readonly Dictionary<SfxCue, float> _ultimoTocado = new Dictionary<SfxCue, float>();
+        private readonly Dictionary<SfxCue, int> _ultimoVariacao = new Dictionary<SfxCue, int>();
 
         private Camera _camera;
-        private float _lastInterface = -100f;
+        private float _ultimoInterface = -100f;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _instance = null;
-            Clips.Clear();
+            _instancia = null;
+            Clipes.Clear();
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Boot()
+        private static void Inicializar()
         {
-            if (_instance != null) return;
+            if (_instancia != null) return;
 
-            var host = new GameObject("SfxPlayer");
-            DontDestroyOnLoad(host);
-            _instance = host.AddComponent<SfxPlayer>();
+            var hospedeiro = new GameObject("SfxPlayer");
+            DontDestroyOnLoad(hospedeiro);
+            _instancia = hospedeiro.AddComponent<SfxPlayer>();
         }
 
         private void Awake()
         {
-            for (int i = 0; i < VoiceCount; i++)
+            for (int i = 0; i < QuantidadeVoz; i++)
             {
-                var voice = gameObject.AddComponent<AudioSource>();
-                voice.playOnAwake = false;
-                voice.loop = false;
-                voice.spatialBlend = 0f;
-                voice.priority = 64;
-                _voices[i] = voice;
-                _startedAt[i] = -100f;
+                var voz = gameObject.AddComponent<AudioSource>();
+                voz.playOnAwake = false;
+                voz.loop = false;
+                voz.spatialBlend = 0f;
+                voz.priority = 64;
+                _vozes[i] = voz;
+                _iniciadoEm[i] = -100f;
             }
 
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneLoaded += AoCarregarCena;
         }
 
         private void OnDestroy()
         {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-            if (_instance == this) _instance = null;
+            SceneManager.sceneLoaded -= AoCarregarCena;
+            if (_instancia == this) _instancia = null;
         }
 
-        private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        private static void AoCarregarCena(Scene cenaAtual, LoadSceneMode modo)
         {
-            foreach (ScrapController scrap in FindObjectsByType<ScrapController>())
+            foreach (ScrapController sucata in FindObjectsByType<ScrapController>())
             {
-                if (scrap.GetComponent<ScrapSounds>() == null) scrap.gameObject.AddComponent<ScrapSounds>();
+                if (sucata.GetComponent<ScrapSounds>() == null) sucata.gameObject.AddComponent<ScrapSounds>();
             }
         }
 
-        /// <summary>Se tocou um som de interface ou de coleta ha menos de <paramref name="seconds"/>.</summary>
-        public static bool InterfaceSoundedWithin(float seconds)
+        /// <summary>Se tocou um som de interface ou de coleta ha menos de <paramref name="segundos"/>.</summary>
+        public static bool InterfaceSoouHa(float segundos)
         {
-            return _instance != null && Time.unscaledTime - _instance._lastInterface < seconds;
+            return _instancia != null && Time.unscaledTime - _instancia._ultimoInterface < segundos;
         }
 
         /// <summary>Carrega (uma vez so) um arquivo de Resources/Sfx.</summary>
-        public static AudioClip Load(string name)
+        public static AudioClip Carregar(string nome)
         {
-            if (string.IsNullOrEmpty(name)) return null;
-            if (Clips.TryGetValue(name, out AudioClip cached)) return cached;
+            if (string.IsNullOrEmpty(nome)) return null;
+            if (Clipes.TryGetValue(nome, out AudioClip guardado)) return guardado;
 
-            AudioClip clip = Resources.Load<AudioClip>("Sfx/" + name);
-            if (clip == null) Debug.LogWarning("[Som] Efeito nao encontrado: Resources/Sfx/" + name);
-            Clips[name] = clip;
-            return clip;
+            AudioClip clipe = Resources.Load<AudioClip>("Sfx/" + nome);
+            if (clipe == null) Debug.LogWarning("[Som] Efeito nao encontrado: Resources/Sfx/" + nome);
+            Clipes[nome] = clipe;
+            return clipe;
         }
 
-        public static void Play(SfxCue cue, Vector2? at, float volume, float pitch, float delay)
+        public static void Tocar(SfxCue deixa, Vector2? at, float volume, float tom2, float atraso)
         {
-            if (_instance != null && cue != null) _instance.PlayCue(cue, at, volume, pitch, delay);
+            if (_instancia != null && deixa != null) _instancia.TocarEfeito(deixa, at, volume, tom2, atraso);
         }
 
-        private void PlayCue(SfxCue cue, Vector2? at, float volume, float pitch, float delay)
+        private void TocarEfeito(SfxCue deixa, Vector2? at, float volume, float tom2, float atraso)
         {
-            float now = Time.unscaledTime;
-            if (_lastPlayed.TryGetValue(cue, out float last) && now - last < cue.Cooldown) return;
+            float agora = Time.unscaledTime;
+            if (_ultimoTocado.TryGetValue(deixa, out float ultimo) && agora - ultimo < deixa.Recarga) return;
 
-            float gain = 1f;
-            float pan = 0f;
-            if (at.HasValue) gain = Distance(at.Value, out pan);
+            float ganho = 1f;
+            float panorama = 0f;
+            if (at.HasValue) ganho = Distancia(at.Value, out panorama);
 
-            if (gain <= 0.01f) return;
+            if (ganho <= 0.01f) return;
 
-            AudioClip clip = Load(PickClip(cue));
-            if (clip == null) return;
+            AudioClip clipe = Carregar(EscolherClipe(deixa));
+            if (clipe == null) return;
 
-            _lastPlayed[cue] = now;
-            if (cue.Interface) _lastInterface = now;
+            _ultimoTocado[deixa] = agora;
+            if (deixa.Interface) _ultimoInterface = agora;
 
-            int index = FreeVoice();
-            AudioSource voice = _voices[index];
-            voice.Stop();
-            voice.clip = clip;
-            voice.volume = Mathf.Clamp01(Sfx.Volume * cue.Volume * volume * gain);
-            voice.pitch = cue.Pitch * pitch * (1f + Random.Range(-cue.PitchJitter, cue.PitchJitter));
-            voice.panStereo = pan;
-            _startedAt[index] = now + delay;
+            int indice = VozLivre();
+            AudioSource voz = _vozes[indice];
+            voz.Stop();
+            voz.clip = clipe;
+            voz.volume = Mathf.Clamp01(Sfx.Volume * deixa.Volume * volume * ganho * GameAudio.NivelEfeitos);
+            voz.pitch = deixa.Tom * tom2 * (1f + Random.Range(-deixa.VariacaoTom, deixa.VariacaoTom));
+            voz.panStereo = panorama;
+            _iniciadoEm[indice] = agora + atraso;
 
-            if (delay > 0f) voice.PlayDelayed(delay);
-            else voice.Play();
+            if (atraso > 0f) voz.PlayDelayed(atraso);
+            else voz.Play();
         }
 
         /// <summary>
         /// Quanto um som vindo de <paramref name="at"/> se ouve agora (0 a 1,
         /// pela distancia da camera) e de que lado ele vem.
         /// </summary>
-        public static float Distance(Vector2 at, out float pan)
+        public static float Distancia(Vector2 at, out float panorama)
         {
-            pan = 0f;
+            panorama = 0f;
 
-            Camera camera = _instance != null ? _instance._camera : null;
+            Camera camera = _instancia != null ? _instancia._camera : null;
             if (camera == null || !camera.isActiveAndEnabled)
             {
                 camera = Camera.main;
-                if (_instance != null) _instance._camera = camera;
+                if (_instancia != null) _instancia._camera = camera;
             }
 
             if (camera == null) return 1f;
 
-            Vector2 offset = at - (Vector2)camera.transform.position;
-            float near = 1f - Mathf.Clamp01((offset.magnitude - Near) / (Far - Near));
-            pan = Mathf.Clamp(offset.x / 12f, -1f, 1f) * 0.5f;
-            return near * near;
+            Vector2 deslocamento = at - (Vector2)camera.transform.position;
+            float perto = 1f - Mathf.Clamp01((deslocamento.magnitude - Perto) / (Longe - Perto));
+            panorama = Mathf.Clamp(deslocamento.x / 12f, -1f, 1f) * 0.5f;
+            return perto * perto;
         }
 
         /// <summary>O arquivo desta vez: com variacoes, uma qualquer menos a ultima.</summary>
-        private string PickClip(SfxCue cue)
+        private string EscolherClipe(SfxCue deixa)
         {
-            if (cue.Variants <= 1) return cue.Clip;
+            if (deixa.Variacoes <= 1) return deixa.Clipe;
 
-            _lastVariant.TryGetValue(cue, out int previous);
-            int pick = Random.Range(1, cue.Variants + 1);
-            if (pick == previous) pick = pick % cue.Variants + 1;
+            _ultimoVariacao.TryGetValue(deixa, out int valorAnterior);
+            int picareta = Random.Range(1, deixa.Variacoes + 1);
+            if (picareta == valorAnterior) picareta = picareta % deixa.Variacoes + 1;
 
-            _lastVariant[cue] = pick;
-            return cue.Clip + "_" + pick;
+            _ultimoVariacao[deixa] = picareta;
+            return deixa.Clipe + "_" + picareta;
         }
 
         /// <summary>Uma voz parada; se nao houver, a que comecou ha mais tempo.</summary>
-        private int FreeVoice()
+        private int VozLivre()
         {
-            int oldest = 0;
-            for (int i = 0; i < VoiceCount; i++)
+            int maisAntigo = 0;
+            for (int i = 0; i < QuantidadeVoz; i++)
             {
-                if (!_voices[i].isPlaying && Time.unscaledTime >= _startedAt[i]) return i;
-                if (_startedAt[i] < _startedAt[oldest]) oldest = i;
+                if (!_vozes[i].isPlaying && Time.unscaledTime >= _iniciadoEm[i]) return i;
+                if (_iniciadoEm[i] < _iniciadoEm[maisAntigo]) maisAntigo = i;
             }
 
-            return oldest;
+            return maisAntigo;
         }
     }
 }

@@ -15,60 +15,60 @@ namespace EchoesOfCravejada
     {
         [SerializeField] private string id;
 
-        [Tooltip("O aviso na tela ao pegar.")]
-        [SerializeField] private string message;
+        [UnityEngine.Serialization.FormerlySerializedAs("message")] [Tooltip("O aviso na tela ao pegar.")]
+        [SerializeField] private string mensagem;
 
-        [Tooltip("O comeco de id do conjunto, se houver. Vazio: item avulso.")]
-        [SerializeField] private string group;
+        [UnityEngine.Serialization.FormerlySerializedAs("group")] [Tooltip("O comeco de id do conjunto, se houver. Vazio: item avulso.")]
+        [SerializeField] private string grupo;
 
-        [SerializeField] private int groupSize;
+        [UnityEngine.Serialization.FormerlySerializedAs("groupSize")] [SerializeField] private int tamanhoGrupo;
 
-        private float _age;
-        private Vector3 _origin;
+        private float _idade;
+        private Vector3 _pontoOrigem;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(string newId, string newMessage, string newGroup = null, int newGroupSize = 0)
+        public void Configurar(string novoId, string novoMensagem, string novoGrupo = null, int novoTamanhoGrupo = 0)
         {
-            id = newId;
-            message = newMessage;
-            group = newGroup;
-            groupSize = newGroupSize;
+            id = novoId;
+            mensagem = novoMensagem;
+            grupo = novoGrupo;
+            tamanhoGrupo = novoTamanhoGrupo;
         }
 
         private void OnEnable()
         {
             // No OnEnable, e nao no Awake: os que so aparecem com a purificacao
             // ficam desligados ate la.
-            _origin = transform.position;
+            _pontoOrigem = transform.position;
         }
 
         private void Start()
         {
-            if (KeyItems.WasFound(id)) Destroy(gameObject);
+            if (KeyItems.FoiEncontrado(id)) Destroy(gameObject);
         }
 
         private void Update()
         {
-            _age += Time.deltaTime;
-            transform.position = _origin + Vector3.up * (Mathf.Sin(_age * 3f) * 0.15f);
+            _idade += Time.deltaTime;
+            transform.position = _pontoOrigem + Vector3.up * (Mathf.Sin(_idade * 3f) * 0.15f);
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D outro)
         {
-            if (other.GetComponentInParent<ScrapController>() == null) return;
+            if (outro.GetComponentInParent<ScrapController>() == null) return;
 
-            KeyItems.Add(id);
+            KeyItems.Adicionar(id);
 
-            Sfx.KeyItem.Play();
+            Sfx.ItemChave.Tocar();
 
             // Item avulso salta em cima do Scrap; os contados (ferramentas,
             // reagentes) nao mostram nada alem do som.
-            bool counted = !string.IsNullOrEmpty(group) && groupSize > 0;
-            var art = GetComponentInChildren<SpriteRenderer>();
-            if (!counted && art != null) ItemToast.Show(art.sprite, new Color(1f, 0.88f, 0.55f));
+            bool contado = !string.IsNullOrEmpty(grupo) && tamanhoGrupo > 0;
+            var arte = GetComponentInChildren<SpriteRenderer>();
+            if (!contado && arte != null) ItemToast.Mostrar(arte.sprite, new Color(1f, 0.88f, 0.55f));
 
             // Pegar algo assim tilinta: acende em volta.
-            NoiseSystem.Emit(transform.position, 8f, 0.2f);
+            NoiseSystem.Emitir(transform.position, 8f, 0.2f);
             Destroy(gameObject);
         }
     }

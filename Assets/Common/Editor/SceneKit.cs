@@ -34,11 +34,11 @@ namespace EchoesOfCravejada.EditorTools
 
             var trigger = ventObject.AddComponent<BoxCollider2D>();
             trigger.isTrigger = true;
-            trigger.size = mode == SteamVent.Mode.Lift
+            trigger.size = mode == SteamVent.Mode.Erguer2
                 ? new Vector2(cells.width - 0.3f, cells.height)
                 : new Vector2(cells.width, cells.height - 0.2f);
 
-            bool lift = mode == SteamVent.Mode.Lift;
+            bool lift = mode == SteamVent.Mode.Erguer2;
             float speed = lift ? LiftSpeed : JetSpeed;
 
             // As particulas nascem na boca e viajam o comprimento todo.
@@ -112,7 +112,7 @@ namespace EchoesOfCravejada.EditorTools
             particles.Stop();
 
             var vent = ventObject.AddComponent<SteamVent>();
-            vent.Configure(mode, speed, direction, onTime, offTime, new[] { particles });
+            vent.Configurar(mode, speed, direction, onTime, offTime, new[] { particles });
             return vent;
         }
 
@@ -128,7 +128,7 @@ namespace EchoesOfCravejada.EditorTools
             trigger.isTrigger = true;
             trigger.size = new Vector2(cells.width, cells.height);
 
-            exitObject.AddComponent<SceneExit>().Configure(sceneName, spawnId);
+            exitObject.AddComponent<SceneExit>().Configurar(sceneName, spawnId);
         }
 
         /// <summary>Um ponto de chegada, com os pes do Scrap no chao da celula.</summary>
@@ -137,7 +137,7 @@ namespace EchoesOfCravejada.EditorTools
             var point = new GameObject("SpawnPoint_" + id);
             if (parent != null) point.transform.SetParent(parent, false);
             point.transform.position = new Vector3(tile.X + 0.5f, tile.Y, 0f);
-            point.AddComponent<SpawnPoint>().Configure(id);
+            point.AddComponent<SpawnPoint>().Configurar(id);
         }
 
         /// <summary>

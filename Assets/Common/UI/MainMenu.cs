@@ -20,89 +20,89 @@ namespace EchoesOfCravejada
     public class MainMenu : MonoBehaviour
     {
         /// <summary>O nome da cena do menu (quem quer voltar pra ele usa este).</summary>
-        public const string SceneName = "MainMenu";
+        public const string NomeCena = "MainMenu";
 
         /// <summary>Onde um jogo novo comeca.</summary>
-        public const string FirstScene = "Phase01_ScrapYard";
+        public const string PrimeiroCena = "Phase01_ScrapYard";
 
-        private const int GridWidth = 320;
-        private const int GridHeight = 180;
-        private const int ColumnX = 212;
-        private const int ButtonY = 98;
-        private const int ButtonGap = 24;
+        private const int LarguraGrade = 320;
+        private const int AlturaGrade = 180;
+        private const int ColunaX = 212;
+        private const int BotaoY = 98;
+        private const int EspacoBotao = 24;
 
-        private static readonly string[] Names = { "continue", "new", "quit" };
+        private static readonly string[] Nomes = { "continue", "new", "quit" };
 
-        private Texture2D _small, _big, _divider, _glow;
-        private Texture2D[,] _buttons;
-        private Texture2D[] _shrine;
-        private readonly Vector3[] _motes = new Vector3[40];
-        private readonly Color[] _moteColors = new Color[40];
+        private Texture2D _pequeno, _grande, _divisor, _brilho;
+        private Texture2D[,] _botoes;
+        private Texture2D[] _santuario;
+        private readonly Vector3[] _particulas = new Vector3[40];
+        private readonly Color[] _coresParticula = new Color[40];
 
-        private bool _hasSave;
-        private int _selected;
-        private float _openedAt;
-        private bool _leaving;
+        private bool _temSalvar;
+        private int _selecionado;
+        private float _abertosEm;
+        private bool _saindo;
 
         private void Start()
         {
             // Quem chega aqui de dentro do jogo (pela tela de morte) traz o tempo parado e as cenas no meio.
             Time.timeScale = 1f;
-            if (Cinematic.Active) Cinematic.End();
+            if (Cinematic.Ativo) Cinematic.Encerrar();
 
-            _hasSave = SaveSystem.HasSave;
-            _selected = _hasSave ? 0 : 1;
-            _openedAt = Time.unscaledTime;
+            _temSalvar = SaveSystem.TemSalvar;
+            _selecionado = _temSalvar ? 0 : 1;
+            _abertosEm = Time.unscaledTime;
 
-            _small = Art("title_small");
-            _big = Art("title_big");
-            _divider = Art("divider");
-            _buttons = new Texture2D[3, 2];
+            _pequeno = CarregarArte("title_small");
+            _grande = CarregarArte("title_big");
+            _divisor = CarregarArte("divider");
+            _botoes = new Texture2D[3, 2];
             for (int i = 0; i < 3; i++)
             {
-                _buttons[i, 0] = Art($"button_{Names[i]}_off");
-                _buttons[i, 1] = Art($"button_{Names[i]}_on");
+                _botoes[i, 0] = CarregarArte($"button_{Nomes[i]}_off");
+                _botoes[i, 1] = CarregarArte($"button_{Nomes[i]}_on");
             }
 
             // O santuario aceso: os quadros da bancada (Resources/Checkpoint).
-            _shrine = new Texture2D[6];
-            for (int i = 0; i < _shrine.Length; i++) _shrine[i] = Resources.Load<Texture2D>($"Checkpoint/checkpoint_{4 + i:00}");
+            _santuario = new Texture2D[6];
+            for (int i = 0; i < _santuario.Length; i++) _santuario[i] = Resources.Load<Texture2D>($"Checkpoint/checkpoint_{4 + i:00}");
 
-            _glow = Glow();
+            _brilho = TexturaDeBrilho();
 
-            for (int i = 0; i < _motes.Length; i++)
+            for (int i = 0; i < _particulas.Length; i++)
             {
-                _motes[i] = new Vector3(Random.Range(0f, GridWidth), Random.Range(0f, GridHeight), Random.Range(3f, 9f));
-                _moteColors[i] = Random.value < 0.4f ? new Color(0.62f, 0.78f, 0.95f) : new Color(0.70f, 0.36f, 0.18f);
+                _particulas[i] = new Vector3(Random.Range(0f, LarguraGrade), Random.Range(0f, AlturaGrade), Random.Range(3f, 9f));
+                _coresParticula[i] = Random.value < 0.4f ? new Color(0.62f, 0.78f, 0.95f) : new Color(0.70f, 0.36f, 0.18f);
             }
         }
 
         /// <summary>Um brilho redondo e suave (o halo da gema do santuario no fundo).</summary>
-        private static Texture2D Glow()
+        private static Texture2D TexturaDeBrilho()
         {
-            const int size = 64;
-            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
-            var pixels = new Color32[size * size];
-            for (int y = 0; y < size; y++)
+            const int tamanho = 64;
+            var textura = new Texture2D(tamanho, tamanho, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+            var pixels = new Color32[tamanho * tamanho];
+            for (int y = 0; y < tamanho; y++)
             {
-                for (int x = 0; x < size; x++)
+                for (int x = 0; x < tamanho; x++)
                 {
-                    float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(size * 0.5f, size * 0.5f)) / (size * 0.5f);
+                    float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(tamanho * 0.5f, tamanho * 0.5f)) / (tamanho * 0.5f);
                     float a = Mathf.Pow(Mathf.Clamp01(1f - d), 2.2f);
-                    pixels[x + y * size] = new Color(1f, 1f, 1f, a);
+                    pixels[x + y * tamanho] = new Color(1f, 1f, 1f, a);
                 }
             }
 
-            texture.SetPixels32(pixels);
-            texture.Apply();
-            return texture;
+            textura.SetPixels32(pixels);
+            textura.Apply();
+            return textura;
         }
 
-        private static Texture2D Art(string name)
+        private static Texture2D CarregarArte(string nome)
         {
-            var texture = Resources.Load<Texture2D>("MainMenu/" + name);
-            if (texture == null) Debug.LogWarning("[Menu] Falta Resources/MainMenu/" + name);
-            return texture;
+            var textura = Resources.Load<Texture2D>("MainMenu/" + nome);
+            if (textura == null) Debug.LogWarning("[Menu] Falta Resources/MainMenu/" + nome);
+            return textura;
         }
 
         // ------------------------------------------------------------------
@@ -114,99 +114,92 @@ namespace EchoesOfCravejada
             float dt = Time.unscaledDeltaTime;
 
             // A poeira sobe devagar (prata) e a ferrugem cai.
-            for (int i = 0; i < _motes.Length; i++)
+            for (int i = 0; i < _particulas.Length; i++)
             {
-                Vector3 m = _motes[i];
-                bool silver = _moteColors[i].b > 0.5f;
-                m.y += (silver ? -m.z : m.z) * dt;
+                Vector3 m = _particulas[i];
+                bool prata = _coresParticula[i].b > 0.5f;
+                m.y += (prata ? -m.z : m.z) * dt;
                 m.x += Mathf.Sin((Time.unscaledTime + i) * 0.9f) * 2f * dt;
-                if (m.y > GridHeight + 2f) m.y = -2f;
-                if (m.y < -2f) m.y = GridHeight + 2f;
-                _motes[i] = m;
+                if (m.y > AlturaGrade + 2f) m.y = -2f;
+                if (m.y < -2f) m.y = AlturaGrade + 2f;
+                _particulas[i] = m;
             }
 
-            if (_leaving || Time.unscaledTime - _openedAt < 0.8f) return;
+            if (_saindo || Time.unscaledTime - _abertosEm < 0.8f) return;
 
-            int move = 0;
-            Keyboard keyboard = Keyboard.current;
-            Gamepad pad = Gamepad.current;
+            int mover = 0;
+            Keyboard teclado = Keyboard.current;
+            Gamepad controle = Gamepad.current;
 
-            if (keyboard != null)
+            if (teclado != null)
             {
-                if (keyboard.upArrowKey.wasPressedThisFrame || keyboard.wKey.wasPressedThisFrame) move = -1;
-                if (keyboard.downArrowKey.wasPressedThisFrame || keyboard.sKey.wasPressedThisFrame) move = 1;
+                if (teclado.upArrowKey.wasPressedThisFrame || teclado.wKey.wasPressedThisFrame) mover = -1;
+                if (teclado.downArrowKey.wasPressedThisFrame || teclado.sKey.wasPressedThisFrame) mover = 1;
             }
 
-            if (pad != null)
+            if (controle != null)
             {
-                if (pad.dpad.up.wasPressedThisFrame || pad.leftStick.up.wasPressedThisFrame) move = -1;
-                if (pad.dpad.down.wasPressedThisFrame || pad.leftStick.down.wasPressedThisFrame) move = 1;
+                if (controle.dpad.up.wasPressedThisFrame || controle.leftStick.up.wasPressedThisFrame) mover = -1;
+                if (controle.dpad.down.wasPressedThisFrame || controle.leftStick.down.wasPressedThisFrame) mover = 1;
             }
 
-            if (move != 0) Select(Step(_selected, move));
+            if (mover != 0) Selecionar(Avancar(_selecionado, mover));
 
-            bool confirm =
-                (keyboard != null && (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame
-                                      || keyboard.spaceKey.wasPressedThisFrame || keyboard.eKey.wasPressedThisFrame))
-                || (pad != null && (pad.buttonSouth.wasPressedThisFrame || pad.startButton.wasPressedThisFrame));
+            bool confirmar =
+                (teclado != null && (teclado.enterKey.wasPressedThisFrame || teclado.numpadEnterKey.wasPressedThisFrame
+                                      || teclado.spaceKey.wasPressedThisFrame || teclado.eKey.wasPressedThisFrame))
+                || (controle != null && (controle.buttonSouth.wasPressedThisFrame || controle.startButton.wasPressedThisFrame));
 
-            if (confirm) Choose(_selected);
+            if (confirmar) Escolher(_selecionado);
         }
 
         /// <summary>A proxima placa nessa direcao, pulando o Continuar quando nao ha save.</summary>
-        private int Step(int from, int direction)
+        private int Avancar(int de, int direcao)
         {
-            int next = from;
-            for (int tries = 0; tries < 3; tries++)
+            int proximo = de;
+            for (int tentativas = 0; tentativas < 3; tentativas++)
             {
-                next = (next + direction + 3) % 3;
-                if (next != 0 || _hasSave) return next;
+                proximo = (proximo + direcao + 3) % 3;
+                if (proximo != 0 || _temSalvar) return proximo;
             }
 
-            return from;
+            return de;
         }
 
-        private void Select(int option)
+        private void Selecionar(int opcao)
         {
-            if (option == _selected || (option == 0 && !_hasSave)) return;
-            _selected = option;
-            Sfx.ShopMove.Play();
+            if (opcao == _selecionado || (opcao == 0 && !_temSalvar)) return;
+            _selecionado = opcao;
+            Sfx.MoverLoja.Tocar();
         }
 
-        private void Choose(int option)
+        private void Escolher(int opcao)
         {
-            if (_leaving) return;
+            if (_saindo) return;
 
-            switch (option)
+            switch (opcao)
             {
                 case 0:
-                    if (!_hasSave) return;
-                    string scene = SaveSystem.Load();
-                    if (string.IsNullOrEmpty(scene) || !Application.CanStreamedLevelBeLoaded(scene))
+                    if (!_temSalvar) return;
+                    if (!GameManager.Instancia.ContinuarJogo())
                     {
-                        Sfx.ShopDeny.Play();
+                        Sfx.NegarLoja.Tocar();
                         return;
                     }
 
-                    Sfx.ShopBuy.Play();
-                    _leaving = true;
-                    SceneLoader.Go(scene, null);
+                    Sfx.ComprarLoja.Tocar();
+                    _saindo = true;
                     break;
 
                 case 1:
-                    Sfx.ShopBuy.Play();
-                    _leaving = true;
-                    SaveSystem.ResetProgress();
-                    SceneLoader.Go(FirstScene, null);
+                    Sfx.ComprarLoja.Tocar();
+                    _saindo = true;
+                    GameManager.Instancia.NovoJogo();
                     break;
 
                 default:
-                    Sfx.DialogueClose.Play();
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.isPlaying = false;
-#else
-                    Application.Quit();
-#endif
+                    Sfx.FecharDialogo.Tocar();
+GameManager.Instancia.SairDoJogo();
                     break;
             }
         }
@@ -217,89 +210,89 @@ namespace EchoesOfCravejada
 
         private void OnGUI()
         {
-            if (_big == null) return;
+            if (_grande == null) return;
 
             float w = Screen.width;
             float h = Screen.height;
-            float age = Time.unscaledTime - _openedAt;
+            float idade = Time.unscaledTime - _abertosEm;
 
-            int scale = Mathf.Max(1, Mathf.FloorToInt(Mathf.Min(w / GridWidth, h / GridHeight)));
-            float ox = Mathf.Round((w - GridWidth * scale) * 0.5f);
-            float oy = Mathf.Round((h - GridHeight * scale) * 0.5f);
-            Color previous = GUI.color;
+            int escalaAtual = Mathf.Max(1, Mathf.FloorToInt(Mathf.Min(w / LarguraGrade, h / AlturaGrade)));
+            float ox = Mathf.Round((w - LarguraGrade * escalaAtual) * 0.5f);
+            float oy = Mathf.Round((h - AlturaGrade * escalaAtual) * 0.5f);
+            Color valorAnterior = GUI.color;
 
             // O fundo: azul de caverna, um brilho onde o santuario esta, e o chao escuro.
-            Fill(new Rect(0f, 0f, w, h), new Color(0.035f, 0.035f, 0.06f));
-            float glow = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 1.2f);
-            GUI.color = new Color(0.32f, 0.66f, 0.92f, (0.28f + 0.08f * glow) * Mathf.Clamp01(age / 1f));
-            GUI.DrawTexture(new Rect(ox + (70f - 110f) * scale, oy + (92f - 90f) * scale, 220f * scale, 180f * scale), _glow);
+            Preencher(new Rect(0f, 0f, w, h), new Color(0.035f, 0.035f, 0.06f));
+            float brilho = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 1.2f);
+            GUI.color = new Color(0.32f, 0.66f, 0.92f, (0.28f + 0.08f * brilho) * Mathf.Clamp01(idade / 1f));
+            TelaCanvas.Textura(new Rect(ox + (70f - 110f) * escalaAtual, oy + (92f - 90f) * escalaAtual, 220f * escalaAtual, 180f * escalaAtual), _brilho);
 
-            Fill(new Rect(0f, oy + 156f * scale, w, h - (oy + 156f * scale)), new Color(0.07f, 0.065f, 0.09f));
-            Fill(new Rect(0f, oy + 156f * scale, w, scale), new Color(0.16f, 0.15f, 0.20f));
+            Preencher(new Rect(0f, oy + 156f * escalaAtual, w, h - (oy + 156f * escalaAtual)), new Color(0.07f, 0.065f, 0.09f));
+            Preencher(new Rect(0f, oy + 156f * escalaAtual, w, escalaAtual), new Color(0.16f, 0.15f, 0.20f));
 
             // A poeira e a ferrugem no ar.
-            for (int i = 0; i < _motes.Length; i++)
+            for (int i = 0; i < _particulas.Length; i++)
             {
-                Color c = _moteColors[i];
+                Color c = _coresParticula[i];
                 GUI.color = new Color(c.r, c.g, c.b, 0.7f);
-                GUI.DrawTexture(new Rect(ox + Mathf.Floor(_motes[i].x) * scale, oy + Mathf.Floor(_motes[i].y) * scale, scale, scale), Texture2D.whiteTexture);
+                TelaCanvas.Textura(new Rect(ox + Mathf.Floor(_particulas[i].x) * escalaAtual, oy + Mathf.Floor(_particulas[i].y) * escalaAtual, escalaAtual, escalaAtual), Texture2D.whiteTexture);
             }
 
             // O santuario aceso, a esquerda, girando a engrenagem.
-            Texture2D shrine = _shrine[(int)(Time.unscaledTime * 8f) % _shrine.Length];
-            Draw(shrine, 22, 60, scale, ox, oy, Mathf.Clamp01(age / 0.8f));
+            Texture2D santuario = _santuario[(int)(Time.unscaledTime * 8f) % _santuario.Length];
+            Desenhar(santuario, 22, 60, escalaAtual, ox, oy, Mathf.Clamp01(idade / 0.8f));
 
             // O titulo, as placas.
-            float title = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((age - 0.2f) / 0.6f));
-            Draw(_small, ColumnX - _small.width / 2, 16 + Mathf.RoundToInt((1f - title) * 4f), scale, ox, oy, title);
-            Draw(_big, ColumnX - _big.width / 2, 36 + Mathf.RoundToInt((1f - title) * 4f), scale, ox, oy, title);
+            float titulo = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((idade - 0.2f) / 0.6f));
+            Desenhar(_pequeno, ColunaX - _pequeno.width / 2, 16 + Mathf.RoundToInt((1f - titulo) * 4f), escalaAtual, ox, oy, titulo);
+            Desenhar(_grande, ColunaX - _grande.width / 2, 36 + Mathf.RoundToInt((1f - titulo) * 4f), escalaAtual, ox, oy, titulo);
 
-            float divider = Mathf.Clamp01((age - 0.5f) / 0.4f);
-            Draw(_divider, ColumnX - _divider.width / 2, 80, scale, ox, oy, divider);
+            float divisor = Mathf.Clamp01((idade - 0.5f) / 0.4f);
+            Desenhar(_divisor, ColunaX - _divisor.width / 2, 80, escalaAtual, ox, oy, divisor);
 
             Event e = Event.current;
             for (int i = 0; i < 3; i++)
             {
-                float t = Mathf.Clamp01((age - 0.6f - i * 0.1f) / 0.35f);
+                float t = Mathf.Clamp01((idade - 0.6f - i * 0.1f) / 0.35f);
                 if (t <= 0f) continue;
 
-                bool on = _selected == i;
-                bool disabled = i == 0 && !_hasSave;
-                Texture2D plate = _buttons[i, on ? 1 : 0];
-                int x = ColumnX - plate.width / 2 + Mathf.RoundToInt((1f - t) * 30f);
-                int y = ButtonY + i * ButtonGap;
+                bool on = _selecionado == i;
+                bool desativado = i == 0 && !_temSalvar;
+                Texture2D placa = _botoes[i, on ? 1 : 0];
+                int x = ColunaX - placa.width / 2 + Mathf.RoundToInt((1f - t) * 30f);
+                int y = BotaoY + i * EspacoBotao;
                 if (on && t >= 1f && Mathf.Sin(Time.unscaledTime * 4f) > 0.2f) y -= 1;
 
-                Draw(plate, x, y, scale, ox, oy, t * (disabled ? 0.35f : 1f));
+                Desenhar(placa, x, y, escalaAtual, ox, oy, t * (desativado ? 0.35f : 1f));
 
                 // O mouse: passar por cima escolhe, clicar confirma.
-                var rect = new Rect(ox + x * scale, oy + y * scale, plate.width * scale, plate.height * scale);
-                if (_leaving || disabled || e == null || !rect.Contains(e.mousePosition)) continue;
+                var retangulo = new Rect(ox + x * escalaAtual, oy + y * escalaAtual, placa.width * escalaAtual, placa.height * escalaAtual);
+                if (_saindo || desativado || e == null || !retangulo.Contains(e.mousePosition)) continue;
 
-                if (e.type == EventType.MouseMove || e.type == EventType.MouseDrag) Select(i);
+                if (e.type == EventType.MouseMove || e.type == EventType.MouseDrag) Selecionar(i);
                 if (e.type == EventType.MouseDown && e.button == 0)
                 {
-                    Select(i);
-                    Choose(i);
+                    Selecionar(i);
+                    Escolher(i);
                     e.Use();
                 }
             }
 
-            GUI.color = previous;
+            GUI.color = valorAnterior;
         }
 
-        private static void Draw(Texture2D art, int x, int y, int scale, float ox, float oy, float alpha)
+        private static void Desenhar(Texture2D arte, int x, int y, int escalaAtual, float ox, float oy, float alfa)
         {
-            if (art == null || alpha <= 0f) return;
+            if (arte == null || alfa <= 0f) return;
 
-            GUI.color = new Color(1f, 1f, 1f, alpha);
-            GUI.DrawTexture(new Rect(ox + x * scale, oy + y * scale, art.width * scale, art.height * scale), art);
+            GUI.color = new Color(1f, 1f, 1f, alfa);
+            TelaCanvas.Textura(new Rect(ox + x * escalaAtual, oy + y * escalaAtual, arte.width * escalaAtual, arte.height * escalaAtual), arte);
         }
 
-        private static void Fill(Rect rect, Color color)
+        private static void Preencher(Rect retangulo, Color cor)
         {
-            GUI.color = color;
-            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = cor;
+            TelaCanvas.Textura(retangulo, Texture2D.whiteTexture);
         }
     }
 }

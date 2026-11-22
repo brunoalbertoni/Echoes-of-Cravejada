@@ -19,97 +19,97 @@ namespace EchoesOfCravejada
     /// </summary>
     public class EndScreen : MonoBehaviour
     {
-        private const int GridWidth = 320;
-        private const int GridHeight = 180;
+        private const int LarguraGrade = 320;
+        private const int AlturaGrade = 180;
 
-        private const float DarkTime = 1.4f;
-        private const float EmblemIn = 1.0f;
-        private const float TitleIn = 2.0f;
-        private const float DividerIn = 2.8f;
-        private const float LinesIn = 3.6f;
-        private const float LineGap = 1.9f;
-        private const float ButtonAfter = 3.5f;
+        private const float TempoEscuro = 1.4f;
+        private const float EmblemaDentro = 1.0f;
+        private const float TituloDentro = 2.0f;
+        private const float DivisorDentro = 2.8f;
+        private const float LinhasDentro = 3.6f;
+        private const float EspacoLinha = 1.9f;
+        private const float BotaoDepois = 3.5f;
 
-        private const int EmblemY = 4;
-        private const int TitleY = 52;
-        private const int DividerY = 84;
-        private const int LineY = 92;
-        private const int LineStep = 10;
-        private const int ButtonY = 146;
-        private const int CreditY = 168;
+        private const int EmblemaY = 4;
+        private const int TituloY = 52;
+        private const int DivisorY = 84;
+        private const int LinhaY = 92;
+        private const int PassoLinha = 10;
+        private const int BotaoY = 146;
+        private const int CreditoY = 168;
 
-        private static EndScreen _instance;
+        private static EndScreen _instancia;
 
         private string _id;
-        private int _lines;
-        private bool _spores;
-        private float _openedAt;
-        private bool _leaving;
-        private bool _hover;
+        private int _linhas;
+        private bool _esporos;
+        private float _abertosEm;
+        private bool _saindo;
+        private bool _flutuar;
 
-        private Texture2D _emblem, _title, _divider, _credit, _vignette;
-        private Texture2D[] _story;
-        private Texture2D[] _button;
+        private Texture2D _emblema, _titulo, _divisor, _credito, _vinheta;
+        private Texture2D[] _historia;
+        private Texture2D[] _botao;
 
-        private readonly Vector3[] _motes = new Vector3[60];
+        private readonly Vector3[] _particulas = new Vector3[60];
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _instance = null;
+            _instancia = null;
         }
 
         /// <summary>Se a tela de fim esta aberta.</summary>
-        public static bool Showing => _instance != null;
+        public static bool Mostrando => _instancia != null;
 
         /// <summary>Abre a tela do final <paramref name="id"/> (as linhas sao {id}_line0..).</summary>
-        public static void Show(string id, int lines, bool spores)
+        public static void Mostrar(string id, int linhas2, bool esporos)
         {
-            if (_instance != null) return;
-            var host = new GameObject("EndScreen");
-            _instance = host.AddComponent<EndScreen>();
-            _instance.Open(id, lines, spores);
+            if (_instancia != null) return;
+            var hospedeiro = new GameObject("EndScreen");
+            _instancia = hospedeiro.AddComponent<EndScreen>();
+            _instancia.Abrir(id, linhas2, esporos);
         }
 
-        private void Open(string id, int lines, bool spores)
+        private void Abrir(string id, int linhas2, bool esporos)
         {
             _id = id;
-            _lines = lines;
-            _spores = spores;
-            _openedAt = Time.unscaledTime;
+            _linhas = linhas2;
+            _esporos = esporos;
+            _abertosEm = Time.unscaledTime;
 
-            _emblem = Art(id + "_emblem");
-            _title = Art(id + "_title");
-            _divider = Art("divider");
-            _credit = Art("credit");
-            _story = new Texture2D[lines];
-            for (int i = 0; i < lines; i++) _story[i] = Art($"{id}_line{i}");
-            _button = new[] { Art("button_menu_off"), Art("button_menu_on") };
-            _vignette = Vignette(spores);
+            _emblema = CarregarArte(id + "_emblem");
+            _titulo = CarregarArte(id + "_title");
+            _divisor = CarregarArte("divider");
+            _credito = CarregarArte("credit");
+            _historia = new Texture2D[linhas2];
+            for (int i = 0; i < linhas2; i++) _historia[i] = CarregarArte($"{id}_line{i}");
+            _botao = new[] { CarregarArte("button_menu_off"), CarregarArte("button_menu_on") };
+            _vinheta = Vinheta(esporos);
 
-            for (int i = 0; i < _motes.Length; i++) _motes[i] = NewMote(Random.Range(0f, GridHeight));
+            for (int i = 0; i < _particulas.Length; i++) _particulas[i] = NovaPoeira(Random.Range(0f, AlturaGrade));
         }
 
         private void OnDestroy()
         {
-            if (_instance == this) _instance = null;
+            if (_instancia == this) _instancia = null;
         }
 
-        private static Texture2D Art(string name)
+        private static Texture2D CarregarArte(string nome)
         {
-            var texture = Resources.Load<Texture2D>("EndScreen/" + name);
-            if (texture == null) Debug.LogWarning("[Fim] Falta Resources/EndScreen/" + name);
-            return texture;
+            var textura = Resources.Load<Texture2D>("EndScreen/" + nome);
+            if (textura == null) Debug.LogWarning("[Fim] Falta Resources/EndScreen/" + nome);
+            return textura;
         }
 
         /// <summary>O fundo: escuro, com o meio levemente tingido (verde doente ou azul frio).</summary>
-        private static Texture2D Vignette(bool sick)
+        private static Texture2D Vinheta(bool doente)
         {
             const int w = 64, h = 36;
-            var texture = new Texture2D(w, h, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+            var textura = new Texture2D(w, h, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
             var pixels = new Color32[w * h];
-            Color center = sick ? new Color(0.04f, 0.11f, 0.08f) : new Color(0.06f, 0.07f, 0.12f);
-            var rim = new Color(0.01f, 0.01f, 0.015f);
+            Color centro = doente ? new Color(0.04f, 0.11f, 0.08f) : new Color(0.06f, 0.07f, 0.12f);
+            var aro = new Color(0.01f, 0.01f, 0.015f);
 
             for (int y = 0; y < h; y++)
             {
@@ -117,54 +117,54 @@ namespace EchoesOfCravejada
                 {
                     float u = (x + 0.5f) / w - 0.5f;
                     float v = (y + 0.5f) / h - 0.5f;
-                    float edge = Mathf.Clamp01((u * u * 1.6f + v * v * 2.2f) * 1.9f);
-                    Color c = Color.Lerp(center, rim, edge);
+                    float beirada = Mathf.Clamp01((u * u * 1.6f + v * v * 2.2f) * 1.9f);
+                    Color c = Color.Lerp(centro, aro, beirada);
                     pixels[x + y * w] = new Color(c.r, c.g, c.b, 1f);
                 }
             }
 
-            texture.SetPixels32(pixels);
-            texture.Apply();
-            return texture;
+            textura.SetPixels32(pixels);
+            textura.Apply();
+            return textura;
         }
 
         /// <summary>Uma particula nova: x ao acaso, a altura dada, a velocidade de subida no z.</summary>
-        private static Vector3 NewMote(float y) => new Vector3(Random.Range(0f, GridWidth), y, Random.Range(2f, 7f));
+        private static Vector3 NovaPoeira(float y) => new Vector3(Random.Range(0f, LarguraGrade), y, Random.Range(2f, 7f));
 
-        private float ButtonAt => LinesIn + LineGap * Mathf.Max(0, _lines - 1) + ButtonAfter;
+        private float BotaoEm => LinhasDentro + EspacoLinha * Mathf.Max(0, _linhas - 1) + BotaoDepois;
 
         private void Update()
         {
             float dt = Time.unscaledDeltaTime;
-            for (int i = 0; i < _motes.Length; i++)
+            for (int i = 0; i < _particulas.Length; i++)
             {
-                Vector3 m = _motes[i];
+                Vector3 m = _particulas[i];
                 m.y -= m.z * dt;
                 m.x += Mathf.Sin((Time.unscaledTime * 0.7f + i) * 1.1f) * 2f * dt;
-                if (m.y < -2f) m = NewMote(GridHeight + 2f);
-                _motes[i] = m;
+                if (m.y < -2f) m = NovaPoeira(AlturaGrade + 2f);
+                _particulas[i] = m;
             }
 
-            float age = Time.unscaledTime - _openedAt;
-            if (_leaving || age < ButtonAt + 0.4f) return;
+            float idade = Time.unscaledTime - _abertosEm;
+            if (_saindo || idade < BotaoEm + 0.4f) return;
 
-            Keyboard keyboard = Keyboard.current;
-            Gamepad pad = Gamepad.current;
-            bool confirm =
-                (keyboard != null && (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame
-                                      || keyboard.spaceKey.wasPressedThisFrame || keyboard.eKey.wasPressedThisFrame))
-                || (pad != null && (pad.buttonSouth.wasPressedThisFrame || pad.startButton.wasPressedThisFrame));
+            Keyboard teclado = Keyboard.current;
+            Gamepad controle = Gamepad.current;
+            bool confirmar =
+                (teclado != null && (teclado.enterKey.wasPressedThisFrame || teclado.numpadEnterKey.wasPressedThisFrame
+                                      || teclado.spaceKey.wasPressedThisFrame || teclado.eKey.wasPressedThisFrame))
+                || (controle != null && (controle.buttonSouth.wasPressedThisFrame || controle.startButton.wasPressedThisFrame));
 
-            if (confirm) Leave();
+            if (confirmar) Sair();
         }
 
-        private void Leave()
+        private void Sair()
         {
-            if (_leaving) return;
-            _leaving = true;
-            Sfx.ShopBuy.Play();
-            Time.timeScale = 1f;
-            SceneLoader.Go(MainMenu.SceneName, null);
+            if (_saindo) return;
+            _saindo = true;
+            Sfx.ComprarLoja.Tocar();
+            GameManager.Instancia.RestaurarTempo(1f);
+            GameManager.Instancia.VoltarAoMenu();
         }
 
         private void OnGUI()
@@ -172,103 +172,103 @@ namespace EchoesOfCravejada
             GUI.depth = -160;
 
             float w = Screen.width, h = Screen.height;
-            float age = Time.unscaledTime - _openedAt;
-            int scale = Mathf.Max(1, Mathf.FloorToInt(Mathf.Min(w / GridWidth, h / GridHeight)));
-            float ox = Mathf.Round((w - GridWidth * scale) * 0.5f);
-            float oy = Mathf.Round((h - GridHeight * scale) * 0.5f);
-            Color previous = GUI.color;
+            float idade = Time.unscaledTime - _abertosEm;
+            int escalaAtual = Mathf.Max(1, Mathf.FloorToInt(Mathf.Min(w / LarguraGrade, h / AlturaGrade)));
+            float ox = Mathf.Round((w - LarguraGrade * escalaAtual) * 0.5f);
+            float oy = Mathf.Round((h - AlturaGrade * escalaAtual) * 0.5f);
+            Color valorAnterior = GUI.color;
 
             // 1. O escuro.
-            float dark = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(age / DarkTime));
-            GUI.color = new Color(1f, 1f, 1f, dark);
-            GUI.DrawTexture(new Rect(0f, 0f, w, h), _vignette);
+            float escuro = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(idade / TempoEscuro));
+            GUI.color = new Color(1f, 1f, 1f, escuro);
+            TelaCanvas.Textura(new Rect(0f, 0f, w, h), _vinheta);
 
             // 2. As particulas subindo.
-            Color mote = _spores ? new Color(0.47f, 1f, 0.67f) : new Color(0.8f, 0.86f, 1f);
-            for (int i = 0; i < _motes.Length; i++)
+            Color particula = _esporos ? new Color(0.47f, 1f, 0.67f) : new Color(0.8f, 0.86f, 1f);
+            for (int i = 0; i < _particulas.Length; i++)
             {
-                float flicker = 0.35f + 0.35f * Mathf.Sin(Time.unscaledTime * 2f + i * 1.7f);
-                GUI.color = new Color(mote.r, mote.g, mote.b, flicker * dark);
-                GUI.DrawTexture(new Rect(ox + Mathf.Floor(_motes[i].x) * scale, oy + Mathf.Floor(_motes[i].y) * scale, scale, scale), Texture2D.whiteTexture);
+                float tremeluzir = 0.35f + 0.35f * Mathf.Sin(Time.unscaledTime * 2f + i * 1.7f);
+                GUI.color = new Color(particula.r, particula.g, particula.b, tremeluzir * escuro);
+                TelaCanvas.Textura(new Rect(ox + Mathf.Floor(_particulas[i].x) * escalaAtual, oy + Mathf.Floor(_particulas[i].y) * escalaAtual, escalaAtual, escalaAtual), Texture2D.whiteTexture);
             }
 
             // 3. O desenho, o titulo e o friso.
-            Rise(_emblem, EmblemY, EmblemIn, 0.9f, 6, age, scale, ox, oy);
-            Rise(_title, TitleY, TitleIn, 0.6f, 4, age, scale, ox, oy);
+            Subir(_emblema, EmblemaY, EmblemaDentro, 0.9f, 6, idade, escalaAtual, ox, oy);
+            Subir(_titulo, TituloY, TituloDentro, 0.6f, 4, idade, escalaAtual, ox, oy);
 
-            if (_divider != null && age >= DividerIn)
+            if (_divisor != null && idade >= DivisorDentro)
             {
-                float open = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((age - DividerIn) / 0.6f));
-                int full = _divider.width;
-                int shown = Mathf.Max(2, Mathf.RoundToInt(full * open));
-                int x0 = (GridWidth - shown) / 2;
+                float aberto = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((idade - DivisorDentro) / 0.6f));
+                int cheio = _divisor.width;
+                int mostrado = Mathf.Max(2, Mathf.RoundToInt(cheio * aberto));
+                int x0 = (LarguraGrade - mostrado) / 2;
                 GUI.color = Color.white;
-                var uv = new Rect((full - shown) * 0.5f / full, 0f, shown / (float)full, 1f);
-                GUI.DrawTextureWithTexCoords(new Rect(ox + x0 * scale, oy + DividerY * scale, shown * scale, _divider.height * scale), _divider, uv);
+                var uv = new Rect((cheio - mostrado) * 0.5f / cheio, 0f, mostrado / (float)cheio, 1f);
+                TelaCanvas.TexturaUV(new Rect(ox + x0 * escalaAtual, oy + DivisorY * escalaAtual, mostrado * escalaAtual, _divisor.height * escalaAtual), _divisor, uv);
             }
 
             // 4. A historia, uma linha de cada vez.
-            for (int i = 0; i < _story.Length; i++)
+            for (int i = 0; i < _historia.Length; i++)
             {
-                Rise(_story[i], LineY + i * LineStep, LinesIn + i * LineGap, 0.9f, 2, age, scale, ox, oy);
+                Subir(_historia[i], LinhaY + i * PassoLinha, LinhasDentro + i * EspacoLinha, 0.9f, 2, idade, escalaAtual, ox, oy);
             }
 
             // 5. O credito e, depois de uns segundos, a placa.
-            float lastLine = LinesIn + LineGap * Mathf.Max(0, _lines - 1);
-            Rise(_credit, CreditY, lastLine + 1.2f, 1f, 0, age, scale, ox, oy, 0.7f);
-            DrawButton(age, scale, ox, oy);
+            float ultimoLinha = LinhasDentro + EspacoLinha * Mathf.Max(0, _linhas - 1);
+            Subir(_credito, CreditoY, ultimoLinha + 1.2f, 1f, 0, idade, escalaAtual, ox, oy, 0.7f);
+            DesenharBotao(idade, escalaAtual, ox, oy);
 
             // 6. Saindo: o preto por cima.
-            if (_leaving)
+            if (_saindo)
             {
                 GUI.color = Color.black;
-                GUI.DrawTexture(new Rect(0f, 0f, w, h), Texture2D.whiteTexture);
+                TelaCanvas.Textura(new Rect(0f, 0f, w, h), Texture2D.whiteTexture);
             }
 
-            GUI.color = previous;
+            GUI.color = valorAnterior;
         }
 
-        private void DrawButton(float age, int scale, float ox, float oy)
+        private void DesenharBotao(float idade, int escalaAtual, float ox, float oy)
         {
-            float t = Mathf.Clamp01((age - ButtonAt) / 0.5f);
-            if (t <= 0f || _button[0] == null) return;
+            float t = Mathf.Clamp01((idade - BotaoEm) / 0.5f);
+            if (t <= 0f || _botao[0] == null) return;
 
             Event e = Event.current;
-            bool lit = _hover || Mathf.Sin(Time.unscaledTime * 3f) > 0.6f;
-            Texture2D plate = _button[lit ? 1 : 0];
-            int x = (GridWidth - plate.width) / 2;
-            int y = ButtonY + Mathf.RoundToInt((1f - t) * 6f);
-            var rect = new Rect(ox + x * scale, oy + y * scale, plate.width * scale, plate.height * scale);
-            Draw(plate, x, y, scale, ox, oy, t);
+            bool aceso = _flutuar || Mathf.Sin(Time.unscaledTime * 3f) > 0.6f;
+            Texture2D placa = _botao[aceso ? 1 : 0];
+            int x = (LarguraGrade - placa.width) / 2;
+            int y = BotaoY + Mathf.RoundToInt((1f - t) * 6f);
+            var retangulo = new Rect(ox + x * escalaAtual, oy + y * escalaAtual, placa.width * escalaAtual, placa.height * escalaAtual);
+            Desenhar(placa, x, y, escalaAtual, ox, oy, t);
 
-            if (_leaving || t < 1f || e == null) return;
-            bool inside = rect.Contains(e.mousePosition);
-            if (inside != _hover && (e.type == EventType.MouseMove || e.type == EventType.Repaint))
+            if (_saindo || t < 1f || e == null) return;
+            bool dentro = retangulo.Contains(e.mousePosition);
+            if (dentro != _flutuar && (e.type == EventType.MouseMove || e.type == EventType.Repaint))
             {
-                if (inside) Sfx.ShopMove.Play();
-                _hover = inside;
+                if (dentro) Sfx.MoverLoja.Tocar();
+                _flutuar = dentro;
             }
 
-            if (inside && e.type == EventType.MouseDown && e.button == 0)
+            if (dentro && e.type == EventType.MouseDown && e.button == 0)
             {
                 e.Use();
-                Leave();
+                Sair();
             }
         }
 
-        private static void Rise(Texture2D art, int y, float start, float time, int distance,
-            float age, int scale, float ox, float oy, float alpha = 1f)
+        private static void Subir(Texture2D arte, int y, float inicio, float tempo, int distancia,
+            float idade, int escalaAtual, float ox, float oy, float alfa = 1f)
         {
-            if (art == null || age < start) return;
-            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((age - start) / time));
-            Draw(art, (GridWidth - art.width) / 2, y + Mathf.RoundToInt((1f - t) * distance), scale, ox, oy, t * alpha);
+            if (arte == null || idade < inicio) return;
+            float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((idade - inicio) / tempo));
+            Desenhar(arte, (LarguraGrade - arte.width) / 2, y + Mathf.RoundToInt((1f - t) * distancia), escalaAtual, ox, oy, t * alfa);
         }
 
-        private static void Draw(Texture2D art, int x, int y, int scale, float ox, float oy, float alpha)
+        private static void Desenhar(Texture2D arte, int x, int y, int escalaAtual, float ox, float oy, float alfa)
         {
-            if (art == null || alpha <= 0f) return;
-            GUI.color = new Color(1f, 1f, 1f, alpha);
-            GUI.DrawTexture(new Rect(ox + x * scale, oy + y * scale, art.width * scale, art.height * scale), art);
+            if (arte == null || alfa <= 0f) return;
+            GUI.color = new Color(1f, 1f, 1f, alfa);
+            TelaCanvas.Textura(new Rect(ox + x * escalaAtual, oy + y * escalaAtual, arte.width * escalaAtual, arte.height * escalaAtual), arte);
         }
     }
 }

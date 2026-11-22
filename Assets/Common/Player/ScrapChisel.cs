@@ -23,353 +23,354 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Rigidbody2D))]
     public class ScrapChisel : MonoBehaviour
     {
-        [SerializeField] private int damage = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("damage")] [SerializeField] private int dano = 1;
 
-        [Tooltip("Preparo antes de o golpe acertar. E daqui que vem o peso.")]
-        [SerializeField] private float windup = 0.12f;
+        [UnityEngine.Serialization.FormerlySerializedAs("windup")] [Tooltip("Preparo antes de o golpe acertar. E daqui que vem o peso.")]
+        [SerializeField] private float preparo = 0.12f;
 
-        [Tooltip("Por quanto tempo o risco do golpe fica na tela.")]
-        [SerializeField] private float swingTime = 0.14f;
+        [UnityEngine.Serialization.FormerlySerializedAs("swingTime")] [Tooltip("Por quanto tempo o risco do golpe fica na tela.")]
+        [SerializeField] private float tempoBalanco = 0.14f;
 
-        [Tooltip("Pausa ate poder bater de novo.")]
-        [SerializeField] private float recovery = 0.30f;
+        [UnityEngine.Serialization.FormerlySerializedAs("recovery")] [Tooltip("Pausa ate poder bater de novo.")]
+        [SerializeField] private float recuperacao = 0.30f;
 
-        [Tooltip("Velocidade pra cima ao acertar algo por baixo.")]
-        [SerializeField] private float pogoSpeed = 12.5f;
+        [UnityEngine.Serialization.FormerlySerializedAs("pogoSpeed")] [Tooltip("Velocidade pra cima ao acertar algo por baixo.")]
+        [SerializeField] private float velocidadePogo = 12.5f;
 
-        [Tooltip("Recuo ao acertar algo de lado.")]
-        [SerializeField] private float recoil = 3f;
+        [UnityEngine.Serialization.FormerlySerializedAs("recoil")] [Tooltip("Recuo ao acertar algo de lado.")]
+        [SerializeField] private float coice = 3f;
 
-        [Tooltip("O risco do golpe: um SpriteRenderer filho, desligado.")]
-        [SerializeField] private SpriteRenderer slash;
+        [UnityEngine.Serialization.FormerlySerializedAs("slash")] [Tooltip("O risco do golpe: um SpriteRenderer filho, desligado.")]
+        [SerializeField] private SpriteRenderer corte;
 
-        [Header("Resonance Strike")]
+        [UnityEngine.Serialization.FormerlySerializedAs("chargeTime")] [Header("Resonance Strike")]
         [Tooltip("Segundos segurando o botao ate o cinzel carregar.")]
-        [SerializeField] private float chargeTime = 0.75f;
+        [SerializeField] private float tempoCarga = 0.75f;
 
-        [Tooltip("Ate onde a onda alcanca, em tiles.")]
-        [SerializeField] private float resonanceRadius = 3.5f;
+        [UnityEngine.Serialization.FormerlySerializedAs("resonanceRadius")] [Tooltip("Ate onde a onda alcanca, em tiles.")]
+        [SerializeField] private float raioRessonancia = 3.5f;
 
-        [SerializeField] private int resonanceDamage = 2;
+        [UnityEngine.Serialization.FormerlySerializedAs("resonanceDamage")] [SerializeField] private int danoRessonancia = 2;
 
-        private ScrapController _controller;
-        private Rigidbody2D _body;
-        private bool _busy;
-        private float _holdStart = -1f;
-        private UnityEngine.Rendering.Universal.Light2D _eyes;
-        private float _eyesIntensity;
-        private Color _eyesColor;
+        private ScrapController _controlador;
+        private Rigidbody2D _corpo;
+        private bool _ocupado;
+        private float _inicioSegurar = -1f;
+        private UnityEngine.Rendering.Universal.Light2D _olhos;
+        private float _intensidadeOlhos;
+        private Color _corOlhos;
 
-        private static bool _resonance;
+        [SaveProgress("_resonance")]
+        private static bool _ressonancia;
 
         /// <summary>Se o Scrap ja tem o Resonance Strike. Quem da e o Geode Drill, ao parar.</summary>
-        public static bool HasResonanceStrike => _resonance;
+        public static bool TemGolpeRessonancia => _ressonancia;
 
         /// <summary>Quando ele foi conquistado. O HUD usa pra mostrar o aviso.</summary>
-        public static float ResonanceTime { get; private set; } = -100f;
+        public static float TempoRessonancia { get; private set; } = -100f;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _resonance = false;
-            ResonanceTime = -100f;
+            _ressonancia = false;
+            TempoRessonancia = -100f;
         }
 
         /// <summary>Da o Resonance Strike sem aviso na tela: pra cenas em que ele ja chega com ele.</summary>
-        public static void UnlockResonanceStrikeSilently()
+        public static void DesbloquearGolpeRessonanteEmSilencio()
         {
-            _resonance = true;
+            _ressonancia = true;
         }
 
-        public static void UnlockResonanceStrike()
+        public static void DesbloquearGolpeRessonante()
         {
-            if (_resonance) return;
+            if (_ressonancia) return;
 
-            _resonance = true;
-            ResonanceTime = Time.time;
-            AbilityCard.Show(ScrapMove.ResonanceStrike);
+            _ressonancia = true;
+            TempoRessonancia = Time.time;
+            AbilityCard.Mostrar(ScrapMove.GolpeRessonancia);
         }
 
         /// <summary>Verdadeiro enquanto o cinzel esta carregado, esperando soltar.</summary>
-        public bool IsCharged { get; private set; }
+        public bool EstaCarregado { get; private set; }
 
         /// <summary>Verdadeiro durante o preparo do golpe.</summary>
-        public bool IsWindingUp { get; private set; }
+        public bool EstaCimaPreparando { get; private set; }
 
         /// <summary>Verdadeiro enquanto o golpe esta acertando.</summary>
-        public bool IsStriking { get; private set; }
+        public bool EstaGolpeando { get; private set; }
 
         /// <summary>Pra onde foi o ultimo golpe: o lado, cima ou baixo. O ScrapAnimator escolhe os quadros por ela.</summary>
-        public Vector2 StrikeDirection { get; private set; } = Vector2.right;
+        public Vector2 DirecaoGolpe { get; private set; } = Vector2.right;
 
         /// <summary>Quando comecaram o preparo e o golpe, e quando o golpe acabou. Sao o relogio da animacao.</summary>
-        public float WindupStartTime { get; private set; } = -100f;
-        public float StrikeStartTime { get; private set; } = -100f;
-        public float StrikeEndTime { get; private set; } = -100f;
+        public float TempoInicioPreparo { get; private set; } = -100f;
+        public float TempoInicioGolpe { get; private set; } = -100f;
+        public float TempoFimGolpe { get; private set; } = -100f;
 
-        public float WindupDuration => windup;
-        public float StrikeDuration => swingTime;
+        public float DuracaoPreparo => preparo;
+        public float DuracaoGolpe => tempoBalanco;
 
-        private readonly Collider2D[] _hits = new Collider2D[16];
+        private readonly Collider2D[] _golpes = new Collider2D[16];
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(SpriteRenderer newSlash)
+        public void Configurar(SpriteRenderer novoCorte)
         {
-            slash = newSlash;
+            corte = novoCorte;
         }
 
         private void Awake()
         {
-            _controller = GetComponent<ScrapController>();
-            _body = GetComponent<Rigidbody2D>();
-            if (slash != null) slash.enabled = false;
+            _controlador = GetComponent<ScrapController>();
+            _corpo = GetComponent<Rigidbody2D>();
+            if (corte != null) corte.enabled = false;
 
             // Os olhos dele avisam que o cinzel carregou.
-            Transform eyes = transform.Find("EyeGlow");
-            if (eyes != null) _eyes = eyes.GetComponent<UnityEngine.Rendering.Universal.Light2D>();
+            Transform olhos = transform.Find("EyeGlow");
+            if (olhos != null) _olhos = olhos.GetComponent<UnityEngine.Rendering.Universal.Light2D>();
 
-            if (_eyes != null)
+            if (_olhos != null)
             {
-                _eyesIntensity = _eyes.intensity;
-                _eyesColor = _eyes.color;
+                _intensidadeOlhos = _olhos.intensity;
+                _corOlhos = _olhos.color;
             }
         }
 
         private void Update()
         {
-            bool pressed = AttackPressed();
+            bool apertado = AtaquePressionado();
 
-            if (_controller.ControlLocked)
+            if (_controlador.ControleTravado)
             {
-                _holdStart = -1f;
-                SetCharged(false);
+                _inicioSegurar = -1f;
+                DefinirCarregado(false);
                 return;
             }
 
-            if (_resonance)
+            if (_ressonancia)
             {
-                if (pressed) _holdStart = Time.time;
+                if (apertado) _inicioSegurar = Time.time;
 
-                bool ready = _holdStart >= 0f && Time.time - _holdStart >= chargeTime && !_busy;
+                bool prontoUso = _inicioSegurar >= 0f && Time.time - _inicioSegurar >= tempoCarga && !_ocupado;
 
-                if (!AttackHeld())
+                if (!AtaqueSegurado())
                 {
-                    _holdStart = -1f;
-                    SetCharged(false);
+                    _inicioSegurar = -1f;
+                    DefinirCarregado(false);
 
-                    if (ready)
+                    if (prontoUso)
                     {
-                        StartCoroutine(Resonate());
+                        StartCoroutine(Ressoar());
                         return;
                     }
                 }
                 else
                 {
-                    SetCharged(ready);
+                    DefinirCarregado(prontoUso);
                 }
             }
 
-            if (_busy || !pressed) return;
+            if (_ocupado || !apertado) return;
 
-            StartCoroutine(Swing(AimDirection()));
+            StartCoroutine(Balancar(DirecaoDaMira()));
         }
 
-        private void SetCharged(bool charged)
+        private void DefinirCarregado(bool carregado2)
         {
-            if (IsCharged == charged) return;
+            if (EstaCarregado == carregado2) return;
 
-            IsCharged = charged;
-            if (charged) Sfx.ChargeReady.Play();
-            if (_eyes == null) return;
+            EstaCarregado = carregado2;
+            if (carregado2) Sfx.ProntoCarga.Tocar();
+            if (_olhos == null) return;
 
-            _eyes.intensity = charged ? _eyesIntensity * 1.8f + 0.4f : _eyesIntensity;
-            _eyes.color = charged ? new Color(0.70f, 0.88f, 1f) : _eyesColor;
+            _olhos.intensity = carregado2 ? _intensidadeOlhos * 1.8f + 0.4f : _intensidadeOlhos;
+            _olhos.color = carregado2 ? new Color(0.70f, 0.88f, 1f) : _corOlhos;
         }
 
-        private static bool AttackHeld()
+        private static bool AtaqueSegurado()
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.jKey.isPressed || keyboard.xKey.isPressed)) return true;
+            Keyboard teclado = Keyboard.current;
+            if (teclado != null && (teclado.jKey.isPressed || teclado.xKey.isPressed)) return true;
 
             Mouse mouse = Mouse.current;
             if (mouse != null && mouse.leftButton.isPressed) return true;
 
-            Gamepad pad = Gamepad.current;
-            return pad != null && pad.buttonWest.isPressed;
+            Gamepad controle = Gamepad.current;
+            return controle != null && controle.buttonWest.isPressed;
         }
 
         /// <summary>
         /// O Resonance Strike: uma onda em volta dele. Fere o que estiver no
         /// raio, estoura barreira de cristal e faz o maior barulho que ele tem.
         /// </summary>
-        private IEnumerator Resonate()
+        private IEnumerator Ressoar()
         {
-            _busy = true;
-            IsStriking = true;
-            StrikeDirection = new Vector2(_controller.Facing, 0f);
-            StrikeStartTime = Time.time;
+            _ocupado = true;
+            EstaGolpeando = true;
+            DirecaoGolpe = new Vector2(_controlador.Virado, 0f);
+            TempoInicioGolpe = Time.time;
 
-            Vector2 center = (Vector2)transform.position + Vector2.up * 0.6f;
+            Vector2 centro = (Vector2)transform.position + Vector2.up * 0.6f;
 
-            NoiseSystem.Emit(center, 22f, 1f);
-            Sfx.Resonance.Play();
+            NoiseSystem.Emitir(centro, 22f, 1f);
+            Sfx.Ressonancia.Tocar();
 
-            if (slash != null)
+            if (corte != null)
             {
-                ResonanceRing.Spawn(center, slash.sprite, resonanceRadius, slash.sharedMaterial);
+                ResonanceRing.Criar(centro, corte.sprite, raioRessonancia, corte.sharedMaterial);
             }
 
-            foreach (Collider2D hit in Physics2D.OverlapCircleAll(center, resonanceRadius))
+            foreach (Collider2D golpe in Physics2D.OverlapCircleAll(centro, raioRessonancia))
             {
-                if (hit == null || hit.transform.IsChildOf(transform)) continue;
+                if (golpe == null || golpe.transform.IsChildOf(transform)) continue;
 
-                var barrier = hit.GetComponentInParent<CrystalBarrier>();
-                if (barrier != null)
+                var barreira = golpe.GetComponentInParent<CrystalBarrier>();
+                if (barreira != null)
                 {
-                    barrier.Shatter();
+                    barreira.Estilhacar();
                     continue;
                 }
 
-                var damageable = hit.GetComponentInParent<IDamageable>();
-                if (damageable != null) damageable.Damage(resonanceDamage + ScrapGems.BonusDamage, center);
+                var danificavel = golpe.GetComponentInParent<IDamageable>();
+                if (danificavel != null) danificavel.ReceberDano(danoRessonancia + ScrapGems.DanoBonus, centro);
             }
 
-            yield return new WaitForSeconds(swingTime);
-            IsStriking = false;
-            StrikeEndTime = Time.time;
+            yield return new WaitForSeconds(tempoBalanco);
+            EstaGolpeando = false;
+            TempoFimGolpe = Time.time;
 
-            yield return new WaitForSeconds(recovery);
-            _busy = false;
+            yield return new WaitForSeconds(recuperacao);
+            _ocupado = false;
         }
 
-        private static bool AttackPressed()
+        private static bool AtaquePressionado()
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.jKey.wasPressedThisFrame || keyboard.xKey.wasPressedThisFrame)) return true;
+            Keyboard teclado = Keyboard.current;
+            if (teclado != null && (teclado.jKey.wasPressedThisFrame || teclado.xKey.wasPressedThisFrame)) return true;
 
             Mouse mouse = Mouse.current;
             if (mouse != null && mouse.leftButton.wasPressedThisFrame) return true;
 
-            Gamepad pad = Gamepad.current;
-            return pad != null && pad.buttonWest.wasPressedThisFrame;
+            Gamepad controle = Gamepad.current;
+            return controle != null && controle.buttonWest.wasPressedThisFrame;
         }
 
         /// <summary>Pra onde o golpe vai: cima, baixo (so no ar) ou o lado em que ele olha.</summary>
-        private Vector2 AimDirection()
+        private Vector2 DirecaoDaMira()
         {
             float vertical = 0f;
 
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null)
+            Keyboard teclado = Keyboard.current;
+            if (teclado != null)
             {
-                if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed) vertical -= 1f;
-                if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed) vertical += 1f;
+                if (teclado.sKey.isPressed || teclado.downArrowKey.isPressed) vertical -= 1f;
+                if (teclado.wKey.isPressed || teclado.upArrowKey.isPressed) vertical += 1f;
             }
 
-            Gamepad pad = Gamepad.current;
-            if (pad != null)
+            Gamepad controle = Gamepad.current;
+            if (controle != null)
             {
-                float stick = pad.leftStick.y.ReadValue();
-                if (Mathf.Abs(stick) > 0.5f) vertical += Mathf.Sign(stick);
-                if (pad.dpad.down.isPressed) vertical -= 1f;
-                if (pad.dpad.up.isPressed) vertical += 1f;
+                float grudar = controle.leftStick.y.ReadValue();
+                if (Mathf.Abs(grudar) > 0.5f) vertical += Mathf.Sign(grudar);
+                if (controle.dpad.down.isPressed) vertical -= 1f;
+                if (controle.dpad.up.isPressed) vertical += 1f;
             }
 
-            if (vertical < 0f && !_controller.IsGrounded) return Vector2.down;
+            if (vertical < 0f && !_controlador.EstaNoChao) return Vector2.down;
             if (vertical > 0f) return Vector2.up;
-            return new Vector2(_controller.Facing, 0f);
+            return new Vector2(_controlador.Virado, 0f);
         }
 
-        private IEnumerator Swing(Vector2 direction)
+        private IEnumerator Balancar(Vector2 direcao)
         {
-            _busy = true;
-            StrikeDirection = direction;
-            IsWindingUp = true;
-            WindupStartTime = Time.time;
-            yield return new WaitForSeconds(windup);
-            IsWindingUp = false;
-            IsStriking = true;
-            StrikeStartTime = Time.time;
+            _ocupado = true;
+            DirecaoGolpe = direcao;
+            EstaCimaPreparando = true;
+            TempoInicioPreparo = Time.time;
+            yield return new WaitForSeconds(preparo);
+            EstaCimaPreparando = false;
+            EstaGolpeando = true;
+            TempoInicioGolpe = Time.time;
 
             // A caixa do golpe, medida a partir dos pes.
-            Vector2 center;
-            Vector2 size;
+            Vector2 centro;
+            Vector2 tamanho;
 
             // Um pouco mais longe que o corpo do cinzel: pro lado, ate 2 tiles do pe.
-            if (direction.y > 0f) { center = new Vector2(0f, 2.05f); size = new Vector2(1.2f, 1.7f); }
-            else if (direction.y < 0f) { center = new Vector2(0f, -0.7f); size = new Vector2(1.1f, 1.6f); }
-            else { center = new Vector2(direction.x * 1.15f, 0.65f); size = new Vector2(1.8f, 1.2f); }
+            if (direcao.y > 0f) { centro = new Vector2(0f, 2.05f); tamanho = new Vector2(1.2f, 1.7f); }
+            else if (direcao.y < 0f) { centro = new Vector2(0f, -0.7f); tamanho = new Vector2(1.1f, 1.6f); }
+            else { centro = new Vector2(direcao.x * 1.15f, 0.65f); tamanho = new Vector2(1.8f, 1.2f); }
 
-            Vector2 origin = transform.position;
-            ShowSlash(center, direction);
-            Sfx.Swing.Play();
+            Vector2 pontoOrigem = transform.position;
+            MostrarCorte(centro, direcao);
+            Sfx.Balanco.Tocar();
 
-            bool struck = false;
-            bool landed = false;
-            int count = Physics2D.OverlapBoxNonAlloc(origin + center, size, 0f, _hits);
+            bool atingido = false;
+            bool pousado = false;
+            int quantidade = Physics2D.OverlapBoxNonAlloc(pontoOrigem + centro, tamanho, 0f, _golpes);
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < quantidade; i++)
             {
-                Collider2D hit = _hits[i];
-                if (hit == null || hit.transform.IsChildOf(transform)) continue;
+                Collider2D golpe = _golpes[i];
+                if (golpe == null || golpe.transform.IsChildOf(transform)) continue;
 
-                var damageable = hit.GetComponentInParent<IDamageable>();
-                if (damageable != null)
+                var danificavel = golpe.GetComponentInParent<IDamageable>();
+                if (danificavel != null)
                 {
-                    damageable.Damage(damage + ScrapGems.BonusDamage, origin);
-                    struck = true;
+                    danificavel.ReceberDano(dano + ScrapGems.DanoBonus, pontoOrigem);
+                    atingido = true;
 
                     // Aparado (o Soldador de frente, o Sentinela em prata) tine em vez de acertar.
-                    bool blocked = damageable is Damageable target && target.LastBlockTime == Time.time;
-                    if (!blocked) landed = true;
+                    bool bloqueado = danificavel is Damageable alvo && alvo.UltimoTempoBloqueio == Time.time;
+                    if (!bloqueado) pousado = true;
                     continue;
                 }
 
                 // Espinho e acido nao apanham, mas da pra quicar neles.
-                if (direction.y < 0f && hit.GetComponentInParent<Hazard>() != null)
+                if (direcao.y < 0f && golpe.GetComponentInParent<Hazard>() != null)
                 {
-                    struck = true;
-                    landed = true;
+                    atingido = true;
+                    pousado = true;
                 }
             }
 
-            if (struck)
+            if (atingido)
             {
-                (landed ? Sfx.Hit : Sfx.Block).Play();
+                (pousado ? Sfx.Golpe : Sfx.QuadroBloqueio).Tocar();
 
-                Vector2 velocity = _body.linearVelocity;
+                Vector2 velocidadeVetorial = _corpo.linearVelocity;
 
-                if (direction.y < 0f) velocity.y = pogoSpeed;
-                else if (direction.y == 0f) velocity.x = -direction.x * recoil;
+                if (direcao.y < 0f) velocidadeVetorial.y = velocidadePogo;
+                else if (direcao.y == 0f) velocidadeVetorial.x = -direcao.x * coice;
 
-                _body.linearVelocity = velocity;
+                _corpo.linearVelocity = velocidadeVetorial;
             }
 
-            yield return new WaitForSeconds(swingTime);
-            if (slash != null) slash.enabled = false;
-            IsStriking = false;
-            StrikeEndTime = Time.time;
+            yield return new WaitForSeconds(tempoBalanco);
+            if (corte != null) corte.enabled = false;
+            EstaGolpeando = false;
+            TempoFimGolpe = Time.time;
 
-            yield return new WaitForSeconds(recovery);
-            _busy = false;
+            yield return new WaitForSeconds(recuperacao);
+            _ocupado = false;
         }
 
-        private void ShowSlash(Vector2 center, Vector2 direction)
+        private void MostrarCorte(Vector2 centro, Vector2 direcao)
         {
-            if (slash == null) return;
+            if (corte == null) return;
 
-            slash.transform.localPosition = center;
+            corte.transform.localPosition = centro;
 
             // O sprite do risco aponta pra direita.
-            float angle = direction.y > 0f ? 90f : (direction.y < 0f ? -90f : 0f);
-            slash.transform.localRotation = Quaternion.Euler(0f, 0f, angle);
-            slash.flipX = direction.y == 0f && direction.x < 0f;
+            float angulo = direcao.y > 0f ? 90f : (direcao.y < 0f ? -90f : 0f);
+            corte.transform.localRotation = Quaternion.Euler(0f, 0f, angulo);
+            corte.flipX = direcao.y == 0f && direcao.x < 0f;
 
             // Com o rubi cravado o golpe sai em brasa.
-            slash.color = ScrapGems.RubySocketed ? new Color(1f, 0.45f, 0.30f) : Color.white;
-            slash.enabled = true;
+            corte.color = ScrapGems.EncaixadoRubi ? new Color(1f, 0.45f, 0.30f) : Color.white;
+            corte.enabled = true;
         }
     }
 }

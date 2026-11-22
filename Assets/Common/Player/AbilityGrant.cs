@@ -13,37 +13,37 @@ namespace EchoesOfCravejada
     [DefaultExecutionOrder(-500)]
     public class AbilityGrant : MonoBehaviour
     {
-        [SerializeField] private bool steamDash;
-        [SerializeField] private bool pressureJump;
-        [SerializeField] private bool resonanceStrike;
+        [UnityEngine.Serialization.FormerlySerializedAs("steamDash")] [SerializeField] private bool dashVapor;
+        [UnityEngine.Serialization.FormerlySerializedAs("pressureJump")] [SerializeField] private bool puloPressao;
+        [UnityEngine.Serialization.FormerlySerializedAs("resonanceStrike")] [SerializeField] private bool golpeRessonancia;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(bool dash, bool jump)
+        public void Configurar(bool dash, bool pulo)
         {
-            steamDash = dash;
-            pressureJump = jump;
+            dashVapor = dash;
+            puloPressao = pulo;
         }
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(bool dash, bool jump, bool resonance)
+        public void Configurar(bool dash, bool pulo, bool ressonancia)
         {
-            steamDash = dash;
-            pressureJump = jump;
-            resonanceStrike = resonance;
+            dashVapor = dash;
+            puloPressao = pulo;
+            golpeRessonancia = ressonancia;
         }
 
         private void Awake()
         {
-            if (resonanceStrike) ScrapChisel.UnlockResonanceStrikeSilently();
+            if (golpeRessonancia) ScrapChisel.DesbloquearGolpeRessonanteEmSilencio();
 
-            if (steamDash)
+            if (dashVapor)
             {
                 var dash = GetComponent<ScrapDash>();
-                if (dash != null) dash.SetUnlockedFromStart(true);
-                ScrapDash.UnlockSilently();
+                if (dash != null) dash.DefinirLiberadoDesdeInicio(true);
+                ScrapDash.DesbloquearEmSilencio();
             }
 
-            if (pressureJump) ScrapController.UnlockPressureJumpSilently();
+            if (puloPressao) ScrapController.DesbloquearSaltoDePressaoEmSilencio();
         }
     }
 }

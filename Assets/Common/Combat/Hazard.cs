@@ -12,48 +12,48 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Collider2D))]
     public class Hazard : MonoBehaviour
     {
-        [SerializeField] private int damage = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("damage")] [SerializeField] private int dano = 1;
 
         private void Reset()
         {
             GetComponent<Collider2D>().isTrigger = true;
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D outro)
         {
-            Burn(other);
+            Queimar(outro);
         }
 
-        private void OnTriggerStay2D(Collider2D other)
+        private void OnTriggerStay2D(Collider2D outro)
         {
-            Burn(other);
+            Queimar(outro);
         }
 
-        private void Burn(Collider2D other)
+        private void Queimar(Collider2D outro)
         {
-            var health = other.GetComponentInParent<ScrapHealth>();
-            if (health != null)
+            var vida = outro.GetComponentInParent<ScrapHealth>();
+            if (vida != null)
             {
-                health.TakeDamage(damage, transform.position, true);
+                vida.LevarDano(dano, transform.position, true);
 
                 // Espinho fura com um tinido; o abismo nao tem som de ponta.
-                bool hurtNow = health.LastHitTime == Time.time;
-                if (hurtNow && name.StartsWith("Spikes")) Sfx.SpikeHit.Play(health.transform.position);
+                bool agoraFerido = vida.UltimoTempoGolpe == Time.time;
+                if (agoraFerido && name.StartsWith("Spikes")) Sfx.GolpeEspinho.Tocar(vida.transform.position);
 
                 // Piscando de um golpe recente ou no meio do dash, o dano nao
                 // entra; mas ele tem que voltar pro chao seguro mesmo assim,
                 // senao segue caindo pelo abismo ate morrer.
-                if (!hurtNow && health.Health > 0 && !Cinematic.Active)
+                if (!agoraFerido && vida.Vida > 0 && !Cinematic.Ativo)
                 {
-                    var back = other.GetComponentInParent<ScrapRespawn>();
-                    if (back != null) back.Respawn();
+                    var costas = outro.GetComponentInParent<ScrapRespawn>();
+                    if (costas != null) costas.Renascer();
                 }
                 return;
             }
 
             // Sem vida (um Scrap montado na mao, por exemplo), so devolve.
-            var respawn = other.GetComponentInParent<ScrapRespawn>();
-            if (respawn != null) respawn.Respawn();
+            var renascimento = outro.GetComponentInParent<ScrapRespawn>();
+            if (renascimento != null) renascimento.Renascer();
         }
     }
 }

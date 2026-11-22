@@ -10,14 +10,14 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class SceneTravel
     {
-        public static string PendingSpawnId;
+        public static string IdNascimentoPendente;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            PendingSpawnId = null;
+            IdNascimentoPendente = null;
         }
     }
 
@@ -31,16 +31,16 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Collider2D))]
     public class SceneExit : MonoBehaviour
     {
-        [SerializeField] private string sceneName;
-        [SerializeField] private string spawnId;
+        [UnityEngine.Serialization.FormerlySerializedAs("sceneName")] [SerializeField] private string nomeCena;
+        [UnityEngine.Serialization.FormerlySerializedAs("spawnId")] [SerializeField] private string idNascimento;
 
-        private bool _used;
+        private bool _usado;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(string newSceneName, string newSpawnId)
+        public void Configurar(string novoNomeCena, string novoIdNascimento)
         {
-            sceneName = newSceneName;
-            spawnId = newSpawnId;
+            nomeCena = novoNomeCena;
+            idNascimento = novoIdNascimento;
         }
 
         private void Reset()
@@ -48,22 +48,22 @@ namespace EchoesOfCravejada
             GetComponent<Collider2D>().isTrigger = true;
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D outro)
         {
-            if (_used) return;
-            if (other.GetComponentInParent<ScrapController>() == null) return;
+            if (_usado) return;
+            if (outro.GetComponentInParent<ScrapController>() == null) return;
 
-            if (!Application.CanStreamedLevelBeLoaded(sceneName))
+            if (!Application.CanStreamedLevelBeLoaded(nomeCena))
             {
-                Debug.LogError("[SceneExit] A cena " + sceneName + " nao esta no Build Settings. " +
+                Debug.LogError("[SceneExit] A cena " + nomeCena + " nao esta no Build Settings. " +
                                "Gere a fase pelo menu Echoes, que ela e adicionada sozinha.", this);
                 return;
             }
 
-            _used = true;
+            _usado = true;
 
             // A tela fecha, carrega com o loading no canto e abre do outro lado.
-            SceneLoader.Go(sceneName, spawnId);
+            GameManager.Instancia.TrocarCena(nomeCena, idNascimento);
         }
     }
 }

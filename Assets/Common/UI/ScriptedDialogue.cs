@@ -18,95 +18,95 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class ScriptedDialogue
     {
-        private static string[] _lines;
-        private static int _index;
+        private static string[] _linhas;
+        private static int _indice;
 
         /// <summary>Se ha uma fala de cena na tela.</summary>
-        public static bool Active => _lines != null && _index < _lines.Length;
+        public static bool Ativo => _linhas != null && _indice < _linhas.Length;
 
         /// <summary>Quem fala.</summary>
-        public static string Speaker { get; private set; }
+        public static string Falante { get; private set; }
 
         /// <summary>O desenho de quem fala, pro retrato na caixa.</summary>
-        public static SpriteRenderer Portrait { get; private set; }
+        public static SpriteRenderer Retrato { get; private set; }
 
         /// <summary>O busto de quem fala na caixa (<see cref="SpeakerPortraits"/>).</summary>
-        public static string PortraitId { get; private set; }
+        public static string IdRetrato { get; private set; }
 
         /// <summary>A linha na tela agora.</summary>
-        public static string CurrentLine => Active ? _lines[_index] : null;
+        public static string LinhaAtual => Ativo ? _linhas[_indice] : null;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _lines = null;
-            _index = 0;
-            Speaker = null;
-            Portrait = null;
-            PortraitId = null;
+            _linhas = null;
+            _indice = 0;
+            Falante = null;
+            Retrato = null;
+            IdRetrato = null;
         }
 
         /// <summary>Mostra as falas, uma por vez, e termina quando o Scrap passou a ultima.</summary>
-        public static IEnumerator Play(string speaker, SpriteRenderer portrait, params string[] lines)
+        public static IEnumerator Tocar(string falante, SpriteRenderer retrato, params string[] linhas2)
         {
-            return PlayAs(SpeakerPortraits.IdFor(speaker), speaker, portrait, lines);
+            return TocarComo(SpeakerPortraits.IdDe(falante), falante, retrato, linhas2);
         }
 
         /// <summary>
         /// O mesmo, escolhendo o busto (o Rei corrompido fala com o rosto
         /// tomado pelo Oxide, com o mesmo nome).
         /// </summary>
-        public static IEnumerator PlayAs(string portraitId, string speaker, SpriteRenderer portrait, params string[] lines)
+        public static IEnumerator TocarComo(string idRetrato, string falante, SpriteRenderer retrato, params string[] linhas2)
         {
-            if (lines == null || lines.Length == 0) yield break;
+            if (linhas2 == null || linhas2.Length == 0) yield break;
 
-            PortraitId = portraitId;
-            Speaker = speaker;
-            Portrait = portrait;
-            _lines = lines;
-            _index = 0;
-            Sfx.DialogueOpen.Play();
+            IdRetrato = idRetrato;
+            Falante = falante;
+            Retrato = retrato;
+            _linhas = linhas2;
+            _indice = 0;
+            Sfx.AbertoDialogo.Tocar();
 
             // O aperto que abriu a cena nao pula a primeira linha.
             yield return null;
 
-            while (_index < _lines.Length)
+            while (_indice < _linhas.Length)
             {
-                if (InteractPressed())
+                if (InteracaoPressionada())
                 {
-                    _index++;
-                    if (_index < _lines.Length) Sfx.DialogueNext.Play();
-                    else Sfx.DialogueClose.Play();
+                    _indice++;
+                    if (_indice < _linhas.Length) Sfx.ProximoDialogo.Tocar();
+                    else Sfx.FecharDialogo.Tocar();
                 }
 
                 yield return null;
             }
 
-            _lines = null;
-            Speaker = null;
-            Portrait = null;
-            PortraitId = null;
+            _linhas = null;
+            Falante = null;
+            Retrato = null;
+            IdRetrato = null;
 
             // Esse mesmo aperto nao vale pra mais nada.
             yield return null;
         }
 
         /// <summary>Some com a fala na hora (a cena foi interrompida).</summary>
-        public static void Stop()
+        public static void Parar()
         {
-            _lines = null;
-            Speaker = null;
-            Portrait = null;
-            PortraitId = null;
+            _linhas = null;
+            Falante = null;
+            Retrato = null;
+            IdRetrato = null;
         }
 
-        private static bool InteractPressed()
+        private static bool InteracaoPressionada()
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.eKey.wasPressedThisFrame || keyboard.kKey.wasPressedThisFrame)) return true;
+            Keyboard teclado = Keyboard.current;
+            if (teclado != null && (teclado.eKey.wasPressedThisFrame || teclado.kKey.wasPressedThisFrame)) return true;
 
-            Gamepad pad = Gamepad.current;
-            return pad != null && pad.buttonNorth.wasPressedThisFrame;
+            Gamepad controle = Gamepad.current;
+            return controle != null && controle.buttonNorth.wasPressedThisFrame;
         }
     }
 }

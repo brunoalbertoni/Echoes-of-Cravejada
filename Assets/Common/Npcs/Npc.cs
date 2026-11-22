@@ -17,123 +17,123 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Collider2D))]
     public class Npc : MonoBehaviour
     {
-        [SerializeField] private string displayName = "???";
+        [UnityEngine.Serialization.FormerlySerializedAs("displayName")] [SerializeField] private string nomeExibido = "???";
 
+        [UnityEngine.Serialization.FormerlySerializedAs("lines")] [TextArea(2, 4)]
+        [SerializeField] private string[] linhas2;
+
+        [UnityEngine.Serialization.FormerlySerializedAs("purifiedLines")] [Tooltip("O que ele diz depois que a area e purificada. Vazio repete as de cima.")]
         [TextArea(2, 4)]
-        [SerializeField] private string[] lines;
+        [SerializeField] private string[] linhasPurificado;
 
-        [Tooltip("O que ele diz depois que a area e purificada. Vazio repete as de cima.")]
-        [TextArea(2, 4)]
-        [SerializeField] private string[] purifiedLines;
+        [UnityEngine.Serialization.FormerlySerializedAs("prompt")] [Tooltip("O que aparece no aviso antes do nome: 'conversar com', 'ler'...")]
+        [SerializeField] private string indicacao = "conversar com";
 
-        [Tooltip("O que aparece no aviso antes do nome: 'conversar com', 'ler'...")]
-        [SerializeField] private string prompt = "conversar com";
+        [UnityEngine.Serialization.FormerlySerializedAs("facesPlayer")] [Tooltip("Se vira pro Scrap. Desligado pra pagina, pichacao e placa, que nao viram.")]
+        [SerializeField] private bool jogadorEncara = true;
 
-        [Tooltip("Se vira pro Scrap. Desligado pra pagina, pichacao e placa, que nao viram.")]
-        [SerializeField] private bool facesPlayer = true;
+        [UnityEngine.Serialization.FormerlySerializedAs("document")] [Tooltip("Pro que se le: o desenho grande (a carta, a placa, o muro) mostrado na tela durante a leitura.")]
+        [SerializeField] private Sprite documento;
 
-        [Tooltip("Pro que se le: o desenho grande (a carta, a placa, o muro) mostrado na tela durante a leitura.")]
-        [SerializeField] private Sprite document;
-
-        [Tooltip("O desenho de depois da purificacao, se ele muda. Vazio repete o de cima.")]
-        [SerializeField] private Sprite purifiedDocument;
+        [UnityEngine.Serialization.FormerlySerializedAs("purifiedDocument")] [Tooltip("O desenho de depois da purificacao, se ele muda. Vazio repete o de cima.")]
+        [SerializeField] private Sprite documentoPurificado;
 
         // O desenho desta leitura, escolhido junto com as falas.
-        private Sprite _document;
+        private Sprite _documento;
 
-        private ScrapController _controller;
+        private ScrapController _controlador;
         private SpriteRenderer _sprite;
-        private int _line = -1;
+        private int _linha = -1;
 
         // As falas desta conversa, escolhidas quando ela comeca: o que o Scrap
         // faz no meio (ou no fim) dela nao troca o texto na tela.
-        private string[] _talk;
+        private string[] _conversa;
 
         /// <summary>O personagem perto do qual o Scrap esta, se houver.</summary>
-        public static Npc Nearby { get; private set; }
+        public static Npc Proximo { get; private set; }
 
         /// <summary>O personagem que esta falando agora, se houver.</summary>
-        public static Npc Talking { get; private set; }
+        public static Npc Conversando { get; private set; }
 
-        public string DisplayName => displayName;
+        public string NomeExibido => nomeExibido;
 
         /// <summary>
         /// O desenho de quem fala, pro retrato na caixa de dialogo: o sprite
         /// dele, ou o do filho quando o corpo fica num filho (a Assistente, no
         /// armario). Nulo pro que se le — pagina, placa, gravura nao tem rosto.
         /// </summary>
-        public SpriteRenderer Portrait { get; private set; }
+        public SpriteRenderer Retrato { get; private set; }
 
         /// <summary>
         /// O busto de quem fala na caixa de dialogo (<see cref="SpeakerPortraits"/>),
         /// pelo nome. Nulo pro que se le: pagina, placa e gravura nao tem rosto.
         /// </summary>
-        public string PortraitId => facesPlayer ? SpeakerPortraits.IdFor(displayName) : null;
+        public string IdRetrato => jogadorEncara ? SpeakerPortraits.IdDe(nomeExibido) : null;
 
         /// <summary>O verbo do aviso: "conversar com" pra gente, "ler" pra coisa escrita.</summary>
-        public string Prompt => prompt;
+        public string Indicacao => indicacao;
 
         /// <summary>
         /// O desenho grande do que se esta lendo agora (a carta, a placa), ou
         /// null pra quem so fala.
         /// </summary>
-        public Sprite Document => Talking == this ? _document : null;
+        public Sprite Documento => Conversando == this ? _documento : null;
 
         /// <summary>A fala na tela agora, ou null se ele nao esta falando.</summary>
-        public string CurrentLine => _line >= 0 && _talk != null && _line < _talk.Length ? _talk[_line] : null;
+        public string LinhaAtual => _linha >= 0 && _conversa != null && _linha < _conversa.Length ? _conversa[_linha] : null;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            Nearby = null;
-            Talking = null;
+            Proximo = null;
+            Conversando = null;
         }
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(string newName, string[] newLines)
+        public void Configurar(string novoNome, string[] novoLinhas)
         {
-            displayName = newName;
-            lines = newLines;
+            nomeExibido = novoNome;
+            linhas2 = novoLinhas;
         }
 
         /// <summary>Usado pelos geradores de fase, pra coisas que se leem em vez de conversar.</summary>
-        public void ConfigureReadable(string newName, string[] newLines)
+        public void ConfigurarLeitura(string novoNome, string[] novoLinhas)
         {
-            displayName = newName;
-            lines = newLines;
-            prompt = "ler";
-            facesPlayer = false;
+            nomeExibido = novoNome;
+            linhas2 = novoLinhas;
+            indicacao = "ler";
+            jogadorEncara = false;
         }
 
         /// <summary>Usado pelos geradores de fase: o que ele diz depois da purificacao.</summary>
-        public void ConfigurePurified(string[] newLines)
+        public void ConfigurarPurificado(string[] novoLinhas)
         {
-            purifiedLines = newLines;
+            linhasPurificado = novoLinhas;
         }
 
         /// <summary>
         /// Usado pelos geradores de fase: o desenho grande mostrado durante a
         /// leitura, e o de depois da purificacao, se muda.
         /// </summary>
-        public void ConfigureDocument(Sprite newDocument, Sprite newPurifiedDocument = null)
+        public void ConfigurarDocumento(Sprite novoDocumento, Sprite novoDocumentoPurificado = null)
         {
-            document = newDocument;
-            purifiedDocument = newPurifiedDocument;
+            documento = novoDocumento;
+            documentoPurificado = novoDocumentoPurificado;
         }
 
         /// <summary>As falas de sempre, as configuradas primeiro (antes da purificacao).</summary>
-        protected string[] FirstLines => lines;
+        protected string[] PrimeiroLinhas => linhas2;
 
         /// <summary>
         /// As falas da proxima conversa. Por padrao, as de depois da
         /// purificacao, se a area ja foi purificada e ele tiver alguma.
         /// </summary>
-        protected virtual string[] PickLines()
+        protected virtual string[] EscolherFalas()
         {
-            bool purified = AreaPurifier.IsPurified && purifiedLines != null && purifiedLines.Length > 0;
-            return purified ? purifiedLines : lines;
+            bool purificado = AreaPurifier.EstaPurificado && linhasPurificado != null && linhasPurificado.Length > 0;
+            return purificado ? linhasPurificado : linhas2;
         }
 
         private void Awake()
@@ -141,7 +141,7 @@ namespace EchoesOfCravejada
             _sprite = GetComponent<SpriteRenderer>();
 
             // So quem conversa vira o rosto; e so quem conversa tem retrato.
-            if (facesPlayer) Portrait = _sprite != null ? _sprite : GetComponentInChildren<SpriteRenderer>();
+            if (jogadorEncara) Retrato = _sprite != null ? _sprite : GetComponentInChildren<SpriteRenderer>();
         }
 
         private void Reset()
@@ -151,116 +151,116 @@ namespace EchoesOfCravejada
 
         private void Update()
         {
-            if (_controller == null) return;
+            if (_controlador == null) return;
 
             // Com o card de conquista na tela, o E e o de fechar o card.
-            if (AbilityCard.Showing) return;
+            if (AbilityCard.Mostrando) return;
 
             // Com a loja aberta, o botao de conversar e o de fechar a loja.
-            if (Crisol.ShopOpen != null) return;
+            if (Crisol.AbertoLoja != null) return;
 
             // Numa cena o E e o de pular a cena, nao o de conversar.
-            if (Cinematic.Active) return;
+            if (Cinematic.Ativo) return;
 
             // Olha pra quem esta falando com ele. A arte olha pra direita.
-            if (_sprite != null && facesPlayer) _sprite.flipX = _controller.transform.position.x < transform.position.x;
+            if (_sprite != null && jogadorEncara) _sprite.flipX = _controlador.transform.position.x < transform.position.x;
 
-            if (!InteractPressed()) return;
+            if (!InteracaoPressionada()) return;
 
             // So comeca a conversa com os pes no chao; continuar pode a qualquer hora.
-            if (_line < 0 && !_controller.IsGrounded) return;
+            if (_linha < 0 && !_controlador.EstaNoChao) return;
 
-            if (_line < 0)
+            if (_linha < 0)
             {
-                _talk = PickLines();
+                _conversa = EscolherFalas();
 
                 // O desenho acompanha o texto: o de depois, se o texto e o de depois.
-                bool after = _talk != null && _talk == purifiedLines && purifiedDocument != null;
-                _document = after ? purifiedDocument : document;
+                bool depois = _conversa != null && _conversa == linhasPurificado && documentoPurificado != null;
+                _documento = depois ? documentoPurificado : documento;
             }
 
-            _line++;
+            _linha++;
 
-            if (_talk == null || _line >= _talk.Length)
+            if (_conversa == null || _linha >= _conversa.Length)
             {
-                if (_line > 0) Sfx.DialogueClose.Play();
-                EndTalk(true);
+                if (_linha > 0) Sfx.FecharDialogo.Tocar();
+                EncerrarConversa(true);
                 return;
             }
 
-            if (_line == 0) Sfx.DialogueOpen.Play();
-            else Sfx.DialogueNext.Play();
+            if (_linha == 0) Sfx.AbertoDialogo.Tocar();
+            else Sfx.ProximoDialogo.Tocar();
 
-            Talking = this;
-            _controller.ControlLocked = true;
+            Conversando = this;
+            _controlador.ControleTravado = true;
         }
 
         /// <summary>
         /// Comeca uma conversa com estas falas, agora, sem esperar o botao. O
         /// Crisol usa pra contar a memoria que acabou de vender.
         /// </summary>
-        protected void StartTalk(string[] newLines)
+        protected void IniciarConversa(string[] novoLinhas)
         {
-            if (_controller == null || newLines == null || newLines.Length == 0) return;
+            if (_controlador == null || novoLinhas == null || novoLinhas.Length == 0) return;
 
-            _talk = newLines;
-            _document = document;
-            _line = 0;
-            Talking = this;
-            Sfx.DialogueOpen.Play();
-            _controller.ControlLocked = true;
+            _conversa = novoLinhas;
+            _documento = documento;
+            _linha = 0;
+            Conversando = this;
+            Sfx.AbertoDialogo.Tocar();
+            _controlador.ControleTravado = true;
         }
 
-        private void EndTalk(bool finished = false)
+        private void EncerrarConversa(bool terminado = false)
         {
             // So conta como conversa terminada se ele ouviu ate o fim.
-            bool wasTalking = finished && _line >= 0;
+            bool estavaConversando = terminado && _linha >= 0;
 
-            _line = -1;
-            if (Talking == this) Talking = null;
-            if (_controller != null) _controller.ControlLocked = false;
+            _linha = -1;
+            if (Conversando == this) Conversando = null;
+            if (_controlador != null) _controlador.ControleTravado = false;
 
-            if (wasTalking && _controller != null) OnTalkFinished(_controller);
+            if (estavaConversando && _controlador != null) AoTerminarConversa(_controlador);
         }
 
         /// <summary>Chamado quando a conversa termina. Crisol usa pra entregar o rubi e abrir a loja.</summary>
-        protected virtual void OnTalkFinished(ScrapController scrap)
+        protected virtual void AoTerminarConversa(ScrapController sucata)
         {
         }
 
-        private static bool InteractPressed()
+        private static bool InteracaoPressionada()
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.eKey.wasPressedThisFrame || keyboard.kKey.wasPressedThisFrame)) return true;
+            Keyboard teclado = Keyboard.current;
+            if (teclado != null && (teclado.eKey.wasPressedThisFrame || teclado.kKey.wasPressedThisFrame)) return true;
 
-            Gamepad pad = Gamepad.current;
-            return pad != null && pad.buttonNorth.wasPressedThisFrame;
+            Gamepad controle = Gamepad.current;
+            return controle != null && controle.buttonNorth.wasPressedThisFrame;
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D outro)
         {
-            var controller = other.GetComponentInParent<ScrapController>();
-            if (controller == null) return;
+            var controlador = outro.GetComponentInParent<ScrapController>();
+            if (controlador == null) return;
 
-            _controller = controller;
-            Nearby = this;
+            _controlador = controlador;
+            Proximo = this;
         }
 
-        private void OnTriggerExit2D(Collider2D other)
+        private void OnTriggerExit2D(Collider2D outro)
         {
-            if (_controller == null || other.GetComponentInParent<ScrapController>() != _controller) return;
+            if (_controlador == null || outro.GetComponentInParent<ScrapController>() != _controlador) return;
 
             // Foi tirado dali no meio da conversa (apanhou, morreu): encerra.
-            EndTalk();
+            EncerrarConversa();
 
-            _controller = null;
-            if (Nearby == this) Nearby = null;
+            _controlador = null;
+            if (Proximo == this) Proximo = null;
         }
 
         private void OnDisable()
         {
-            EndTalk();
-            if (Nearby == this) Nearby = null;
+            EncerrarConversa();
+            if (Proximo == this) Proximo = null;
         }
     }
 }

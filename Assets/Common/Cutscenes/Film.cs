@@ -23,22 +23,22 @@ namespace EchoesOfCravejada
         public float t;
         public float x;
         public float y;
-        public float scale = 1f;
-        public float alpha = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("scale")] public float escalaAtual = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("alpha")] public float alfa = 1f;
 
         /// <summary>Como chega nesta chave: 0 linear, 1 suave, 2 freando, 3 acelerando.</summary>
-        public int ease = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("ease")] public int suavidade = 1;
 
         public FilmKey() { }
 
-        public FilmKey(float t, float x, float y, float scale = 1f, float alpha = 1f, int ease = 1)
+        public FilmKey(float t, float x, float y, float escalaAtual = 1f, float alfa = 1f, int suavidade = 1)
         {
             this.t = t;
             this.x = x;
             this.y = y;
-            this.scale = scale;
-            this.alpha = alpha;
-            this.ease = ease;
+            this.escalaAtual = escalaAtual;
+            this.alfa = alfa;
+            this.suavidade = suavidade;
         }
     }
 
@@ -46,28 +46,28 @@ namespace EchoesOfCravejada
     [Serializable]
     public class FilmLayer
     {
-        public string name;
+        [UnityEngine.Serialization.FormerlySerializedAs("name")] public string nome;
 
         /// <summary>Indice do primeiro quadro na lista do filme, e quantos sao.</summary>
-        public int firstFrame;
-        public int frameCount = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("firstFrame")] public int primeiroQuadro;
+        [UnityEngine.Serialization.FormerlySerializedAs("frameCount")] public int quantidadeQuadro = 1;
 
         /// <summary>A animacao: quadros por segundo, quando comeca e se repete.</summary>
-        public float fps = 8f;
-        public float animStart;
-        public bool loop;
+        [UnityEngine.Serialization.FormerlySerializedAs("fps")] public float qps = 8f;
+        [UnityEngine.Serialization.FormerlySerializedAs("animStart")] public float inicioAnim;
+        [UnityEngine.Serialization.FormerlySerializedAs("loop")] public bool repeticao;
 
         /// <summary>Profundidade: 0 colado na tela, 1 no palco, maior que 1 passa na frente.</summary>
-        public float parallax = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("parallax")] public float paralaxe = 1f;
 
         /// <summary>Soma a luz em vez de cobrir (brilhos, raios).</summary>
-        public bool additive;
+        [UnityEngine.Serialization.FormerlySerializedAs("additive")] public bool aditivo;
 
         /// <summary>Onde fica o pivo, em fracao do quadro (0,0 canto de cima a esquerda).</summary>
-        public float pivotX = 0.5f;
-        public float pivotY = 0.5f;
+        [UnityEngine.Serialization.FormerlySerializedAs("pivotX")] public float pivoX = 0.5f;
+        [UnityEngine.Serialization.FormerlySerializedAs("pivotY")] public float pivoY = 0.5f;
 
-        public FilmKey[] keys;
+        [UnityEngine.Serialization.FormerlySerializedAs("keys")] public FilmKey[] chaves;
     }
 
     /// <summary>A camera: o ponto do palco no meio da tela e o zoom.</summary>
@@ -77,18 +77,18 @@ namespace EchoesOfCravejada
         public float t;
         public float x;
         public float y;
-        public float zoom = 1f;
-        public int ease = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("zoom")] public float zoom = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("ease")] public int suavidade = 1;
 
         public FilmCam() { }
 
-        public FilmCam(float t, float x, float y, float zoom = 1f, int ease = 1)
+        public FilmCam(float t, float x, float y, float zoom = 1f, int suavidade = 1)
         {
             this.t = t;
             this.x = x;
             this.y = y;
             this.zoom = zoom;
-            this.ease = ease;
+            this.suavidade = suavidade;
         }
     }
 
@@ -97,11 +97,11 @@ namespace EchoesOfCravejada
     public class FilmShake
     {
         public float t;
-        public float duration;
-        public float amount;
+        [UnityEngine.Serialization.FormerlySerializedAs("duration")] public float duracao;
+        [UnityEngine.Serialization.FormerlySerializedAs("amount")] public float quantia;
 
         public FilmShake() { }
-        public FilmShake(float t, float duration, float amount) { this.t = t; this.duration = duration; this.amount = amount; }
+        public FilmShake(float t, float duracao, float quantia) { this.t = t; this.duracao = duracao; this.quantia = quantia; }
     }
 
     /// <summary>Um clarao de cor por cima de tudo: sobe rapido e desbota.</summary>
@@ -109,18 +109,18 @@ namespace EchoesOfCravejada
     public class FilmFlash
     {
         public float t;
-        public float duration;
-        public uint color = 0xFFFFFFFF;
-        public float strength = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("duration")] public float duracao;
+        [UnityEngine.Serialization.FormerlySerializedAs("color")] public uint cor = 0xFFFFFFFF;
+        [UnityEngine.Serialization.FormerlySerializedAs("strength")] public float forca2 = 1f;
 
         public FilmFlash() { }
 
-        public FilmFlash(float t, float duration, uint color = 0xFFFFFFFF, float strength = 1f)
+        public FilmFlash(float t, float duracao, uint cor = 0xFFFFFFFF, float forca2 = 1f)
         {
             this.t = t;
-            this.duration = duration;
-            this.color = color;
-            this.strength = strength;
+            this.duracao = duracao;
+            this.cor = cor;
+            this.forca2 = forca2;
         }
     }
 
@@ -133,7 +133,7 @@ namespace EchoesOfCravejada
     public class FilmSpray
     {
         /// <summary>0 quadradinho, 1 bolinha macia, 2 risco no sentido do voo.</summary>
-        public int shape;
+        [UnityEngine.Serialization.FormerlySerializedAs("shape")] public int forma;
 
         /// <summary>Onde nascem, no palco.</summary>
         public float x, y, w, h;
@@ -145,17 +145,17 @@ namespace EchoesOfCravejada
         public float vx, vy, spreadX, spreadY;
 
         /// <summary>Velocidade pra fora de um centro (estouros): soma com a de cima.</summary>
-        public float burst;
+        [UnityEngine.Serialization.FormerlySerializedAs("burst")] public float rajada;
 
-        public float gravity;
-        public float life = 1f;
-        public uint color = 0xFFFFFFFF;
-        public uint color2 = 0x00FFFFFF;
-        public int size = 1;
-        public float grow;
-        public bool additive;
-        public float parallax = 1f;
-        public int seed = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("gravity")] public float gravidade;
+        [UnityEngine.Serialization.FormerlySerializedAs("life")] public float duracaoVida = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("color")] public uint cor = 0xFFFFFFFF;
+        [UnityEngine.Serialization.FormerlySerializedAs("color2")] public uint cor2 = 0x00FFFFFF;
+        [UnityEngine.Serialization.FormerlySerializedAs("size")] public int tamanho = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("grow")] public float crescer;
+        [UnityEngine.Serialization.FormerlySerializedAs("additive")] public bool aditivo;
+        [UnityEngine.Serialization.FormerlySerializedAs("parallax")] public float paralaxe = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("seed")] public int semente = 1;
     }
 
     /// <summary>Um som num instante do plano (nome do campo em Sfx).</summary>
@@ -163,17 +163,17 @@ namespace EchoesOfCravejada
     public class FilmCue
     {
         public float t;
-        public string sound;
-        public float pitch = 1f;
-        public float volume = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("sound")] public string som;
+        [UnityEngine.Serialization.FormerlySerializedAs("pitch")] public float tom2 = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("volume")] public float volume = 1f;
 
         public FilmCue() { }
 
-        public FilmCue(float t, string sound, float pitch = 1f, float volume = 1f)
+        public FilmCue(float t, string som, float tom2 = 1f, float volume = 1f)
         {
             this.t = t;
-            this.sound = sound;
-            this.pitch = pitch;
+            this.som = som;
+            this.tom2 = tom2;
             this.volume = volume;
         }
     }
@@ -182,35 +182,35 @@ namespace EchoesOfCravejada
     [Serializable]
     public class FilmShot
     {
-        public string name;
-        public float duration = 4f;
-        public uint background = 0xFF000000;
-        public FilmLayer[] layers;
-        public FilmCam[] camera;
-        public FilmShake[] shakes;
-        public FilmFlash[] flashes;
-        public FilmSpray[] sprays;
-        public FilmCue[] cues;
+        [UnityEngine.Serialization.FormerlySerializedAs("name")] public string nome;
+        [UnityEngine.Serialization.FormerlySerializedAs("duration")] public float duracao = 4f;
+        [UnityEngine.Serialization.FormerlySerializedAs("background")] public uint fundo = 0xFF000000;
+        [UnityEngine.Serialization.FormerlySerializedAs("layers")] public FilmLayer[] camadas;
+        [UnityEngine.Serialization.FormerlySerializedAs("camera")] public FilmCam[] camera;
+        [UnityEngine.Serialization.FormerlySerializedAs("shakes")] public FilmShake[] tremores;
+        [UnityEngine.Serialization.FormerlySerializedAs("flashes")] public FilmFlash[] claroes;
+        [UnityEngine.Serialization.FormerlySerializedAs("sprays")] public FilmSpray[] jatos;
+        [UnityEngine.Serialization.FormerlySerializedAs("cues")] public FilmCue[] deixas;
 
         /// <summary>Entrada e saida pelo preto (0: corte seco).</summary>
-        public float fadeIn = 0.3f;
-        public float fadeOut = 0.3f;
+        [UnityEngine.Serialization.FormerlySerializedAs("fadeIn")] public float esmaecerDentro = 0.3f;
+        [UnityEngine.Serialization.FormerlySerializedAs("fadeOut")] public float foraEsmaecer = 0.3f;
 
         /// <summary>Quanto as bordas escurecem.</summary>
-        public float vignette = 0.35f;
+        [UnityEngine.Serialization.FormerlySerializedAs("vignette")] public float vinheta = 0.35f;
     }
 
     /// <summary>Os pixels de um quadro: 0xAARRGGBB, linha a linha de cima pra baixo.</summary>
     public sealed class FilmFrame
     {
-        public readonly int Width;
-        public readonly int Height;
+        public readonly int Largura;
+        public readonly int Altura;
         public readonly uint[] Pixels;
 
-        public FilmFrame(int width, int height, uint[] pixels)
+        public FilmFrame(int largura, int altura, uint[] pixels)
         {
-            Width = width;
-            Height = height;
+            Largura = largura;
+            Altura = altura;
             Pixels = pixels;
         }
     }
@@ -218,16 +218,16 @@ namespace EchoesOfCravejada
     /// <summary>Monta um instante de um plano num quadro de 320x180.</summary>
     public static class FilmCompositor
     {
-        public const int Width = 320;
-        public const int Height = 180;
+        public const int Largura = 320;
+        public const int Altura = 180;
 
-        private static float[] _vignette;
-        private static float _vignetteFor = -1f;
+        private static float[] _vinheta;
+        private static float _vinhetaPor = -1f;
 
-        public static float Ease(float k, int ease)
+        public static float Suavizar(float k, int suavidade)
         {
             k = k < 0f ? 0f : k > 1f ? 1f : k;
-            switch (ease)
+            switch (suavidade)
             {
                 case 0: return k;
                 case 2: return 1f - (1f - k) * (1f - k);
@@ -236,215 +236,215 @@ namespace EchoesOfCravejada
             }
         }
 
-        private static float Lerp(float a, float b, float k) => a + (b - a) * k;
+        private static float Interpolar(float a, float b, float k) => a + (b - a) * k;
 
-        public static FilmKey Sample(FilmKey[] keys, float t)
+        public static FilmKey Amostrar(FilmKey[] chaves, float t)
         {
-            if (keys == null || keys.Length == 0) return new FilmKey(0f, 160f, 90f);
-            if (t <= keys[0].t || keys.Length == 1) return keys[0];
+            if (chaves == null || chaves.Length == 0) return new FilmKey(0f, 160f, 90f);
+            if (t <= chaves[0].t || chaves.Length == 1) return chaves[0];
 
-            for (int i = 1; i < keys.Length; i++)
+            for (int i = 1; i < chaves.Length; i++)
             {
-                if (t > keys[i].t) continue;
-                FilmKey a = keys[i - 1], b = keys[i];
-                float k = Ease((t - a.t) / Math.Max(0.0001f, b.t - a.t), b.ease);
-                return new FilmKey(t, Lerp(a.x, b.x, k), Lerp(a.y, b.y, k), Lerp(a.scale, b.scale, k), Lerp(a.alpha, b.alpha, k));
+                if (t > chaves[i].t) continue;
+                FilmKey a = chaves[i - 1], b = chaves[i];
+                float k = Suavizar((t - a.t) / Math.Max(0.0001f, b.t - a.t), b.suavidade);
+                return new FilmKey(t, Interpolar(a.x, b.x, k), Interpolar(a.y, b.y, k), Interpolar(a.escalaAtual, b.escalaAtual, k), Interpolar(a.alfa, b.alfa, k));
             }
 
-            return keys[keys.Length - 1];
+            return chaves[chaves.Length - 1];
         }
 
-        public static FilmCam SampleCam(FilmCam[] keys, float t)
+        public static FilmCam AmostrarCamera(FilmCam[] chaves, float t)
         {
-            if (keys == null || keys.Length == 0) return new FilmCam(0f, 160f, 90f);
-            if (t <= keys[0].t || keys.Length == 1) return keys[0];
+            if (chaves == null || chaves.Length == 0) return new FilmCam(0f, 160f, 90f);
+            if (t <= chaves[0].t || chaves.Length == 1) return chaves[0];
 
-            for (int i = 1; i < keys.Length; i++)
+            for (int i = 1; i < chaves.Length; i++)
             {
-                if (t > keys[i].t) continue;
-                FilmCam a = keys[i - 1], b = keys[i];
-                float k = Ease((t - a.t) / Math.Max(0.0001f, b.t - a.t), b.ease);
-                return new FilmCam(t, Lerp(a.x, b.x, k), Lerp(a.y, b.y, k), Lerp(a.zoom, b.zoom, k));
+                if (t > chaves[i].t) continue;
+                FilmCam a = chaves[i - 1], b = chaves[i];
+                float k = Suavizar((t - a.t) / Math.Max(0.0001f, b.t - a.t), b.suavidade);
+                return new FilmCam(t, Interpolar(a.x, b.x, k), Interpolar(a.y, b.y, k), Interpolar(a.zoom, b.zoom, k));
             }
 
-            return keys[keys.Length - 1];
+            return chaves[chaves.Length - 1];
         }
 
-        public static int FrameAt(FilmLayer layer, float t)
+        public static int QuadroEm(FilmLayer camadaVisual, float t)
         {
-            if (layer.frameCount <= 1 || t < layer.animStart) return layer.firstFrame;
-            int index = (int)((t - layer.animStart) * layer.fps);
-            index = layer.loop ? index % layer.frameCount : Math.Min(index, layer.frameCount - 1);
-            return layer.firstFrame + index;
+            if (camadaVisual.quantidadeQuadro <= 1 || t < camadaVisual.inicioAnim) return camadaVisual.primeiroQuadro;
+            int indice = (int)((t - camadaVisual.inicioAnim) * camadaVisual.qps);
+            indice = camadaVisual.repeticao ? indice % camadaVisual.quantidadeQuadro : Math.Min(indice, camadaVisual.quantidadeQuadro - 1);
+            return camadaVisual.primeiroQuadro + indice;
         }
 
         /// <summary>Monta o plano no instante t. O alvo tem 320x180, y pra baixo.</summary>
-        public static void Render(FilmShot shot, IList<FilmFrame> frames, float t, uint[] target)
+        public static void Renderizar(FilmShot plano, IList<FilmFrame> quadros, float t, uint[] alvo)
         {
-            for (int i = 0; i < target.Length; i++) target[i] = shot.background | 0xFF000000;
+            for (int i = 0; i < alvo.Length; i++) alvo[i] = plano.fundo | 0xFF000000;
 
-            FilmCam cam = SampleCam(shot.camera, t);
-            (float shakeX, float shakeY) = Shake(shot, t);
+            FilmCam cam = AmostrarCamera(plano.camera, t);
+            (float tremorX, float tremorY) = Tremer(plano, t);
 
-            if (shot.layers != null)
+            if (plano.camadas != null)
             {
-                foreach (FilmLayer layer in shot.layers)
+                foreach (FilmLayer camadaVisual in plano.camadas)
                 {
-                    if (layer == null) continue;
-                    FilmKey key = Sample(layer.keys, t);
-                    if (key.alpha <= 0.003f) continue;
+                    if (camadaVisual == null) continue;
+                    FilmKey chave = Amostrar(camadaVisual.chaves, t);
+                    if (chave.alfa <= 0.003f) continue;
 
-                    int index = FrameAt(layer, t);
-                    if (index < 0 || index >= frames.Count || frames[index] == null) continue;
-                    DrawLayer(target, frames[index], layer, key, cam, shakeX, shakeY);
+                    int indice = QuadroEm(camadaVisual, t);
+                    if (indice < 0 || indice >= quadros.Count || quadros[indice] == null) continue;
+                    DesenharCamada(alvo, quadros[indice], camadaVisual, chave, cam, tremorX, tremorY);
                 }
             }
 
-            if (shot.sprays != null)
+            if (plano.jatos != null)
             {
-                foreach (FilmSpray spray in shot.sprays) DrawSpray(target, spray, t, cam, shakeX, shakeY);
+                foreach (FilmSpray jato in plano.jatos) DesenharJato(alvo, jato, t, cam, tremorX, tremorY);
             }
 
-            Vignette(target, shot.vignette);
+            Vinheta(alvo, plano.vinheta);
 
-            if (shot.flashes != null)
+            if (plano.claroes != null)
             {
-                foreach (FilmFlash flash in shot.flashes)
+                foreach (FilmFlash clarao in plano.claroes)
                 {
-                    float since = t - flash.t;
-                    if (since < 0f || since > flash.duration) continue;
-                    float rise = 0.08f;
-                    float a = since < rise ? since / rise : 1f - (since - rise) / Math.Max(0.001f, flash.duration - rise);
-                    Wash(target, flash.color, a * flash.strength);
+                    float desde = t - clarao.t;
+                    if (desde < 0f || desde > clarao.duracao) continue;
+                    float subida = 0.08f;
+                    float a = desde < subida ? desde / subida : 1f - (desde - subida) / Math.Max(0.001f, clarao.duracao - subida);
+                    Lavar(alvo, clarao.cor, a * clarao.forca2);
                 }
             }
 
-            float fade = 1f;
-            if (shot.fadeIn > 0f && t < shot.fadeIn) fade = t / shot.fadeIn;
-            if (shot.fadeOut > 0f && t > shot.duration - shot.fadeOut) fade = Math.Min(fade, (shot.duration - t) / shot.fadeOut);
-            if (fade < 1f) Wash(target, 0xFF000000, 1f - Math.Max(0f, fade));
+            float esmaecimento = 1f;
+            if (plano.esmaecerDentro > 0f && t < plano.esmaecerDentro) esmaecimento = t / plano.esmaecerDentro;
+            if (plano.foraEsmaecer > 0f && t > plano.duracao - plano.foraEsmaecer) esmaecimento = Math.Min(esmaecimento, (plano.duracao - t) / plano.foraEsmaecer);
+            if (esmaecimento < 1f) Lavar(alvo, 0xFF000000, 1f - Math.Max(0f, esmaecimento));
         }
 
-        private static (float, float) Shake(FilmShot shot, float t)
+        private static (float, float) Tremer(FilmShot plano, float t)
         {
             float x = 0f, y = 0f;
-            if (shot.shakes == null) return (0f, 0f);
+            if (plano.tremores == null) return (0f, 0f);
 
-            foreach (FilmShake shake in shot.shakes)
+            foreach (FilmShake tremor in plano.tremores)
             {
-                float since = t - shake.t;
-                if (since < 0f || since > shake.duration) continue;
-                float power = shake.amount * (1f - since / shake.duration);
-                x += (float)Math.Sin(since * 71f + shake.t * 13f) * power;
-                y += (float)Math.Cos(since * 59f + shake.t * 7f) * power;
+                float desde = t - tremor.t;
+                if (desde < 0f || desde > tremor.duracao) continue;
+                float forca = tremor.quantia * (1f - desde / tremor.duracao);
+                x += (float)Math.Sin(desde * 71f + tremor.t * 13f) * forca;
+                y += (float)Math.Cos(desde * 59f + tremor.t * 7f) * forca;
             }
 
             return (x, y);
         }
 
         /// <summary>Do palco pra tela, com a profundidade da camada.</summary>
-        private static void Project(float wx, float wy, float parallax, FilmCam cam, float shakeX, float shakeY,
+        private static void Projetar(float wx, float wy, float paralaxe, FilmCam cam, float tremorX, float tremorY,
             out float sx, out float sy, out float zoom)
         {
-            zoom = 1f + (cam.zoom - 1f) * parallax;
-            sx = Width * 0.5f + (wx - cam.x * parallax - Width * 0.5f * (1f - parallax)) * zoom + shakeX * parallax;
-            sy = Height * 0.5f + (wy - cam.y * parallax - Height * 0.5f * (1f - parallax)) * zoom + shakeY * parallax;
+            zoom = 1f + (cam.zoom - 1f) * paralaxe;
+            sx = Largura * 0.5f + (wx - cam.x * paralaxe - Largura * 0.5f * (1f - paralaxe)) * zoom + tremorX * paralaxe;
+            sy = Altura * 0.5f + (wy - cam.y * paralaxe - Altura * 0.5f * (1f - paralaxe)) * zoom + tremorY * paralaxe;
         }
 
-        private static void DrawLayer(uint[] target, FilmFrame frame, FilmLayer layer, FilmKey key, FilmCam cam, float shakeX, float shakeY)
+        private static void DesenharCamada(uint[] alvo, FilmFrame quadro, FilmLayer camadaVisual, FilmKey chave, FilmCam cam, float tremorX, float tremorY)
         {
-            Project(key.x, key.y, layer.parallax, cam, shakeX, shakeY, out float px, out float py, out float zoom);
-            float scale = key.scale * zoom;
-            if (scale <= 0.001f) return;
+            Projetar(chave.x, chave.y, camadaVisual.paralaxe, cam, tremorX, tremorY, out float px, out float py, out float zoom);
+            float escalaAtual = chave.escalaAtual * zoom;
+            if (escalaAtual <= 0.001f) return;
 
-            float left = px - frame.Width * layer.pivotX * scale;
-            float top = py - frame.Height * layer.pivotY * scale;
-            int x0 = Math.Max(0, (int)Math.Floor(left));
-            int y0 = Math.Max(0, (int)Math.Floor(top));
-            int x1 = Math.Min(Width, (int)Math.Ceiling(left + frame.Width * scale));
-            int y1 = Math.Min(Height, (int)Math.Ceiling(top + frame.Height * scale));
-            float inv = 1f / scale;
-            int alpha = (int)(Math.Min(1f, key.alpha) * 256f);
-            uint[] src = frame.Pixels;
+            float esquerda = px - quadro.Largura * camadaVisual.pivoX * escalaAtual;
+            float topo = py - quadro.Altura * camadaVisual.pivoY * escalaAtual;
+            int x0 = Math.Max(0, (int)Math.Floor(esquerda));
+            int y0 = Math.Max(0, (int)Math.Floor(topo));
+            int x1 = Math.Min(Largura, (int)Math.Ceiling(esquerda + quadro.Largura * escalaAtual));
+            int y1 = Math.Min(Altura, (int)Math.Ceiling(topo + quadro.Altura * escalaAtual));
+            float inv = 1f / escalaAtual;
+            int alfa = (int)(Math.Min(1f, chave.alfa) * 256f);
+            uint[] origem = quadro.Pixels;
 
             for (int y = y0; y < y1; y++)
             {
-                int v = (int)((y + 0.5f - top) * inv);
-                if (v < 0 || v >= frame.Height) continue;
-                int row = v * frame.Width;
-                int dstRow = y * Width;
+                int v = (int)((y + 0.5f - topo) * inv);
+                if (v < 0 || v >= quadro.Altura) continue;
+                int linha = v * quadro.Largura;
+                int linhaDestino = y * Largura;
 
                 for (int x = x0; x < x1; x++)
                 {
-                    int u = (int)((x + 0.5f - left) * inv);
-                    if (u < 0 || u >= frame.Width) continue;
+                    int u = (int)((x + 0.5f - esquerda) * inv);
+                    if (u < 0 || u >= quadro.Largura) continue;
 
-                    uint p = src[row + u];
+                    uint p = origem[linha + u];
                     int a = (int)(p >> 24);
                     if (a == 0) continue;
-                    a = a * alpha >> 8;
+                    a = a * alfa >> 8;
                     if (a <= 0) continue;
 
-                    int i = dstRow + x;
-                    target[i] = layer.additive ? Add(target[i], p, a) : Over(target[i], p, a);
+                    int i = linhaDestino + x;
+                    alvo[i] = camadaVisual.aditivo ? Adicionar(alvo[i], p, a) : Sobrepor(alvo[i], p, a);
                 }
             }
         }
 
-        private static uint Over(uint under, uint over, int a)
+        private static uint Sobrepor(uint abaixo, uint sobre, int a)
         {
-            if (a >= 255) return over | 0xFF000000;
-            int r0 = (int)(under >> 16 & 255), g0 = (int)(under >> 8 & 255), b0 = (int)(under & 255);
-            int r1 = (int)(over >> 16 & 255), g1 = (int)(over >> 8 & 255), b1 = (int)(over & 255);
+            if (a >= 255) return sobre | 0xFF000000;
+            int r0 = (int)(abaixo >> 16 & 255), g0 = (int)(abaixo >> 8 & 255), b0 = (int)(abaixo & 255);
+            int r1 = (int)(sobre >> 16 & 255), g1 = (int)(sobre >> 8 & 255), b1 = (int)(sobre & 255);
             int r = r0 + ((r1 - r0) * a >> 8);
             int g = g0 + ((g1 - g0) * a >> 8);
             int b = b0 + ((b1 - b0) * a >> 8);
             return 0xFF000000 | (uint)r << 16 | (uint)g << 8 | (uint)b;
         }
 
-        private static uint Add(uint under, uint over, int a)
+        private static uint Adicionar(uint abaixo, uint sobre, int a)
         {
-            int r = (int)(under >> 16 & 255) + ((int)(over >> 16 & 255) * a >> 8);
-            int g = (int)(under >> 8 & 255) + ((int)(over >> 8 & 255) * a >> 8);
-            int b = (int)(under & 255) + ((int)(over & 255) * a >> 8);
+            int r = (int)(abaixo >> 16 & 255) + ((int)(sobre >> 16 & 255) * a >> 8);
+            int g = (int)(abaixo >> 8 & 255) + ((int)(sobre >> 8 & 255) * a >> 8);
+            int b = (int)(abaixo & 255) + ((int)(sobre & 255) * a >> 8);
             return 0xFF000000 | (uint)Math.Min(255, r) << 16 | (uint)Math.Min(255, g) << 8 | (uint)Math.Min(255, b);
         }
 
-        private static void Wash(uint[] target, uint color, float amount)
+        private static void Lavar(uint[] alvo, uint cor, float quantia)
         {
-            if (amount <= 0f) return;
-            int a = (int)(Math.Min(1f, amount) * 256f);
+            if (quantia <= 0f) return;
+            int a = (int)(Math.Min(1f, quantia) * 256f);
             if (a > 255) a = 255;
-            for (int i = 0; i < target.Length; i++) target[i] = Over(target[i], color, a);
+            for (int i = 0; i < alvo.Length; i++) alvo[i] = Sobrepor(alvo[i], cor, a);
         }
 
-        private static void Vignette(uint[] target, float strength)
+        private static void Vinheta(uint[] alvo, float forca2)
         {
-            if (strength <= 0f) return;
+            if (forca2 <= 0f) return;
 
-            if (_vignette == null || Math.Abs(_vignetteFor - strength) > 0.0001f)
+            if (_vinheta == null || Math.Abs(_vinhetaPor - forca2) > 0.0001f)
             {
-                _vignette = new float[Width * Height];
-                _vignetteFor = strength;
-                for (int y = 0; y < Height; y++)
+                _vinheta = new float[Largura * Altura];
+                _vinhetaPor = forca2;
+                for (int y = 0; y < Altura; y++)
                 {
-                    for (int x = 0; x < Width; x++)
+                    for (int x = 0; x < Largura; x++)
                     {
-                        float dx = (x - Width * 0.5f) / (Width * 0.5f);
-                        float dy = (y - Height * 0.5f) / (Height * 0.5f);
+                        float dx = (x - Largura * 0.5f) / (Largura * 0.5f);
+                        float dy = (y - Altura * 0.5f) / (Altura * 0.5f);
                         float d = (float)Math.Sqrt(dx * dx * 0.8f + dy * dy * 0.6f);
                         float k = Math.Max(0f, d - 0.55f) / 0.6f;
-                        _vignette[x + y * Width] = 1f - Math.Min(1f, k * k) * strength;
+                        _vinheta[x + y * Largura] = 1f - Math.Min(1f, k * k) * forca2;
                     }
                 }
             }
 
-            for (int i = 0; i < target.Length; i++)
+            for (int i = 0; i < alvo.Length; i++)
             {
-                float k = _vignette[i];
+                float k = _vinheta[i];
                 if (k >= 0.999f) continue;
-                uint p = target[i];
-                target[i] = 0xFF000000 | (uint)((p >> 16 & 255) * k) << 16 | (uint)((p >> 8 & 255) * k) << 8 | (uint)((p & 255) * k);
+                uint p = alvo[i];
+                alvo[i] = 0xFF000000 | (uint)((p >> 16 & 255) * k) << 16 | (uint)((p >> 8 & 255) * k) << 8 | (uint)((p & 255) * k);
             }
         }
 
@@ -452,11 +452,11 @@ namespace EchoesOfCravejada
         // Particulas
         // ------------------------------------------------------------------
 
-        private static float Rand(int seed, int i, int salt)
+        private static float Aleatorio(int semente, int i, int sal)
         {
             unchecked
             {
-                uint h = (uint)(seed * 73856093) ^ (uint)(i * 19349663) ^ (uint)(salt * 83492791);
+                uint h = (uint)(semente * 73856093) ^ (uint)(i * 19349663) ^ (uint)(sal * 83492791);
                 h ^= h >> 13;
                 h *= 0x5bd1e995;
                 h ^= h >> 15;
@@ -464,96 +464,96 @@ namespace EchoesOfCravejada
             }
         }
 
-        private static uint Mix(uint a, uint b, float k)
+        private static uint MisturarCores(uint a, uint b, float k)
         {
-            int r = (int)Lerp(a >> 16 & 255, b >> 16 & 255, k);
-            int g = (int)Lerp(a >> 8 & 255, b >> 8 & 255, k);
-            int bl = (int)Lerp(a & 255, b & 255, k);
-            int al = (int)Lerp(a >> 24 & 255, b >> 24 & 255, k);
+            int r = (int)Interpolar(a >> 16 & 255, b >> 16 & 255, k);
+            int g = (int)Interpolar(a >> 8 & 255, b >> 8 & 255, k);
+            int bl = (int)Interpolar(a & 255, b & 255, k);
+            int al = (int)Interpolar(a >> 24 & 255, b >> 24 & 255, k);
             return (uint)al << 24 | (uint)r << 16 | (uint)g << 8 | (uint)bl;
         }
 
-        private static void DrawSpray(uint[] target, FilmSpray spray, float t, FilmCam cam, float shakeX, float shakeY)
+        private static void DesenharJato(uint[] alvo, FilmSpray jato, float t, FilmCam cam, float tremorX, float tremorY)
         {
-            if (spray == null || spray.rate <= 0f || t < spray.from) return;
+            if (jato == null || jato.rate <= 0f || t < jato.from) return;
 
-            int total = (int)((spray.to - spray.from) * spray.rate);
-            int last = Math.Min(total - 1, (int)((t - spray.from) * spray.rate));
-            int first = Math.Max(0, (int)((t - spray.from - spray.life * 1.3f) * spray.rate));
-            float cx = spray.x + spray.w * 0.5f, cy = spray.y + spray.h * 0.5f;
+            int total = (int)((jato.to - jato.from) * jato.rate);
+            int ultimo = Math.Min(total - 1, (int)((t - jato.from) * jato.rate));
+            int primeiro = Math.Max(0, (int)((t - jato.from - jato.duracaoVida * 1.3f) * jato.rate));
+            float cx = jato.x + jato.w * 0.5f, cy = jato.y + jato.h * 0.5f;
 
-            for (int i = first; i <= last; i++)
+            for (int i = primeiro; i <= ultimo; i++)
             {
-                float birth = spray.from + i / spray.rate;
-                float life = spray.life * (0.7f + 0.6f * Rand(spray.seed, i, 5));
-                float age = t - birth;
-                if (age < 0f || age > life) continue;
+                float nascimento = jato.from + i / jato.rate;
+                float duracaoVida = jato.duracaoVida * (0.7f + 0.6f * Aleatorio(jato.semente, i, 5));
+                float idade = t - nascimento;
+                if (idade < 0f || idade > duracaoVida) continue;
 
-                float x0 = spray.x + Rand(spray.seed, i, 1) * spray.w;
-                float y0 = spray.y + Rand(spray.seed, i, 2) * spray.h;
-                float vx = spray.vx + (Rand(spray.seed, i, 3) * 2f - 1f) * spray.spreadX;
-                float vy = spray.vy + (Rand(spray.seed, i, 4) * 2f - 1f) * spray.spreadY;
+                float x0 = jato.x + Aleatorio(jato.semente, i, 1) * jato.w;
+                float y0 = jato.y + Aleatorio(jato.semente, i, 2) * jato.h;
+                float vx = jato.vx + (Aleatorio(jato.semente, i, 3) * 2f - 1f) * jato.spreadX;
+                float vy = jato.vy + (Aleatorio(jato.semente, i, 4) * 2f - 1f) * jato.spreadY;
 
-                if (spray.burst != 0f)
+                if (jato.rajada != 0f)
                 {
                     float dx = x0 - cx, dy = y0 - cy;
-                    float len = (float)Math.Sqrt(dx * dx + dy * dy);
-                    if (len < 0.01f)
+                    float tam = (float)Math.Sqrt(dx * dx + dy * dy);
+                    if (tam < 0.01f)
                     {
-                        float ang = Rand(spray.seed, i, 6) * 6.2832f;
+                        float ang = Aleatorio(jato.semente, i, 6) * 6.2832f;
                         dx = (float)Math.Cos(ang);
                         dy = (float)Math.Sin(ang);
-                        len = 1f;
+                        tam = 1f;
                     }
 
-                    float power = spray.burst * (0.5f + Rand(spray.seed, i, 7));
-                    vx += dx / len * power;
-                    vy += dy / len * power;
+                    float forca = jato.rajada * (0.5f + Aleatorio(jato.semente, i, 7));
+                    vx += dx / tam * forca;
+                    vy += dy / tam * forca;
                 }
 
-                float wx = x0 + vx * age;
-                float wy = y0 + vy * age + 0.5f * spray.gravity * age * age;
-                float k = age / life;
-                uint color = Mix(spray.color, spray.color2, k);
-                float fade = (color >> 24 & 255) / 255f * (1f - k * k);
-                float size = spray.size + spray.grow * age;
+                float wx = x0 + vx * idade;
+                float wy = y0 + vy * idade + 0.5f * jato.gravidade * idade * idade;
+                float k = idade / duracaoVida;
+                uint cor = MisturarCores(jato.cor, jato.cor2, k);
+                float esmaecimento = (cor >> 24 & 255) / 255f * (1f - k * k);
+                float tamanho = jato.tamanho + jato.crescer * idade;
 
-                Project(wx, wy, spray.parallax, cam, shakeX, shakeY, out float sx, out float sy, out float zoom);
-                size *= zoom;
+                Projetar(wx, wy, jato.paralaxe, cam, tremorX, tremorY, out float sx, out float sy, out float zoom);
+                tamanho *= zoom;
 
-                if (spray.shape == 2)
+                if (jato.forma == 2)
                 {
-                    float svx = vx, svy = vy + spray.gravity * age;
-                    float len = (float)Math.Sqrt(svx * svx + svy * svy);
-                    if (len < 0.01f) continue;
-                    int steps = Math.Max(2, (int)(len * 0.05f * zoom));
-                    for (int s = 0; s < steps; s++)
+                    float svx = vx, svy = vy + jato.gravidade * idade;
+                    float tam = (float)Math.Sqrt(svx * svx + svy * svy);
+                    if (tam < 0.01f) continue;
+                    int passos = Math.Max(2, (int)(tam * 0.05f * zoom));
+                    for (int s = 0; s < passos; s++)
                     {
-                        float f = s / (float)steps;
-                        Dot(target, sx - svx / len * s, sy - svy / len * s, Math.Max(1f, size), color, fade * (1f - f), spray.additive, false);
+                        float f = s / (float)passos;
+                        Ponto(alvo, sx - svx / tam * s, sy - svy / tam * s, Math.Max(1f, tamanho), cor, esmaecimento * (1f - f), jato.aditivo, false);
                     }
                 }
                 else
                 {
-                    Dot(target, sx, sy, Math.Max(1f, size), color, fade, spray.additive, spray.shape == 1);
+                    Ponto(alvo, sx, sy, Math.Max(1f, tamanho), cor, esmaecimento, jato.aditivo, jato.forma == 1);
                 }
             }
         }
 
-        private static void Dot(uint[] target, float cx, float cy, float size, uint color, float alpha, bool additive, bool soft)
+        private static void Ponto(uint[] alvo, float cx, float cy, float tamanho, uint cor, float alfa, bool aditivo, bool macio)
         {
-            int s = Math.Max(1, (int)Math.Round(size));
+            int s = Math.Max(1, (int)Math.Round(tamanho));
             int x0 = (int)Math.Round(cx - s * 0.5f), y0 = (int)Math.Round(cy - s * 0.5f);
             float r = s * 0.5f;
 
             for (int y = y0; y < y0 + s; y++)
             {
-                if (y < 0 || y >= Height) continue;
+                if (y < 0 || y >= Altura) continue;
                 for (int x = x0; x < x0 + s; x++)
                 {
-                    if (x < 0 || x >= Width) continue;
-                    float a = alpha;
-                    if (soft && s > 2)
+                    if (x < 0 || x >= Largura) continue;
+                    float a = alfa;
+                    if (macio && s > 2)
                     {
                         float dx = x + 0.5f - cx, dy = y + 0.5f - cy;
                         float d = (float)Math.Sqrt(dx * dx + dy * dy) / r;
@@ -563,8 +563,8 @@ namespace EchoesOfCravejada
 
                     int ai = (int)(Math.Min(1f, a) * 255f);
                     if (ai <= 0) continue;
-                    int i = x + y * Width;
-                    target[i] = additive ? Add(target[i], color, ai) : Over(target[i], color, ai);
+                    int i = x + y * Largura;
+                    alvo[i] = aditivo ? Adicionar(alvo[i], cor, ai) : Sobrepor(alvo[i], cor, ai);
                 }
             }
         }

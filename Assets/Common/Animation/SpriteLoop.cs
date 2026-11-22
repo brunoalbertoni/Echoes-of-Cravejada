@@ -12,41 +12,41 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(SpriteRenderer))]
     public class SpriteLoop : MonoBehaviour
     {
-        [SerializeField] private Sprite[] frames;
-        [SerializeField] private float framesPerSecond = 6f;
+        [UnityEngine.Serialization.FormerlySerializedAs("frames")] [SerializeField] private Sprite[] quadros;
+        [UnityEngine.Serialization.FormerlySerializedAs("framesPerSecond")] [SerializeField] private float quadrosPorSegundo = 6f;
 
-        [Tooltip("O quadro de olhos fechados. -1: nao pisca.")]
-        [SerializeField] private int blinkFrame = -1;
+        [UnityEngine.Serialization.FormerlySerializedAs("blinkFrame")] [Tooltip("O quadro de olhos fechados. -1: nao pisca.")]
+        [SerializeField] private int quadroPiscar = -1;
 
-        private SpriteRenderer _renderer;
-        private float _offset;
+        private SpriteRenderer _renderizador;
+        private float _deslocamento;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(Sprite[] newFrames, float newFramesPerSecond, int newBlinkFrame)
+        public void Configurar(Sprite[] novoQuadros, float novoQuadrosPorSegundo, int novoQuadroPiscar)
         {
-            frames = newFrames;
-            framesPerSecond = newFramesPerSecond;
-            blinkFrame = newBlinkFrame;
+            quadros = novoQuadros;
+            quadrosPorSegundo = novoQuadrosPorSegundo;
+            quadroPiscar = novoQuadroPiscar;
         }
 
         private void Awake()
         {
-            _renderer = GetComponent<SpriteRenderer>();
+            _renderizador = GetComponent<SpriteRenderer>();
 
             // Cada um num ponto do ciclo, pra nao respirarem todos juntos.
-            _offset = Mathf.Abs(transform.position.x * 0.37f + transform.position.y * 0.11f);
+            _deslocamento = Mathf.Abs(transform.position.x * 0.37f + transform.position.y * 0.11f);
         }
 
         private void Update()
         {
-            if (frames == null || frames.Length == 0) return;
+            if (quadros == null || quadros.Length == 0) return;
 
-            float clock = (Time.time + _offset) * framesPerSecond;
-            int frame = (int)clock % frames.Length;
+            float relogio = (Time.time + _deslocamento) * quadrosPorSegundo;
+            int quadro = (int)relogio % quadros.Length;
 
-            if (frame == blinkFrame && frame > 0 && (int)(clock / frames.Length) % 3 != 0) frame--;
+            if (quadro == quadroPiscar && quadro > 0 && (int)(relogio / quadros.Length) % 3 != 0) quadro--;
 
-            if (frames[frame] != null) _renderer.sprite = frames[frame];
+            if (quadros[quadro] != null) FrameAnimator.Exibir(_renderizador, quadros[quadro]);
         }
     }
 }

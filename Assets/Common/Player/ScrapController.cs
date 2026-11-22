@@ -18,367 +18,368 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Rigidbody2D))]
     public class ScrapController : MonoBehaviour
     {
-        [Header("Andar")]
+        [UnityEngine.Serialization.FormerlySerializedAs("maxSpeed")] [Header("Andar")]
         [Tooltip("Velocidade maxima, em tiles por segundo.")]
-        [SerializeField] private float maxSpeed = 5.5f;
+        [SerializeField] private float velocidadeMax = 5.5f;
 
-        [Tooltip("Segundos ate atingir a velocidade maxima. Maior = mais pesado pra engrenar.")]
-        [SerializeField] private float accelTime = 0.22f;
+        [UnityEngine.Serialization.FormerlySerializedAs("accelTime")] [Tooltip("Segundos ate atingir a velocidade maxima. Maior = mais pesado pra engrenar.")]
+        [SerializeField] private float tempoAceleracao = 0.22f;
 
-        [Tooltip("Segundos ate parar por completo. Maior = derrapa mais ao soltar a direcao.")]
-        [SerializeField] private float brakeTime = 0.30f;
+        [UnityEngine.Serialization.FormerlySerializedAs("brakeTime")] [Tooltip("Segundos ate parar por completo. Maior = derrapa mais ao soltar a direcao.")]
+        [SerializeField] private float tempoFreio = 0.30f;
 
-        [Header("Pular")]
+        [UnityEngine.Serialization.FormerlySerializedAs("jumpHeight")] [Header("Pular")]
         [Tooltip("Altura do pulo em tiles. A velocidade inicial e calculada a partir daqui, entao esse valor e literal.")]
-        [SerializeField] private float jumpHeight = 3.0f;
+        [SerializeField] private float alturaPulo = 3.0f;
 
-        [Tooltip("Gravidade base. Alta de proposito: o Scrap e de ferro.")]
-        [SerializeField] private float gravityScale = 3.6f;
+        [UnityEngine.Serialization.FormerlySerializedAs("gravityScale")] [Tooltip("Gravidade base. Alta de proposito: o Scrap e de ferro.")]
+        [SerializeField] private float escalaGravidade = 3.6f;
 
-        [Tooltip("Multiplica a gravidade durante a queda. Cair mais rapido do que sobe tira a sensacao de flutuar.")]
-        [SerializeField] private float fallGravityMultiplier = 1.5f;
+        [UnityEngine.Serialization.FormerlySerializedAs("fallGravityMultiplier")] [Tooltip("Multiplica a gravidade durante a queda. Cair mais rapido do que sobe tira a sensacao de flutuar.")]
+        [SerializeField] private float multiplicadorGravidadeQueda = 1.5f;
 
-        [Tooltip("Soltar o botao no meio da subida corta o pulo por este fator. 1 = sem corte.")]
-        [SerializeField, Range(0f, 1f)] private float jumpCutMultiplier = 0.45f;
+        [UnityEngine.Serialization.FormerlySerializedAs("jumpCutMultiplier")] [Tooltip("Soltar o botao no meio da subida corta o pulo por este fator. 1 = sem corte.")]
+        [SerializeField, Range(0f, 1f)] private float multiplicadorCortePulo = 0.45f;
 
-        [Tooltip("Janela em que ainda da pra pular depois de ja ter saido da plataforma.")]
-        [SerializeField] private float coyoteTime = 0.10f;
+        [UnityEngine.Serialization.FormerlySerializedAs("coyoteTime")] [Tooltip("Janela em que ainda da pra pular depois de ja ter saido da plataforma.")]
+        [SerializeField] private float tempoCoiote = 0.10f;
 
-        [Tooltip("Janela em que um pulo apertado cedo demais ainda vale quando encostar no chao.")]
-        [SerializeField] private float jumpBufferTime = 0.12f;
+        [UnityEngine.Serialization.FormerlySerializedAs("jumpBufferTime")] [Tooltip("Janela em que um pulo apertado cedo demais ainda vale quando encostar no chao.")]
+        [SerializeField] private float tempoReservaPulo = 0.12f;
 
-        [Header("Chao")]
+        [UnityEngine.Serialization.FormerlySerializedAs("groundCheck")] [Header("Chao")]
         [Tooltip("Transform vazio nos pes do Scrap. O gerador cria como filho 'GroundCheck'.")]
-        [SerializeField] private Transform groundCheck;
+        [SerializeField] private Transform checagemSolo;
 
-        [SerializeField] private float groundCheckRadius = 0.18f;
+        [UnityEngine.Serialization.FormerlySerializedAs("groundCheckRadius")] [SerializeField] private float raioChecagemSolo = 0.18f;
 
-        [Tooltip("Quais layers contam como chao. O gerador aponta pra layer 'Ground'.")]
-        [SerializeField] private LayerMask groundLayers = ~0;
+        [UnityEngine.Serialization.FormerlySerializedAs("groundLayers")] [Tooltip("Quais layers contam como chao. O gerador aponta pra layer 'Ground'.")]
+        [SerializeField] private LayerMask camadasSolo = ~0;
 
-        [Header("Wall Grip")]
+        [UnityEngine.Serialization.FormerlySerializedAs("wallSlideSpeed")] [Header("Wall Grip")]
         [Tooltip("Velocidade maxima de queda enquanto ele segura numa parede. Menor = gruda mais.")]
-        [SerializeField] private float wallSlideSpeed = 1.6f;
+        [SerializeField] private float velocidadeDeslizeParede = 1.6f;
 
-        [Tooltip("Empurrao pra longe da parede ao pular dela, em tiles por segundo.")]
-        [SerializeField] private float wallJumpPush = 7f;
+        [UnityEngine.Serialization.FormerlySerializedAs("wallJumpPush")] [Tooltip("Empurrao pra longe da parede ao pular dela, em tiles por segundo.")]
+        [SerializeField] private float empurraPuloParede = 7f;
 
-        [Tooltip("Altura do pulo de parede, como fracao do pulo normal.")]
-        [SerializeField, Range(0.5f, 1.2f)] private float wallJumpHeight = 1.0f;
+        [UnityEngine.Serialization.FormerlySerializedAs("wallJumpHeight")] [Tooltip("Altura do pulo de parede, como fracao do pulo normal.")]
+        [SerializeField, Range(0.5f, 1.2f)] private float alturaPuloParede = 1.0f;
 
-        [Tooltip("Por quanto tempo depois do pulo de parede ele ignora a direcao. E o que impede de voltar na hora pra mesma parede sem ganhar altura.")]
-        [SerializeField] private float wallJumpLockTime = 0.16f;
+        [UnityEngine.Serialization.FormerlySerializedAs("wallJumpLockTime")] [Tooltip("Por quanto tempo depois do pulo de parede ele ignora a direcao. E o que impede de voltar na hora pra mesma parede sem ganhar altura.")]
+        [SerializeField] private float tempoTravaPuloParede = 0.16f;
 
-        [Tooltip("Janela em que ainda da pra pular depois de ja ter soltado a parede.")]
-        [SerializeField] private float wallCoyoteTime = 0.10f;
+        [UnityEngine.Serialization.FormerlySerializedAs("wallCoyoteTime")] [Tooltip("Janela em que ainda da pra pular depois de ja ter soltado a parede.")]
+        [SerializeField] private float tempoCoioteParede = 0.10f;
 
-        [Header("Wall Grip - Novo Comportamento")]
+        [UnityEngine.Serialization.FormerlySerializedAs("wallStickDuration")] [Header("Wall Grip - Novo Comportamento")]
         [Tooltip("Tempo em segundos que ele fica grudado parado na parede antes de começar a escorregar.")]
-        [SerializeField] private float wallStickDuration = 1.0f;
+        [SerializeField] private float duracaoGrudarParede = 1.0f;
 
-        [Header("Degraus")]
+        [UnityEngine.Serialization.FormerlySerializedAs("maxStepHeight")] [Header("Degraus")]
         [Tooltip("Degrau ate essa altura (em tiles) ele sobe andando, sem pular. Os de tile inteiro continuam pedindo pulo: so as escadarias tem degrau de meio tile.")]
-        [SerializeField] private float maxStepHeight = 0.55f;
+        [SerializeField] private float alturaPassoMax = 0.55f;
 
-        private float _wallStickTimer;
-        private int _lastJumpedWallSide;
+        private float _cronometroGrudarParede;
+        private int _ultimoLadoParedePulou;
 
-        private Rigidbody2D _body;
+        private Rigidbody2D _corpo;
         private SpriteRenderer _sprite;
 
-        private float _moveInput;
-        private float _coyoteCounter;
-        private float _jumpBufferCounter;
-        private bool _jumpHeld;
-        private bool _jumpReleasedThisFrame;
-        private bool _isGrounded;
+        private float _entradaMover;
+        private float _contadorCoiote;
+        private float _contadorReservaPulo;
+        private bool _seguradoPulo;
+        private bool _quadroEsteSoltoPulo;
+        private bool _estaNoChao;
 
         // -1 parede a esquerda, +1 a direita, 0 nenhuma.
-        private int _wallSide;
-        private int _lastWallSide;
-        private float _wallCoyoteCounter;
-        private bool _wallSliding;
-        private float _steerLock;
-        private int _facing = 1;
-        private bool _airJumpUsed;
+        private int _ladoParede;
+        private int _ultimoLadoParede;
+        private float _contadorCoioteParede;
+        private bool _deslizandoParede;
+        private float _travaDirecao;
+        private int _direcaoOlhar = 1;
+        private bool _usadoPuloAr;
 
         // Mercurio: enquanto ele pisa numa poca, escorrega; se ela tem
         // correnteza, e arrastado. Gota grudada no corpo deixa ele lento.
-        private float _mercuryUntil;
-        private float _current;
+        private float _mercurioAte;
+        private float _atual;
 
-        private static bool _pressureJump;
+        [SaveProgress("_pressureJump")]
+        private static bool _puloPressao;
 
         /// <summary>Ate quando o Scrap esta lento por causa de mercurio grudado. O HUD usa pro aviso.</summary>
-        public static float SlowedUntil { get; private set; } = -100f;
+        public static float LentidaoAte { get; private set; } = -100f;
 
         /// <summary>
         /// Se o Scrap ja tem o Pressure Jump: um segundo pulo no ar, com uma
         /// rajada de vapor dos pistoes. Quem da e o Boiler Master, ao cair.
         /// </summary>
-        public static bool HasPressureJump => _pressureJump;
+        public static bool TemPuloPressao => _puloPressao;
 
         /// <summary>Quando ele foi conquistado. O HUD usa pra mostrar o aviso.</summary>
-        public static float PressureJumpTime { get; private set; } = -100f;
+        public static float TempoPuloPressao { get; private set; } = -100f;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _pressureJump = false;
-            PressureJumpTime = -100f;
-            SlowedUntil = -100f;
+            _puloPressao = false;
+            TempoPuloPressao = -100f;
+            LentidaoAte = -100f;
         }
 
         /// <summary>
         /// Chamado a cada passo de fisica pela poca de mercurio em que ele
-        /// pisa. <paramref name="current"/> e a correnteza, em tiles por
+        /// pisa. <paramref name="atual"/> e a correnteza, em tiles por
         /// segundo (0 numa poca parada).
         /// </summary>
-        public void OnMercury(float current)
+        public void NoMercurio(float atual)
         {
-            _mercuryUntil = Time.time + 0.1f;
-            _current = current;
+            _mercurioAte = Time.time + 0.1f;
+            _atual = atual;
         }
 
         /// <summary>Verdadeiro enquanto ele pisa em mercurio.</summary>
-        public bool IsOnMercury => Time.time < _mercuryUntil;
+        public bool EstaLigadoMercurio => Time.time < _mercurioAte;
 
         /// <summary>Mercurio grudou no corpo: ele anda mais devagar por um tempo.</summary>
-        public void Slow(float seconds)
+        public void Desacelerar(float segundos)
         {
-            SlowedUntil = Mathf.Max(SlowedUntil, Time.time + seconds);
+            LentidaoAte = Mathf.Max(LentidaoAte, Time.time + segundos);
         }
 
         /// <summary>Da o Pressure Jump sem aviso na tela: pra cenas em que ele ja chega com ele.</summary>
-        public static void UnlockPressureJumpSilently()
+        public static void DesbloquearSaltoDePressaoEmSilencio()
         {
-            _pressureJump = true;
+            _puloPressao = true;
         }
 
-        public static void UnlockPressureJump()
+        public static void DesbloquearSaltoDePressao()
         {
-            if (_pressureJump) return;
+            if (_puloPressao) return;
 
-            _pressureJump = true;
-            PressureJumpTime = Time.time;
-            AbilityCard.Show(ScrapMove.PressureJump);
+            _puloPressao = true;
+            TempoPuloPressao = Time.time;
+            AbilityCard.Mostrar(ScrapMove.PuloPressao);
         }
 
         /// <summary>Verdadeiro enquanto o GroundCheck encosta em algo da layer de chao.</summary>
-        public bool IsGrounded => _isGrounded;
+        public bool EstaNoChao => _estaNoChao;
 
         /// <summary>Verdadeiro enquanto ele escorrega segurando numa parede.</summary>
-        public bool IsWallSliding => _wallSliding;
+        public bool EstaDeslizandoParede => _deslizandoParede;
 
         /// <summary>Pra que lado ele esta virado: -1 esquerda, +1 direita.</summary>
-        public int Facing => _facing;
+        public int Virado => _direcaoOlhar;
 
         /// <summary>
         /// Trava o controle: ele para de andar e nao pula. Usado enquanto raspa
         /// uma alavanca — e o que deixa ele vulneravel.
         /// </summary>
-        public bool ControlLocked { get; set; }
+        public bool ControleTravado { get; set; }
 
         /// <summary>
         /// Joga o Scrap com uma velocidade e deixa ele sem direcao por um
         /// instante, pra o empurrao nao ser desfeito no quadro seguinte.
         /// </summary>
-        public void Knockback(Vector2 velocity, float lockTime)
+        public void Empurrar(Vector2 velocidadeVetorial, float tempoTrava)
         {
-            _body.linearVelocity = velocity;
-            _steerLock = Mathf.Max(_steerLock, lockTime);
+            _corpo.linearVelocity = velocidadeVetorial;
+            _travaDirecao = Mathf.Max(_travaDirecao, tempoTrava);
         }
 
         /// <summary>Velocidade horizontal atual, normalizada pela maxima. Util pro Animator depois.</summary>
-        public float NormalizedSpeed => maxSpeed <= 0f ? 0f : Mathf.Abs(_body.linearVelocity.x) / maxSpeed;
+        public float VelocidadeNormalizada => velocidadeMax <= 0f ? 0f : Mathf.Abs(_corpo.linearVelocity.x) / velocidadeMax;
 
         private void Awake()
         {
-            _body = GetComponent<Rigidbody2D>();
+            _corpo = GetComponent<Rigidbody2D>();
             _sprite = GetComponentInChildren<SpriteRenderer>();
 
-            _body.gravityScale = gravityScale;
-            _body.freezeRotation = true;
-            _body.interpolation = RigidbodyInterpolation2D.Interpolate;
-            _body.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            _corpo.gravityScale = escalaGravidade;
+            _corpo.freezeRotation = true;
+            _corpo.interpolation = RigidbodyInterpolation2D.Interpolate;
+            _corpo.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         }
 
         private void Update()
         {
-            ReadInput();
+            LerEntrada();
 
-            _isGrounded = groundCheck != null
-                && Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayers);
+            _estaNoChao = checagemSolo != null
+                && Physics2D.OverlapCircle(checagemSolo.position, raioChecagemSolo, camadasSolo);
 
             // Se tocou no chão, limpa a memória da parede anterior
-            if (_isGrounded)
+            if (_estaNoChao)
             {
-                _lastJumpedWallSide = 0;
+                _ultimoLadoParedePulou = 0;
             }
 
             // Coyote time: recarrega no chao, escorre no ar.
-            _coyoteCounter = _isGrounded ? coyoteTime : _coyoteCounter - Time.deltaTime;
-            _jumpBufferCounter -= Time.deltaTime;
-            _steerLock -= Time.deltaTime;
+            _contadorCoiote = _estaNoChao ? tempoCoiote : _contadorCoiote - Time.deltaTime;
+            _contadorReservaPulo -= Time.deltaTime;
+            _travaDirecao -= Time.deltaTime;
 
-            UpdateWall();
+            AtualizarParede();
 
             // O pulo do ar volta ao pisar no chao ou encostar numa parede valida.
-            if (_isGrounded || _wallSide != 0) _airJumpUsed = false;
+            if (_estaNoChao || _ladoParede != 0) _usadoPuloAr = false;
 
-            if (!Mathf.Approximately(_moveInput, 0f)) _facing = _moveInput < 0f ? -1 : 1;
+            if (!Mathf.Approximately(_entradaMover, 0f)) _direcaoOlhar = _entradaMover < 0f ? -1 : 1;
 
             // Na parede ele olha pra fora dela.
-            if (_wallSliding) _facing = -_wallSide;
+            if (_deslizandoParede) _direcaoOlhar = -_ladoParede;
 
-            if (_sprite != null) _sprite.flipX = _facing < 0;
+            if (_sprite != null) _sprite.flipX = _direcaoOlhar < 0;
         }
 
         /// <summary>
         /// Ve se ha parede encostada de algum lado, na altura do corpo. So vale
         /// no ar: no chao, parede e so parede.
         /// </summary>
-        private void UpdateWall()
+        private void AtualizarParede()
         {
-            int previousWall = _wallSide;
-            _wallSide = 0;
+            int paredeAnterior = _ladoParede;
+            _ladoParede = 0;
 
-            if (!_isGrounded)
+            if (!_estaNoChao)
             {
-                Vector2 center = (Vector2)transform.position + new Vector2(0f, 0.65f);
-                var size = new Vector2(0.14f, 0.7f);
+                Vector2 centro = (Vector2)transform.position + new Vector2(0f, 0.65f);
+                var tamanho = new Vector2(0.14f, 0.7f);
 
-                if (Physics2D.OverlapBox(center + new Vector2(0.46f, 0f), size, 0f, groundLayers)) _wallSide = 1;
-                else if (Physics2D.OverlapBox(center + new Vector2(-0.46f, 0f), size, 0f, groundLayers)) _wallSide = -1;
+                if (Physics2D.OverlapBox(centro + new Vector2(0.46f, 0f), tamanho, 0f, camadasSolo)) _ladoParede = 1;
+                else if (Physics2D.OverlapBox(centro + new Vector2(-0.46f, 0f), tamanho, 0f, camadasSolo)) _ladoParede = -1;
             }
 
             // Se encontrou uma parede diferente da que acabou de pular, libera a trava
-            if (_wallSide != 0 && _wallSide != _lastJumpedWallSide)
+            if (_ladoParede != 0 && _ladoParede != _ultimoLadoParedePulou)
             {
-                _lastJumpedWallSide = 0;
+                _ultimoLadoParedePulou = 0;
             }
 
             // Se for a MESMA parede de onde acabou de sair, ignora para não escalar a mesma parede
-            if (_wallSide != 0 && _wallSide == _lastJumpedWallSide)
+            if (_ladoParede != 0 && _ladoParede == _ultimoLadoParedePulou)
             {
-                _wallSide = 0;
+                _ladoParede = 0;
             }
 
-            if (_wallSide != 0)
+            if (_ladoParede != 0)
             {
-                _lastWallSide = _wallSide;
-                _wallCoyoteCounter = wallCoyoteTime;
+                _ultimoLadoParede = _ladoParede;
+                _contadorCoioteParede = tempoCoioteParede;
 
                 // Se acabou de encostar na parede, ativa a parada de 1s
-                if (previousWall == 0)
+                if (paredeAnterior == 0)
                 {
-                    _wallStickTimer = wallStickDuration;
+                    _cronometroGrudarParede = duracaoGrudarParede;
                 }
-                else if (_wallStickTimer > 0f)
+                else if (_cronometroGrudarParede > 0f)
                 {
-                    _wallStickTimer -= Time.deltaTime;
+                    _cronometroGrudarParede -= Time.deltaTime;
                 }
             }
             else
             {
-                _wallCoyoteCounter -= Time.deltaTime;
-                _wallStickTimer = 0f;
+                _contadorCoioteParede -= Time.deltaTime;
+                _cronometroGrudarParede = 0f;
             }
 
             // Segura na parede se estiver encostado e caindo
-            _wallSliding = _wallSide != 0
-                && _body.linearVelocity.y <= 0f
-                && Mathf.Abs(_moveInput) > 0.1f
-                && Mathf.Sign(_moveInput) == _wallSide;
+            _deslizandoParede = _ladoParede != 0
+                && _corpo.linearVelocity.y <= 0f
+                && Mathf.Abs(_entradaMover) > 0.1f
+                && Mathf.Sign(_entradaMover) == _ladoParede;
         }
 
         private void FixedUpdate()
         {
-            ApplyHorizontal();
-            StepUp();
-            ApplyJump();
-            ApplyGravity();
+            AplicarHorizontal();
+            SubirDegrau();
+            AplicarPulo();
+            AplicarGravidade();
 
             // Consumido aqui pra o corte de pulo acontecer uma vez so, e nao a cada passo de fisica.
-            _jumpReleasedThisFrame = false;
+            _quadroEsteSoltoPulo = false;
         }
 
-        private void ReadInput()
+        private void LerEntrada()
         {
-            float axis = 0f;
-            bool jumpPressed = false;
-            bool jumpHeldNow = false;
+            float eixo = 0f;
+            bool apertadoPulo = false;
+            bool agoraSeguradoPulo = false;
 
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null)
+            Keyboard teclado = Keyboard.current;
+            if (teclado != null)
             {
-                if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) axis -= 1f;
-                if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) axis += 1f;
+                if (teclado.aKey.isPressed || teclado.leftArrowKey.isPressed) eixo -= 1f;
+                if (teclado.dKey.isPressed || teclado.rightArrowKey.isPressed) eixo += 1f;
 
-                jumpPressed |= keyboard.spaceKey.wasPressedThisFrame
-                    || keyboard.wKey.wasPressedThisFrame
-                    || keyboard.upArrowKey.wasPressedThisFrame;
+                apertadoPulo |= teclado.spaceKey.wasPressedThisFrame
+                    || teclado.wKey.wasPressedThisFrame
+                    || teclado.upArrowKey.wasPressedThisFrame;
 
-                jumpHeldNow |= keyboard.spaceKey.isPressed
-                    || keyboard.wKey.isPressed
-                    || keyboard.upArrowKey.isPressed;
+                agoraSeguradoPulo |= teclado.spaceKey.isPressed
+                    || teclado.wKey.isPressed
+                    || teclado.upArrowKey.isPressed;
             }
 
-            Gamepad pad = Gamepad.current;
-            if (pad != null)
+            Gamepad controle = Gamepad.current;
+            if (controle != null)
             {
-                float stick = pad.leftStick.x.ReadValue();
-                if (Mathf.Abs(stick) > 0.2f) axis += stick;
-                if (pad.dpad.left.isPressed) axis -= 1f;
-                if (pad.dpad.right.isPressed) axis += 1f;
+                float grudar = controle.leftStick.x.ReadValue();
+                if (Mathf.Abs(grudar) > 0.2f) eixo += grudar;
+                if (controle.dpad.left.isPressed) eixo -= 1f;
+                if (controle.dpad.right.isPressed) eixo += 1f;
 
-                jumpPressed |= pad.buttonSouth.wasPressedThisFrame;
-                jumpHeldNow |= pad.buttonSouth.isPressed;
+                apertadoPulo |= controle.buttonSouth.wasPressedThisFrame;
+                agoraSeguradoPulo |= controle.buttonSouth.isPressed;
             }
 
-            if (ControlLocked)
+            if (ControleTravado)
             {
-                axis = 0f;
-                jumpPressed = false;
-                jumpHeldNow = false;
+                eixo = 0f;
+                apertadoPulo = false;
+                agoraSeguradoPulo = false;
             }
 
-            _moveInput = Mathf.Clamp(axis, -1f, 1f);
+            _entradaMover = Mathf.Clamp(eixo, -1f, 1f);
 
-            if (_jumpHeld && !jumpHeldNow) _jumpReleasedThisFrame = true;
-            _jumpHeld = jumpHeldNow;
+            if (_seguradoPulo && !agoraSeguradoPulo) _quadroEsteSoltoPulo = true;
+            _seguradoPulo = agoraSeguradoPulo;
 
-            if (jumpPressed) _jumpBufferCounter = jumpBufferTime;
+            if (apertadoPulo) _contadorReservaPulo = tempoReservaPulo;
         }
 
-        private void ApplyHorizontal()
+        private void AplicarHorizontal()
         {
             // Logo depois de um pulo de parede ou de apanhar, o embalo manda.
-            if (_steerLock > 0f) return;
+            if (_travaDirecao > 0f) return;
 
-            float top = maxSpeed * (Time.time < SlowedUntil ? 0.55f : 1f);
-            float target = _moveInput * top;
+            float topo = velocidadeMax * (Time.time < LentidaoAte ? 0.55f : 1f);
+            float alvo = _entradaMover * topo;
 
             // Acelerar e frear tem taxas separadas. E essa diferenca que da o peso:
             // o Scrap custa a engrenar e custa a parar.
-            float rate = Mathf.Approximately(target, 0f)
-                ? maxSpeed / Mathf.Max(brakeTime, 0.01f)
-                : maxSpeed / Mathf.Max(accelTime, 0.01f);
+            float taxa = Mathf.Approximately(alvo, 0f)
+                ? velocidadeMax / Mathf.Max(tempoFreio, 0.01f)
+                : velocidadeMax / Mathf.Max(tempoAceleracao, 0.01f);
 
             // Ferro flutua em mercurio, mas nao tem onde firmar o pe: ele anda
             // um pouco mais devagar, custa muito a engrenar e mais ainda a
             // parar. A correnteza entra por cima de tudo.
-            if (IsOnMercury && _isGrounded)
+            if (EstaLigadoMercurio && _estaNoChao)
             {
-                rate = Mathf.Approximately(target, 0f) ? maxSpeed / 1.5f : maxSpeed / 0.8f;
-                target = target * 0.85f + _current;
+                taxa = Mathf.Approximately(alvo, 0f) ? velocidadeMax / 1.5f : velocidadeMax / 0.8f;
+                alvo = alvo * 0.85f + _atual;
             }
 
-            Vector2 velocity = _body.linearVelocity;
-            velocity.x = Mathf.MoveTowards(velocity.x, target, rate * Time.fixedDeltaTime);
-            _body.linearVelocity = velocity;
+            Vector2 velocidadeVetorial = _corpo.linearVelocity;
+            velocidadeVetorial.x = Mathf.MoveTowards(velocidadeVetorial.x, alvo, taxa * Time.fixedDeltaTime);
+            _corpo.linearVelocity = velocidadeVetorial;
         }
 
         /// <summary>
@@ -386,144 +387,144 @@ namespace EchoesOfCravejada
         /// de ate maxStepHeight logo a frente e espaco livre em cima dele, o
         /// corpo e posto em cima. Degrau de tile inteiro nao entra aqui.
         /// </summary>
-        private void StepUp()
+        private void SubirDegrau()
         {
-            if (!_isGrounded || ControlLocked || _steerLock > 0f || Mathf.Abs(_moveInput) < 0.1f) return;
-            if (maxStepHeight <= 0.05f) return;
+            if (!_estaNoChao || ControleTravado || _travaDirecao > 0f || Mathf.Abs(_entradaMover) < 0.1f) return;
+            if (alturaPassoMax <= 0.05f) return;
 
-            float direction = Mathf.Sign(_moveInput);
-            Vector2 feet = _body.position;
+            float direcao = Mathf.Sign(_entradaMover);
+            Vector2 pes = _corpo.position;
 
             // Logo a frente do corpo (o casco tem 0,35 de raio).
-            float probeX = feet.x + direction * 0.42f;
+            float sondaX = pes.x + direcao * 0.42f;
 
             // A altura do degrau: um raio de cima pra baixo, na frente. Se ele
             // ja comeca dentro de algo, e parede alta: nada a fazer.
-            Vector2 from = new Vector2(probeX, feet.y + maxStepHeight + 0.05f);
-            RaycastHit2D hit = Physics2D.Raycast(from, Vector2.down, maxStepHeight + 0.05f, groundLayers);
-            if (!hit || hit.collider.isTrigger || hit.distance <= 0.001f) return;
+            Vector2 de = new Vector2(sondaX, pes.y + alturaPassoMax + 0.05f);
+            RaycastHit2D golpe = Physics2D.Raycast(de, Vector2.down, alturaPassoMax + 0.05f, camadasSolo);
+            if (!golpe || golpe.collider.isTrigger || golpe.distance <= 0.001f) return;
 
-            float rise = hit.point.y - feet.y;
-            if (rise < 0.05f || rise > maxStepHeight) return;
+            float subida = golpe.point.y - pes.y;
+            if (subida < 0.05f || subida > alturaPassoMax) return;
 
             // Cabe em cima do degrau?
-            Vector2 body = new Vector2(feet.x + direction * 0.12f, feet.y + rise + 0.6f);
-            if (Physics2D.OverlapBox(body, new Vector2(0.6f, 0.95f), 0f, groundLayers)) return;
+            Vector2 corpo = new Vector2(pes.x + direcao * 0.12f, pes.y + subida + 0.6f);
+            if (Physics2D.OverlapBox(corpo, new Vector2(0.6f, 0.95f), 0f, camadasSolo)) return;
 
-            _body.position = new Vector2(feet.x + direction * 0.04f, feet.y + rise + 0.02f);
+            _corpo.position = new Vector2(pes.x + direcao * 0.04f, pes.y + subida + 0.02f);
 
-            Vector2 velocity = _body.linearVelocity;
-            if (velocity.y < 0f) velocity.y = 0f;
-            _body.linearVelocity = velocity;
+            Vector2 velocidadeVetorial = _corpo.linearVelocity;
+            if (velocidadeVetorial.y < 0f) velocidadeVetorial.y = 0f;
+            _corpo.linearVelocity = velocidadeVetorial;
         }
 
-        private void ApplyJump()
+        private void AplicarPulo()
         {
-            if (_jumpBufferCounter > 0f && _coyoteCounter > 0f)
+            if (_contadorReservaPulo > 0f && _contadorCoiote > 0f)
             {
                 // v = raiz(2 * g * h), entao jumpHeight vale literalmente em tiles,
                 // mesmo se voce mexer na gravidade depois.
-                float gravity = Mathf.Abs(Physics2D.gravity.y) * gravityScale;
-                float launchSpeed = Mathf.Sqrt(2f * gravity * Mathf.Max(jumpHeight, 0.01f));
+                float gravidade = Mathf.Abs(Physics2D.gravity.y) * escalaGravidade;
+                float velocidadeLancamento = Mathf.Sqrt(2f * gravidade * Mathf.Max(alturaPulo, 0.01f));
 
-                Vector2 velocity = _body.linearVelocity;
-                velocity.y = launchSpeed;
-                _body.linearVelocity = velocity;
+                Vector2 velocidadeVetorial = _corpo.linearVelocity;
+                velocidadeVetorial.y = velocidadeLancamento;
+                _corpo.linearVelocity = velocidadeVetorial;
 
-                _jumpBufferCounter = 0f;
-                _coyoteCounter = 0f;
-                Sfx.Jump.Play();
+                _contadorReservaPulo = 0f;
+                _contadorCoiote = 0f;
+                Sfx.Pulo.Tocar();
                 return;
             }
 
             // Pulo de parede: depende do direcional apontado
-            if (_jumpBufferCounter > 0f && !_isGrounded && _wallCoyoteCounter > 0f && _lastWallSide != 0)
+            if (_contadorReservaPulo > 0f && !_estaNoChao && _contadorCoioteParede > 0f && _ultimoLadoParede != 0)
             {
-                float gravity = Mathf.Abs(Physics2D.gravity.y) * gravityScale;
+                float gravidade = Mathf.Abs(Physics2D.gravity.y) * escalaGravidade;
 
                 // Registra qual parede foi usada para pular (impede que grude nela de novo até ir pra outra ou tocar no chão)
-                _lastJumpedWallSide = _lastWallSide;
+                _ultimoLadoParedePulou = _ultimoLadoParede;
 
-                bool pushingAway = Mathf.Abs(_moveInput) > 0.2f && Mathf.Sign(_moveInput) != _lastWallSide;
+                bool longeEmpurrando = Mathf.Abs(_entradaMover) > 0.2f && Mathf.Sign(_entradaMover) != _ultimoLadoParede;
 
-                if (pushingAway)
+                if (longeEmpurrando)
                 {
                     // Pulo completo: joga na diagonal pra outra parede
-                    float launchSpeed = Mathf.Sqrt(2f * gravity * Mathf.Max(jumpHeight * wallJumpHeight, 0.01f));
-                    _body.linearVelocity = new Vector2(-_lastWallSide * wallJumpPush, launchSpeed);
+                    float velocidadeLancamento = Mathf.Sqrt(2f * gravidade * Mathf.Max(alturaPulo * alturaPuloParede, 0.01f));
+                    _corpo.linearVelocity = new Vector2(-_ultimoLadoParede * empurraPuloParede, velocidadeLancamento);
 
-                    _steerLock = wallJumpLockTime;
-                    _facing = -_lastWallSide;
+                    _travaDirecao = tempoTravaPuloParede;
+                    _direcaoOlhar = -_ultimoLadoParede;
                 }
                 else
                 {
                     // Pulo neutro pra cima: descola e cai reto sem impulso horizontal
-                    float launchSpeed = Mathf.Sqrt(2f * gravity * Mathf.Max(jumpHeight * 0.7f, 0.01f));
-                    _body.linearVelocity = new Vector2(0f, launchSpeed);
+                    float velocidadeLancamento = Mathf.Sqrt(2f * gravidade * Mathf.Max(alturaPulo * 0.7f, 0.01f));
+                    _corpo.linearVelocity = new Vector2(0f, velocidadeLancamento);
                 }
 
-                _jumpBufferCounter = 0f;
-                _wallCoyoteCounter = 0f;
-                _wallStickTimer = 0f;
-                Sfx.WallJump.Play();
+                _contadorReservaPulo = 0f;
+                _contadorCoioteParede = 0f;
+                _cronometroGrudarParede = 0f;
+                Sfx.PuloParede.Tocar();
                 return;
             }
 
             // Pressure Jump: um pulo a mais, no ar, um pouco mais baixo.
-            if (_jumpBufferCounter > 0f && !_isGrounded && _pressureJump && !_airJumpUsed)
+            if (_contadorReservaPulo > 0f && !_estaNoChao && _puloPressao && !_usadoPuloAr)
             {
-                float gravity = Mathf.Abs(Physics2D.gravity.y) * gravityScale;
-                float launchSpeed = Mathf.Sqrt(2f * gravity * Mathf.Max(jumpHeight * 0.85f, 0.01f));
+                float gravidade = Mathf.Abs(Physics2D.gravity.y) * escalaGravidade;
+                float velocidadeLancamento = Mathf.Sqrt(2f * gravidade * Mathf.Max(alturaPulo * 0.85f, 0.01f));
 
-                Vector2 velocity = _body.linearVelocity;
-                velocity.y = launchSpeed;
-                _body.linearVelocity = velocity;
+                Vector2 velocidadeVetorial = _corpo.linearVelocity;
+                velocidadeVetorial.y = velocidadeLancamento;
+                _corpo.linearVelocity = velocidadeVetorial;
 
-                _airJumpUsed = true;
-                _jumpBufferCounter = 0f;
-                Sfx.PressureJump.Play();
+                _usadoPuloAr = true;
+                _contadorReservaPulo = 0f;
+                Sfx.PuloPressao.Tocar();
                 return;
             }
 
-            if (_jumpReleasedThisFrame && _body.linearVelocity.y > 0f)
+            if (_quadroEsteSoltoPulo && _corpo.linearVelocity.y > 0f)
             {
-                Vector2 velocity = _body.linearVelocity;
-                velocity.y *= jumpCutMultiplier;
-                _body.linearVelocity = velocity;
+                Vector2 velocidadeVetorial = _corpo.linearVelocity;
+                velocidadeVetorial.y *= multiplicadorCortePulo;
+                _corpo.linearVelocity = velocidadeVetorial;
             }
         }
 
-        private void ApplyGravity()
+        private void AplicarGravidade()
         {
-            _body.gravityScale = _body.linearVelocity.y < 0f
-                ? gravityScale * fallGravityMultiplier
-                : gravityScale;
+            _corpo.gravityScale = _corpo.linearVelocity.y < 0f
+                ? escalaGravidade * multiplicadorGravidadeQueda
+                : escalaGravidade;
 
-            if (_wallSliding)
+            if (_deslizandoParede)
             {
-                Vector2 velocity = _body.linearVelocity;
+                Vector2 velocidadeVetorial = _corpo.linearVelocity;
 
                 // Se ainda estiver no tempo de "grudar", congela o Scrap verticalmente na parede
-                if (_wallStickTimer > 0f)
+                if (_cronometroGrudarParede > 0f)
                 {
-                    velocity.y = 0f;
+                    velocidadeVetorial.y = 0f;
                 }
-                else if (velocity.y < -wallSlideSpeed)
+                else if (velocidadeVetorial.y < -velocidadeDeslizeParede)
                 {
                     // Passado o tempo, escorrega na velocidade configurada
-                    velocity.y = -wallSlideSpeed;
+                    velocidadeVetorial.y = -velocidadeDeslizeParede;
                 }
 
-                _body.linearVelocity = velocity;
+                _corpo.linearVelocity = velocidadeVetorial;
             }
         }
 
         private void OnDrawGizmosSelected()
         {
-            if (groundCheck == null) return;
+            if (checagemSolo == null) return;
 
-            Gizmos.color = Application.isPlaying && _isGrounded ? Color.green : Color.yellow;
-            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+            Gizmos.color = Application.isPlaying && _estaNoChao ? Color.green : Color.yellow;
+            Gizmos.DrawWireSphere(checagemSolo.position, raioChecagemSolo);
         }
     }
 }

@@ -17,128 +17,127 @@ namespace EchoesOfCravejada
     public class AbilityCard : MonoBehaviour
     {
         // Um respiro entre ganhar e o card abrir, pra o momento ser visto.
-        private const float OpenDelay = 0.35f;
+        private const float AtrasoAberto = 0.35f;
 
         // Ninguem fecha sem querer: o aviso de fechar so aparece depois disto.
-        private const float MinOpenTime = 1.1f;
+        private const float TempoAbertoMin = 1.1f;
 
-        private const float AppearTime = 0.4f;
-        private const float CloseTime = 0.25f;
+        private const float TempoAparecer = 0.4f;
+        private const float TempoFechar = 0.25f;
 
-        private static AbilityCard _instance;
-        private static readonly Queue<ScrapMove> Pending = new Queue<ScrapMove>();
+        private static AbilityCard _instancia;
+        private static readonly Queue<ScrapMove> Pendente = new Queue<ScrapMove>();
 
-        private ScrapMove? _current;
-        private float _readyAt;
-        private float _openedAt;
-        private float _closingAt = -1f;
-        private float _previousTimeScale = 1f;
-        private ScrapController _scrap;
-        private bool _previousLock;
+        private ScrapMove? _atual;
+        private float _prontoEm;
+        private float _abertosEm;
+        private float _fechandoEm = -1f;
+        private float _escalaTempoAnterior = 1f;
+        private ScrapController _sucata;
+        private bool _travaAnterior;
 
         /// <summary>Verdadeiro enquanto o card esta na tela. Npc e placas olham aqui.</summary>
-        public static bool Showing => _instance != null && _instance._current.HasValue;
+        public static bool Mostrando => _instancia != null && _instancia._atual.HasValue;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _instance = null;
-            Pending.Clear();
+            _instancia = null;
+            Pendente.Clear();
             if (Time.timeScale == 0f) Time.timeScale = 1f;
         }
 
         /// <summary>Mostra o card desta habilidade. Se ja houver um aberto, entra na fila.</summary>
-        public static void Show(ScrapMove move)
+        public static void Mostrar(ScrapMove mover)
         {
-            if (_instance == null)
+            if (_instancia == null)
             {
-                var host = new GameObject("AbilityCard");
-                _instance = host.AddComponent<AbilityCard>();
+                var hospedeiro = new GameObject("AbilityCard");
+                _instancia = hospedeiro.AddComponent<AbilityCard>();
             }
 
-            Pending.Enqueue(move);
-            if (!_instance._current.HasValue) _instance._readyAt = Time.unscaledTime + OpenDelay;
+            Pendente.Enqueue(mover);
+            if (!_instancia._atual.HasValue) _instancia._prontoEm = Time.unscaledTime + AtrasoAberto;
         }
 
         private void Update()
         {
-            if (!_current.HasValue)
+            if (!_atual.HasValue)
             {
-                if (Pending.Count > 0 && Time.unscaledTime >= _readyAt) Open(Pending.Dequeue());
+                if (Pendente.Count > 0 && Time.unscaledTime >= _prontoEm) Abrir(Pendente.Dequeue());
                 return;
             }
 
-            if (_closingAt >= 0f)
+            if (_fechandoEm >= 0f)
             {
-                if (Time.unscaledTime - _closingAt >= CloseTime) Close();
+                if (Time.unscaledTime - _fechandoEm >= TempoFechar) Fechar();
                 return;
             }
 
-            if (Time.unscaledTime - _openedAt >= MinOpenTime && ContinuePressed())
+            if (Time.unscaledTime - _abertosEm >= TempoAbertoMin && ContinuarPressionado())
             {
-                _closingAt = Time.unscaledTime;
-                Sfx.SignClose.Play();
+                _fechandoEm = Time.unscaledTime;
+                Sfx.FecharPlaca.Tocar();
             }
         }
 
-        private void Open(ScrapMove move)
+        private void Abrir(ScrapMove mover)
         {
-            _current = move;
-            _openedAt = Time.unscaledTime;
-            _closingAt = -1f;
+            _atual = mover;
+            _abertosEm = Time.unscaledTime;
+            _fechandoEm = -1f;
 
-            _previousTimeScale = Time.timeScale > 0f ? Time.timeScale : 1f;
-            Time.timeScale = 0f;
-            Sfx.AbilityGet.Play();
+            _escalaTempoAnterior = GameManager.Instancia.CongelarTempo();
+            Sfx.ObtidoHabilidade.Tocar();
 
-            _scrap = FindAnyObjectByType<ScrapController>();
-            if (_scrap != null)
+            _sucata = ScrapRef.Controlador;
+            if (_sucata != null)
             {
-                _previousLock = _scrap.ControlLocked;
-                _scrap.ControlLocked = true;
+                _travaAnterior = _sucata.ControleTravado;
+                _sucata.ControleTravado = true;
             }
         }
 
-        private void Close()
+        private void Fechar()
         {
-            _current = null;
-            _closingAt = -1f;
-            Time.timeScale = _previousTimeScale;
+            _atual = null;
+            _fechandoEm = -1f;
+            GameManager.Instancia.RestaurarTempo(_escalaTempoAnterior);
 
-            if (_scrap != null) _scrap.ControlLocked = _previousLock;
-            _scrap = null;
+            if (_sucata != null) _sucata.ControleTravado = _travaAnterior;
+            _sucata = null;
 
             // O proximo da fila, se houver, com o mesmo respiro.
-            _readyAt = Time.unscaledTime + OpenDelay;
+            _prontoEm = Time.unscaledTime + AtrasoAberto;
         }
 
         private void OnDestroy()
         {
             // Trocar de cena com o card aberto nao pode deixar o jogo parado.
-            if (_current.HasValue)
+            if (_atual.HasValue)
             {
-                Time.timeScale = _previousTimeScale;
-                if (_scrap != null) _scrap.ControlLocked = _previousLock;
+                GameManager.Instancia.RestaurarTempo(_escalaTempoAnterior);
+                if (_sucata != null) _sucata.ControleTravado = _travaAnterior;
             }
 
-            if (_instance == this) _instance = null;
+            if (_instancia == this) _instancia = null;
         }
 
-        private static bool ContinuePressed()
+        private static bool ContinuarPressionado()
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.spaceKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame
-                    || keyboard.numpadEnterKey.wasPressedThisFrame || keyboard.eKey.wasPressedThisFrame
-                    || keyboard.jKey.wasPressedThisFrame || keyboard.escapeKey.wasPressedThisFrame))
+            Keyboard teclado = Keyboard.current;
+            if (teclado != null && (teclado.spaceKey.wasPressedThisFrame || teclado.enterKey.wasPressedThisFrame
+                    || teclado.numpadEnterKey.wasPressedThisFrame || teclado.eKey.wasPressedThisFrame
+                    || teclado.jKey.wasPressedThisFrame || teclado.escapeKey.wasPressedThisFrame))
             {
                 return true;
             }
 
-            Gamepad pad = Gamepad.current;
-            return pad != null && (pad.buttonSouth.wasPressedThisFrame || pad.buttonEast.wasPressedThisFrame
-                || pad.buttonNorth.wasPressedThisFrame || pad.startButton.wasPressedThisFrame);
+            Gamepad controle = Gamepad.current;
+            return controle != null && (controle.buttonSouth.wasPressedThisFrame || controle.buttonEast.wasPressedThisFrame
+                || controle.buttonNorth.wasPressedThisFrame || controle.startButton.wasPressedThisFrame);
         }
 
         // ------------------------------------------------------------------
@@ -147,127 +146,127 @@ namespace EchoesOfCravejada
 
         private void OnGUI()
         {
-            if (!_current.HasValue) return;
+            if (!_atual.HasValue) return;
 
             // Por cima de todo o HUD.
             GUI.depth = -100;
 
-            ScrapMove move = _current.Value;
-            MoveGuide.Info info = MoveGuide.Get(move);
-            float now = Time.unscaledTime;
-            float age = now - _openedAt;
+            ScrapMove mover = _atual.Value;
+            MoveGuide.Info info = MoveGuide.Obter(mover);
+            float agora = Time.unscaledTime;
+            float idade = agora - _abertosEm;
 
-            float appear = Mathf.Clamp01(age / AppearTime);
-            float leaving = _closingAt >= 0f ? Mathf.Clamp01((now - _closingAt) / CloseTime) : 0f;
-            float alpha = Mathf.Clamp01(appear * 2f) * (1f - leaving);
+            float aparecer = Mathf.Clamp01(idade / TempoAparecer);
+            float saindo = _fechandoEm >= 0f ? Mathf.Clamp01((agora - _fechandoEm) / TempoFechar) : 0f;
+            float alfa = Mathf.Clamp01(aparecer * 2f) * (1f - saindo);
 
             // O fundo escurece primeiro, inteiro.
-            MoveGuide.Alpha = 1f;
-            MoveGuide.Fill(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.72f * alpha));
+            MoveGuide.Alfa = 1f;
+            MoveGuide.Preencher(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.72f * alfa));
 
-            MoveGuide.Alpha = alpha;
+            MoveGuide.Alfa = alfa;
 
             // --- As medidas ---
-            float cardWidth = Mathf.Min(Screen.width - 40f, 800f);
-            bool stacked = cardWidth < 640f;
-            const float pad = 24f;
+            float larguraCartao = Mathf.Min(Screen.width - 40f, 800f);
+            bool empilhado = larguraCartao < 640f;
+            const float controle = 24f;
 
-            float demoWidth = stacked ? cardWidth - pad * 2f : Mathf.Round(cardWidth * 0.46f);
-            float demoHeight = Mathf.Round(demoWidth * 0.58f);
-            float textWidth = stacked ? cardWidth - pad * 2f : cardWidth - pad * 3f - demoWidth;
+            float larguraDemo = empilhado ? larguraCartao - controle * 2f : Mathf.Round(larguraCartao * 0.46f);
+            float alturaDemo = Mathf.Round(larguraDemo * 0.58f);
+            float larguraTexto = empilhado ? larguraCartao - controle * 2f : larguraCartao - controle * 3f - larguraDemo;
 
-            GUIStyle howStyle = MoveGuide.Style(17, false, TextAnchor.UpperLeft, true);
-            float howHeight = 0f;
-            foreach (string line in info.HowTo) howHeight += howStyle.CalcHeight(new GUIContent(line), textWidth - 18f) + 8f;
+            GUIStyle estiloComo = MoveGuide.Estilo(17, false, TextAnchor.UpperLeft, true);
+            float alturaComo = 0f;
+            foreach (string linha2 in info.ComoPara) alturaComo += estiloComo.CalcHeight(new GUIContent(linha2), larguraTexto - 18f) + 8f;
 
             // Como usar: titulo, teclas, controle e as linhas.
-            const float keyHeight = 36f;
-            float textBlock = 26f + keyHeight + 12f + 24f + 10f + howHeight;
-            float body = stacked ? demoHeight + 18f + textBlock : Mathf.Max(demoHeight, textBlock);
+            const float alturaChave = 36f;
+            float bloqueioTexto = 26f + alturaChave + 12f + 24f + 10f + alturaComo;
+            float corpo = empilhado ? alturaDemo + 18f + bloqueioTexto : Mathf.Max(alturaDemo, bloqueioTexto);
 
-            const float head = 178f;
-            const float foot = 64f;
-            float cardHeight = head + body + foot;
+            const float cabeca = 178f;
+            const float pe = 64f;
+            float alturaCartao = cabeca + corpo + pe;
 
-            var card = new Rect((Screen.width - cardWidth) * 0.5f, (Screen.height - cardHeight) * 0.5f + 26f, cardWidth, cardHeight);
+            var cartao = new Rect((Screen.width - larguraCartao) * 0.5f, (Screen.height - alturaCartao) * 0.5f + 26f, larguraCartao, alturaCartao);
 
             // --- A entrada: o card cresce passando um pouco do ponto e assenta ---
-            Matrix4x4 previousMatrix = GUI.matrix;
-            float scale = Mathf.LerpUnclamped(0.82f, 1f, EaseOutBack(appear)) * Mathf.Lerp(1f, 0.94f, leaving);
-            GUIUtility.ScaleAroundPivot(new Vector2(scale, scale), card.center);
+            Matrix4x4 matrizAnterior = GUI.matrix;
+            float escalaAtual = Mathf.LerpUnclamped(0.82f, 1f, SuavizarComRecuo(aparecer)) * Mathf.Lerp(1f, 0.94f, saindo);
+            GUIUtility.ScaleAroundPivot(new Vector2(escalaAtual, escalaAtual), cartao.center);
 
-            var medal = new Vector2(card.center.x, card.y);
-            Rays(medal, now, Mathf.Max(cardWidth, 420f) * 0.42f);
+            var medalha = new Vector2(cartao.center.x, cartao.y);
+            Raios(medalha, agora, Mathf.Max(larguraCartao, 420f) * 0.42f);
 
-            MoveGuide.Box(card);
-            MoveGuide.Fill(new Rect(card.x + 6f, card.y + 6f, card.width - 12f, 1f), MoveGuide.GoldDark);
-            MoveGuide.Fill(new Rect(card.x + 6f, card.yMax - 7f, card.width - 12f, 1f), MoveGuide.GoldDark);
+            MoveGuide.Caixa(cartao);
+            MoveGuide.Preencher(new Rect(cartao.x + 6f, cartao.y + 6f, cartao.width - 12f, 1f), MoveGuide.EscuroOuro);
+            MoveGuide.Preencher(new Rect(cartao.x + 6f, cartao.yMax - 7f, cartao.width - 12f, 1f), MoveGuide.EscuroOuro);
 
-            Medal(medal, now, age);
-            Sparkles(medal, now, cardWidth);
+            Medalha(medalha, agora, idade);
+            Brilhos(medalha, agora, larguraCartao);
 
             // --- O cabecalho ---
-            float y = card.y + 56f;
-            Ribbon(new Rect(card.x, y, card.width, 22f), "HABILIDADE CONQUISTADA");
+            float y = cartao.y + 56f;
+            Faixa(new Rect(cartao.x, y, cartao.width, 22f), "HABILIDADE CONQUISTADA");
 
             y += 30f;
-            GUIStyle titleStyle = MoveGuide.Style(stacked ? 30 : 36, true, TextAnchor.MiddleCenter);
-            MoveGuide.Text(new Rect(card.x + 2f, y + 2f, card.width, 48f), info.Title, titleStyle, new Color(0f, 0f, 0f, 0.6f));
-            MoveGuide.Text(new Rect(card.x, y, card.width, 48f), info.Title, titleStyle, MoveGuide.Gold);
+            GUIStyle estiloTitulo = MoveGuide.Estilo(empilhado ? 30 : 36, true, TextAnchor.MiddleCenter);
+            MoveGuide.Texto(new Rect(cartao.x + 2f, y + 2f, cartao.width, 48f), info.Titulo, estiloTitulo, new Color(0f, 0f, 0f, 0.6f));
+            MoveGuide.Texto(new Rect(cartao.x, y, cartao.width, 48f), info.Titulo, estiloTitulo, MoveGuide.Ouro);
 
             y += 52f;
-            GUIStyle tagStyle = MoveGuide.Style(16, false, TextAnchor.MiddleCenter, false, true);
-            MoveGuide.Text(new Rect(card.x + pad, y, card.width - pad * 2f, 24f), info.Tagline, tagStyle, MoveGuide.Faded);
+            GUIStyle estiloEtiqueta = MoveGuide.Estilo(16, false, TextAnchor.MiddleCenter, false, true);
+            MoveGuide.Texto(new Rect(cartao.x + controle, y, cartao.width - controle * 2f, 24f), info.Frase, estiloEtiqueta, MoveGuide.Esmaecido);
 
             // --- O corpo: a mini cena e o como usar ---
-            float bodyY = card.y + head;
-            var demo = new Rect(card.x + pad, bodyY, demoWidth, demoHeight);
-            float demoTime = Mathf.Max(0f, age - AppearTime * 0.5f);
-            MoveGuide.Demo(move, demo, demoTime);
+            float corpoY = cartao.y + cabeca;
+            var demo = new Rect(cartao.x + controle, corpoY, larguraDemo, alturaDemo);
+            float tempoDemo = Mathf.Max(0f, idade - TempoAparecer * 0.5f);
+            MoveGuide.Demonstrar(mover, demo, tempoDemo);
 
-            float textX = stacked ? card.x + pad : demo.xMax + pad;
-            float textY = stacked ? demo.yMax + 18f : bodyY;
+            float textoX = empilhado ? cartao.x + controle : demo.xMax + controle;
+            float textoY = empilhado ? demo.yMax + 18f : corpoY;
 
-            MoveGuide.Text(new Rect(textX, textY, textWidth, 22f), "COMO USAR", MoveGuide.Style(14, true), MoveGuide.Gold);
-            textY += 26f;
+            MoveGuide.Texto(new Rect(textoX, textoY, larguraTexto, 22f), "COMO USAR", MoveGuide.Estilo(14, true), MoveGuide.Ouro);
+            textoY += 26f;
 
-            MoveGuide.Keys(info.Keys, textX, textY, keyHeight, move, demoTime);
-            textY += keyHeight + 12f;
+            MoveGuide.Teclas(info.Chaves, textoX, textoY, alturaChave, mover, tempoDemo);
+            textoY += alturaChave + 12f;
 
-            MoveGuide.Text(new Rect(textX, textY, textWidth, 22f), info.Pad, MoveGuide.Style(14), MoveGuide.Faded);
-            textY += 34f;
+            MoveGuide.Texto(new Rect(textoX, textoY, larguraTexto, 22f), info.Controle, MoveGuide.Estilo(14), MoveGuide.Esmaecido);
+            textoY += 34f;
 
-            foreach (string line in info.HowTo)
+            foreach (string linha2 in info.ComoPara)
             {
-                float lineHeight = howStyle.CalcHeight(new GUIContent(line), textWidth - 18f);
-                MoveGuide.Fill(new Rect(textX + 2f, textY + 7f, 6f, 6f), MoveGuide.Gold);
-                MoveGuide.Text(new Rect(textX + 18f, textY, textWidth - 18f, lineHeight), line, howStyle, MoveGuide.Paper);
-                textY += lineHeight + 8f;
+                float alturaLinha2 = estiloComo.CalcHeight(new GUIContent(linha2), larguraTexto - 18f);
+                MoveGuide.Preencher(new Rect(textoX + 2f, textoY + 7f, 6f, 6f), MoveGuide.Ouro);
+                MoveGuide.Texto(new Rect(textoX + 18f, textoY, larguraTexto - 18f, alturaLinha2), linha2, estiloComo, MoveGuide.Papel);
+                textoY += alturaLinha2 + 8f;
             }
 
             // --- O rodape: como fechar, piscando, so depois do tempo minimo ---
-            if (age >= MinOpenTime)
+            if (idade >= TempoAbertoMin)
             {
-                const string hint = "[Espaço] ou [E] para continuar";
-                const float hintHeight = 30f;
-                float hintWidth = MoveGuide.Keys(hint, 0f, 0f, hintHeight, null, 0f, false);
+                const string dica = "[Espaço] ou [E] para continuar";
+                const float alturaDica = 30f;
+                float larguraDica = MoveGuide.Teclas(dica, 0f, 0f, alturaDica, null, 0f, false);
 
-                float blink = 0.55f + 0.45f * Mathf.Sin((age - MinOpenTime) * 4f);
-                float fadeIn = Mathf.Clamp01((age - MinOpenTime) / 0.3f);
-                MoveGuide.Alpha = alpha * fadeIn * blink;
-                MoveGuide.Keys(hint, card.center.x - hintWidth * 0.5f, card.yMax - foot + 14f, hintHeight);
-                MoveGuide.Alpha = alpha;
+                float piscar = 0.55f + 0.45f * Mathf.Sin((idade - TempoAbertoMin) * 4f);
+                float esmaecerDentro = Mathf.Clamp01((idade - TempoAbertoMin) / 0.3f);
+                MoveGuide.Alfa = alfa * esmaecerDentro * piscar;
+                MoveGuide.Teclas(dica, cartao.center.x - larguraDica * 0.5f, cartao.yMax - pe + 14f, alturaDica);
+                MoveGuide.Alfa = alfa;
             }
 
             // O clarao da chegada.
-            float flash = 1f - Mathf.Clamp01(age / 0.35f);
-            if (flash > 0f) MoveGuide.Fill(card, new Color(1f, 0.95f, 0.8f, flash * 0.55f));
+            float clarao = 1f - Mathf.Clamp01(idade / 0.35f);
+            if (clarao > 0f) MoveGuide.Preencher(cartao, new Color(1f, 0.95f, 0.8f, clarao * 0.55f));
 
-            GUI.matrix = previousMatrix;
-            MoveGuide.Alpha = 1f;
+            GUI.matrix = matrizAnterior;
+            MoveGuide.Alfa = 1f;
         }
 
-        private static float EaseOutBack(float t)
+        private static float SuavizarComRecuo(float t)
         {
             const float c1 = 1.70158f;
             const float c3 = c1 + 1f;
@@ -276,49 +275,49 @@ namespace EchoesOfCravejada
         }
 
         /// <summary>Os raios dourados girando devagar atras do medalhao.</summary>
-        private static void Rays(Vector2 center, float now, float length)
+        private static void Raios(Vector2 centro, float agora, float comprimento)
         {
-            Matrix4x4 saved = GUI.matrix;
-            const int count = 14;
+            Matrix4x4 salvo = GUI.matrix;
+            const int quantidade = 14;
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < quantidade; i++)
             {
-                GUI.matrix = saved;
-                float angle = now * 12f + i * 360f / count;
-                GUIUtility.RotateAroundPivot(angle, center);
+                GUI.matrix = salvo;
+                float angulo = agora * 12f + i * 360f / quantidade;
+                GUIUtility.RotateAroundPivot(angulo, centro);
 
-                float width = i % 2 == 0 ? 14f : 8f;
-                float reach = i % 2 == 0 ? length : length * 0.7f;
-                MoveGuide.Fill(new Rect(center.x - width * 0.5f, center.y - reach, width, reach),
-                    new Color(MoveGuide.Gold.r, MoveGuide.Gold.g, MoveGuide.Gold.b, 0.10f));
+                float largura = i % 2 == 0 ? 14f : 8f;
+                float alcanceGolpe = i % 2 == 0 ? comprimento : comprimento * 0.7f;
+                MoveGuide.Preencher(new Rect(centro.x - largura * 0.5f, centro.y - alcanceGolpe, largura, alcanceGolpe),
+                    new Color(MoveGuide.Ouro.r, MoveGuide.Ouro.g, MoveGuide.Ouro.b, 0.10f));
             }
 
-            GUI.matrix = saved;
+            GUI.matrix = salvo;
         }
 
         /// <summary>
         /// O medalhao em cima do card: um disco dourado com o Scrap parado
         /// dentro, a borda pulsando de leve.
         /// </summary>
-        private static void Medal(Vector2 center, float now, float age)
+        private static void Medalha(Vector2 centro, float agora, float idade)
         {
-            const float radius = 46f;
-            float pulse = 0.5f + 0.5f * Mathf.Sin(now * 3f);
+            const float raioArea = 46f;
+            float pulso = 0.5f + 0.5f * Mathf.Sin(agora * 3f);
 
-            Disc(center, radius + 8f, new Color(MoveGuide.Gold.r, MoveGuide.Gold.g, MoveGuide.Gold.b, 0.15f + 0.15f * pulse));
-            Disc(center, radius, MoveGuide.Gold);
-            Disc(center, radius - 4f, MoveGuide.GoldDark);
-            Disc(center, radius - 7f, new Color(0.13f, 0.11f, 0.13f, 1f));
+            Disco(centro, raioArea + 8f, new Color(MoveGuide.Ouro.r, MoveGuide.Ouro.g, MoveGuide.Ouro.b, 0.15f + 0.15f * pulso));
+            Disco(centro, raioArea, MoveGuide.Ouro);
+            Disco(centro, raioArea - 4f, MoveGuide.EscuroOuro);
+            Disco(centro, raioArea - 7f, new Color(0.13f, 0.11f, 0.13f, 1f));
 
             // O Scrap no meio, de frente pro card: o primeiro quadro parado.
-            HeroPortrait(center, radius);
+            RetratoDoHeroi(centro, raioArea);
 
             // Um brilho passando em diagonal, logo na chegada.
-            float sweep = Mathf.Clamp01((age - 0.3f) / 0.6f);
-            if (sweep > 0f && sweep < 1f)
+            float varrida = Mathf.Clamp01((idade - 0.3f) / 0.6f);
+            if (varrida > 0f && varrida < 1f)
             {
-                float x = Mathf.Lerp(center.x - radius, center.x + radius, sweep);
-                MoveGuide.Fill(new Rect(x - 6f, center.y - radius + 6f, 12f, (radius - 6f) * 2f), new Color(1f, 1f, 1f, 0.35f * (1f - sweep)));
+                float x = Mathf.Lerp(centro.x - raioArea, centro.x + raioArea, varrida);
+                MoveGuide.Preencher(new Rect(x - 6f, centro.y - raioArea + 6f, 12f, (raioArea - 6f) * 2f), new Color(1f, 1f, 1f, 0.35f * (1f - varrida)));
             }
         }
 
@@ -327,82 +326,82 @@ namespace EchoesOfCravejada
         /// transparente em volta do corpo, entao ele pode ser maior que o
         /// disco; os pes ficam um pouco abaixo do centro.
         /// </summary>
-        private static void HeroPortrait(Vector2 center, float radius)
+        private static void RetratoDoHeroi(Vector2 centro, float raioArea)
         {
-            var animator = FindAnyObjectByType<ScrapAnimator>();
-            Sprite[] frames = animator != null ? animator.CurrentFrames : null;
-            Sprite sprite = frames != null && frames.Length > 0 ? frames[ScrapAnimator.Idle] : null;
+            var animador = ScrapRef.Animador;
+            Sprite[] quadros = animador != null ? animador.QuadrosAtual : null;
+            Sprite sprite = quadros != null && quadros.Length > 0 ? quadros[ScrapAnimator.QuadroOcioso] : null;
             if (sprite == null || sprite.texture == null) return;
 
             Rect pixels = sprite.rect;
-            float scale = Mathf.Max(1f, Mathf.Floor((radius * 2f - 16f) / pixels.height * 1.3f));
-            float width = pixels.width * scale;
-            float height = pixels.height * scale;
-            float feet = center.y + radius * 0.62f;
-            var target = new Rect(center.x - width * 0.5f, feet - (pixels.height - sprite.pivot.y) * scale, width, height);
+            float escalaAtual = Mathf.Max(1f, Mathf.Floor((raioArea * 2f - 16f) / pixels.height * 1.3f));
+            float largura = pixels.width * escalaAtual;
+            float altura = pixels.height * escalaAtual;
+            float pes = centro.y + raioArea * 0.62f;
+            var alvo = new Rect(centro.x - largura * 0.5f, pes - (pixels.height - sprite.pivot.y) * escalaAtual, largura, altura);
 
-            Texture texture = sprite.texture;
-            var uv = new Rect(pixels.x / texture.width, pixels.y / texture.height,
-                pixels.width / texture.width, pixels.height / texture.height);
+            Texture textura = sprite.texture;
+            var uv = new Rect(pixels.x / textura.width, pixels.y / textura.height,
+                pixels.width / textura.width, pixels.height / textura.height);
 
-            Color previous = GUI.color;
-            GUI.color = new Color(1f, 1f, 1f, MoveGuide.Alpha);
-            GUI.DrawTextureWithTexCoords(target, texture, uv);
-            GUI.color = previous;
+            Color valorAnterior = GUI.color;
+            GUI.color = new Color(1f, 1f, 1f, MoveGuide.Alfa);
+            TelaCanvas.TexturaUV(alvo, textura, uv);
+            GUI.color = valorAnterior;
         }
 
         /// <summary>Um disco de faixas horizontais: o IMGUI so desenha retangulo.</summary>
-        private static void Disc(Vector2 center, float radius, Color color)
+        private static void Disco(Vector2 centro, float raioArea, Color cor)
         {
-            const float step = 2f;
-            for (float dy = -radius; dy < radius; dy += step)
+            const float passo = 2f;
+            for (float dy = -raioArea; dy < raioArea; dy += passo)
             {
-                float mid = dy + step * 0.5f;
-                float half = Mathf.Sqrt(Mathf.Max(0f, radius * radius - mid * mid));
-                MoveGuide.Fill(new Rect(center.x - half, center.y + dy, half * 2f, step), color);
+                float meio = dy + passo * 0.5f;
+                float metade = Mathf.Sqrt(Mathf.Max(0f, raioArea * raioArea - meio * meio));
+                MoveGuide.Preencher(new Rect(centro.x - metade, centro.y + dy, metade * 2f, passo), cor);
             }
         }
 
         /// <summary>Faiscas douradas piscando em volta do medalhao.</summary>
-        private static void Sparkles(Vector2 center, float now, float width)
+        private static void Brilhos(Vector2 centro, float agora, float largura)
         {
             for (int i = 0; i < 10; i++)
             {
-                float seed = i * 12.9898f;
-                float x = center.x + (Mathf.Repeat(Mathf.Sin(seed) * 43758.55f, 1f) - 0.5f) * width * 0.7f;
-                float y = center.y + (Mathf.Repeat(Mathf.Sin(seed * 1.7f) * 24634.63f, 1f) - 0.5f) * 90f;
-                float twinkle = Mathf.Max(0f, Mathf.Sin(now * 2.5f + i * 1.3f));
-                float size = 2f + 3f * twinkle;
+                float semente = i * 12.9898f;
+                float x = centro.x + (Mathf.Repeat(Mathf.Sin(semente) * 43758.55f, 1f) - 0.5f) * largura * 0.7f;
+                float y = centro.y + (Mathf.Repeat(Mathf.Sin(semente * 1.7f) * 24634.63f, 1f) - 0.5f) * 90f;
+                float reluzir = Mathf.Max(0f, Mathf.Sin(agora * 2.5f + i * 1.3f));
+                float tamanho = 2f + 3f * reluzir;
 
-                var color = new Color(1f, 0.92f, 0.65f, twinkle * 0.9f);
-                MoveGuide.Fill(new Rect(x - size * 0.5f, y - size * 1.5f, size, size * 3f), color);
-                MoveGuide.Fill(new Rect(x - size * 1.5f, y - size * 0.5f, size * 3f, size), color);
+                var cor = new Color(1f, 0.92f, 0.65f, reluzir * 0.9f);
+                MoveGuide.Preencher(new Rect(x - tamanho * 0.5f, y - tamanho * 1.5f, tamanho, tamanho * 3f), cor);
+                MoveGuide.Preencher(new Rect(x - tamanho * 1.5f, y - tamanho * 0.5f, tamanho * 3f, tamanho), cor);
             }
         }
 
         /// <summary>A faixa do cabecalho: o texto entre dois tracos com losangos.</summary>
-        private static void Ribbon(Rect row, string text)
+        private static void Faixa(Rect linha, string texto)
         {
-            GUIStyle style = MoveGuide.Style(15, true, TextAnchor.MiddleCenter);
-            float textWidth = style.CalcSize(new GUIContent(text)).x;
-            float lineWidth = Mathf.Min(140f, (row.width - textWidth) * 0.5f - 40f);
-            float midY = row.y + row.height * 0.5f;
+            GUIStyle estilo = MoveGuide.Estilo(15, true, TextAnchor.MiddleCenter);
+            float larguraTexto = estilo.CalcSize(new GUIContent(texto)).x;
+            float larguraLinha = Mathf.Min(140f, (linha.width - larguraTexto) * 0.5f - 40f);
+            float meioY = linha.y + linha.height * 0.5f;
 
-            MoveGuide.Text(row, text, style, MoveGuide.Gold);
+            MoveGuide.Texto(linha, texto, estilo, MoveGuide.Ouro);
 
-            float leftEnd = row.center.x - textWidth * 0.5f - 14f;
-            float rightStart = row.center.x + textWidth * 0.5f + 14f;
+            float fimEsquerda = linha.center.x - larguraTexto * 0.5f - 14f;
+            float inicioDireita = linha.center.x + larguraTexto * 0.5f + 14f;
 
-            MoveGuide.Fill(new Rect(leftEnd - lineWidth, midY - 1f, lineWidth, 2f), MoveGuide.GoldDark);
-            MoveGuide.Fill(new Rect(rightStart, midY - 1f, lineWidth, 2f), MoveGuide.GoldDark);
-            Diamond(new Vector2(leftEnd + 4f, midY));
-            Diamond(new Vector2(rightStart - 4f, midY));
+            MoveGuide.Preencher(new Rect(fimEsquerda - larguraLinha, meioY - 1f, larguraLinha, 2f), MoveGuide.EscuroOuro);
+            MoveGuide.Preencher(new Rect(inicioDireita, meioY - 1f, larguraLinha, 2f), MoveGuide.EscuroOuro);
+            Diamante(new Vector2(fimEsquerda + 4f, meioY));
+            Diamante(new Vector2(inicioDireita - 4f, meioY));
         }
 
-        private static void Diamond(Vector2 center)
+        private static void Diamante(Vector2 centro)
         {
-            MoveGuide.Fill(new Rect(center.x - 1f, center.y - 4f, 2f, 8f), MoveGuide.Gold);
-            MoveGuide.Fill(new Rect(center.x - 3f, center.y - 2f, 6f, 4f), MoveGuide.Gold);
+            MoveGuide.Preencher(new Rect(centro.x - 1f, centro.y - 4f, 2f, 8f), MoveGuide.Ouro);
+            MoveGuide.Preencher(new Rect(centro.x - 3f, centro.y - 2f, 6f, 4f), MoveGuide.Ouro);
         }
     }
 }

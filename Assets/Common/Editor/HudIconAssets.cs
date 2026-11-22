@@ -86,7 +86,6 @@ namespace EchoesOfCravejada.EditorTools
             importer.isReadable = true;
         }
 
-        [MenuItem("Echoes/Redesenhar os ícones do HUD", false, 91)]
         public static void Redraw()
         {
             Directory.CreateDirectory(Folder);
@@ -101,7 +100,6 @@ namespace EchoesOfCravejada.EditorTools
             Debug.Log($"[HUD] Ícones redesenhados em {Folder}.");
         }
 
-        [MenuItem("Echoes/Redesenhar a tela de morte", false, 92)]
         public static void RedrawDeathScreen()
         {
             Directory.CreateDirectory(DeathFolder);
@@ -120,7 +118,6 @@ namespace EchoesOfCravejada.EditorTools
             Debug.Log($"[Morte] Arte redesenhada em {DeathFolder}.");
         }
 
-        [MenuItem("Echoes/Redesenhar o menu principal", false, 93)]
         public static void RedrawMenu()
         {
             Directory.CreateDirectory(MenuFolder);
@@ -140,7 +137,6 @@ namespace EchoesOfCravejada.EditorTools
             Debug.Log($"[Menu] Arte redesenhada em {MenuFolder}.");
         }
 
-        [MenuItem("Echoes/Redesenhar a tela de pausa", false, 94)]
         public static void RedrawPause()
         {
             Directory.CreateDirectory(PauseFolder);
@@ -166,7 +162,6 @@ namespace EchoesOfCravejada.EditorTools
             Debug.Log($"[Pausa] Arte desenhada em {PauseFolder}.");
         }
 
-        [MenuItem("Echoes/Redesenhar os retratos de diálogo", false, 95)]
         public static void RedrawPortraits()
         {
             Directory.CreateDirectory(PortraitFolder);

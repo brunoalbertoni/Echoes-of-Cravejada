@@ -13,9 +13,8 @@ namespace EchoesOfCravejada.EditorTools
     /// </summary>
     public static class MainMenuGenerator
     {
-        private const string ScenePath = "Assets/Common/Scenes/" + MainMenu.SceneName + ".unity";
+        private const string ScenePath = "Assets/Common/Scenes/" + MainMenu.NomeCena + ".unity";
 
-        [MenuItem("Echoes/Gerar Menu Principal", false, 0)]
         public static void Generate()
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;

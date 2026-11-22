@@ -22,16 +22,16 @@ namespace EchoesOfCravejada
         private void Awake()
         {
             var tiles = GetComponent<TilemapCollider2D>();
-            var composite = GetComponent<CompositeCollider2D>();
+            var composto = GetComponent<CompositeCollider2D>();
 
             tiles.ProcessTilemapChanges();
 
-            if (composite == null) return;
+            if (composto == null) return;
 
-            composite.GenerateGeometry();
+            composto.GenerateGeometry();
             Physics2D.SyncTransforms();
 
-            if (composite.shapeCount > 0) return;
+            if (composto.shapeCount > 0) return;
 
             Debug.LogWarning("[GroundColliderRefresh] O colisor composto do terreno ficou vazio; " +
                              "usando a colisao tile a tile.", this);

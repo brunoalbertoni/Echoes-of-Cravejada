@@ -19,17 +19,17 @@ namespace EchoesOfCravejada
     /// </summary>
     public class SaveEngraving : MonoBehaviour
     {
-        private const int PlateWidth = 240;
+        private const int LarguraPlaca = 240;
 
-        private const float FlashTime = 0.45f;
-        private const float EtchFrom = 0.15f;
-        private const float EtchTo = 0.8f;
-        private const float FlyFrom = 1.55f;
-        private const float FlyTo = 2.1f;
-        private const float StayUntil = 4.4f;
-        private const float GoneAt = 5f;
+        private const float TempoClarao = 0.45f;
+        private const float EntalheDe = 0.15f;
+        private const float EntalhePara = 0.8f;
+        private const float VoarDe = 1.55f;
+        private const float VoarPara = 2.1f;
+        private const float FicarAte = 4.4f;
+        private const float SumidoEm = 5f;
 
-        private static readonly Color32[] BrassTones =
+        private static readonly Color32[] TonalidadesLatao =
         {
             new Color32(30, 19, 12, 255),
             new Color32(78, 52, 28, 255),
@@ -49,92 +49,93 @@ namespace EchoesOfCravejada
 
         private static readonly int[] Bayer = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
 
-        private static SaveEngraving _instance;
+        private static SaveEngraving _instancia;
 
         /// <summary>Enquanto a tela e fotografada, o HUD nao se desenha.</summary>
-        public static bool HideHud { get; private set; }
+        public static bool HudEsconder { get; private set; }
 
         /// <summary>Quantas gravuras ja foram feitas na sessao (o numero da placa).</summary>
-        public static int Count { get; private set; }
+        [SaveProgress("Count")]
+        public static int Quantidade { get; private set; }
 
-        private Texture2D _photo;
-        private Texture2D _engraved;
-        private float _start = -100f;
+        private Texture2D _foto;
+        private Texture2D _gravado;
+        private float _inicio = -100f;
         private string _area;
-        private int _number;
-        private bool _stamped;
-        private GUIStyle _caption;
-        private Texture2D _savedTag;
-        private bool _savedTagLoaded;
+        private int _numero;
+        private bool _carimbado;
+        private GUIStyle _legenda;
+        private Texture2D _etiquetaSalvo;
+        private bool _carregadoEtiquetaSalvo;
 
         // O "jogo salvo" pequeno e meio transparente no canto de cima a direita.
-        private const float SavedTagFor = 3.5f;
-        private const float SavedTagFade = 0.8f;
+        private const float EtiquetaSalvoPor = 3.5f;
+        private const float EsmaecerEtiquetaSalvo = 0.8f;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _instance = null;
-            HideHud = false;
-            Count = 0;
+            _instancia = null;
+            HudEsconder = false;
+            Quantidade = 0;
         }
 
         /// <summary>Grava o momento: fotografa a tela no fim deste quadro e comeca a cena da placa.</summary>
-        public static void Engrave()
+        public static void Gravar()
         {
-            if (_instance == null)
+            if (_instancia == null)
             {
-                var host = new GameObject("SaveEngraving");
-                DontDestroyOnLoad(host);
-                _instance = host.AddComponent<SaveEngraving>();
+                var hospedeiro = new GameObject("SaveEngraving");
+                DontDestroyOnLoad(hospedeiro);
+                _instancia = hospedeiro.AddComponent<SaveEngraving>();
             }
 
-            _instance.StopAllCoroutines();
-            _instance.StartCoroutine(_instance.Capture());
+            _instancia.StopAllCoroutines();
+            _instancia.StartCoroutine(_instancia.Capturar());
         }
 
-        private IEnumerator Capture()
+        private IEnumerator Capturar()
         {
             // Um quadro sem HUD (nem a placa anterior), e a foto no fim dele.
-            HideHud = true;
+            HudEsconder = true;
             yield return null;
             yield return new WaitForEndOfFrame();
 
-            Texture2D shot = ScreenCapture.CaptureScreenshotAsTexture();
-            HideHud = false;
+            Texture2D plano = ScreenCapture.CaptureScreenshotAsTexture();
+            HudEsconder = false;
 
-            if (shot == null) yield break;
+            if (plano == null) yield break;
 
-            Release();
-            Build(shot);
-            Destroy(shot);
+            Liberar();
+            Construir(plano);
+            Destroy(plano);
 
-            Count++;
-            _number = Count;
-            string scene = SceneManager.GetActiveScene().name;
-            _area = scene;
+            Quantidade++;
+            _numero = Quantidade;
+            string cenaAtual = SceneManager.GetActiveScene().name;
+            _area = cenaAtual;
             foreach (KeyValuePair<string, string> area in Areas)
             {
-                if (scene.EndsWith(area.Key)) _area = area.Value;
+                if (cenaAtual.EndsWith(area.Key)) _area = area.Value;
             }
-            _start = Time.unscaledTime;
-            _stamped = false;
+            _inicio = Time.unscaledTime;
+            _carimbado = false;
 
-            Sfx.EngraveEtch.Play(delay: EtchFrom);
+            Sfx.EntalheGravar.Tocar(atraso: EntalheDe);
         }
 
         private void OnDestroy()
         {
-            Release();
-            if (_instance == this) _instance = null;
+            Liberar();
+            if (_instancia == this) _instancia = null;
         }
 
-        private void Release()
+        private void Liberar()
         {
-            if (_photo != null) Destroy(_photo);
-            if (_engraved != null) Destroy(_engraved);
-            _photo = null;
-            _engraved = null;
+            if (_foto != null) Destroy(_foto);
+            if (_gravado != null) Destroy(_gravado);
+            _foto = null;
+            _gravado = null;
         }
 
         // ------------------------------------------------------------------
@@ -142,33 +143,33 @@ namespace EchoesOfCravejada
         // ------------------------------------------------------------------
 
         /// <summary>A foto reduzida (pixelada como o jogo) e a mesma foto gravada em latao.</summary>
-        private void Build(Texture2D shot)
+        private void Construir(Texture2D plano)
         {
-            int width = PlateWidth;
-            int height = Mathf.Max(1, Mathf.RoundToInt(PlateWidth * shot.height / (float)shot.width));
+            int largura = LarguraPlaca;
+            int altura = Mathf.Max(1, Mathf.RoundToInt(LarguraPlaca * plano.height / (float)plano.width));
 
-            Color32[] source = shot.GetPixels32();
-            var photo = new Color32[width * height];
-            var engraved = new Color32[width * height];
+            Color32[] fonte = plano.GetPixels32();
+            var foto = new Color32[largura * altura];
+            var gravado = new Color32[largura * altura];
 
-            float stepX = shot.width / (float)width;
-            float stepY = shot.height / (float)height;
-            int box = Mathf.Max(1, Mathf.FloorToInt(Mathf.Min(stepX, stepY)));
+            float passoX = plano.width / (float)largura;
+            float passoY = plano.height / (float)altura;
+            int caixa = Mathf.Max(1, Mathf.FloorToInt(Mathf.Min(passoX, passoY)));
 
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < altura; y++)
             {
-                for (int x = 0; x < width; x++)
+                for (int x = 0; x < largura; x++)
                 {
                     // A media de um quadradinho da tela.
-                    int sx0 = Mathf.FloorToInt(x * stepX);
-                    int sy0 = Mathf.FloorToInt(y * stepY);
+                    int sx0 = Mathf.FloorToInt(x * passoX);
+                    int sy0 = Mathf.FloorToInt(y * passoY);
                     int r = 0, g = 0, b = 0, n = 0;
-                    for (int oy = 0; oy < box; oy += 2)
+                    for (int oy = 0; oy < caixa; oy += 2)
                     {
-                        int sy = Mathf.Min(shot.height - 1, sy0 + oy);
-                        for (int ox = 0; ox < box; ox += 2)
+                        int sy = Mathf.Min(plano.height - 1, sy0 + oy);
+                        for (int ox = 0; ox < caixa; ox += 2)
                         {
-                            Color32 c = source[Mathf.Min(shot.width - 1, sx0 + ox) + sy * shot.width];
+                            Color32 c = fonte[Mathf.Min(plano.width - 1, sx0 + ox) + sy * plano.width];
                             r += c.r;
                             g += c.g;
                             b += c.b;
@@ -176,41 +177,41 @@ namespace EchoesOfCravejada
                         }
                     }
 
-                    var average = new Color32((byte)(r / n), (byte)(g / n), (byte)(b / n), 255);
-                    photo[x + y * width] = average;
+                    var media = new Color32((byte)(r / n), (byte)(g / n), (byte)(b / n), 255);
+                    foto[x + y * largura] = media;
 
                     // Luz, com contraste e as bordas mais escuras.
-                    float light = (0.3f * average.r + 0.59f * average.g + 0.11f * average.b) / 255f;
-                    light = Mathf.Clamp01((light - 0.06f) / 0.62f);
-                    float u = x / (float)width - 0.5f;
-                    float v = y / (float)height - 0.5f;
-                    light *= 1f - 1.1f * (u * u + v * v);
+                    float luz = (0.3f * media.r + 0.59f * media.g + 0.11f * media.b) / 255f;
+                    luz = Mathf.Clamp01((luz - 0.06f) / 0.62f);
+                    float u = x / (float)largura - 0.5f;
+                    float v = y / (float)altura - 0.5f;
+                    luz *= 1f - 1.1f * (u * u + v * v);
 
                     // Pontilhado ordenado: cinco tons de latao.
-                    float threshold = (Bayer[(x & 3) + (y & 3) * 4] + 0.5f) / 16f - 0.5f;
-                    int level = Mathf.Clamp(Mathf.FloorToInt(light * 4f + 0.5f + threshold * 0.9f), 0, 4);
+                    float limiar = (Bayer[(x & 3) + (y & 3) * 4] + 0.5f) / 16f - 0.5f;
+                    int nivel = Mathf.Clamp(Mathf.FloorToInt(luz * 4f + 0.5f + limiar * 0.9f), 0, 4);
 
                     // Os riscos do buril nas sombras, de duas em duas linhas.
-                    if (light < 0.5f && y % 3 == 0 && level > 0) level--;
+                    if (luz < 0.5f && y % 3 == 0 && nivel > 0) nivel--;
 
-                    engraved[x + y * width] = BrassTones[level];
+                    gravado[x + y * largura] = TonalidadesLatao[nivel];
                 }
             }
 
-            _photo = MakeTexture(width, height, photo);
-            _engraved = MakeTexture(width, height, engraved);
+            _foto = CriarTextura(largura, altura, foto);
+            _gravado = CriarTextura(largura, altura, gravado);
         }
 
-        private static Texture2D MakeTexture(int width, int height, Color32[] pixels)
+        private static Texture2D CriarTextura(int largura, int altura, Color32[] pixels)
         {
-            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+            var textura = new Texture2D(largura, altura, TextureFormat.RGBA32, false)
             {
                 filterMode = FilterMode.Point,
                 wrapMode = TextureWrapMode.Clamp,
             };
-            texture.SetPixels32(pixels);
-            texture.Apply();
-            return texture;
+            textura.SetPixels32(pixels);
+            textura.Apply();
+            return textura;
         }
 
         // ------------------------------------------------------------------
@@ -219,170 +220,170 @@ namespace EchoesOfCravejada
 
         private void OnGUI()
         {
-            if (HideHud || _engraved == null) return;
+            if (HudEsconder || _gravado == null) return;
 
-            DrawSavedTag();
+            DesenharEtiquetaSalvo();
 
-            float age = Time.unscaledTime - _start;
-            if (age < 0f || age > GoneAt) return;
+            float idade = Time.unscaledTime - _inicio;
+            if (idade < 0f || idade > SumidoEm) return;
 
             // Por cima do HUD.
             GUI.depth = -100;
 
-            float screenW = Screen.width;
-            float screenH = Screen.height;
-            float aspect = _engraved.height / (float)_engraved.width;
+            float telaW = Screen.width;
+            float telaH = Screen.height;
+            float proporcao = _gravado.height / (float)_gravado.width;
 
             // Grande no meio; pequena no canto de baixo a direita.
-            float bigWidth = Mathf.Min(screenW * 0.6f, screenH * 0.62f / aspect);
-            float smallWidth = Mathf.Max(170f, screenW * 0.17f);
+            float larguraGrande = Mathf.Min(telaW * 0.6f, telaH * 0.62f / proporcao);
+            float larguraPequeno = Mathf.Max(170f, telaW * 0.17f);
 
-            var bigCenter = new Vector2(screenW * 0.5f, screenH * 0.46f);
-            float smallHeight = PlateHeight(smallWidth, aspect);
-            var smallCenter = new Vector2(screenW - 24f - smallWidth * 0.5f, screenH - 24f - smallHeight * 0.5f);
+            var centroGrande = new Vector2(telaW * 0.5f, telaH * 0.46f);
+            float alturaPequeno = AlturaDaPlaca(larguraPequeno, proporcao);
+            var centroPequeno = new Vector2(telaW - 24f - larguraPequeno * 0.5f, telaH - 24f - alturaPequeno * 0.5f);
 
-            float fly = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(FlyFrom, FlyTo, age));
-            float width = Mathf.Lerp(bigWidth, smallWidth, fly);
-            Vector2 center = Vector2.Lerp(bigCenter, smallCenter, fly);
+            float voar = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(VoarDe, VoarPara, idade));
+            float largura = Mathf.Lerp(larguraGrande, larguraPequeno, voar);
+            Vector2 centro = Vector2.Lerp(centroGrande, centroPequeno, voar);
 
             // Uma arqueada no caminho, como se fosse jogada.
-            center.y -= Mathf.Sin(fly * Mathf.PI) * screenH * 0.08f;
+            centro.y -= Mathf.Sin(voar * Mathf.PI) * telaH * 0.08f;
 
             // Ao chegar no canto: o carimbo.
-            if (age >= FlyTo && !_stamped)
+            if (idade >= VoarPara && !_carimbado)
             {
-                _stamped = true;
-                Sfx.EngraveStamp.Play();
+                _carimbado = true;
+                Sfx.CarimboGravar.Tocar();
             }
 
-            float punch = age >= FlyTo ? 1f + 0.14f * Mathf.Exp(-(age - FlyTo) * 14f) * Mathf.Cos((age - FlyTo) * 30f) : 1f;
-            width *= punch;
+            float soco = idade >= VoarPara ? 1f + 0.14f * Mathf.Exp(-(idade - VoarPara) * 14f) * Mathf.Cos((idade - VoarPara) * 30f) : 1f;
+            largura *= soco;
 
             // No meio ela pende pra um lado; no canto, pro outro.
-            float tilt = Mathf.Lerp(-2.5f * Mathf.SmoothStep(0f, 1f, age / 0.8f), 3f, fly);
+            float inclinacao = Mathf.Lerp(-2.5f * Mathf.SmoothStep(0f, 1f, idade / 0.8f), 3f, voar);
 
-            float alpha = 1f - Mathf.InverseLerp(StayUntil, GoneAt, age);
-            float etch = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(EtchFrom, EtchTo, age));
+            float alfa = 1f - Mathf.InverseLerp(FicarAte, SumidoEm, idade);
+            float entalhe = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(EntalheDe, EntalhePara, idade));
 
-            Matrix4x4 previous = GUI.matrix;
-            GUIUtility.RotateAroundPivot(tilt, center);
-            DrawPlate(center, width, aspect, etch, alpha);
-            GUI.matrix = previous;
+            Matrix4x4 valorAnterior = GUI.matrix;
+            GUIUtility.RotateAroundPivot(inclinacao, centro);
+            DesenharPlaca(centro, largura, proporcao, entalhe, alfa);
+            GUI.matrix = valorAnterior;
 
             // O clarao da gema, por cima de tudo, no comeco.
-            float flash = 1f - Mathf.Clamp01(age / FlashTime);
-            if (flash > 0f) Fill(new Rect(0f, 0f, screenW, screenH), new Color(1f, 0.98f, 0.9f, flash * flash));
+            float clarao = 1f - Mathf.Clamp01(idade / TempoClarao);
+            if (clarao > 0f) Preencher(new Rect(0f, 0f, telaW, telaH), new Color(1f, 0.98f, 0.9f, clarao * clarao));
         }
 
-        private void DrawSavedTag()
+        private void DesenharEtiquetaSalvo()
         {
-            float age = Time.unscaledTime - _start;
-            if (age < 0f || age > SavedTagFor) return;
+            float idade = Time.unscaledTime - _inicio;
+            if (idade < 0f || idade > EtiquetaSalvoPor) return;
 
-            if (!_savedTagLoaded)
+            if (!_carregadoEtiquetaSalvo)
             {
-                _savedTagLoaded = true;
-                _savedTag = Resources.Load<Texture2D>("PauseScreen/saved");
+                _carregadoEtiquetaSalvo = true;
+                _etiquetaSalvo = Resources.Load<Texture2D>("PauseScreen/saved");
             }
 
-            float alpha = 0.55f * Mathf.Clamp01(age / 0.3f) * (1f - Mathf.InverseLerp(SavedTagFor - SavedTagFade, SavedTagFor, age));
-            Color previous = GUI.color;
-            GUI.color = new Color(1f, 1f, 1f, alpha);
+            float alfa = 0.55f * Mathf.Clamp01(idade / 0.3f) * (1f - Mathf.InverseLerp(EtiquetaSalvoPor - EsmaecerEtiquetaSalvo, EtiquetaSalvoPor, idade));
+            Color valorAnterior = GUI.color;
+            GUI.color = new Color(1f, 1f, 1f, alfa);
 
-            if (_savedTag != null)
+            if (_etiquetaSalvo != null)
             {
-                int scale = Mathf.Max(1, Mathf.FloorToInt(Screen.height / 360f));
-                float tw = _savedTag.width * scale, th = _savedTag.height * scale;
-                GUI.DrawTexture(new Rect(Screen.width - 16f - tw, 14f, tw, th), _savedTag);
+                int escalaAtual = Mathf.Max(1, Mathf.FloorToInt(Screen.height / 360f));
+                float tw = _etiquetaSalvo.width * escalaAtual, th = _etiquetaSalvo.height * escalaAtual;
+                TelaCanvas.Textura(new Rect(Screen.width - 16f - tw, 14f, tw, th), _etiquetaSalvo);
             }
             else
             {
-                GUI.Label(new Rect(Screen.width - 160f, 12f, 148f, 24f), "jogo salvo");
+                TelaCanvas.Texto(new Rect(Screen.width - 160f, 12f, 148f, 24f), "jogo salvo");
             }
 
-            GUI.color = previous;
+            GUI.color = valorAnterior;
         }
 
-        private static float PlateHeight(float width, float aspect)
+        private static float AlturaDaPlaca(float largura, float proporcao)
         {
-            float border = Mathf.Round(width * 0.04f);
-            return width * aspect + border * 2f + CaptionHeight(width);
+            float borda = Mathf.Round(largura * 0.04f);
+            return largura * proporcao + borda * 2f + AlturaDaLegenda(largura);
         }
 
-        private static float CaptionHeight(float width) => Mathf.Max(16f, Mathf.Round(width * 0.085f));
+        private static float AlturaDaLegenda(float largura) => Mathf.Max(16f, Mathf.Round(largura * 0.085f));
 
         /// <summary>A placa: moldura de latao rebitada, a imagem e a faixa com a legenda.</summary>
-        private void DrawPlate(Vector2 center, float width, float aspect, float etch, float alpha)
+        private void DesenharPlaca(Vector2 centro, float largura, float proporcao, float entalhe, float alfa)
         {
-            float border = Mathf.Max(4f, Mathf.Round(width * 0.04f));
-            float imageW = width - border * 2f;
-            float imageH = imageW * aspect;
-            float captionH = CaptionHeight(width);
-            float height = imageH + border * 2f + captionH;
+            float borda = Mathf.Max(4f, Mathf.Round(largura * 0.04f));
+            float imagemW = largura - borda * 2f;
+            float imagemH = imagemW * proporcao;
+            float legendaH = AlturaDaLegenda(largura);
+            float altura = imagemH + borda * 2f + legendaH;
 
-            var outer = new Rect(center.x - width * 0.5f, center.y - height * 0.5f, width, height);
+            var externo = new Rect(centro.x - largura * 0.5f, centro.y - altura * 0.5f, largura, altura);
 
             // A sombra no chao da tela, a moldura e o friso.
-            Fill(new Rect(outer.x + 6f, outer.y + 8f, outer.width, outer.height), new Color(0f, 0f, 0f, 0.45f * alpha));
-            Fill(outer, Brass(0, alpha));
-            Fill(new Rect(outer.x + 2f, outer.y + 2f, outer.width - 4f, outer.height - 4f), Brass(2, alpha));
-            Fill(new Rect(outer.x + 2f, outer.y + 2f, outer.width - 4f, 2f), Brass(4, alpha));
-            Fill(new Rect(outer.x + 2f, outer.yMax - 4f, outer.width - 4f, 2f), Brass(1, alpha));
+            Preencher(new Rect(externo.x + 6f, externo.y + 8f, externo.width, externo.height), new Color(0f, 0f, 0f, 0.45f * alfa));
+            Preencher(externo, CorDeLatao(0, alfa));
+            Preencher(new Rect(externo.x + 2f, externo.y + 2f, externo.width - 4f, externo.height - 4f), CorDeLatao(2, alfa));
+            Preencher(new Rect(externo.x + 2f, externo.y + 2f, externo.width - 4f, 2f), CorDeLatao(4, alfa));
+            Preencher(new Rect(externo.x + 2f, externo.yMax - 4f, externo.width - 4f, 2f), CorDeLatao(1, alfa));
 
             // A imagem: a foto virando gravura.
-            var image = new Rect(outer.x + border, outer.y + border, imageW, imageH);
-            Fill(new Rect(image.x - 2f, image.y - 2f, image.width + 4f, image.height + 4f), Brass(0, alpha));
+            var imagem = new Rect(externo.x + borda, externo.y + borda, imagemW, imagemH);
+            Preencher(new Rect(imagem.x - 2f, imagem.y - 2f, imagem.width + 4f, imagem.height + 4f), CorDeLatao(0, alfa));
 
-            Color tint = GUI.color;
-            GUI.color = new Color(1f, 1f, 1f, alpha * (1f - etch));
-            if (_photo != null && etch < 1f) GUI.DrawTexture(image, _photo);
-            GUI.color = new Color(1f, 1f, 1f, alpha * etch);
-            GUI.DrawTexture(image, _engraved);
-            GUI.color = tint;
+            Color tom = GUI.color;
+            GUI.color = new Color(1f, 1f, 1f, alfa * (1f - entalhe));
+            if (_foto != null && entalhe < 1f) TelaCanvas.Textura(imagem, _foto);
+            GUI.color = new Color(1f, 1f, 1f, alfa * entalhe);
+            TelaCanvas.Textura(imagem, _gravado);
+            GUI.color = tom;
 
             // Os rebites nos quatro cantos.
-            float rivet = Mathf.Max(3f, Mathf.Round(border * 0.5f));
-            float inset = (border - rivet) * 0.5f;
-            Rivet(new Vector2(outer.x + inset, outer.y + inset), rivet, alpha);
-            Rivet(new Vector2(outer.xMax - inset - rivet, outer.y + inset), rivet, alpha);
-            Rivet(new Vector2(outer.x + inset, outer.yMax - inset - rivet), rivet, alpha);
-            Rivet(new Vector2(outer.xMax - inset - rivet, outer.yMax - inset - rivet), rivet, alpha);
+            float rebite = Mathf.Max(3f, Mathf.Round(borda * 0.5f));
+            float recuo = (borda - rebite) * 0.5f;
+            Rebite(new Vector2(externo.x + recuo, externo.y + recuo), rebite, alfa);
+            Rebite(new Vector2(externo.xMax - recuo - rebite, externo.y + recuo), rebite, alfa);
+            Rebite(new Vector2(externo.x + recuo, externo.yMax - recuo - rebite), rebite, alfa);
+            Rebite(new Vector2(externo.xMax - recuo - rebite, externo.yMax - recuo - rebite), rebite, alfa);
 
             // A legenda, gravada fundo na faixa de baixo.
-            if (_caption == null)
+            if (_legenda == null)
             {
-                _caption = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold, clipping = TextClipping.Clip };
+                _legenda = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold, clipping = TextClipping.Clip };
             }
 
-            _caption.fontSize = Mathf.Max(9, Mathf.RoundToInt(captionH * 0.55f));
-            var strip = new Rect(image.x, image.yMax + 2f, image.width, captionH);
-            string text = $"GRAVURA Nº {_number}  ·  {_area.ToUpperInvariant()}";
+            _legenda.fontSize = Mathf.Max(9, Mathf.RoundToInt(legendaH * 0.55f));
+            var tira = new Rect(imagem.x, imagem.yMax + 2f, imagem.width, legendaH);
+            string texto = $"GRAVURA Nº {_numero}  ·  {_area.ToUpperInvariant()}";
 
-            _caption.normal.textColor = Brass(4, alpha * 0.8f);
-            GUI.Label(new Rect(strip.x + 1f, strip.y + 1f, strip.width, strip.height), text, _caption);
-            _caption.normal.textColor = Brass(0, alpha);
-            GUI.Label(strip, text, _caption);
+            _legenda.normal.textColor = CorDeLatao(4, alfa * 0.8f);
+            TelaCanvas.Texto(new Rect(tira.x + 1f, tira.y + 1f, tira.width, tira.height), texto, _legenda);
+            _legenda.normal.textColor = CorDeLatao(0, alfa);
+            TelaCanvas.Texto(tira, texto, _legenda);
         }
 
-        private static void Rivet(Vector2 at, float size, float alpha)
+        private static void Rebite(Vector2 at, float tamanho, float alfa)
         {
-            Fill(new Rect(at.x, at.y, size, size), Brass(0, alpha));
-            Fill(new Rect(at.x, at.y, size - 1f, size - 1f), Brass(4, alpha));
-            Fill(new Rect(at.x + 1f, at.y + 1f, size - 2f, size - 2f), Brass(3, alpha));
+            Preencher(new Rect(at.x, at.y, tamanho, tamanho), CorDeLatao(0, alfa));
+            Preencher(new Rect(at.x, at.y, tamanho - 1f, tamanho - 1f), CorDeLatao(4, alfa));
+            Preencher(new Rect(at.x + 1f, at.y + 1f, tamanho - 2f, tamanho - 2f), CorDeLatao(3, alfa));
         }
 
-        private static Color Brass(int tone, float alpha)
+        private static Color CorDeLatao(int tonalidade, float alfa)
         {
-            Color32 c = BrassTones[tone];
-            return new Color(c.r / 255f, c.g / 255f, c.b / 255f, alpha);
+            Color32 c = TonalidadesLatao[tonalidade];
+            return new Color(c.r / 255f, c.g / 255f, c.b / 255f, alfa);
         }
 
-        private static void Fill(Rect rect, Color color)
+        private static void Preencher(Rect retangulo, Color cor)
         {
-            Color previous = GUI.color;
-            GUI.color = color;
-            GUI.DrawTexture(rect, Texture2D.whiteTexture);
-            GUI.color = previous;
+            Color valorAnterior = GUI.color;
+            GUI.color = cor;
+            TelaCanvas.Textura(retangulo, Texture2D.whiteTexture);
+            GUI.color = valorAnterior;
         }
     }
 }

@@ -15,73 +15,73 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(SpriteRenderer))]
     public class MotionFrames : MonoBehaviour
     {
-        [SerializeField] private Sprite[] idle;
-        [SerializeField] private Sprite[] move;
+        [UnityEngine.Serialization.FormerlySerializedAs("idle")] [SerializeField] private Sprite[] parado;
+        [UnityEngine.Serialization.FormerlySerializedAs("move")] [SerializeField] private Sprite[] mover;
 
-        [SerializeField] private float idleFps = 3f;
+        [UnityEngine.Serialization.FormerlySerializedAs("idleFps")] [SerializeField] private float qpsParado = 3f;
 
-        [Tooltip("Quadros por segundo a cada tile por segundo de velocidade.")]
-        [SerializeField] private float framesPerTile = 1.6f;
+        [UnityEngine.Serialization.FormerlySerializedAs("framesPerTile")] [Tooltip("Quadros por segundo a cada tile por segundo de velocidade.")]
+        [SerializeField] private float quadrosPorTile = 1.6f;
 
-        [SerializeField] private float maxMoveFps = 14f;
+        [UnityEngine.Serialization.FormerlySerializedAs("maxMoveFps")] [SerializeField] private float qpsMoverMax = 14f;
 
-        private SpriteRenderer _renderer;
-        private Vector3 _last;
-        private float _clock;
-        private float _speed;
-        private Sprite _held;
-        private float _heldUntil;
+        private SpriteRenderer _renderizador;
+        private Vector3 _ultimo;
+        private float _relogio;
+        private float _velocidade;
+        private Sprite _segurado;
+        private float _seguradoAte;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(Sprite[] newIdle, Sprite[] newMove, float newIdleFps = 3f, float newFramesPerTile = 1.6f)
+        public void Configurar(Sprite[] novoParado, Sprite[] novoMover, float novoQpsParado = 3f, float novoQuadrosPorTile = 1.6f)
         {
-            idle = newIdle;
-            move = newMove;
-            idleFps = newIdleFps;
-            framesPerTile = newFramesPerTile;
+            parado = novoParado;
+            mover = novoMover;
+            qpsParado = novoQpsParado;
+            quadrosPorTile = novoQuadrosPorTile;
         }
 
         /// <summary>Segura uma pose por um tempo, por cima do andar e do parado.</summary>
-        public void Hold(Sprite pose, float seconds)
+        public void Segurar(Sprite pose, float segundos)
         {
-            _held = pose;
-            _heldUntil = Time.time + seconds;
+            _segurado = pose;
+            _seguradoAte = Time.time + segundos;
         }
 
         private void Awake()
         {
-            _renderer = GetComponent<SpriteRenderer>();
-            _last = transform.position;
+            _renderizador = GetComponent<SpriteRenderer>();
+            _ultimo = transform.position;
 
             // Cada um num ponto do ciclo, pra nao respirarem todos juntos.
-            _clock = Mathf.Abs(transform.position.x * 0.37f + transform.position.y * 0.11f);
+            _relogio = Mathf.Abs(transform.position.x * 0.37f + transform.position.y * 0.11f);
         }
 
         private void LateUpdate()
         {
-            Vector3 position = transform.position;
+            Vector3 posicao = transform.position;
             float dt = Mathf.Max(Time.deltaTime, 0.0001f);
-            float speed = Mathf.Abs(position.x - _last.x) / dt;
-            _last = position;
+            float velocidade = Mathf.Abs(posicao.x - _ultimo.x) / dt;
+            _ultimo = posicao;
 
             // Suaviza: um quadro parado no meio da corrida nao vira "parado".
-            _speed = Mathf.Lerp(_speed, speed, 12f * dt);
+            _velocidade = Mathf.Lerp(_velocidade, velocidade, 12f * dt);
 
-            if (_held != null && Time.time < _heldUntil)
+            if (_segurado != null && Time.time < _seguradoAte)
             {
-                _renderer.sprite = _held;
+                FrameAnimator.Exibir(_renderizador, _segurado);
                 return;
             }
 
-            bool moving = _speed > 0.3f && move != null && move.Length > 0;
-            Sprite[] frames = moving ? move : idle;
-            if (frames == null || frames.Length == 0) return;
+            bool movendo = _velocidade > 0.3f && mover != null && mover.Length > 0;
+            Sprite[] quadros = movendo ? mover : parado;
+            if (quadros == null || quadros.Length == 0) return;
 
-            float fps = moving ? Mathf.Min(maxMoveFps, 4f + _speed * framesPerTile) : idleFps;
-            _clock += dt * fps;
+            float qps = movendo ? Mathf.Min(qpsMoverMax, 4f + _velocidade * quadrosPorTile) : qpsParado;
+            _relogio += dt * qps;
 
-            Sprite frame = frames[(int)_clock % frames.Length];
-            if (frame != null) _renderer.sprite = frame;
+            Sprite quadro = quadros[(int)_relogio % quadros.Length];
+            if (quadro != null) FrameAnimator.Exibir(_renderizador, quadro);
         }
     }
 }

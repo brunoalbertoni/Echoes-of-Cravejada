@@ -21,7 +21,7 @@ namespace EchoesOfCravejada.EditorTools
             renderer.sortingLayerName = Phase01Assets.SortingActors;
             renderer.sortingOrder = order;
 
-            wreck.AddComponent<SpriteLoop>().Configure(frames, FramesPerSecond, -1);
+            wreck.AddComponent<SpriteLoop>().Configurar(frames, FramesPerSecond, -1);
 
             wreck.SetActive(false);
             return wreck;

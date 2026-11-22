@@ -13,9 +13,9 @@ namespace EchoesOfCravejada
         public string Id => id;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(string newId)
+        public void Configurar(string novoId)
         {
-            id = newId;
+            id = novoId;
         }
     }
 }

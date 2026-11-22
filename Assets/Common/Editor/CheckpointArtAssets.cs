@@ -40,7 +40,6 @@ namespace EchoesOfCravejada.EditorTools
             importer.SetTextureSettings(settings);
         }
 
-        [MenuItem("Echoes/Redesenhar a Bancada de Ourives", false, 90)]
         public static void Redraw()
         {
             Directory.CreateDirectory(Folder);

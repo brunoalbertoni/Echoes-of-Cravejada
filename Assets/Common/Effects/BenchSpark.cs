@@ -8,74 +8,74 @@ namespace EchoesOfCravejada
     /// </summary>
     public class BenchSpark : MonoBehaviour
     {
-        private static Sprite _dot;
+        private static Sprite _ponto;
 
-        private SpriteRenderer _renderer;
-        private Vector2 _velocity;
-        private float _life;
-        private float _age;
-        private Color _hot;
-        private Color _cold;
+        private SpriteRenderer _renderizador;
+        private Vector2 _velocidadeVetor;
+        private float _duracaoVida;
+        private float _idade;
+        private Color _quente;
+        private Color _frio;
 
-        /// <summary>Solta <paramref name="count"/> fagulhas de <paramref name="from"/>.</summary>
-        public static void Burst(Vector2 from, int count, Color hot, Color cold, float speed = 4f, float spread = 70f)
+        /// <summary>Solta <paramref name="quantidade"/> fagulhas de <paramref name="de"/>.</summary>
+        public static void Estourar(Vector2 de, int quantidade, Color quente, Color frio, float velocidade = 4f, float espalhamento = 70f)
         {
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < quantidade; i++)
             {
-                float angle = (90f + Random.Range(-spread, spread)) * Mathf.Deg2Rad;
-                var velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * speed * Random.Range(0.5f, 1.2f);
-                Spawn(from, velocity, Random.Range(0.35f, 0.7f), hot, cold);
+                float angulo = (90f + Random.Range(-espalhamento, espalhamento)) * Mathf.Deg2Rad;
+                var velocidadeVetorial = new Vector2(Mathf.Cos(angulo), Mathf.Sin(angulo)) * velocidade * Random.Range(0.5f, 1.2f);
+                Criar(de, velocidadeVetorial, Random.Range(0.35f, 0.7f), quente, frio);
             }
         }
 
-        private static void Spawn(Vector2 from, Vector2 velocity, float life, Color hot, Color cold)
+        private static void Criar(Vector2 de, Vector2 velocidadeVetorial, float duracaoVida, Color quente, Color frio)
         {
-            var spark = new GameObject("BenchSpark");
-            spark.transform.position = from;
+            var faisca = Prefabs.Criar("BenchSpark");
+            faisca.transform.position = de;
 
-            var renderer = spark.AddComponent<SpriteRenderer>();
-            renderer.sprite = Dot();
-            renderer.sortingLayerName = "Actors";
-            renderer.sortingOrder = 30;
-            renderer.color = hot;
+            var renderizador = Prefabs.Componente<SpriteRenderer>(faisca);
+            renderizador.sprite = Ponto();
+            renderizador.sortingLayerName = "Actors";
+            renderizador.sortingOrder = 30;
+            renderizador.color = quente;
 
-            var script = spark.AddComponent<BenchSpark>();
-            script._renderer = renderer;
-            script._velocity = velocity;
-            script._life = life;
-            script._hot = hot;
-            script._cold = cold;
+            var roteiro = faisca.AddComponent<BenchSpark>();
+            roteiro._renderizador = renderizador;
+            roteiro._velocidadeVetor = velocidadeVetorial;
+            roteiro._duracaoVida = duracaoVida;
+            roteiro._quente = quente;
+            roteiro._frio = frio;
         }
 
         /// <summary>Um pixel branco de 2x2 (a 32 px por tile), feito uma vez so.</summary>
-        private static Sprite Dot()
+        private static Sprite Ponto()
         {
-            if (_dot != null) return _dot;
+            if (_ponto != null) return _ponto;
 
-            var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
-            texture.SetPixels32(new[] { new Color32(255, 255, 255, 255), new Color32(255, 255, 255, 255),
+            var textura = new Texture2D(2, 2, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
+            textura.SetPixels32(new[] { new Color32(255, 255, 255, 255), new Color32(255, 255, 255, 255),
                 new Color32(255, 255, 255, 255), new Color32(255, 255, 255, 255) });
-            texture.Apply();
-            _dot = Sprite.Create(texture, new Rect(0, 0, 2, 2), new Vector2(0.5f, 0.5f), 32f);
-            return _dot;
+            textura.Apply();
+            _ponto = Sprite.Create(textura, new Rect(0, 0, 2, 2), new Vector2(0.5f, 0.5f), 32f);
+            return _ponto;
         }
 
         private void Update()
         {
-            _age += Time.deltaTime;
-            if (_age >= _life)
+            _idade += Time.deltaTime;
+            if (_idade >= _duracaoVida)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            _velocity.y -= 14f * Time.deltaTime;
-            transform.position += (Vector3)(_velocity * Time.deltaTime);
+            _velocidadeVetor.y -= 14f * Time.deltaTime;
+            transform.position += (Vector3)(_velocidadeVetor * Time.deltaTime);
 
-            float k = _age / _life;
-            Color color = Color.Lerp(_hot, _cold, k);
-            color.a = 1f - k * k;
-            _renderer.color = color;
+            float k = _idade / _duracaoVida;
+            Color cor = Color.Lerp(_quente, _frio, k);
+            cor.a = 1f - k * k;
+            _renderizador.color = cor;
         }
     }
 }

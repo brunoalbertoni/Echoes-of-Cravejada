@@ -7,146 +7,147 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Rigidbody2D))]
     public class ScrapDash : MonoBehaviour
     {
-        [SerializeField] private float speed = 17f;
-        [SerializeField] private float duration = 0.20f;
-        [SerializeField] private float cooldown = 0.9f;
+        [UnityEngine.Serialization.FormerlySerializedAs("speed")] [SerializeField] private float velocidade = 17f;
+        [UnityEngine.Serialization.FormerlySerializedAs("duration")] [SerializeField] private float duracao = 0.20f;
+        [UnityEngine.Serialization.FormerlySerializedAs("cooldown")] [SerializeField] private float recarga = 0.9f;
 
-        [Tooltip("A cor que ele vai pegando enquanto o dash recarrega.")]
-        [SerializeField] private Color heatColor = new Color(1f, 0.45f, 0.35f);
+        [UnityEngine.Serialization.FormerlySerializedAs("heatColor")] [Tooltip("A cor que ele vai pegando enquanto o dash recarrega.")]
+        [SerializeField] private Color corCalor = new Color(1f, 0.45f, 0.35f);
 
-        [Header("Intangibilidade")]
-        [SerializeField] private string normalLayerName = "Player";
-        [SerializeField] private string intangibleLayerName = "PlayerIntangible";
-        [SerializeField, Range(0.1f, 1f)] private float dashAlpha = 0.45f;
+        [UnityEngine.Serialization.FormerlySerializedAs("normalLayerName")] [Header("Intangibilidade")]
+        [SerializeField] private string nomeCamadaNormal = "Player";
+        [UnityEngine.Serialization.FormerlySerializedAs("intangibleLayerName")] [SerializeField] private string nomeCamadaIntangivel = "PlayerIntangible";
+        [UnityEngine.Serialization.FormerlySerializedAs("dashAlpha")] [SerializeField, Range(0.1f, 1f)] private float alfaDash = 0.45f;
 
-        private ScrapController _controller;
-        private Rigidbody2D _body;
+        private ScrapController _controlador;
+        private Rigidbody2D _corpo;
         private SpriteRenderer _sprite;
 
-        private float _dashUntil;
-        private float _readyAt;
-        private int _direction;
-        private bool _usedInAir;
+        private float _dashAte;
+        private float _prontoEm;
+        private int _direcao;
+        private bool _usadoDentroAr;
 
-        private int _normalLayer;
-        private int _intangibleLayer;
-        private bool _wasDashing;
+        private int _camadaNormal;
+        private int _camadaIntangivel;
+        private bool _estavaDashando;
 
-        private static bool _unlocked;
+        [SaveProgress("_unlocked")]
+        private static bool _desbloqueado;
 
-        private float Cooldown => cooldown * Shop.DashCooldownScale;
-        public bool IsDashing => Time.time < _dashUntil;
-        public static bool Unlocked => _unlocked;
-        public static float UnlockTime { get; private set; } = -100f;
+        private float Recarga => recarga * Shop.EscalaRecargaDash;
+        public bool EstaDashando => Time.time < _dashAte;
+        public static bool Desbloqueado => _desbloqueado;
+        public static float TempoDesbloquear { get; private set; } = -100f;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _unlocked = false;
-            UnlockTime = -100f;
+            _desbloqueado = false;
+            TempoDesbloquear = -100f;
         }
 
-        public void Refresh()
+        public void Atualizar()
         {
-            if (IsDashing) return;
-            _readyAt = 0f;
-            _usedInAir = false;
+            if (EstaDashando) return;
+            _prontoEm = 0f;
+            _usadoDentroAr = false;
         }
 
-        public static void UnlockSilently() => _unlocked = true;
+        public static void DesbloquearEmSilencio() => _desbloqueado = true;
 
-        public static void Unlock()
+        public static void Desbloquear()
         {
-            if (_unlocked) return;
-            _unlocked = true;
-            UnlockTime = Time.time;
-            AbilityCard.Show(ScrapMove.SteamDash);
+            if (_desbloqueado) return;
+            _desbloqueado = true;
+            TempoDesbloquear = Time.time;
+            AbilityCard.Mostrar(ScrapMove.DashVapor);
         }
 
-        [SerializeField] private bool unlockedFromStart;
+        [UnityEngine.Serialization.FormerlySerializedAs("unlockedFromStart")] [SerializeField] private bool desbloqueadoDeInicio;
 
-        public void SetUnlockedFromStart(bool unlocked) => unlockedFromStart = unlocked;
+        public void DefinirLiberadoDesdeInicio(bool desbloqueado) => desbloqueadoDeInicio = desbloqueado;
 
         private void Awake()
         {
-            if (unlockedFromStart) _unlocked = true;
+            if (desbloqueadoDeInicio) _desbloqueado = true;
 
-            _controller = GetComponent<ScrapController>();
-            _body = GetComponent<Rigidbody2D>();
+            _controlador = GetComponent<ScrapController>();
+            _corpo = GetComponent<Rigidbody2D>();
             _sprite = GetComponent<SpriteRenderer>();
 
-            _normalLayer = LayerMask.NameToLayer(normalLayerName);
-            _intangibleLayer = LayerMask.NameToLayer(intangibleLayerName);
+            _camadaNormal = LayerMask.NameToLayer(nomeCamadaNormal);
+            _camadaIntangivel = LayerMask.NameToLayer(nomeCamadaIntangivel);
 
-            if (_normalLayer == -1) _normalLayer = gameObject.layer;
-            if (_intangibleLayer == -1) _intangibleLayer = _normalLayer;
+            if (_camadaNormal == -1) _camadaNormal = gameObject.layer;
+            if (_camadaIntangivel == -1) _camadaIntangivel = _camadaNormal;
         }
 
         private void Update()
         {
-            if (_controller.IsGrounded) _usedInAir = false;
+            if (_controlador.EstaNoChao) _usadoDentroAr = false;
 
-            UpdateDashState();
+            AtualizarEstadoDoDash();
 
-            if (_sprite != null && _unlocked)
+            if (_sprite != null && _desbloqueado)
             {
-                if (IsDashing)
+                if (EstaDashando)
                 {
                     Color c = Color.white;
-                    c.a = dashAlpha;
+                    c.a = alfaDash;
                     _sprite.color = c;
                 }
                 else
                 {
-                    float heat = Mathf.Clamp01((_readyAt - Time.time) / Mathf.Max(0.1f, Cooldown));
-                    Color c = Color.Lerp(Color.white, heatColor, heat);
+                    float calor = Mathf.Clamp01((_prontoEm - Time.time) / Mathf.Max(0.1f, Recarga));
+                    Color c = Color.Lerp(Color.white, corCalor, calor);
                     c.a = 1f;
                     _sprite.color = c;
                 }
             }
 
-            if (!_unlocked || _controller.ControlLocked) return;
-            if (Time.time < _readyAt || _usedInAir) return;
-            if (!DashPressed()) return;
+            if (!_desbloqueado || _controlador.ControleTravado) return;
+            if (Time.time < _prontoEm || _usadoDentroAr) return;
+            if (!DashPressionado()) return;
 
-            _direction = _controller.Facing;
-            _dashUntil = Time.time + duration;
-            _readyAt = Time.time + Cooldown;
-            if (!_controller.IsGrounded) _usedInAir = true;
+            _direcao = _controlador.Virado;
+            _dashAte = Time.time + duracao;
+            _prontoEm = Time.time + Recarga;
+            if (!_controlador.EstaNoChao) _usadoDentroAr = true;
 
-            _controller.Knockback(new Vector2(_direction * speed, 0f), duration);
-            Sfx.Dash.Play();
+            _controlador.Empurrar(new Vector2(_direcao * velocidade, 0f), duracao);
+            Sfx.QuadroDash.Tocar();
         }
 
-        private void UpdateDashState()
+        private void AtualizarEstadoDoDash()
         {
-            bool dashingNow = IsDashing;
+            bool agoraDashando = EstaDashando;
 
-            if (dashingNow && !_wasDashing)
+            if (agoraDashando && !_estavaDashando)
             {
-                gameObject.layer = _intangibleLayer;
-                _wasDashing = true;
+                gameObject.layer = _camadaIntangivel;
+                _estavaDashando = true;
             }
-            else if (!dashingNow && _wasDashing)
+            else if (!agoraDashando && _estavaDashando)
             {
-                gameObject.layer = _normalLayer;
-                _wasDashing = false;
+                gameObject.layer = _camadaNormal;
+                _estavaDashando = false;
             }
         }
 
         private void FixedUpdate()
         {
-            if (Time.time >= _dashUntil) return;
-            _body.linearVelocity = new Vector2(_direction * speed, 0f);
+            if (Time.time >= _dashAte) return;
+            _corpo.linearVelocity = new Vector2(_direcao * velocidade, 0f);
         }
 
-        private static bool DashPressed()
+        private static bool DashPressionado()
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.leftShiftKey.wasPressedThisFrame || keyboard.lKey.wasPressedThisFrame)) return true;
+            Keyboard teclado = Keyboard.current;
+            if (teclado != null && (teclado.leftShiftKey.wasPressedThisFrame || teclado.lKey.wasPressedThisFrame)) return true;
 
-            Gamepad pad = Gamepad.current;
-            return pad != null && pad.rightShoulder.wasPressedThisFrame;
+            Gamepad controle = Gamepad.current;
+            return controle != null && controle.rightShoulder.wasPressedThisFrame;
         }
     }
 }

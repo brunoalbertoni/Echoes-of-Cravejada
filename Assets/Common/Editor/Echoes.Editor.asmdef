@@ -1,0 +1,21 @@
+{
+    "name": "Echoes.Editor",
+    "rootNamespace": "EchoesOfCravejada",
+    "references": [
+        "Echoes.Runtime",
+        "Unity.InputSystem",
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Universal.2D.Runtime",
+        "Unity.2D.Tilemap.Extras",
+        "Unity.2D.Sprite.Editor",
+        "LeanTween",
+        "Unity.Cinemachine",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "autoReferenced": false
+}

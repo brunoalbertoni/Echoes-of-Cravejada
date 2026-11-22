@@ -9,52 +9,52 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Collider2D))]
     public class OldScrap : MonoBehaviour
     {
-        private int _shards;
-        private float _age;
+        private int _fragmentos;
+        private float _idade;
 
-        public static OldScrap Drop(Vector3 position, int shards, Sprite sprite)
+        public static OldScrap Soltar(Vector3 posicao, int fragmentos, Sprite sprite)
         {
-            var scrap = new GameObject("OldScrap");
-            scrap.transform.position = DropSpot.Free(position + Vector3.up * 0.5f) - Vector3.up * 0.5f;
+            var sucata = Prefabs.Criar("OldScrap");
+            sucata.transform.position = DropSpot.PontoLivre(posicao + Vector3.up * 0.5f) - Vector3.up * 0.5f;
 
-            var renderer = scrap.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            renderer.sortingLayerName = "Actors";
-            renderer.sortingOrder = -2;
+            var renderizador = Prefabs.Componente<SpriteRenderer>(sucata);
+            renderizador.sprite = sprite;
+            renderizador.sortingLayerName = "Actors";
+            renderizador.sortingOrder = -2;
 
-            var trigger = scrap.AddComponent<CircleCollider2D>();
-            trigger.isTrigger = true;
-            trigger.radius = 0.7f;
-            trigger.offset = new Vector2(0f, 0.5f);
+            var gatilho = Prefabs.Componente<CircleCollider2D>(sucata);
+            gatilho.isTrigger = true;
+            gatilho.radius = 0.7f;
+            gatilho.offset = new Vector2(0f, 0.5f);
 
-            var old = scrap.AddComponent<OldScrap>();
-            old._shards = shards;
-            return old;
+            var antigo = sucata.AddComponent<OldScrap>();
+            antigo._fragmentos = fragmentos;
+            return antigo;
         }
 
         private void Update()
         {
-            _age += Time.deltaTime;
+            _idade += Time.deltaTime;
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D outro)
         {
-            Recover(other);
+            Recuperar(outro);
         }
 
-        private void OnTriggerStay2D(Collider2D other)
+        private void OnTriggerStay2D(Collider2D outro)
         {
-            Recover(other);
+            Recuperar(outro);
         }
 
-        private void Recover(Collider2D other)
+        private void Recuperar(Collider2D outro)
         {
             // Ele renasce longe dali, mas a carencia evita pegar no mesmo quadro.
-            if (_age < 0.5f) return;
-            if (other.GetComponentInParent<ScrapController>() == null) return;
+            if (_idade < 0.5f) return;
+            if (outro.GetComponentInParent<ScrapController>() == null) return;
 
-            ScrapWallet.Add(_shards);
-            Sfx.ShardsRecovered.Play();
+            ScrapWallet.Adicionar(_fragmentos);
+            Sfx.RecuperadosFragmentos.Tocar();
             Destroy(gameObject);
         }
     }

@@ -11,16 +11,16 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class BossWreck
     {
-        public static void Show(GameObject wreck, Vector3? place = null, bool flipX = false)
+        public static void Mostrar(GameObject destrocos, Vector3? lugar = null, bool inverterX = false)
         {
-            if (wreck == null) return;
+            if (destrocos == null) return;
 
-            if (place.HasValue) wreck.transform.position = place.Value;
+            if (lugar.HasValue) destrocos.transform.position = lugar.Value;
 
-            var renderer = wreck.GetComponent<SpriteRenderer>();
-            if (renderer != null) renderer.flipX = flipX;
+            var renderizador = destrocos.GetComponent<SpriteRenderer>();
+            if (renderizador != null) renderizador.flipX = inverterX;
 
-            wreck.SetActive(true);
+            destrocos.SetActive(true);
         }
     }
 }

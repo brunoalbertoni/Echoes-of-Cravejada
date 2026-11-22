@@ -63,7 +63,7 @@ namespace EchoesOfCravejada.EditorTools
                 textures.Add(texture);
             }
 
-            player.Configure(film.Shots.ToArray(), textures.ToArray(), endWhite);
+            player.Configurar(film.Shots.ToArray(), textures.ToArray(), endWhite);
         }
 
         private static void WritePng(string path, PixelCanvas canvas)

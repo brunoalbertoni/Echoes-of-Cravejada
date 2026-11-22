@@ -15,149 +15,149 @@ namespace EchoesOfCravejada
     /// </summary>
     public class ElevatorArrival : MonoBehaviour
     {
-        [Tooltip("O SpawnPoint de quem chega por este elevador.")]
-        [SerializeField] private string spawnId;
+        [UnityEngine.Serialization.FormerlySerializedAs("spawnId")] [Tooltip("O SpawnPoint de quem chega por este elevador.")]
+        [SerializeField] private string idNascimento;
 
-        [Tooltip("Altura (y de mundo) do fundo do poco, de onde a cabine parte.")]
-        [SerializeField] private float startY;
+        [UnityEngine.Serialization.FormerlySerializedAs("startY")] [Tooltip("Altura (y de mundo) do fundo do poco, de onde a cabine parte.")]
+        [SerializeField] private float inicioY;
 
-        [Tooltip("Tiles por segundo, na velocidade de cruzeiro.")]
-        [SerializeField] private float speed = 5f;
+        [UnityEngine.Serialization.FormerlySerializedAs("speed")] [Tooltip("Tiles por segundo, na velocidade de cruzeiro.")]
+        [SerializeField] private float velocidade = 5f;
 
-        [Tooltip("Se a chegada toca tambem quando se da Play direto na cena (sem vir de outra).")]
-        [SerializeField] private bool playWithoutTravel = true;
+        [UnityEngine.Serialization.FormerlySerializedAs("playWithoutTravel")] [Tooltip("Se a chegada toca tambem quando se da Play direto na cena (sem vir de outra).")]
+        [SerializeField] private bool tocarSemViagem = true;
 
-        private bool _play;
-        private float _stopY;
+        private bool _tocar;
+        private float _paradaY;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(string newSpawnId, float newStartY, float newSpeed)
+        public void Configurar(string novoIdNascimento, float novoInicioY, float novoVelocidade)
         {
-            spawnId = newSpawnId;
-            startY = newStartY;
-            speed = newSpeed;
+            idNascimento = novoIdNascimento;
+            inicioY = novoInicioY;
+            velocidade = novoVelocidade;
         }
 
         private void Awake()
         {
             // Lido antes do Start da SceneArrival, que consome o recado.
-            string pending = SceneTravel.PendingSpawnId;
+            string pendente = SceneTravel.IdNascimentoPendente;
 
-            if (SaveSystem.HasPendingBench) _play = false;
-            else if (!string.IsNullOrEmpty(pending)) _play = pending == spawnId;
-            else _play = playWithoutTravel;
+            if (SaveSystem.TemBancadaPendente) _tocar = false;
+            else if (!string.IsNullOrEmpty(pendente)) _tocar = pendente == idNascimento;
+            else _tocar = tocarSemViagem;
 
             // A cabine fica no andar ate a SceneArrival achar chao embaixo do
             // Scrap (o chao dele e o da cabine); so depois desce pro fundo. A
             // tela ainda esta fechada pelo loading nesses quadros.
-            _stopY = transform.position.y;
+            _paradaY = transform.position.y;
         }
 
         private void Start()
         {
-            if (_play) StartCoroutine(Arrive());
+            if (_tocar) StartCoroutine(Chegar());
         }
 
-        private void SetY(float y)
+        private void DefinirAltura(float y)
         {
-            Vector3 position = transform.position;
-            position.y = y;
-            transform.position = position;
+            Vector3 posicao = transform.position;
+            posicao.y = y;
+            transform.position = posicao;
         }
 
-        private IEnumerator Arrive()
+        private IEnumerator Chegar()
         {
-            var controller = FindAnyObjectByType<ScrapController>();
-            if (controller == null)
+            var controlador = ScrapRef.Controlador;
+            if (controlador == null)
             {
-                SetY(_stopY);
+                DefinirAltura(_paradaY);
                 yield break;
             }
 
-            Transform player = controller.transform;
-            var body = player.GetComponent<Rigidbody2D>();
+            Transform jogador = controlador.transform;
+            var corpo = jogador.GetComponent<Rigidbody2D>();
 
             // A SceneArrival poe o Scrap no SpawnPoint e espera o chao. Deixa
             // ela terminar: a posicao em que ela o larga e a de chegada.
-            float waited = 0f;
-            while (body != null && !body.simulated && waited < 6f)
+            float esperou = 0f;
+            while (corpo != null && !corpo.simulated && esperou < 6f)
             {
-                waited += Time.unscaledDeltaTime;
+                esperou += Time.unscaledDeltaTime;
                 yield return null;
             }
 
             yield return null;
 
-            Cinematic.Begin();
-            controller.ControlLocked = true;
-            if (body != null)
+            Cinematic.Iniciar();
+            controlador.ControleTravado = true;
+            if (corpo != null)
             {
-                body.linearVelocity = Vector2.zero;
-                body.simulated = false;
+                corpo.linearVelocity = Vector2.zero;
+                corpo.simulated = false;
             }
 
             // O Scrap vai no meio da cabine, na mesma altura relativa de quando ela para.
-            Vector3 stop = new Vector3(transform.position.x, _stopY, 0f);
-            Vector3 riderOffset = new Vector3(transform.position.x + 1.5f, player.position.y, 0f) - stop;
+            Vector3 parada = new Vector3(transform.position.x, _paradaY, 0f);
+            Vector3 deslocamentoPassageiro = new Vector3(transform.position.x + 1.5f, jogador.position.y, 0f) - parada;
 
-            SetY(startY);
-            player.position = transform.position + riderOffset;
-            if (body != null) body.position = player.position;
+            DefinirAltura(inicioY);
+            jogador.position = transform.position + deslocamentoPassageiro;
+            if (corpo != null) corpo.position = jogador.position;
 
-            Camera main = Camera.main;
-            var follow = main != null ? main.GetComponent<ScrapCameraFollow>() : null;
-            if (follow != null) follow.SnapToTarget();
+            Camera principal = Camera.main;
+            var seguir = principal != null ? principal.GetComponent<ScrapCameraFollow>() : null;
+            if (seguir != null) seguir.IrDiretoAoAlvo();
 
             // O motor ja vem andando: a cabine chega embalada e freia no andar.
             var motor = gameObject.AddComponent<AudioSource>();
-            motor.clip = SfxPlayer.Load(Sfx.ElevatorLoop.Clip);
+            motor.clip = SfxPlayer.Carregar(Sfx.RepeticaoElevador.Clipe);
             motor.loop = true;
             motor.spatialBlend = 0f;
             motor.volume = 0f;
             if (motor.clip != null) motor.Play();
 
-            float braking = speed * 0.9f;
-            float current = speed;
+            float freando = velocidade * 0.9f;
+            float atual = velocidade;
 
-            while (transform.position.y < _stopY)
+            while (transform.position.y < _paradaY)
             {
-                float left = _stopY - transform.position.y;
+                float esquerda = _paradaY - transform.position.y;
 
                 // Freia nos ultimos tiles: v = raiz(2 a d), sem passar da de cruzeiro.
-                float target = Mathf.Min(speed, Mathf.Sqrt(2f * braking * left) + 0.4f);
-                current = Mathf.MoveTowards(current, target, braking * 2f * Time.deltaTime);
+                float alvo = Mathf.Min(velocidade, Mathf.Sqrt(2f * freando * esquerda) + 0.4f);
+                atual = Mathf.MoveTowards(atual, alvo, freando * 2f * Time.deltaTime);
 
-                SetY(Mathf.Min(_stopY, transform.position.y + current * Time.deltaTime));
-                player.position = transform.position + riderOffset;
+                DefinirAltura(Mathf.Min(_paradaY, transform.position.y + atual * Time.deltaTime));
+                jogador.position = transform.position + deslocamentoPassageiro;
 
-                float pace = current / Mathf.Max(0.1f, speed);
-                motor.pitch = 0.8f + 0.25f * pace;
-                motor.volume = Sfx.Volume * Sfx.ElevatorLoop.Volume * Mathf.Lerp(0.35f, 1f, pace);
+                float ritmo = atual / Mathf.Max(0.1f, velocidade);
+                motor.pitch = 0.8f + 0.25f * ritmo;
+                motor.volume = Sfx.Volume * Sfx.RepeticaoElevador.Volume * Mathf.Lerp(0.35f, 1f, ritmo);
 
                 yield return null;
             }
 
-            SetY(_stopY);
-            player.position = transform.position + riderOffset;
+            DefinirAltura(_paradaY);
+            jogador.position = transform.position + deslocamentoPassageiro;
             Destroy(motor);
 
             // O tranco da parada.
-            ScrapCameraFollow.Shake(0.1f, 0.3f);
-            Sfx.ElevatorStart.Play(transform.position, pitch: 0.8f);
+            ScrapCameraFollow.Tremer(0.1f, 0.3f);
+            Sfx.InicioElevador.Tocar(transform.position, tom2: 0.8f);
             yield return new WaitForSeconds(0.45f);
 
-            if (body != null)
+            if (corpo != null)
             {
-                body.position = player.position;
-                body.linearVelocity = Vector2.zero;
-                body.simulated = true;
+                corpo.position = jogador.position;
+                corpo.linearVelocity = Vector2.zero;
+                corpo.simulated = true;
             }
 
-            var respawn = player.GetComponent<ScrapRespawn>();
-            if (respawn != null) respawn.SetSafePosition(player.position);
+            var renascimento = jogador.GetComponent<ScrapRespawn>();
+            if (renascimento != null) renascimento.DefinirPosicaoSegura(jogador.position);
 
-            controller.ControlLocked = false;
-            Cinematic.End();
+            controlador.ControleTravado = false;
+            Cinematic.Encerrar();
         }
     }
 }

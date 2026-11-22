@@ -6,10 +6,10 @@ namespace EchoesOfCravejada
     /// <summary>Os movimentos que o jogo ensina: as habilidades conquistadas e os das placas de tutorial.</summary>
     public enum ScrapMove
     {
-        SteamDash,
-        PressureJump,
-        ResonanceStrike,
-        WallJump,
+        DashVapor,
+        PuloPressao,
+        GolpeRessonancia,
+        PuloParede,
         Pogo,
     }
 
@@ -26,176 +26,176 @@ namespace EchoesOfCravejada
     {
         public sealed class Info
         {
-            public string Title;
-            public string Tagline;
+            public string Titulo;
+            public string Frase;
 
             /// <summary>As teclas: o que esta entre colchetes vira tecla desenhada, o resto vira texto.</summary>
-            public string Keys;
+            public string Chaves;
 
-            public string Pad;
-            public string[] HowTo;
+            public string Controle;
+            public string[] ComoPara;
 
             /// <summary>Quanto dura uma volta da mini cena, em segundos.</summary>
-            public float Loop;
+            public float Repeticao;
         }
 
         private static readonly Dictionary<ScrapMove, Info> Infos = new Dictionary<ScrapMove, Info>
         {
-            [ScrapMove.SteamDash] = new Info
+            [ScrapMove.DashVapor] = new Info
             {
-                Title = "Sobrecarga de Velocidade",
-                Tagline = "O motor do Coletor agora pulsa nas suas pernas.",
-                Keys = "[Shift] ou [L]",
-                Pad = "Controle: RB",
-                HowTo = new[]
+                Titulo = "Sobrecarga de Velocidade",
+                Frase = "O motor do Coletor agora pulsa nas suas pernas.",
+                Chaves = "[Shift] ou [L]",
+                Controle = "Controle: RB",
+                ComoPara = new[]
                 {
                     "Aperte para arrancar reto para a frente.",
                     "No ar o arranque não cai: use no meio do pulo para cruzar vãos largos.",
                     "Um arranque por pulo. As costas esquentam enquanto ele recarrega.",
                 },
-                Loop = 3f,
+                Repeticao = 3f,
             },
-            [ScrapMove.PressureJump] = new Info
+            [ScrapMove.PuloPressao] = new Info
             {
-                Title = "Salto de Pressão",
-                Tagline = "A caldeira do Mestre agora sopra nos seus pistões.",
-                Keys = "[Espaço] de novo, no ar",
-                Pad = "Controle: A, no ar",
-                HowTo = new[]
+                Titulo = "Salto de Pressão",
+                Frase = "A caldeira do Mestre agora sopra nos seus pistões.",
+                Chaves = "[Espaço] de novo, no ar",
+                Controle = "Controle: A, no ar",
+                ComoPara = new[]
                 {
                     "Pule e, ainda no ar, pule outra vez: uma rajada de vapor empurra você para cima.",
                     "O segundo pulo volta quando você pisa no chão ou encosta numa parede.",
                 },
-                Loop = 3f,
+                Repeticao = 3f,
             },
-            [ScrapMove.ResonanceStrike] = new Info
+            [ScrapMove.GolpeRessonancia] = new Info
             {
-                Title = "Golpe Ressonante",
-                Tagline = "O cinzel aprendeu a cantar como cristal.",
-                Keys = "Segure [J] e solte",
-                Pad = "Controle: segure X e solte",
-                HowTo = new[]
+                Titulo = "Golpe Ressonante",
+                Frase = "O cinzel aprendeu a cantar como cristal.",
+                Chaves = "Segure [J] e solte",
+                Controle = "Controle: segure X e solte",
+                ComoPara = new[]
                 {
                     "Segure o golpe até os olhos brilharem em azul, depois solte.",
                     "A onda fere tudo em volta e estilhaça barreiras de cristal.",
                     "É o golpe mais barulhento que você tem: tudo por perto vai ouvir.",
                 },
-                Loop = 3.2f,
+                Repeticao = 3.2f,
             },
-            [ScrapMove.WallJump] = new Info
+            [ScrapMove.PuloParede] = new Info
             {
-                Title = "Pulo de Parede",
-                Tagline = "Onde não há chão, há parede.",
-                Keys = "[←] [→] + [Espaço]",
-                Pad = "Controle: direção + A",
-                HowTo = new[]
+                Titulo = "Pulo de Parede",
+                Frase = "Onde não há chão, há parede.",
+                Chaves = "[←] [→] + [Espaço]",
+                Controle = "Controle: direção + A",
+                ComoPara = new[]
                 {
                     "Pule contra uma parede e, encostado nela, pule de novo para saltar para o outro lado.",
                     "Segure a direção da parede para escorregar devagar.",
                     "Numa chaminé estreita, vá alternando as paredes para subir.",
                 },
-                Loop = 2f,
+                Repeticao = 2f,
             },
             [ScrapMove.Pogo] = new Info
             {
-                Title = "Golpe para Baixo",
-                Tagline = "Espinho também serve de degrau.",
-                Keys = "No ar: [↓] + [J]",
-                Pad = "Controle: baixo + X, no ar",
-                HowTo = new[]
+                Titulo = "Golpe para Baixo",
+                Frase = "Espinho também serve de degrau.",
+                Chaves = "No ar: [↓] + [J]",
+                Controle = "Controle: baixo + X, no ar",
+                ComoPara = new[]
                 {
                     "No ar, segure para baixo e golpeie: o cinzel bate embaixo de você.",
                     "Acertar espinhos ou inimigos por baixo faz você quicar para cima.",
                     "Encadeie os quiques para cruzar espinhos largos demais para um pulo.",
                 },
-                Loop = 3.4f,
+                Repeticao = 3.4f,
             },
         };
 
-        public static Info Get(ScrapMove move) => Infos[move];
+        public static Info Obter(ScrapMove mover) => Infos[mover];
 
         // ------------------------------------------------------------------
         // Desenho: cor com a transparencia do quadro todo
         // ------------------------------------------------------------------
 
         /// <summary>A transparencia de tudo o que se desenha aqui. Quem abre e fecha o painel ajusta.</summary>
-        public static float Alpha = 1f;
+        public static float Alfa = 1f;
 
-        public static readonly Color Gold = new Color(0.95f, 0.80f, 0.45f);
-        public static readonly Color GoldDark = new Color(0.45f, 0.33f, 0.16f);
-        public static readonly Color Ink = new Color(0.07f, 0.06f, 0.08f, 0.97f);
-        public static readonly Color Muted = new Color(0.25f, 0.20f, 0.18f);
-        public static readonly Color Paper = new Color(0.93f, 0.90f, 0.82f);
-        public static readonly Color Faded = new Color(0.66f, 0.62f, 0.56f);
+        public static readonly Color Ouro = new Color(0.95f, 0.80f, 0.45f);
+        public static readonly Color EscuroOuro = new Color(0.45f, 0.33f, 0.16f);
+        public static readonly Color Tinta = new Color(0.07f, 0.06f, 0.08f, 0.97f);
+        public static readonly Color Mudo = new Color(0.25f, 0.20f, 0.18f);
+        public static readonly Color Papel = new Color(0.93f, 0.90f, 0.82f);
+        public static readonly Color Esmaecido = new Color(0.66f, 0.62f, 0.56f);
 
-        private static readonly Color DemoBack = new Color(0.11f, 0.10f, 0.12f, 1f);
-        private static readonly Color Rock = new Color(0.30f, 0.23f, 0.20f);
-        private static readonly Color RockTop = new Color(0.52f, 0.40f, 0.30f);
-        private static readonly Color RockSeam = new Color(0.20f, 0.15f, 0.13f);
-        private static readonly Color Spike = new Color(0.72f, 0.72f, 0.78f);
-        private static readonly Color SpikeDark = new Color(0.40f, 0.40f, 0.46f);
-        private static readonly Color Steam = new Color(0.92f, 0.96f, 1f);
-        private static readonly Color Heat = new Color(1f, 0.55f, 0.40f);
-        private static readonly Color Resonance = new Color(0.70f, 0.88f, 1f);
-        private static readonly Color Crystal = new Color(0.55f, 0.80f, 1f);
+        private static readonly Color CostasDemo = new Color(0.11f, 0.10f, 0.12f, 1f);
+        private static readonly Color Rocha = new Color(0.30f, 0.23f, 0.20f);
+        private static readonly Color TopoRocha = new Color(0.52f, 0.40f, 0.30f);
+        private static readonly Color VeioRocha = new Color(0.20f, 0.15f, 0.13f);
+        private static readonly Color Espinho = new Color(0.72f, 0.72f, 0.78f);
+        private static readonly Color EscuroEspinho = new Color(0.40f, 0.40f, 0.46f);
+        private static readonly Color Vapor = new Color(0.92f, 0.96f, 1f);
+        private static readonly Color Calor = new Color(1f, 0.55f, 0.40f);
+        private static readonly Color Ressonancia = new Color(0.70f, 0.88f, 1f);
+        private static readonly Color Cristal = new Color(0.55f, 0.80f, 1f);
 
-        public static void Fill(Rect rect, Color color)
+        public static void Preencher(Rect retangulo, Color cor)
         {
-            Color previous = GUI.color;
-            GUI.color = new Color(color.r, color.g, color.b, color.a * Alpha);
-            GUI.DrawTexture(rect, Texture2D.whiteTexture);
-            GUI.color = previous;
+            Color valorAnterior = GUI.color;
+            GUI.color = new Color(cor.r, cor.g, cor.b, cor.a * Alfa);
+            TelaCanvas.Textura(retangulo, Texture2D.whiteTexture);
+            GUI.color = valorAnterior;
         }
 
-        public static void Text(Rect rect, string text, GUIStyle style, Color color)
+        public static void Texto(Rect retangulo, string texto, GUIStyle estilo, Color cor)
         {
-            Color previous = GUI.color;
-            GUI.color = new Color(color.r, color.g, color.b, color.a * Alpha);
-            GUI.Label(rect, text, style);
-            GUI.color = previous;
+            Color valorAnterior = GUI.color;
+            GUI.color = new Color(cor.r, cor.g, cor.b, cor.a * Alfa);
+            TelaCanvas.Texto(retangulo, texto, estilo);
+            GUI.color = valorAnterior;
         }
 
         /// <summary>A caixa de sempre do HUD: borda dourada por fora, fundo escuro por dentro.</summary>
-        public static void Box(Rect inner, float border = 3f)
+        public static void Caixa(Rect interno, float borda = 3f)
         {
-            Fill(new Rect(inner.x - border, inner.y - border, inner.width + border * 2f, inner.height + border * 2f), Gold);
-            Fill(inner, Ink);
+            Preencher(new Rect(interno.x - borda, interno.y - borda, interno.width + borda * 2f, interno.height + borda * 2f), Ouro);
+            Preencher(interno, Tinta);
         }
 
         // ------------------------------------------------------------------
         // Estilos de texto
         // ------------------------------------------------------------------
 
-        private static readonly Dictionary<int, GUIStyle> Styles = new Dictionary<int, GUIStyle>();
+        private static readonly Dictionary<int, GUIStyle> Estilos = new Dictionary<int, GUIStyle>();
 
         /// <summary>
         /// Um estilo de texto branco (a cor vem do Text). So pode ser chamado
         /// de dentro de um OnGUI, porque parte do GUI.skin.
         /// </summary>
-        public static GUIStyle Style(int size, bool bold = false, TextAnchor anchor = TextAnchor.UpperLeft, bool wrap = false,
-            bool italic = false)
+        public static GUIStyle Estilo(int tamanho, bool negrito = false, TextAnchor ancora = TextAnchor.UpperLeft, bool quebrar = false,
+            bool italico = false)
         {
-            int key = size * 1000 + (bold ? 100 : 0) + (italic ? 200 : 0) + (int)anchor * 2 + (wrap ? 1 : 0);
-            if (Styles.TryGetValue(key, out GUIStyle style) && style != null) return style;
+            int chave = tamanho * 1000 + (negrito ? 100 : 0) + (italico ? 200 : 0) + (int)ancora * 2 + (quebrar ? 1 : 0);
+            if (Estilos.TryGetValue(chave, out GUIStyle estilo) && estilo != null) return estilo;
 
-            FontStyle fontStyle = bold
-                ? (italic ? FontStyle.BoldAndItalic : FontStyle.Bold)
-                : (italic ? FontStyle.Italic : FontStyle.Normal);
+            FontStyle estiloFonte = negrito
+                ? (italico ? FontStyle.BoldAndItalic : FontStyle.Bold)
+                : (italico ? FontStyle.Italic : FontStyle.Normal);
 
-            style = new GUIStyle(GUI.skin.label)
+            estilo = new GUIStyle(GUI.skin.label)
             {
-                fontSize = size,
-                fontStyle = fontStyle,
-                alignment = anchor,
-                wordWrap = wrap,
+                fontSize = tamanho,
+                fontStyle = estiloFonte,
+                alignment = ancora,
+                wordWrap = quebrar,
                 richText = false,
             };
-            style.normal.textColor = Color.white;
-            style.padding = new RectOffset(0, 0, 0, 0);
-            style.margin = new RectOffset(0, 0, 0, 0);
+            estilo.normal.textColor = Color.white;
+            estilo.padding = new RectOffset(0, 0, 0, 0);
+            estilo.margin = new RectOffset(0, 0, 0, 0);
 
-            Styles[key] = style;
-            return style;
+            Estilos[chave] = estilo;
+            return estilo;
         }
 
         // ------------------------------------------------------------------
@@ -204,447 +204,451 @@ namespace EchoesOfCravejada
 
         private struct Token
         {
-            public string Text;
-            public bool IsKey;
+            public string Texto2;
+            public bool EstaChave;
         }
 
-        private static List<Token> Tokens(string keys)
+        private static List<Token> Partes(string chaves)
         {
-            var tokens = new List<Token>();
+            var partes = new List<Token>();
             int i = 0;
 
-            while (i < keys.Length)
+            while (i < chaves.Length)
             {
-                if (keys[i] == '[')
+                if (chaves[i] == '[')
                 {
-                    int end = keys.IndexOf(']', i);
-                    if (end < 0) end = keys.Length;
-                    tokens.Add(new Token { Text = keys.Substring(i + 1, end - i - 1), IsKey = true });
-                    i = end + 1;
+                    int fim = chaves.IndexOf(']', i);
+                    if (fim < 0) fim = chaves.Length;
+                    partes.Add(new Token { Texto2 = chaves.Substring(i + 1, fim - i - 1), EstaChave = true });
+                    i = fim + 1;
                     continue;
                 }
 
-                int next = keys.IndexOf('[', i);
-                if (next < 0) next = keys.Length;
-                string text = keys.Substring(i, next - i).Trim();
-                if (text.Length > 0) tokens.Add(new Token { Text = text, IsKey = false });
-                i = next;
+                int proximo = chaves.IndexOf('[', i);
+                if (proximo < 0) proximo = chaves.Length;
+                string texto = chaves.Substring(i, proximo - i).Trim();
+                if (texto.Length > 0) partes.Add(new Token { Texto2 = texto, EstaChave = false });
+                i = proximo;
             }
 
-            return tokens;
+            return partes;
         }
 
         /// <summary>
         /// Desenha a linha de teclas a partir de (x, y) e devolve a largura. As
         /// teclas que a mini cena esta apertando agora aparecem afundadas e
-        /// acesas. Com <paramref name="draw"/> falso, so mede.
+        /// acesas. Com <paramref name="desenho"/> falso, so mede.
         /// </summary>
-        public static float Keys(string keys, float x, float y, float height, ScrapMove? move = null, float time = 0f, bool draw = true)
+        public static float Teclas(string chaves, float x, float y, float altura, ScrapMove? mover = null, float tempo = 0f, bool desenho = true)
         {
-            GUIStyle capStyle = Style(Mathf.RoundToInt(height * 0.45f), true, TextAnchor.MiddleCenter);
-            GUIStyle wordStyle = Style(Mathf.RoundToInt(height * 0.45f), false, TextAnchor.MiddleLeft);
-            const float gap = 8f;
+            GUIStyle estiloTampa = Estilo(Mathf.RoundToInt(altura * 0.45f), true, TextAnchor.MiddleCenter);
+            GUIStyle estiloPalavra = Estilo(Mathf.RoundToInt(altura * 0.45f), false, TextAnchor.MiddleLeft);
+            const float espaco = 8f;
             float cursor = x;
 
-            foreach (Token token in Tokens(keys))
+            foreach (Token parteTexto in Partes(chaves))
             {
-                if (token.IsKey)
+                if (parteTexto.EstaChave)
                 {
-                    float width = Mathf.Max(height, capStyle.CalcSize(new GUIContent(token.Text)).x + height * 0.6f);
+                    float largura = Mathf.Max(altura, estiloTampa.CalcSize(new GUIContent(parteTexto.Texto2)).x + altura * 0.6f);
 
-                    if (draw)
+                    if (desenho)
                     {
-                        bool pressed = move.HasValue && IsPressed(move.Value, token.Text, time);
-                        Cap(new Rect(cursor, y, width, height), token.Text, pressed, capStyle);
+                        bool apertado = mover.HasValue && EstaPressionado(mover.Value, parteTexto.Texto2, tempo);
+                        Tecla(new Rect(cursor, y, largura, altura), parteTexto.Texto2, apertado, estiloTampa);
                     }
 
-                    cursor += width + gap;
+                    cursor += largura + espaco;
                 }
                 else
                 {
-                    float width = wordStyle.CalcSize(new GUIContent(token.Text)).x;
-                    if (draw) Text(new Rect(cursor, y - 2f, width + 4f, height), token.Text, wordStyle, Faded);
-                    cursor += width + gap;
+                    float largura = estiloPalavra.CalcSize(new GUIContent(parteTexto.Texto2)).x;
+                    if (desenho) Texto(new Rect(cursor, y - 2f, largura + 4f, altura), parteTexto.Texto2, estiloPalavra, Esmaecido);
+                    cursor += largura + espaco;
                 }
             }
 
-            return Mathf.Max(0f, cursor - gap - x);
+            return Mathf.Max(0f, cursor - espaco - x);
         }
 
-        private static void Cap(Rect rect, string label, bool pressed, GUIStyle style)
+        private static void Tecla(Rect retangulo, string rotulo, bool apertado, GUIStyle estilo)
         {
-            float depth = Mathf.Max(3f, rect.height * 0.12f);
+            float profundidade = Mathf.Max(3f, retangulo.height * 0.12f);
 
-            if (pressed)
+            if (apertado)
             {
                 // Afundada: sem a lateral, e acesa por dentro.
-                var face = new Rect(rect.x, rect.y + depth, rect.width, rect.height - depth);
-                Fill(new Rect(face.x - 4f, face.y - 4f, face.width + 8f, face.height + 8f), new Color(Gold.r, Gold.g, Gold.b, 0.25f));
-                Fill(face, Gold);
-                Fill(new Rect(face.x + 2f, face.y + 2f, face.width - 4f, face.height - 4f), new Color(1f, 0.90f, 0.62f));
-                Text(face, label, style, new Color(0.16f, 0.11f, 0.06f));
+                var rosto = new Rect(retangulo.x, retangulo.y + profundidade, retangulo.width, retangulo.height - profundidade);
+                Preencher(new Rect(rosto.x - 4f, rosto.y - 4f, rosto.width + 8f, rosto.height + 8f), new Color(Ouro.r, Ouro.g, Ouro.b, 0.25f));
+                Preencher(rosto, Ouro);
+                Preencher(new Rect(rosto.x + 2f, rosto.y + 2f, rosto.width - 4f, rosto.height - 4f), new Color(1f, 0.90f, 0.62f));
+                Texto(rosto, rotulo, estilo, new Color(0.16f, 0.11f, 0.06f));
             }
             else
             {
-                Fill(rect, new Color(0.62f, 0.56f, 0.48f));
-                Fill(new Rect(rect.x, rect.yMax - depth, rect.width, depth), new Color(0.30f, 0.26f, 0.22f));
-                var face = new Rect(rect.x + 2f, rect.y + 2f, rect.width - 4f, rect.height - depth - 2f);
-                Fill(face, new Color(0.22f, 0.20f, 0.19f));
-                Text(face, label, style, Paper);
+                Preencher(retangulo, new Color(0.62f, 0.56f, 0.48f));
+                Preencher(new Rect(retangulo.x, retangulo.yMax - profundidade, retangulo.width, profundidade), new Color(0.30f, 0.26f, 0.22f));
+                var rosto = new Rect(retangulo.x + 2f, retangulo.y + 2f, retangulo.width - 4f, retangulo.height - profundidade - 2f);
+                Preencher(rosto, new Color(0.22f, 0.20f, 0.19f));
+                Texto(rosto, rotulo, estilo, Papel);
             }
         }
 
         /// <summary>Quais teclas a mini cena esta apertando neste instante da volta.</summary>
-        private static bool IsPressed(ScrapMove move, string key, float time)
+        private static bool EstaPressionado(ScrapMove mover, string chave, float tempo)
         {
-            float t = Mathf.Repeat(time, Get(move).Loop);
+            float t = Mathf.Repeat(tempo, Obter(mover).Repeticao);
 
-            switch (move)
+            switch (mover)
             {
-                case ScrapMove.SteamDash:
-                    if (key == "Espaço") return Between(t, 0.45f, 0.60f);
-                    if (key == "Shift") return Between(t, 0.75f, 0.92f);
+                case ScrapMove.DashVapor:
+                    if (chave == "Espaço") return EstaEntre(t, 0.45f, 0.60f);
+                    if (chave == "Shift") return EstaEntre(t, 0.75f, 0.92f);
                     return false;
 
-                case ScrapMove.PressureJump:
-                    return key == "Espaço" && (Between(t, 0.40f, 0.54f) || Between(t, 0.80f, 0.94f));
+                case ScrapMove.PuloPressao:
+                    return chave == "Espaço" && (EstaEntre(t, 0.40f, 0.54f) || EstaEntre(t, 0.80f, 0.94f));
 
-                case ScrapMove.ResonanceStrike:
-                    return key == "J" && Between(t, 0.50f, 1.25f);
+                case ScrapMove.GolpeRessonancia:
+                    return chave == "J" && EstaEntre(t, 0.50f, 1.25f);
 
-                case ScrapMove.WallJump:
-                    if (key == "←") return Between(t, 0f, 0.45f);
-                    if (key == "→") return Between(t, 1.0f, 1.45f);
-                    if (key == "Espaço") return Between(t, 0.45f, 0.58f) || Between(t, 1.45f, 1.58f);
+                case ScrapMove.PuloParede:
+                    if (chave == "←") return EstaEntre(t, 0f, 0.45f);
+                    if (chave == "→") return EstaEntre(t, 1.0f, 1.45f);
+                    if (chave == "Espaço") return EstaEntre(t, 0.45f, 0.58f) || EstaEntre(t, 1.45f, 1.58f);
                     return false;
 
                 case ScrapMove.Pogo:
-                    if (key == "↓") return Between(t, 0.72f, 1.02f) || Between(t, 1.32f, 1.62f);
-                    if (key == "J") return Between(t, 0.86f, 0.98f) || Between(t, 1.46f, 1.58f);
+                    if (chave == "↓") return EstaEntre(t, 0.72f, 1.02f) || EstaEntre(t, 1.32f, 1.62f);
+                    if (chave == "J") return EstaEntre(t, 0.86f, 0.98f) || EstaEntre(t, 1.46f, 1.58f);
                     return false;
             }
 
             return false;
         }
 
-        private static bool Between(float t, float from, float to) => t >= from && t < to;
+        private static bool EstaEntre(float t, float de, float to) => t >= de && t < to;
 
         // ------------------------------------------------------------------
         // A mini cena
         // ------------------------------------------------------------------
 
-        private static ScrapAnimator _animator;
+        private static ScrapAnimator _animador;
 
-        private static Sprite[] HeroFrames()
+        private static Sprite[] QuadrosDoHeroi()
         {
-            if (_animator == null) _animator = Object.FindAnyObjectByType<ScrapAnimator>();
-            return _animator != null ? _animator.CurrentFrames : null;
+            if (_animador == null) _animador = ScrapRef.Animador;
+            return _animador != null ? _animador.QuadrosAtual : null;
         }
 
         /// <summary>
         /// A mini cena do movimento, num quadro escuro com moldura. O tempo e
         /// desde que o painel abriu, pra a cena sempre comecar do inicio.
         /// </summary>
-        public static void Demo(ScrapMove move, Rect frame, float time)
+        public static void Demonstrar(ScrapMove mover, Rect quadro, float tempo)
         {
-            Fill(new Rect(frame.x - 2f, frame.y - 2f, frame.width + 4f, frame.height + 4f), Muted);
-            Fill(frame, DemoBack);
+            Preencher(new Rect(quadro.x - 2f, quadro.y - 2f, quadro.width + 4f, quadro.height + 4f), Mudo);
+            Preencher(quadro, CostasDemo);
 
-            GUI.BeginGroup(frame);
+            GUI.BeginGroup(quadro);
 
-            float w = frame.width;
-            float h = frame.height;
+            TelaCanvas.AbrirRecorte(new Rect(Vector2.zero, (quadro).size));
+
+            float w = quadro.width;
+            float h = quadro.height;
 
             // O tamanho do pixel: inteiro, pra a arte nao borrar.
             int p = Mathf.Max(1, Mathf.FloorToInt(h / 64f));
 
             // A grade apagada de tiles no fundo.
             float tile = 16f * p;
-            for (float gx = tile; gx < w; gx += tile) Fill(new Rect(gx, 0f, 1f, h), new Color(1f, 1f, 1f, 0.025f));
-            for (float gy = tile; gy < h; gy += tile) Fill(new Rect(0f, gy, w, 1f), new Color(1f, 1f, 1f, 0.025f));
+            for (float gx = tile; gx < w; gx += tile) Preencher(new Rect(gx, 0f, 1f, h), new Color(1f, 1f, 1f, 0.025f));
+            for (float gy = tile; gy < h; gy += tile) Preencher(new Rect(0f, gy, w, 1f), new Color(1f, 1f, 1f, 0.025f));
 
-            Info info = Get(move);
-            float t = Mathf.Repeat(time, info.Loop);
+            Info info = Obter(mover);
+            float t = Mathf.Repeat(tempo, info.Repeticao);
 
-            switch (move)
+            switch (mover)
             {
-                case ScrapMove.SteamDash: DashScene(w, h, p, t); break;
-                case ScrapMove.PressureJump: JumpScene(w, h, p, t); break;
-                case ScrapMove.ResonanceStrike: ResonanceScene(w, h, p, t); break;
-                case ScrapMove.WallJump: WallScene(w, h, p, t, time); break;
-                case ScrapMove.Pogo: PogoScene(w, h, p, t); break;
+                case ScrapMove.DashVapor: CenaDoDash(w, h, p, t); break;
+                case ScrapMove.PuloPressao: CenaDoPulo(w, h, p, t); break;
+                case ScrapMove.GolpeRessonancia: CenaDaRessonancia(w, h, p, t); break;
+                case ScrapMove.PuloParede: CenaDaParede(w, h, p, t, tempo); break;
+                case ScrapMove.Pogo: CenaDoGolpeParaBaixo(w, h, p, t); break;
             }
 
             // A cena some no preto e volta do comeco (o pulo de parede nao: ele e um ciclo).
-            if (move != ScrapMove.WallJump)
+            if (mover != ScrapMove.PuloParede)
             {
-                float fade = 0f;
-                if (t < 0.25f) fade = 1f - t / 0.25f;
-                else if (t > info.Loop - 0.4f) fade = (t - (info.Loop - 0.4f)) / 0.4f;
-                if (fade > 0f) Fill(new Rect(0f, 0f, w, h), new Color(DemoBack.r, DemoBack.g, DemoBack.b, Mathf.Clamp01(fade)));
+                float esmaecimento = 0f;
+                if (t < 0.25f) esmaecimento = 1f - t / 0.25f;
+                else if (t > info.Repeticao - 0.4f) esmaecimento = (t - (info.Repeticao - 0.4f)) / 0.4f;
+                if (esmaecimento > 0f) Preencher(new Rect(0f, 0f, w, h), new Color(CostasDemo.r, CostasDemo.g, CostasDemo.b, Mathf.Clamp01(esmaecimento)));
             }
+
+            TelaCanvas.FecharRecorte();
 
             GUI.EndGroup();
         }
 
-        private static int IdleFrame(float t) => ScrapAnimator.Idle + (int)(t * 3f) % ScrapAnimator.IdleFrames;
+        private static int QuadroParado(float t) => ScrapAnimator.QuadroOcioso + (int)(t * 3f) % ScrapAnimator.QuadrosOcioso;
 
-        private static void DashScene(float w, float h, int p, float t)
+        private static void CenaDoDash(float w, float h, int p, float t)
         {
-            float ground = h * 0.78f;
-            float pitLeft = w * 0.34f;
-            float pitRight = w * 0.66f;
+            float solo = h * 0.78f;
+            float esquerdaFosso = w * 0.34f;
+            float direitaFosso = w * 0.66f;
 
-            Ground(0f, pitLeft, ground, h, p);
-            Ground(pitRight, w, ground, h, p);
-            Ground(pitLeft, pitRight, h - 3f * p, h, p);
-            Spikes(pitLeft, pitRight, h - 3f * p, p);
+            Chao(0f, esquerdaFosso, solo, h, p);
+            Chao(direitaFosso, w, solo, h, p);
+            Chao(esquerdaFosso, direitaFosso, h - 3f * p, h, p);
+            Espinhos(esquerdaFosso, direitaFosso, h - 3f * p, p);
 
-            float x0 = w * 0.14f, xJump = w * 0.27f, xDash = w * 0.74f, xLand = w * 0.82f;
-            float lift = h * 0.20f;
+            float x0 = w * 0.14f, puloX = w * 0.27f, dashX = w * 0.74f, pousarX = w * 0.82f;
+            float erguer = h * 0.20f;
 
             if (t < 0.45f)
             {
-                Hero(IdleFrame(t), x0, ground, p, false, Color.white);
+                Heroi(QuadroParado(t), x0, solo, p, false, Color.white);
             }
             else if (t < 0.75f)
             {
                 float u = (t - 0.45f) / 0.30f;
-                Hero(ScrapAnimator.Jump, Mathf.Lerp(x0, xJump, u), ground - lift * Mathf.Sin(u * Mathf.PI * 0.5f), p, false, Color.white);
+                Heroi(ScrapAnimator.Pulo, Mathf.Lerp(x0, puloX, u), solo - erguer * Mathf.Sin(u * Mathf.PI * 0.5f), p, false, Color.white);
             }
             else if (t < 1.0f)
             {
                 float u = (t - 0.75f) / 0.25f;
-                float y = ground - lift;
+                float y = solo - erguer;
 
                 // O rastro: o Scrap de um instante atras, cada vez mais apagado.
                 for (int k = 3; k >= 1; k--)
                 {
-                    float back = u - k * 0.13f;
-                    if (back < 0f) continue;
-                    Hero(ScrapAnimator.Dash, Mathf.Lerp(xJump, xDash, back), y, p, false,
-                        new Color(Heat.r, Heat.g, Heat.b, 0.45f - k * 0.12f));
+                    float costas = u - k * 0.13f;
+                    if (costas < 0f) continue;
+                    Heroi(ScrapAnimator.QuadroDash, Mathf.Lerp(puloX, dashX, costas), y, p, false,
+                        new Color(Calor.r, Calor.g, Calor.b, 0.45f - k * 0.12f));
                 }
 
-                Puff(new Vector2(xJump - 4f * p, y - 8f * p), t - 0.75f, 0.45f, p, Steam);
-                Hero(ScrapAnimator.Dash, Mathf.Lerp(xJump, xDash, u), y, p, false, Color.white);
+                Baforada(new Vector2(puloX - 4f * p, y - 8f * p), t - 0.75f, 0.45f, p, Vapor);
+                Heroi(ScrapAnimator.QuadroDash, Mathf.Lerp(puloX, dashX, u), y, p, false, Color.white);
             }
             else if (t < 1.3f)
             {
                 float u = (t - 1.0f) / 0.30f;
-                Puff(new Vector2(xJump - 4f * p, ground - lift - 8f * p), t - 0.75f, 0.45f, p, Steam);
-                Hero(ScrapAnimator.Fall, Mathf.Lerp(xDash, xLand, u), ground - lift * (1f - u * u), p, false, Color.white);
+                Baforada(new Vector2(puloX - 4f * p, solo - erguer - 8f * p), t - 0.75f, 0.45f, p, Vapor);
+                Heroi(ScrapAnimator.QuadroQueda, Mathf.Lerp(dashX, pousarX, u), solo - erguer * (1f - u * u), p, false, Color.white);
             }
             else
             {
                 // As costas esfriam aos poucos, como no jogo.
-                float heat = Mathf.Clamp01(1f - (t - 1.0f) / 0.9f);
-                Hero(IdleFrame(t), xLand, ground, p, false, Color.Lerp(Color.white, Heat, heat));
+                float calor = Mathf.Clamp01(1f - (t - 1.0f) / 0.9f);
+                Heroi(QuadroParado(t), pousarX, solo, p, false, Color.Lerp(Color.white, Calor, calor));
             }
         }
 
-        private static void JumpScene(float w, float h, int p, float t)
+        private static void CenaDoPulo(float w, float h, int p, float t)
         {
-            float ground = h * 0.86f;
-            Ground(0f, w, ground, h, p);
+            float solo = h * 0.86f;
+            Chao(0f, w, solo, h, p);
 
             float x0 = w * 0.2f, x1 = w * 0.8f;
-            float first = h * 0.22f, second = h * 0.44f;
+            float primeiro = h * 0.22f, segundo = h * 0.44f;
             float x = Mathf.Lerp(x0, x1, Mathf.InverseLerp(0.4f, 1.75f, t));
 
             // A rajada do segundo pulo fica no ar, onde ele pulou.
-            float burstX = Mathf.Lerp(x0, x1, Mathf.InverseLerp(0.4f, 1.75f, 0.8f));
-            if (t >= 0.8f) Puff(new Vector2(burstX, ground - first + 2f * p), t - 0.8f, 0.6f, p, Steam, 1.6f);
+            float rajadaX = Mathf.Lerp(x0, x1, Mathf.InverseLerp(0.4f, 1.75f, 0.8f));
+            if (t >= 0.8f) Baforada(new Vector2(rajadaX, solo - primeiro + 2f * p), t - 0.8f, 0.6f, p, Vapor, 1.6f);
 
             if (t < 0.4f)
             {
-                Hero(IdleFrame(t), x0, ground, p, false, Color.white);
+                Heroi(QuadroParado(t), x0, solo, p, false, Color.white);
             }
             else if (t < 0.8f)
             {
                 float u = (t - 0.4f) / 0.4f;
-                Hero(ScrapAnimator.Jump, x, ground - first * Mathf.Sin(u * Mathf.PI * 0.5f), p, false, Color.white);
+                Heroi(ScrapAnimator.Pulo, x, solo - primeiro * Mathf.Sin(u * Mathf.PI * 0.5f), p, false, Color.white);
             }
             else if (t < 1.15f)
             {
                 float u = (t - 0.8f) / 0.35f;
-                Hero(ScrapAnimator.Jump, x, ground - first - (second - first) * Mathf.Sin(u * Mathf.PI * 0.5f), p, false, Color.white);
+                Heroi(ScrapAnimator.Pulo, x, solo - primeiro - (segundo - primeiro) * Mathf.Sin(u * Mathf.PI * 0.5f), p, false, Color.white);
             }
             else if (t < 1.75f)
             {
                 float u = (t - 1.15f) / 0.6f;
-                Hero(ScrapAnimator.Fall, x, ground - second * (1f - u * u), p, false, Color.white);
+                Heroi(ScrapAnimator.QuadroQueda, x, solo - segundo * (1f - u * u), p, false, Color.white);
             }
             else
             {
-                Hero(IdleFrame(t), x1, ground, p, false, Color.white);
+                Heroi(QuadroParado(t), x1, solo, p, false, Color.white);
             }
         }
 
-        private static void ResonanceScene(float w, float h, int p, float t)
+        private static void CenaDaRessonancia(float w, float h, int p, float t)
         {
-            float ground = h * 0.84f;
-            Ground(0f, w, ground, h, p);
+            float solo = h * 0.84f;
+            Chao(0f, w, solo, h, p);
 
             float cx = w * 0.5f;
-            float leftCrystal = w * 0.17f, rightCrystal = w * 0.83f;
-            const float shatter = 1.62f;
+            float cristalEsquerda = w * 0.17f, cristalDireita = w * 0.83f;
+            const float estilhaco = 1.62f;
 
-            if (t < shatter)
+            if (t < estilhaco)
             {
-                CrystalShape(leftCrystal, ground, p);
-                CrystalShape(rightCrystal, ground, p);
+                FormaDoCristal(cristalEsquerda, solo, p);
+                FormaDoCristal(cristalDireita, solo, p);
             }
             else if (t < 2.3f)
             {
-                Shards(leftCrystal, ground, t - shatter, p, -1f);
-                Shards(rightCrystal, ground, t - shatter, p, 1f);
+                Fragmentos(cristalEsquerda, solo, t - estilhaco, p, -1f);
+                Fragmentos(cristalDireita, solo, t - estilhaco, p, 1f);
             }
 
-            bool charged = t >= 1.0f && t < 1.25f;
-            Color tint = charged ? Color.Lerp(Color.white, Resonance, 0.5f + 0.5f * Mathf.Sin(t * 40f)) : Color.white;
+            bool carregado2 = t >= 1.0f && t < 1.25f;
+            Color tom = carregado2 ? Color.Lerp(Color.white, Ressonancia, 0.5f + 0.5f * Mathf.Sin(t * 40f)) : Color.white;
 
             if (t < 0.5f || t >= 1.45f)
             {
-                Hero(IdleFrame(t), cx, ground, p, false, Color.white);
+                Heroi(QuadroParado(t), cx, solo, p, false, Color.white);
             }
             else if (t < 1.25f)
             {
-                if (charged)
+                if (carregado2)
                 {
-                    float glow = 0.35f + 0.25f * Mathf.Sin(t * 40f);
-                    Fill(new Rect(cx - 10f * p, ground - 24f * p, 20f * p, 22f * p), new Color(Resonance.r, Resonance.g, Resonance.b, glow * 0.35f));
+                    float brilho = 0.35f + 0.25f * Mathf.Sin(t * 40f);
+                    Preencher(new Rect(cx - 10f * p, solo - 24f * p, 20f * p, 22f * p), new Color(Ressonancia.r, Ressonancia.g, Ressonancia.b, brilho * 0.35f));
                 }
 
-                Hero(ScrapAnimator.Windup, cx, ground, p, false, tint);
+                Heroi(ScrapAnimator.QuadroPreparo, cx, solo, p, false, tom);
 
                 // A barra de carga embaixo dos pes.
-                float charge = Mathf.Clamp01((t - 0.5f) / 0.5f);
-                var bar = new Rect(cx - 10f * p, ground + 3f * p, 20f * p, 2f * p);
-                Fill(bar, Muted);
-                Fill(new Rect(bar.x, bar.y, bar.width * charge, bar.height), charge >= 1f ? Resonance : Gold);
+                float carga = Mathf.Clamp01((t - 0.5f) / 0.5f);
+                var barra = new Rect(cx - 10f * p, solo + 3f * p, 20f * p, 2f * p);
+                Preencher(barra, Mudo);
+                Preencher(new Rect(barra.x, barra.y, barra.width * carga, barra.height), carga >= 1f ? Ressonancia : Ouro);
             }
             else
             {
-                Hero(ScrapAnimator.Strike, cx, ground, p, false, Color.white);
+                Heroi(ScrapAnimator.QuadroGolpe, cx, solo, p, false, Color.white);
             }
 
             if (t >= 1.25f && t < 1.75f)
             {
                 float u = (t - 1.25f) / 0.5f;
-                var center = new Vector2(cx, ground - 10f * p);
-                Ring(center, Mathf.Lerp(4f * p, w * 0.42f, u), p, new Color(Resonance.r, Resonance.g, Resonance.b, 1f - u));
-                Ring(center, Mathf.Lerp(2f * p, w * 0.30f, u), p, new Color(1f, 1f, 1f, (1f - u) * 0.5f));
+                var centro = new Vector2(cx, solo - 10f * p);
+                Anel(centro, Mathf.Lerp(4f * p, w * 0.42f, u), p, new Color(Ressonancia.r, Ressonancia.g, Ressonancia.b, 1f - u));
+                Anel(centro, Mathf.Lerp(2f * p, w * 0.30f, u), p, new Color(1f, 1f, 1f, (1f - u) * 0.5f));
             }
         }
 
-        private static void WallScene(float w, float h, int p, float t, float time)
+        private static void CenaDaParede(float w, float h, int p, float t, float tempo)
         {
-            float left = w * 0.36f;
-            float right = w * 0.64f;
+            float esquerda = w * 0.36f;
+            float direita = w * 0.64f;
 
             // As paredes descem sem parar: e ele que esta subindo.
-            float seam = 12f * p;
-            float scroll = Mathf.Repeat(time * h * 0.32f, seam * 2f);
-            Wall(0f, left, h, p, scroll, seam, true);
-            Wall(right, w, h, p, scroll, seam, false);
+            float veio = 12f * p;
+            float rolagem = Mathf.Repeat(tempo * h * 0.32f, veio * 2f);
+            Parede(0f, esquerda, h, p, rolagem, veio, true);
+            Parede(direita, w, h, p, rolagem, veio, false);
 
-            float reach = 7f * p;
+            float alcanceGolpe = 7f * p;
             float baseY = h * 0.66f;
-            float arc = h * 0.20f;
-            float slide = 5f * p;
+            float arco = h * 0.20f;
+            float deslize = 5f * p;
 
             if (t < 0.45f)
             {
                 float u = t / 0.45f;
-                Hero(ScrapAnimator.Wall, left + reach, baseY + slide * u, p, false, Color.white);
+                Heroi(ScrapAnimator.Parede2, esquerda + alcanceGolpe, baseY + deslize * u, p, false, Color.white);
             }
             else if (t < 1.0f)
             {
                 float u = (t - 0.45f) / 0.55f;
-                Puff(new Vector2(left + 2f * p, baseY + slide - 6f * p), t - 0.45f, 0.35f, p, Faded);
-                float y = Mathf.Lerp(baseY + slide, baseY, u) - 4f * arc * u * (1f - u);
-                Hero(u < 0.5f ? ScrapAnimator.Jump : ScrapAnimator.Fall, Mathf.Lerp(left + reach, right - reach, u), y, p, false, Color.white);
+                Baforada(new Vector2(esquerda + 2f * p, baseY + deslize - 6f * p), t - 0.45f, 0.35f, p, Esmaecido);
+                float y = Mathf.Lerp(baseY + deslize, baseY, u) - 4f * arco * u * (1f - u);
+                Heroi(u < 0.5f ? ScrapAnimator.Pulo : ScrapAnimator.QuadroQueda, Mathf.Lerp(esquerda + alcanceGolpe, direita - alcanceGolpe, u), y, p, false, Color.white);
             }
             else if (t < 1.45f)
             {
                 float u = (t - 1.0f) / 0.45f;
-                Hero(ScrapAnimator.Wall, right - reach, baseY + slide * u, p, true, Color.white);
+                Heroi(ScrapAnimator.Parede2, direita - alcanceGolpe, baseY + deslize * u, p, true, Color.white);
             }
             else
             {
                 float u = (t - 1.45f) / 0.55f;
-                Puff(new Vector2(right - 2f * p, baseY + slide - 6f * p), t - 1.45f, 0.35f, p, Faded);
-                float y = Mathf.Lerp(baseY + slide, baseY, u) - 4f * arc * u * (1f - u);
-                Hero(u < 0.5f ? ScrapAnimator.Jump : ScrapAnimator.Fall, Mathf.Lerp(right - reach, left + reach, u), y, p, true, Color.white);
+                Baforada(new Vector2(direita - 2f * p, baseY + deslize - 6f * p), t - 1.45f, 0.35f, p, Esmaecido);
+                float y = Mathf.Lerp(baseY + deslize, baseY, u) - 4f * arco * u * (1f - u);
+                Heroi(u < 0.5f ? ScrapAnimator.Pulo : ScrapAnimator.QuadroQueda, Mathf.Lerp(direita - alcanceGolpe, esquerda + alcanceGolpe, u), y, p, true, Color.white);
             }
 
             // Setinhas subindo no meio da chamine: o caminho e pra cima.
             for (int i = 0; i < 3; i++)
             {
-                float y = Mathf.Repeat(h - time * h * 0.32f - i * h / 3f, h);
-                Chevron(w * 0.5f, y, p, new Color(Gold.r, Gold.g, Gold.b, 0.18f));
+                float y = Mathf.Repeat(h - tempo * h * 0.32f - i * h / 3f, h);
+                Seta(w * 0.5f, y, p, new Color(Ouro.r, Ouro.g, Ouro.b, 0.18f));
             }
         }
 
-        private static void PogoScene(float w, float h, int p, float t)
+        private static void CenaDoGolpeParaBaixo(float w, float h, int p, float t)
         {
-            float ground = h * 0.8f;
-            float spikeLeft = w * 0.2f, spikeRight = w * 0.8f;
-            Ground(0f, w, ground, h, p);
-            Spikes(spikeLeft, spikeRight, ground, p);
+            float solo = h * 0.8f;
+            float esquerdaEspinho = w * 0.2f, direitaEspinho = w * 0.8f;
+            Chao(0f, w, solo, h, p);
+            Espinhos(esquerdaEspinho, direitaEspinho, solo, p);
 
-            float x0 = w * 0.09f, hit1 = w * 0.37f, hit2 = w * 0.61f, land = w * 0.9f;
-            float hitY = ground - 13f * p;
+            float x0 = w * 0.09f, golpe1 = w * 0.37f, golpe2 = w * 0.61f, pousar = w * 0.9f;
+            float golpeY = solo - 13f * p;
 
             if (t < 0.35f)
             {
-                Hero(IdleFrame(t), x0, ground, p, false, Color.white);
+                Heroi(QuadroParado(t), x0, solo, p, false, Color.white);
             }
             else if (t < 0.95f)
             {
-                Leap(x0, ground, hit1, hitY, h * 0.32f, (t - 0.35f) / 0.6f, p, t > 0.82f);
+                Saltar(x0, solo, golpe1, golpeY, h * 0.32f, (t - 0.35f) / 0.6f, p, t > 0.82f);
             }
             else if (t < 1.55f)
             {
-                Leap(hit1, hitY, hit2, hitY, h * 0.30f, (t - 0.95f) / 0.6f, p, t > 1.42f);
+                Saltar(golpe1, golpeY, golpe2, golpeY, h * 0.30f, (t - 0.95f) / 0.6f, p, t > 1.42f);
             }
             else if (t < 2.15f)
             {
-                Leap(hit2, hitY, land, ground, h * 0.26f, (t - 1.55f) / 0.6f, p, false);
+                Saltar(golpe2, golpeY, pousar, solo, h * 0.26f, (t - 1.55f) / 0.6f, p, false);
             }
             else
             {
-                Hero(IdleFrame(t), land, ground, p, false, Color.white);
+                Heroi(QuadroParado(t), pousar, solo, p, false, Color.white);
             }
 
             // O risco do cinzel embaixo dos pes, e a faisca no espinho.
-            SlashDown(hit1, hitY, t - 0.95f, p);
-            SlashDown(hit2, hitY, t - 1.55f, p);
+            CorteParaBaixo(golpe1, golpeY, t - 0.95f, p);
+            CorteParaBaixo(golpe2, golpeY, t - 1.55f, p);
         }
 
-        /// <summary>Um salto em arco de um ponto a outro. Com <paramref name="aiming"/>, ja mira o golpe pra baixo.</summary>
-        private static void Leap(float x0, float y0, float x1, float y1, float height, float u, int p, bool aiming)
+        /// <summary>Um salto em arco de um ponto a outro. Com <paramref name="mirando"/>, ja mira o golpe pra baixo.</summary>
+        private static void Saltar(float x0, float y0, float x1, float y1, float altura, float u, int p, bool mirando)
         {
             float x = Mathf.Lerp(x0, x1, u);
-            float y = Mathf.Lerp(y0, y1, u) - 4f * height * u * (1f - u);
-            int frame = aiming ? ScrapAnimator.Windup : (u < 0.5f ? ScrapAnimator.Jump : ScrapAnimator.Fall);
-            Hero(frame, x, y, p, false, Color.white);
+            float y = Mathf.Lerp(y0, y1, u) - 4f * altura * u * (1f - u);
+            int quadro = mirando ? ScrapAnimator.QuadroPreparo : (u < 0.5f ? ScrapAnimator.Pulo : ScrapAnimator.QuadroQueda);
+            Heroi(quadro, x, y, p, false, Color.white);
         }
 
-        private static void SlashDown(float x, float feetY, float age, int p)
+        private static void CorteParaBaixo(float x, float pesY, float idade, int p)
         {
-            const float life = 0.16f;
-            if (age < 0f || age > life) return;
+            const float duracaoVida = 0.16f;
+            if (idade < 0f || idade > duracaoVida) return;
 
-            float fade = 1f - age / life;
+            float esmaecimento = 1f - idade / duracaoVida;
             for (int i = 0; i < 4; i++)
             {
-                float width = (14 - i * 3) * p;
-                Fill(new Rect(x - width * 0.5f, feetY + i * 1.5f * p, width, 1.5f * p), new Color(1f, 1f, 1f, fade));
+                float largura = (14 - i * 3) * p;
+                Preencher(new Rect(x - largura * 0.5f, pesY + i * 1.5f * p, largura, 1.5f * p), new Color(1f, 1f, 1f, esmaecimento));
             }
 
-            Puff(new Vector2(x, feetY + 6f * p), age, 0.3f, p, Gold);
+            Baforada(new Vector2(x, pesY + 6f * p), idade, 0.3f, p, Ouro);
         }
 
         // ------------------------------------------------------------------
@@ -655,147 +659,147 @@ namespace EchoesOfCravejada
         /// Um quadro do Scrap, com os pes em (feetX, feetY) e o pixel do
         /// tamanho p. Sem os quadros na cena, um boneco chapado no lugar.
         /// </summary>
-        private static void Hero(int frame, float feetX, float feetY, int p, bool flip, Color tint)
+        private static void Heroi(int quadro, float pesX, float pesY, int p, bool inverter, Color tom)
         {
-            Sprite[] frames = HeroFrames();
-            Sprite sprite = frames != null && frame >= 0 && frame < frames.Length ? frames[frame] : null;
+            Sprite[] quadros = QuadrosDoHeroi();
+            Sprite sprite = quadros != null && quadro >= 0 && quadro < quadros.Length ? quadros[quadro] : null;
 
             if (sprite == null || sprite.texture == null)
             {
-                Fill(new Rect(feetX - 5f * p, feetY - 18f * p, 10f * p, 18f * p), tint * new Color(0.8f, 0.55f, 0.35f));
+                Preencher(new Rect(pesX - 5f * p, pesY - 18f * p, 10f * p, 18f * p), tom * new Color(0.8f, 0.55f, 0.35f));
                 return;
             }
 
             Rect pixels = sprite.rect;
-            Vector2 pivot = sprite.pivot;
+            Vector2 pivo = sprite.pivot;
 
             // A cena foi medida pro quadro antigo, de 32 pixels: um quadro
             // maior (mais detalhado) encolhe pra caber no mesmo espaco.
-            float scale = p * Mathf.Min(1f, 32f / pixels.height);
+            float escalaAtual = p * Mathf.Min(1f, 32f / pixels.height);
 
-            float left = flip ? feetX - (pixels.width - pivot.x) * scale : feetX - pivot.x * scale;
-            float top = feetY - (pixels.height - pivot.y) * scale;
-            var target = new Rect(left, top, pixels.width * scale, pixels.height * scale);
+            float esquerda = inverter ? pesX - (pixels.width - pivo.x) * escalaAtual : pesX - pivo.x * escalaAtual;
+            float topo = pesY - (pixels.height - pivo.y) * escalaAtual;
+            var alvo = new Rect(esquerda, topo, pixels.width * escalaAtual, pixels.height * escalaAtual);
 
-            Texture texture = sprite.texture;
-            var uv = new Rect(pixels.x / texture.width, pixels.y / texture.height,
-                pixels.width / texture.width, pixels.height / texture.height);
-            if (flip) uv = new Rect(uv.xMax, uv.y, -uv.width, uv.height);
+            Texture textura = sprite.texture;
+            var uv = new Rect(pixels.x / textura.width, pixels.y / textura.height,
+                pixels.width / textura.width, pixels.height / textura.height);
+            if (inverter) uv = new Rect(uv.xMax, uv.y, -uv.width, uv.height);
 
-            Color previous = GUI.color;
-            GUI.color = new Color(tint.r, tint.g, tint.b, tint.a * Alpha);
-            GUI.DrawTextureWithTexCoords(target, texture, uv);
-            GUI.color = previous;
+            Color valorAnterior = GUI.color;
+            GUI.color = new Color(tom.r, tom.g, tom.b, tom.a * Alfa);
+            TelaCanvas.TexturaUV(alvo, textura, uv);
+            GUI.color = valorAnterior;
         }
 
-        private static void Ground(float x0, float x1, float top, float bottom, int p)
+        private static void Chao(float x0, float x1, float topo, float parteInferior, int p)
         {
             if (x1 <= x0) return;
 
-            Fill(new Rect(x0, top, x1 - x0, bottom - top), Rock);
-            Fill(new Rect(x0, top, x1 - x0, 2f * p), RockTop);
+            Preencher(new Rect(x0, topo, x1 - x0, parteInferior - topo), Rocha);
+            Preencher(new Rect(x0, topo, x1 - x0, 2f * p), TopoRocha);
 
             // Umas emendas de pedra, sempre no mesmo lugar.
             for (float x = x0 + 9f * p; x < x1 - 2f * p; x += 15f * p)
             {
-                Fill(new Rect(x, top + 5f * p, 4f * p, p), RockSeam);
+                Preencher(new Rect(x, topo + 5f * p, 4f * p, p), VeioRocha);
             }
         }
 
-        private static void Spikes(float x0, float x1, float baseY, int p)
+        private static void Espinhos(float x0, float x1, float baseY, int p)
         {
-            float width = 6f * p;
-            float height = 7f * p;
+            float largura = 6f * p;
+            float altura = 7f * p;
 
-            for (float x = x0; x + width <= x1 + 0.5f; x += width)
+            for (float x = x0; x + largura <= x1 + 0.5f; x += largura)
             {
-                float center = x + width * 0.5f;
-                for (float r = 0f; r < height; r += p)
+                float centro = x + largura * 0.5f;
+                for (float r = 0f; r < altura; r += p)
                 {
-                    float span = Mathf.Max(p, width * (1f - r / height));
-                    Fill(new Rect(center - span * 0.5f, baseY - r - p, span, p), r < 2f * p ? SpikeDark : Spike);
+                    float extensao = Mathf.Max(p, largura * (1f - r / altura));
+                    Preencher(new Rect(centro - extensao * 0.5f, baseY - r - p, extensao, p), r < 2f * p ? EscuroEspinho : Espinho);
                 }
             }
         }
 
-        private static void Wall(float x0, float x1, float h, int p, float scroll, float seam, bool leftSide)
+        private static void Parede(float x0, float x1, float h, int p, float rolagem, float veio, bool ladoEsquerda)
         {
-            Fill(new Rect(x0, 0f, x1 - x0, h), Rock);
+            Preencher(new Rect(x0, 0f, x1 - x0, h), Rocha);
 
-            float edge = leftSide ? x1 - 2f * p : x0;
-            Fill(new Rect(edge, 0f, 2f * p, h), RockTop);
+            float beirada = ladoEsquerda ? x1 - 2f * p : x0;
+            Preencher(new Rect(beirada, 0f, 2f * p, h), TopoRocha);
 
-            for (float y = -seam * 2f + scroll; y < h; y += seam)
+            for (float y = -veio * 2f + rolagem; y < h; y += veio)
             {
-                float shift = Mathf.Repeat(y - scroll, seam * 2f) < seam ? 0f : 6f * p;
-                for (float x = x0 + 3f * p + shift; x < x1 - 4f * p; x += 14f * p)
+                float turno = Mathf.Repeat(y - rolagem, veio * 2f) < veio ? 0f : 6f * p;
+                for (float x = x0 + 3f * p + turno; x < x1 - 4f * p; x += 14f * p)
                 {
-                    Fill(new Rect(x, y, 7f * p, p), RockSeam);
+                    Preencher(new Rect(x, y, 7f * p, p), VeioRocha);
                 }
             }
         }
 
-        private static void CrystalShape(float cx, float ground, int p)
+        private static void FormaDoCristal(float cx, float solo, int p)
         {
-            int[] rows = { 2, 4, 6, 6, 6, 6, 6, 4, 4, 2 };
-            for (int i = 0; i < rows.Length; i++)
+            int[] linhas = { 2, 4, 6, 6, 6, 6, 6, 4, 4, 2 };
+            for (int i = 0; i < linhas.Length; i++)
             {
-                float width = rows[i] * p;
-                Color color = i < 3 ? Color.Lerp(Crystal, Color.white, 0.5f) : Crystal;
-                Fill(new Rect(cx - width * 0.5f, ground - (rows.Length - i) * p * 1.5f, width, p * 1.5f), color);
+                float largura = linhas[i] * p;
+                Color cor = i < 3 ? Color.Lerp(Cristal, Color.white, 0.5f) : Cristal;
+                Preencher(new Rect(cx - largura * 0.5f, solo - (linhas.Length - i) * p * 1.5f, largura, p * 1.5f), cor);
             }
         }
 
-        private static void Shards(float cx, float ground, float age, int p, float side)
+        private static void Fragmentos(float cx, float solo, float idade, int p, float lado)
         {
-            float fade = Mathf.Clamp01(1f - age / 0.6f);
+            float esmaecimento = Mathf.Clamp01(1f - idade / 0.6f);
             for (int i = 0; i < 6; i++)
             {
-                float angle = (35f + i * 22f) * Mathf.Deg2Rad;
-                float speed = (40f + i * 9f) * p * 0.5f;
-                float x = cx + side * Mathf.Cos(angle) * speed * age;
-                float y = ground - 8f * p - Mathf.Sin(angle) * speed * age + 120f * p * age * age;
-                Fill(new Rect(x, y, 2f * p, 2f * p), new Color(Crystal.r, Crystal.g, Crystal.b, fade));
+                float angulo = (35f + i * 22f) * Mathf.Deg2Rad;
+                float velocidade = (40f + i * 9f) * p * 0.5f;
+                float x = cx + lado * Mathf.Cos(angulo) * velocidade * idade;
+                float y = solo - 8f * p - Mathf.Sin(angulo) * velocidade * idade + 120f * p * idade * idade;
+                Preencher(new Rect(x, y, 2f * p, 2f * p), new Color(Cristal.r, Cristal.g, Cristal.b, esmaecimento));
             }
         }
 
-        private static void Ring(Vector2 center, float radius, int p, Color color)
+        private static void Anel(Vector2 centro, float raioArea, int p, Color cor)
         {
-            const int dots = 40;
-            for (int i = 0; i < dots; i++)
+            const int pontos = 40;
+            for (int i = 0; i < pontos; i++)
             {
-                float angle = i * Mathf.PI * 2f / dots;
-                float x = center.x + Mathf.Cos(angle) * radius;
-                float y = center.y + Mathf.Sin(angle) * radius * 0.8f;
-                Fill(new Rect(x - p, y - p, 2f * p, 2f * p), color);
+                float angulo = i * Mathf.PI * 2f / pontos;
+                float x = centro.x + Mathf.Cos(angulo) * raioArea;
+                float y = centro.y + Mathf.Sin(angulo) * raioArea * 0.8f;
+                Preencher(new Rect(x - p, y - p, 2f * p, 2f * p), cor);
             }
         }
 
         /// <summary>Um sopro de vapor ou poeira: quadradinhos se abrindo e sumindo.</summary>
-        private static void Puff(Vector2 center, float age, float life, int p, Color color, float size = 1f)
+        private static void Baforada(Vector2 centro, float idade, float duracaoVida, int p, Color cor, float tamanho = 1f)
         {
-            if (age < 0f || age > life) return;
+            if (idade < 0f || idade > duracaoVida) return;
 
-            float u = age / life;
-            float spread = (3f + 9f * u) * p * size;
-            float square = Mathf.Max(p, (3f - 2f * u) * p * size);
-            var faded = new Color(color.r, color.g, color.b, (1f - u) * 0.8f);
+            float u = idade / duracaoVida;
+            float espalhamento = (3f + 9f * u) * p * tamanho;
+            float quadrado = Mathf.Max(p, (3f - 2f * u) * p * tamanho);
+            var esmaecido = new Color(cor.r, cor.g, cor.b, (1f - u) * 0.8f);
 
             for (int i = 0; i < 6; i++)
             {
-                float angle = i * Mathf.PI / 3f + 0.4f;
-                float x = center.x + Mathf.Cos(angle) * spread;
-                float y = center.y + Mathf.Sin(angle) * spread * 0.6f;
-                Fill(new Rect(x - square * 0.5f, y - square * 0.5f, square, square), faded);
+                float angulo = i * Mathf.PI / 3f + 0.4f;
+                float x = centro.x + Mathf.Cos(angulo) * espalhamento;
+                float y = centro.y + Mathf.Sin(angulo) * espalhamento * 0.6f;
+                Preencher(new Rect(x - quadrado * 0.5f, y - quadrado * 0.5f, quadrado, quadrado), esmaecido);
             }
         }
 
-        private static void Chevron(float cx, float y, int p, Color color)
+        private static void Seta(float cx, float y, int p, Color cor)
         {
             for (int i = 0; i < 4; i++)
             {
-                Fill(new Rect(cx - (i + 1) * p * 1.5f, y + i * p, p * 1.5f, p), color);
-                Fill(new Rect(cx + i * p * 1.5f, y + i * p, p * 1.5f, p), color);
+                Preencher(new Rect(cx - (i + 1) * p * 1.5f, y + i * p, p * 1.5f, p), cor);
+                Preencher(new Rect(cx + i * p * 1.5f, y + i * p, p * 1.5f, p), cor);
             }
         }
     }

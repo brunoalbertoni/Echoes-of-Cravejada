@@ -14,74 +14,77 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class KeyItems
     {
-        private static readonly HashSet<string> Held = new HashSet<string>();
-        private static readonly HashSet<string> Delivered = new HashSet<string>();
-        private static readonly HashSet<string> Flags = new HashSet<string>();
+        [SaveProgress("Held")]
+        private static readonly HashSet<string> Segurado = new HashSet<string>();
+        [SaveProgress("Delivered")]
+        private static readonly HashSet<string> Entregues = new HashSet<string>();
+        [SaveProgress("Flags")]
+        private static readonly HashSet<string> Marcas = new HashSet<string>();
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            Held.Clear();
-            Delivered.Clear();
-            Flags.Clear();
+            Segurado.Clear();
+            Entregues.Clear();
+            Marcas.Clear();
         }
 
-        public static void Add(string id)
+        public static void Adicionar(string id)
         {
-            if (!Delivered.Contains(id)) Held.Add(id);
+            if (!Entregues.Contains(id)) Segurado.Add(id);
         }
 
         /// <summary>Se ele esta com isso na mao agora.</summary>
-        public static bool Has(string id) => Held.Contains(id);
+        public static bool Tem(string id) => Segurado.Contains(id);
 
         /// <summary>Se isso ja foi entregue a alguem.</summary>
-        public static bool WasDelivered(string id) => Delivered.Contains(id);
+        public static bool FoiEntregue(string id) => Entregues.Contains(id);
 
         /// <summary>Se ele ja pegou isso alguma vez, esteja na mao ou entregue.</summary>
-        public static bool WasFound(string id) => Held.Contains(id) || Delivered.Contains(id);
+        public static bool FoiEncontrado(string id) => Segurado.Contains(id) || Entregues.Contains(id);
 
         /// <summary>Entrega: sai da mao e fica lembrado. Falso se ele nao estava com isso.</summary>
-        public static bool Deliver(string id)
+        public static bool Entregar(string id)
         {
-            if (!Held.Remove(id)) return false;
+            if (!Segurado.Remove(id)) return false;
 
-            Delivered.Add(id);
+            Entregues.Add(id);
             return true;
         }
 
         /// <summary>Quantas coisas com esse comeco de id ele tem na mao.</summary>
-        public static int CountHeld(string prefix) => Count(Held, prefix);
+        public static int ContarGuardados(string prefixo) => Contar(Segurado, prefixo);
 
         /// <summary>Quantas coisas com esse comeco de id ele ja achou, na mao ou entregues.</summary>
-        public static int CountFound(string prefix) => Count(Held, prefix) + Count(Delivered, prefix);
+        public static int ContarEncontrados(string prefixo) => Contar(Segurado, prefixo) + Contar(Entregues, prefixo);
 
         /// <summary>Entrega tudo o que ele tem na mao com esse comeco de id.</summary>
-        public static void DeliverAll(string prefix)
+        public static void EntregarTudo(string prefixo)
         {
             var ids = new List<string>();
-            foreach (string id in Held)
+            foreach (string id in Segurado)
             {
-                if (id.StartsWith(prefix)) ids.Add(id);
+                if (id.StartsWith(prefixo)) ids.Add(id);
             }
 
-            foreach (string id in ids) Deliver(id);
+            foreach (string id in ids) Entregar(id);
         }
 
-        public static void SetFlag(string flag) => Flags.Add(flag);
+        public static void DefinirMarca(string marca) => Marcas.Add(marca);
 
-        public static bool HasFlag(string flag) => Flags.Contains(flag);
+        public static bool TemMarca(string marca) => Marcas.Contains(marca);
 
-        private static int Count(HashSet<string> set, string prefix)
+        private static int Contar(HashSet<string> conjunto, string prefixo)
         {
-            int count = 0;
-            foreach (string id in set)
+            int quantidade = 0;
+            foreach (string id in conjunto)
             {
-                if (id.StartsWith(prefix)) count++;
+                if (id.StartsWith(prefixo)) quantidade++;
             }
 
-            return count;
+            return quantidade;
         }
     }
 }

@@ -8,56 +8,56 @@ namespace EchoesOfCravejada
     /// </summary>
     public class ResonanceRing : MonoBehaviour
     {
-        private const float Life = 0.35f;
+        private const float DuracaoVida = 0.35f;
 
-        private SpriteRenderer[] _arcs;
-        private float _age;
-        private float _reach;
+        private SpriteRenderer[] _arcos;
+        private float _idade;
+        private float _alcance;
 
-        public static void Spawn(Vector3 position, Sprite arc, float reach, Material material)
+        public static void Criar(Vector3 posicao, Sprite arco, float alcanceGolpe, Material material)
         {
-            var ring = new GameObject("ResonanceRing");
-            ring.transform.position = position;
+            var anel = new GameObject("ResonanceRing");
+            anel.transform.position = posicao;
 
-            var arcs = new SpriteRenderer[2];
+            var arcos = new SpriteRenderer[2];
 
-            for (int i = 0; i < arcs.Length; i++)
+            for (int i = 0; i < arcos.Length; i++)
             {
-                var side = new GameObject("Arc");
-                side.transform.SetParent(ring.transform, false);
+                var lado = new GameObject("Arc");
+                lado.transform.SetParent(anel.transform, false);
 
-                arcs[i] = side.AddComponent<SpriteRenderer>();
-                arcs[i].sprite = arc;
-                arcs[i].flipX = i == 1;
-                arcs[i].color = new Color(0.80f, 0.90f, 1f);
-                arcs[i].sortingLayerName = "Actors";
-                arcs[i].sortingOrder = 5;
-                if (material != null) arcs[i].sharedMaterial = material;
+                arcos[i] = lado.AddComponent<SpriteRenderer>();
+                arcos[i].sprite = arco;
+                arcos[i].flipX = i == 1;
+                arcos[i].color = new Color(0.80f, 0.90f, 1f);
+                arcos[i].sortingLayerName = "Actors";
+                arcos[i].sortingOrder = 5;
+                if (material != null) arcos[i].sharedMaterial = material;
             }
 
-            var component = ring.AddComponent<ResonanceRing>();
-            component._arcs = arcs;
-            component._reach = reach;
+            var componente = anel.AddComponent<ResonanceRing>();
+            componente._arcos = arcos;
+            componente._alcance = alcanceGolpe;
         }
 
         private void Update()
         {
-            _age += Time.deltaTime;
-            float k = Mathf.Clamp01(_age / Life);
+            _idade += Time.deltaTime;
+            float k = Mathf.Clamp01(_idade / DuracaoVida);
 
-            for (int i = 0; i < _arcs.Length; i++)
+            for (int i = 0; i < _arcos.Length; i++)
             {
-                float side = i == 0 ? 1f : -1f;
+                float lado = i == 0 ? 1f : -1f;
 
-                _arcs[i].transform.localPosition = new Vector3(side * _reach * k, 0f, 0f);
-                _arcs[i].transform.localScale = Vector3.one * Mathf.Lerp(1f, 3f, k);
+                _arcos[i].transform.localPosition = new Vector3(lado * _alcance * k, 0f, 0f);
+                _arcos[i].transform.localScale = Vector3.one * Mathf.Lerp(1f, 3f, k);
 
-                Color color = _arcs[i].color;
-                color.a = 1f - k;
-                _arcs[i].color = color;
+                Color cor = _arcos[i].color;
+                cor.a = 1f - k;
+                _arcos[i].color = cor;
             }
 
-            if (_age >= Life) Destroy(gameObject);
+            if (_idade >= DuracaoVida) Destroy(gameObject);
         }
     }
 }

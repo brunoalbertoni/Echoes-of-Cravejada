@@ -4,7 +4,7 @@ using UnityEngine;
 namespace EchoesOfCravejada
 {
     /// <summary>
-    /// O HUD provisorio: vida, Opaque Shards, gemas, os avisos, as barras dos
+    /// O HUD: vida, Opaque Shards, gemas, os avisos, as barras dos
     /// chefes e a caixa de dialogo. E desenhado com IMGUI, sem asset nenhum, pra
     /// as mecanicas poderem ser testadas ja — troque por uma interface de verdade
     /// depois.
@@ -16,90 +16,90 @@ namespace EchoesOfCravejada
     /// </summary>
     public class GameHud : MonoBehaviour
     {
-        private ScrapHealth _health;
-        private GUIStyle _label;
-        private GUIStyle _line;
-        private GUIStyle _speech;
+        private ScrapHealth _vida;
+        private GUIStyle _rotulo;
+        private GUIStyle _linha;
+        private GUIStyle _fala;
 
         // Os avisos deste quadro, na ordem em que vao ser empilhados.
-        private readonly List<string> _notices = new List<string>();
+        private readonly List<string> _avisos = new List<string>();
 
-        private static readonly Color HeartFull = new Color(0.95f, 0.80f, 0.45f);
-        private static readonly Color HeartEmpty = new Color(0.25f, 0.20f, 0.18f);
-        private static readonly Color ShardColor = new Color(0.60f, 0.72f, 0.78f);
-        private static readonly Color GemColor = new Color(0.55f, 0.85f, 0.95f);
-        private static readonly Color BoxFill = new Color(0.07f, 0.06f, 0.08f, 0.96f);
+        private static readonly Color CheioCoracao = new Color(0.95f, 0.80f, 0.45f);
+        private static readonly Color VaziaCoracao = new Color(0.25f, 0.20f, 0.18f);
+        private static readonly Color CorFragmento = new Color(0.60f, 0.72f, 0.78f);
+        private static readonly Color CorGema = new Color(0.55f, 0.85f, 0.95f);
+        private static readonly Color PreenchimentoCaixa = new Color(0.07f, 0.06f, 0.08f, 0.96f);
 
-        private const float BoxBorder = 3f;
-        private const float PromptY = 0.70f;
+        private const float BordaCaixa = 3f;
+        private const float IndicacaoY = 0.70f;
 
         private void OnGUI()
         {
             // A bancada esta fotografando a tela pra gravura: o HUD sai da foto.
-            if (SaveEngraving.HideHud) return;
+            if (SaveEngraving.HudEsconder) return;
 
-            if (_health == null) _health = FindAnyObjectByType<ScrapHealth>();
-            EnsureStyles();
+            if (_vida == null) _vida = ScrapRef.Vida;
+            GarantirEstilos();
 
-            _notices.Clear();
+            _avisos.Clear();
 
             // As faixas de cena vao primeiro: a caixa de fala fica por cima delas.
-            DrawLetterbox();
+            DesenharFaixasDeCinema();
 
-            DrawStatus();
-            DrawDialogue();
-            DrawDistrict1();
-            DrawDistrict2();
-            DrawDistrict3();
+            DesenharStatus();
+            DesenharDialogo();
+            DesenharDistrito1();
+            DesenharDistrito2();
+            DesenharDistrito3();
 
-            if (HudNotice.Showing) _notices.Add(HudNotice.Text);
+            if (HudNotice.Mostrando) _avisos.Add(HudNotice.Texto2);
 
-            DrawScreenCover();
+            DesenharCoberturaDaTela();
 
             // Por ultimo, pra ficarem por cima de tudo.
-            DrawNotices();
+            DesenharAvisos();
         }
 
         /// <summary>As faixas pretas de cena, deslizando pra dentro e pra fora.</summary>
-        private static void DrawLetterbox()
+        private static void DesenharFaixasDeCinema()
         {
-            float bars = Cinematic.Letterbox;
-            if (bars <= 0f) return;
+            float barras = Cinematic.FaixasCinema;
+            if (barras <= 0f) return;
 
-            float height = Screen.height * 0.11f * Mathf.SmoothStep(0f, 1f, bars);
-            Fill(new Rect(0f, 0f, Screen.width, height), Color.black);
-            Fill(new Rect(0f, Screen.height - height, Screen.width, height), Color.black);
+            float altura = Screen.height * 0.11f * Mathf.SmoothStep(0f, 1f, barras);
+            Preencher(new Rect(0f, 0f, Screen.width, altura), Color.black);
+            Preencher(new Rect(0f, Screen.height - altura, Screen.width, altura), Color.black);
         }
 
         /// <summary>
         /// O clarao e o escuro da tela inteira (a cena do despertar comeca no
         /// preto). Ficam por cima do HUD.
         /// </summary>
-        private static void DrawScreenCover()
+        private static void DesenharCoberturaDaTela()
         {
-            if (Cinematic.Flash > 0f)
+            if (Cinematic.Clarao2 > 0f)
             {
-                Fill(new Rect(0f, 0f, Screen.width, Screen.height), new Color(1f, 0.97f, 0.88f, Mathf.Clamp01(Cinematic.Flash)));
+                Preencher(new Rect(0f, 0f, Screen.width, Screen.height), new Color(1f, 0.97f, 0.88f, Mathf.Clamp01(Cinematic.Clarao2)));
             }
 
-            if (Cinematic.Fade > 0f)
+            if (Cinematic.Esmaecimento > 0f)
             {
-                Fill(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, Mathf.Clamp01(Cinematic.Fade)));
+                Preencher(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, Mathf.Clamp01(Cinematic.Esmaecimento)));
             }
         }
 
-        private void EnsureStyles()
+        private void GarantirEstilos()
         {
-            if (_label != null) return;
+            if (_rotulo != null) return;
 
-            _label = new GUIStyle(GUI.skin.label) { fontSize = 18, fontStyle = FontStyle.Bold };
-            _label.normal.textColor = Color.white;
+            _rotulo = new GUIStyle(GUI.skin.label) { fontSize = 18, fontStyle = FontStyle.Bold };
+            _rotulo.normal.textColor = Color.white;
 
             // Uma linha so, sem quebrar: e o que vai dentro das caixas de aviso.
-            _line = new GUIStyle(_label) { wordWrap = false, alignment = TextAnchor.MiddleCenter };
+            _linha = new GUIStyle(_rotulo) { wordWrap = false, alignment = TextAnchor.MiddleCenter };
 
-            _speech = new GUIStyle(GUI.skin.label) { fontSize = 20, wordWrap = true, alignment = TextAnchor.UpperLeft };
-            _speech.normal.textColor = new Color(0.93f, 0.90f, 0.82f);
+            _fala = new GUIStyle(GUI.skin.label) { fontSize = 20, wordWrap = true, alignment = TextAnchor.UpperLeft };
+            _fala.normal.textColor = new Color(0.93f, 0.90f, 0.82f);
         }
 
         // ------------------------------------------------------------------
@@ -107,194 +107,194 @@ namespace EchoesOfCravejada
         // ------------------------------------------------------------------
 
         // Os icones (Resources/HudIcons, desenhados pelo HudIconArt). Em pixel art, sempre em dobro.
-        private const float IconScale = 2f;
-        private static Texture2D _heartFullIcon;
-        private static Texture2D _heartEmptyIcon;
-        private static Texture2D _shardIcon;
-        private static Texture2D _gemIcon;
-        private static bool _iconsLoaded;
+        private const float EscalaIcone = 2f;
+        private static Texture2D _iconeCheioCoracao;
+        private static Texture2D _iconeVaziaCoracao;
+        private static Texture2D _iconeFragmento;
+        private static Texture2D _iconeGema;
+        private static bool _carregadoIcones;
 
-        private static void LoadIcons()
+        private static void CarregarIcones()
         {
-            if (_iconsLoaded) return;
-            _iconsLoaded = true;
+            if (_carregadoIcones) return;
+            _carregadoIcones = true;
 
-            _heartFullIcon = Resources.Load<Texture2D>("HudIcons/heart_full");
-            _heartEmptyIcon = Resources.Load<Texture2D>("HudIcons/heart_empty");
-            _shardIcon = Resources.Load<Texture2D>("HudIcons/shard");
-            _gemIcon = Resources.Load<Texture2D>("HudIcons/gem");
+            _iconeCheioCoracao = Resources.Load<Texture2D>("HudIcons/heart_full");
+            _iconeVaziaCoracao = Resources.Load<Texture2D>("HudIcons/heart_empty");
+            _iconeFragmento = Resources.Load<Texture2D>("HudIcons/shard");
+            _iconeGema = Resources.Load<Texture2D>("HudIcons/gem");
         }
 
         /// <summary>Um icone em dobro com o canto em (x, y). Devolve a largura dele na tela.</summary>
-        private static float Icon(Texture2D icon, float x, float y, Color tint)
+        private static float Icone(Texture2D icone, float x, float y, Color tom)
         {
-            var rect = new Rect(x, y, icon.width * IconScale, icon.height * IconScale);
-            Color previous = GUI.color;
-            GUI.color = tint;
-            GUI.DrawTexture(rect, icon);
-            GUI.color = previous;
-            return rect.width;
+            var retangulo = new Rect(x, y, icone.width * EscalaIcone, icone.height * EscalaIcone);
+            Color valorAnterior = GUI.color;
+            GUI.color = tom;
+            TelaCanvas.Textura(retangulo, icone);
+            GUI.color = valorAnterior;
+            return retangulo.width;
         }
 
         /// <summary>
         /// A vida (coracoes de sucata: cheios com a brasa acesa, gastos
         /// apagados), os fragmentos (a pepita azul) e as gemas (o rubi).
         /// </summary>
-        private void DrawStatus()
+        private void DesenharStatus()
         {
-            const float margin = 16f;
-            LoadIcons();
+            const float margem = 16f;
+            CarregarIcones();
 
-            float y = margin;
+            float y = margem;
 
-            if (_health != null)
+            if (_vida != null)
             {
-                if (_heartFullIcon != null && _heartEmptyIcon != null)
+                if (_iconeCheioCoracao != null && _iconeVaziaCoracao != null)
                 {
-                    float step = _heartFullIcon.width * IconScale + 2f;
-                    for (int i = 0; i < _health.MaxHealth; i++)
+                    float passo = _iconeCheioCoracao.width * EscalaIcone + 2f;
+                    for (int i = 0; i < _vida.VidaMax; i++)
                     {
-                        bool full = i < _health.Health;
+                        bool cheio = i < _vida.Vida;
 
                         // O ultimo coracao cheio bate quando a vida esta por um fio.
-                        float beat = full && _health.Health == 1 ? Mathf.Abs(Mathf.Sin(Time.time * 4f)) * 2f : 0f;
-                        Icon(full ? _heartFullIcon : _heartEmptyIcon, margin + i * step, y - beat, Color.white);
+                        float batida = cheio && _vida.Vida == 1 ? Mathf.Abs(Mathf.Sin(Time.time * 4f)) * 2f : 0f;
+                        Icone(cheio ? _iconeCheioCoracao : _iconeVaziaCoracao, margem + i * passo, y - batida, Color.white);
                     }
 
-                    y += _heartFullIcon.height * IconScale + 6f;
+                    y += _iconeCheioCoracao.height * EscalaIcone + 6f;
                 }
                 else
                 {
-                    const float size = 18f;
-                    for (int i = 0; i < _health.MaxHealth; i++)
+                    const float tamanho = 18f;
+                    for (int i = 0; i < _vida.VidaMax; i++)
                     {
-                        var rect = new Rect(margin + i * (size + 6f), y, size, size);
-                        Fill(new Rect(rect.x - 2f, rect.y - 2f, size + 4f, size + 4f), Color.black);
-                        Fill(rect, i < _health.Health ? HeartFull : HeartEmpty);
+                        var retangulo = new Rect(margem + i * (tamanho + 6f), y, tamanho, tamanho);
+                        Preencher(new Rect(retangulo.x - 2f, retangulo.y - 2f, tamanho + 4f, tamanho + 4f), Color.black);
+                        Preencher(retangulo, i < _vida.Vida ? CheioCoracao : VaziaCoracao);
                     }
 
                     y += 32f;
                 }
             }
 
-            if (_shardIcon != null)
+            if (_iconeFragmento != null)
             {
-                float width = Icon(_shardIcon, margin + 4f, y, Color.white);
-                GUI.Label(new Rect(margin + 4f + width + 6f, y - 1f, 200f, 28f), ScrapWallet.Shards.ToString(), _label);
-                y += _shardIcon.height * IconScale + 4f;
+                float largura = Icone(_iconeFragmento, margem + 4f, y, Color.white);
+                TelaCanvas.Texto(new Rect(margem + 4f + largura + 6f, y - 1f, 200f, 28f), ScrapWallet.QuantidadeFragmentos.ToString(), _rotulo);
+                y += _iconeFragmento.height * EscalaIcone + 4f;
             }
             else
             {
-                Fill(new Rect(margin, y, 12f, 16f), ShardColor);
-                GUI.Label(new Rect(margin + 20f, y - 5f, 200f, 28f), ScrapWallet.Shards.ToString(), _label);
+                Preencher(new Rect(margem, y, 12f, 16f), CorFragmento);
+                TelaCanvas.Texto(new Rect(margem + 20f, y - 5f, 200f, 28f), ScrapWallet.QuantidadeFragmentos.ToString(), _rotulo);
                 y += 26f;
             }
 
-            DrawGems(margin + 4f, y);
-            if (GemPurse.Gems > 0) y += (_gemIcon != null ? _gemIcon.height * IconScale : 16f) + 8f;
+            DesenharGemas(margem + 4f, y);
+            if (GemPurse.Gemas > 0) y += (_iconeGema != null ? _iconeGema.height * EscalaIcone : 16f) + 8f;
 
-            DrawInventory(margin, y + 4f);
+            DesenharInventario(margem, y + 4f);
         }
 
-        private static readonly Color SlotFill = new Color(0.06f, 0.05f, 0.07f, 0.55f);
-        private static readonly Color SlotRim = new Color(0.78f, 0.6f, 0.3f, 0.55f);
+        private static readonly Color PreenchimentoEspaco = new Color(0.06f, 0.05f, 0.07f, 0.55f);
+        private static readonly Color AroEspaco = new Color(0.78f, 0.6f, 0.3f, 0.55f);
 
         /// <summary>
         /// O inventario: uma fileira de casinhas com o icone de cada coisa que
         /// o Scrap carrega pra usar ou entregar.
         /// </summary>
-        private void DrawInventory(float x, float y)
+        private void DesenharInventario(float x, float y)
         {
-            var items = InventoryIcons.Current();
-            if (items.Count == 0) return;
+            var itens = InventoryIcons.ItensAtuais();
+            if (itens.Count == 0) return;
 
-            const float slot = 38f;
-            int hovered = -1;
+            const float espacoItem = 38f;
+            int sobMouse = -1;
             Vector2 mouse = Event.current.mousePosition;
-            for (int i = 0; i < items.Count; i++)
+            for (int i = 0; i < itens.Count; i++)
             {
-                var rect = new Rect(x + i * (slot + 4f), y, slot, slot);
-                Fill(rect, SlotRim);
-                Fill(new Rect(rect.x + 1f, rect.y + 1f, slot - 2f, slot - 2f), SlotFill);
+                var retangulo = new Rect(x + i * (espacoItem + 4f), y, espacoItem, espacoItem);
+                Preencher(retangulo, AroEspaco);
+                Preencher(new Rect(retangulo.x + 1f, retangulo.y + 1f, espacoItem - 2f, espacoItem - 2f), PreenchimentoEspaco);
 
-                Texture2D icon = items[i].Icon;
-                float w = icon.width * IconScale, h = icon.height * IconScale;
-                GUI.DrawTexture(new Rect(rect.x + (slot - w) * 0.5f, rect.y + (slot - h) * 0.5f, w, h), icon);
+                Texture2D icone = itens[i].Icone2;
+                float w = icone.width * EscalaIcone, h = icone.height * EscalaIcone;
+                TelaCanvas.Textura(new Rect(retangulo.x + (espacoItem - w) * 0.5f, retangulo.y + (espacoItem - h) * 0.5f, w, h), icone);
 
-                if (items[i].Count > 1)
-                    GUI.Label(new Rect(rect.xMax - 16f, rect.yMax - 20f, 20f, 20f), items[i].Count.ToString(), _label);
+                if (itens[i].Quantidade > 1)
+                    TelaCanvas.Texto(new Rect(retangulo.xMax - 16f, retangulo.yMax - 20f, 20f, 20f), itens[i].Quantidade.ToString(), _rotulo);
 
-                if (rect.Contains(mouse)) hovered = i;
+                if (retangulo.Contains(mouse)) sobMouse = i;
             }
 
-            if (hovered >= 0)
-                DrawItemTip(items[hovered], new Rect(x + hovered * (slot + 4f), y, slot, slot));
+            if (sobMouse >= 0)
+                DesenharDicaDoItem(itens[sobMouse], new Rect(x + sobMouse * (espacoItem + 4f), y, espacoItem, espacoItem));
         }
 
-        private GUIStyle _tipName;
-        private GUIStyle _tipUse;
-        private static readonly Color TipFill = new Color(0.07f, 0.055f, 0.06f, 0.94f);
-        private static readonly Color TipRim = new Color(0.78f, 0.6f, 0.3f, 0.9f);
+        private GUIStyle _nomePonta;
+        private GUIStyle _usoPonta;
+        private static readonly Color PreenchimentoPonta = new Color(0.07f, 0.055f, 0.06f, 0.94f);
+        private static readonly Color AroPonta = new Color(0.78f, 0.6f, 0.3f, 0.9f);
 
         /// <summary>A plaquinha embaixo da casinha: o nome do item e o que fazer com ele.</summary>
-        private void DrawItemTip(InventoryIcons.Entry item, Rect slotRect)
+        private void DesenharDicaDoItem(InventoryIcons.Entry item, Rect retanguloEspaco)
         {
-            if (string.IsNullOrEmpty(item.Name)) return;
+            if (string.IsNullOrEmpty(item.Nome)) return;
 
-            if (_tipName == null)
+            if (_nomePonta == null)
             {
-                _tipName = new GUIStyle(_label) { fontSize = 16, wordWrap = false };
-                _tipName.normal.textColor = new Color(1f, 0.88f, 0.6f);
-                _tipUse = new GUIStyle(GUI.skin.label) { fontSize = 13, wordWrap = false };
-                _tipUse.normal.textColor = new Color(0.85f, 0.82f, 0.76f);
+                _nomePonta = new GUIStyle(_rotulo) { fontSize = 16, wordWrap = false };
+                _nomePonta.normal.textColor = new Color(1f, 0.88f, 0.6f);
+                _usoPonta = new GUIStyle(GUI.skin.label) { fontSize = 13, wordWrap = false };
+                _usoPonta.normal.textColor = new Color(0.85f, 0.82f, 0.76f);
             }
 
-            Vector2 nameSize = _tipName.CalcSize(new GUIContent(item.Name));
-            Vector2 useSize = string.IsNullOrEmpty(item.Use) ? Vector2.zero : _tipUse.CalcSize(new GUIContent(item.Use));
-            float w = Mathf.Round(Mathf.Max(nameSize.x, useSize.x) + 16f);
-            float h = Mathf.Round(nameSize.y + useSize.y + 8f);
-            var box = new Rect(slotRect.x, slotRect.yMax + 6f, w, h);
+            Vector2 tamanhoNome = _nomePonta.CalcSize(new GUIContent(item.Nome));
+            Vector2 tamanhoUso = string.IsNullOrEmpty(item.Uso) ? Vector2.zero : _usoPonta.CalcSize(new GUIContent(item.Uso));
+            float w = Mathf.Round(Mathf.Max(tamanhoNome.x, tamanhoUso.x) + 16f);
+            float h = Mathf.Round(tamanhoNome.y + tamanhoUso.y + 8f);
+            var caixa = new Rect(retanguloEspaco.x, retanguloEspaco.yMax + 6f, w, h);
 
             // Moldura de dois tons, cantos cortados, como as casinhas.
-            Fill(new Rect(box.x + 2f, box.y, w - 4f, h), TipRim);
-            Fill(new Rect(box.x, box.y + 2f, w, h - 4f), TipRim);
-            Fill(new Rect(box.x + 2f, box.y + 2f, w - 4f, h - 4f), TipFill);
+            Preencher(new Rect(caixa.x + 2f, caixa.y, w - 4f, h), AroPonta);
+            Preencher(new Rect(caixa.x, caixa.y + 2f, w, h - 4f), AroPonta);
+            Preencher(new Rect(caixa.x + 2f, caixa.y + 2f, w - 4f, h - 4f), PreenchimentoPonta);
             // A setinha apontando pra casinha.
-            Fill(new Rect(slotRect.center.x - 3f, box.y - 4f, 6f, 4f), TipRim);
-            Fill(new Rect(slotRect.center.x - 1f, box.y - 6f, 2f, 2f), TipRim);
+            Preencher(new Rect(retanguloEspaco.center.x - 3f, caixa.y - 4f, 6f, 4f), AroPonta);
+            Preencher(new Rect(retanguloEspaco.center.x - 1f, caixa.y - 6f, 2f, 2f), AroPonta);
 
-            GUI.Label(new Rect(box.x + 8f, box.y + 3f, w, nameSize.y), item.Name, _tipName);
-            if (useSize.y > 0f)
-                GUI.Label(new Rect(box.x + 8f, box.y + 3f + nameSize.y, w, useSize.y), item.Use, _tipUse);
+            TelaCanvas.Texto(new Rect(caixa.x + 8f, caixa.y + 3f, w, tamanhoNome.y), item.Nome, _nomePonta);
+            if (tamanhoUso.y > 0f)
+                TelaCanvas.Texto(new Rect(caixa.x + 8f, caixa.y + 3f + tamanhoNome.y, w, tamanhoUso.y), item.Uso, _usoPonta);
         }
 
         /// <summary>
         /// As gemas lapidadas: o rubi e a conta. So aparece depois da
         /// primeira, e brilha por um instante quando chega uma nova.
         /// </summary>
-        private void DrawGems(float x, float y)
+        private void DesenharGemas(float x, float y)
         {
-            if (GemPurse.Gems <= 0) return;
+            if (GemPurse.Gemas <= 0) return;
 
-            float glow = Mathf.Clamp01(1f - (Time.time - GemPurse.LastGainTime) / 1.5f);
+            float brilho = Mathf.Clamp01(1f - (Time.time - GemPurse.UltimoTempoGanho) / 1.5f);
 
-            if (_gemIcon != null)
+            if (_iconeGema != null)
             {
                 // Ao chegar uma nova, ele clareia e da um pulinho.
-                float hop = glow * 3f;
-                float width = Icon(_gemIcon, x, y - hop, Color.Lerp(Color.white, new Color(1f, 0.9f, 0.9f), glow));
-                GUI.Label(new Rect(x + width + 6f, y - 1f, 200f, 28f), GemPurse.Gems.ToString(), _label);
+                float salto = brilho * 3f;
+                float largura = Icone(_iconeGema, x, y - salto, Color.Lerp(Color.white, new Color(1f, 0.9f, 0.9f), brilho));
+                TelaCanvas.Texto(new Rect(x + largura + 6f, y - 1f, 200f, 28f), GemPurse.Gemas.ToString(), _rotulo);
                 return;
             }
 
-            Color gem = Color.Lerp(GemColor, Color.white, glow * 0.7f);
-            int[] widths = { 4, 8, 12, 8, 4 };
-            for (int i = 0; i < widths.Length; i++)
+            Color gema = Color.Lerp(CorGema, Color.white, brilho * 0.7f);
+            int[] larguras = { 4, 8, 12, 8, 4 };
+            for (int i = 0; i < larguras.Length; i++)
             {
-                Fill(new Rect(x + 6f - widths[i] * 0.5f, y + i * 3f, widths[i], 3f), gem);
+                Preencher(new Rect(x + 6f - larguras[i] * 0.5f, y + i * 3f, larguras[i], 3f), gema);
             }
 
-            GUI.Label(new Rect(x + 20f, y - 4f, 200f, 28f), GemPurse.Gems.ToString(), _label);
+            TelaCanvas.Texto(new Rect(x + 20f, y - 4f, 200f, 28f), GemPurse.Gemas.ToString(), _rotulo);
         }
 
         // ------------------------------------------------------------------
@@ -302,17 +302,17 @@ namespace EchoesOfCravejada
         // ------------------------------------------------------------------
 
         /// <summary>O District 1: a alavanca, o Rusty Scrapper e os avisos da bancada e da purificacao.</summary>
-        private void DrawDistrict1()
+        private void DesenharDistrito1()
         {
-            RustyLever lever = RustyLever.Nearby;
-            if (lever != null) DrawPrompt("Golpeie a alavanca com o cinzel");
+            RustyLever alavanca = RustyLever.Proximo;
+            if (alavanca != null) DesenharIndicacao("Golpeie a alavanca com o cinzel");
 
-            RustyScrapper boss = RustyScrapper.Fighting;
-            if (boss != null) BossBar("O Coletor Enferrujado", boss.HealthFraction, new Color(0.45f, 0.75f, 0.55f));
+            RustyScrapper chefe = RustyScrapper.Lutando;
+            if (chefe != null) BarraDoChefe("O Coletor Enferrujado", chefe.FracaoVida, new Color(0.45f, 0.75f, 0.55f));
 
             // A bancada nao avisa com frase: quem conta que salvou e a gravura (SaveEngraving).
-            Workbench bench = Workbench.Nearby;
-            if (bench != null && bench.CanSave) DrawPrompt(Workbench.Current == bench ? "E: salvar de novo" : "E: salvar na Bancada de Ourives");
+            Workbench bancada2 = Workbench.Proximo;
+            if (bancada2 != null && bancada2.PodeSalvar) DesenharIndicacao(Workbench.Atual == bancada2 ? "E: salvar de novo" : "E: salvar na Bancada de Ourives");
 
             // As habilidades novas (dash, pulo duplo, golpe ressonante) nao
             // viram aviso aqui: quem mostra e o AbilityCard, na tela inteira.
@@ -320,68 +320,68 @@ namespace EchoesOfCravejada
         }
 
         /// <summary>O District 2: valvulas, o Boiler Master, a loja de Crisol e os avisos.</summary>
-        private void DrawDistrict2()
+        private void DesenharDistrito2()
         {
-            Valve valve = Valve.Nearby;
-            if (valve != null) DrawPrompt("Golpeie a válvula com o cinzel");
+            Valve valvula = Valve.Proximo;
+            if (valvula != null) DesenharIndicacao("Golpeie a válvula com o cinzel");
 
-            BoilerMaster master = BoilerMaster.Fighting;
-            if (master != null)
+            BoilerMaster mestre = BoilerMaster.Lutando;
+            if (mestre != null)
             {
-                BossBar(master.IsExposed ? "O Mestre das Caldeiras — FORNALHA EXPOSTA" : "O Mestre das Caldeiras",
-                    master.HealthFraction,
-                    master.IsExposed ? new Color(1f, 0.55f, 0.25f) : new Color(0.55f, 0.6f, 0.7f));
+                BarraDoChefe(mestre.EstaExposto ? "O Mestre das Caldeiras — FORNALHA EXPOSTA" : "O Mestre das Caldeiras",
+                    mestre.FracaoVida,
+                    mestre.EstaExposto ? new Color(1f, 0.55f, 0.25f) : new Color(0.55f, 0.6f, 0.7f));
             }
 
-            Crisol shop = Crisol.ShopOpen;
-            if (shop != null) DrawShop(shop);
+            Crisol loja = Crisol.AbertoLoja;
+            if (loja != null) DesenharLoja(loja);
 
         }
 
         /// <summary>O District 3 (e o 4): raspar e polir, os chefes, as gemas e as estatuas.</summary>
-        private void DrawDistrict3()
+        private void DesenharDistrito3()
         {
-            if (HoldAction.Owner != null) DrawPrompt(HoldAction.Text, Mathf.Clamp01(HoldAction.Progress));
+            if (HoldAction.Dono != null) DesenharIndicacao(HoldAction.Texto2, Mathf.Clamp01(HoldAction.Progresso2));
 
-            TheResonant elite = TheResonant.Fighting;
+            TheResonant elite = TheResonant.Lutando;
             if (elite != null)
             {
-                BossBar(elite.IsExposed ? "O Capataz — PRESO" : "O Capataz", elite.HealthFraction, new Color(0.60f, 0.80f, 1f));
+                BarraDoChefe(elite.EstaExposto ? "O Capataz — PRESO" : "O Capataz", elite.FracaoVida, new Color(0.60f, 0.80f, 1f));
             }
 
-            SilverKing king = SilverKing.Fighting;
-            if (king != null && !king.IsTransforming)
+            SilverKing rei = SilverKing.Lutando;
+            if (rei != null && !rei.EstaTransformando)
             {
-                BossBar(king.IsPhaseTwo ? "O Rei de Prata — CORROMPIDO" : "O Rei de Prata",
-                    king.HealthFraction,
-                    king.IsPhaseTwo ? new Color(0.45f, 1f, 0.62f) : new Color(1f, 0.95f, 0.78f));
+                BarraDoChefe(rei.EstaDoisFase ? "O Rei de Prata — CORROMPIDO" : "O Rei de Prata",
+                    rei.FracaoVida,
+                    rei.EstaDoisFase ? new Color(0.45f, 1f, 0.62f) : new Color(1f, 0.95f, 0.78f));
             }
 
-            MercuryAlchemist alchemist = MercuryAlchemist.Fighting;
-            if (alchemist != null)
+            MercuryAlchemist alquimista = MercuryAlchemist.Lutando;
+            if (alquimista != null)
             {
-                BossBar(alchemist.IsSilver ? "O Alquimista de Mercúrio — EM PRATA" : "O Alquimista de Mercúrio",
-                    alchemist.HealthFraction,
-                    alchemist.IsSilver ? new Color(0.92f, 0.95f, 1f) : new Color(0.60f, 0.66f, 0.80f));
+                BarraDoChefe(alquimista.EstaPrata ? "O Alquimista de Mercúrio — EM PRATA" : "O Alquimista de Mercúrio",
+                    alquimista.FracaoVida,
+                    alquimista.EstaPrata ? new Color(0.92f, 0.95f, 1f) : new Color(0.60f, 0.66f, 0.80f));
             }
 
-            GeodeDrill drill = GeodeDrill.Fighting;
-            if (drill != null)
+            GeodeDrill broca = GeodeDrill.Lutando;
+            if (broca != null)
             {
-                BossBar(drill.IsExposed ? "A Broca dos Geodos — MOTOR EXPOSTO" : "A Broca dos Geodos",
-                    drill.HealthFraction,
-                    drill.IsExposed ? new Color(1f, 0.55f, 0.25f) : new Color(0.62f, 0.55f, 0.80f));
+                BarraDoChefe(broca.EstaExposto ? "A Broca dos Geodos — MOTOR EXPOSTO" : "A Broca dos Geodos",
+                    broca.FracaoVida,
+                    broca.EstaExposto ? new Color(1f, 0.55f, 0.25f) : new Color(0.62f, 0.55f, 0.80f));
             }
 
-            if (Time.time - ScrapGems.SapphireGivenTime < 6f) _notices.Add("Safira bruta recebida: crave-a numa Bancada de Ourives");
-            if (Time.time - ScrapGems.SapphireSocketedTime < 6f) _notices.Add("Safira cravada: passos e quedas fazem menos ruído");
+            if (Time.time - ScrapGems.TempoDadoSafira < 6f) _avisos.Add("Safira bruta recebida: crave-a numa Bancada de Ourives");
+            if (Time.time - ScrapGems.TempoEncaixadoSafira < 6f) _avisos.Add("Safira cravada: passos e quedas fazem menos ruído");
 
             // Nao ha medidor de ruido: o barulho se sente pelo que ele acende
             // e pelo que ele acorda.
-            StatueButton statue = StatueButton.Nearby;
-            if (statue != null && statue.Enabled && HoldAction.Owner == null && Npc.Talking == null && Npc.Nearby == null)
+            StatueButton estatua = StatueButton.Proximo;
+            if (estatua != null && estatua.Habilitado && HoldAction.Dono == null && Npc.Conversando == null && Npc.Proximo == null)
             {
-                DrawPrompt("E: apertar o botão da estátua");
+                DesenharIndicacao("E: apertar o botão da estátua");
             }
         }
 
@@ -390,228 +390,228 @@ namespace EchoesOfCravejada
         /// marcado em dourado, o que nao da pra pagar apagado), a descricao do
         /// marcado, o que ele respondeu e as teclas.
         /// </summary>
-        private void DrawShop(Crisol shop)
+        private void DesenharLoja(Crisol loja)
         {
-            EnsureShopStyles();
+            GarantirEstilosDaLoja();
 
-            const float rowHeight = 46f;
-            const float headerH = 84f;
-            const float footerH = 46f;
-            float width = Mathf.Min(Screen.width - 40f, 860f);
-            float listH = Mathf.Max(shop.Items.Count * rowHeight + 12f, 250f);
-            float height = Mathf.Min(headerH + listH + footerH + 20f, Screen.height - 40f);
-            float x = Mathf.Round((Screen.width - width) * 0.5f);
-            float y = Mathf.Round((Screen.height - height) * 0.5f);
+            const float alturaLinha = 46f;
+            const float cabecalhoH = 84f;
+            const float rodapeH = 46f;
+            float largura = Mathf.Min(Screen.width - 40f, 860f);
+            float listaH = Mathf.Max(loja.Itens.Count * alturaLinha + 12f, 250f);
+            float altura = Mathf.Min(cabecalhoH + listaH + rodapeH + 20f, Screen.height - 40f);
+            float x = Mathf.Round((Screen.width - largura) * 0.5f);
+            float y = Mathf.Round((Screen.height - altura) * 0.5f);
 
             // O fundo escurece o jogo atras, pra loja ser o centro.
-            Fill(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.55f));
+            Preencher(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.55f));
 
-            var frame = new Rect(x, y, width, height);
-            Panel(frame, ShopWood, ShopBrass, ShopBrassDark);
-            Rivets(frame);
+            var quadro = new Rect(x, y, largura, altura);
+            Painel(quadro, MadeiraLoja, LataoLoja, EscuroLataoLoja);
+            Rebites(quadro);
 
-            Color previous = GUI.contentColor;
+            Color valorAnterior = GUI.contentColor;
 
             // -- Cabecalho: o retrato do Crisol, o nome da loja, a carteira.
-            var header = new Rect(x + 14f, y + 14f, width - 28f, headerH - 14f);
-            Fill(new Rect(header.x, header.yMax - 2f, header.width, 2f), ShopBrassDark);
+            var cabecalho = new Rect(x + 14f, y + 14f, largura - 28f, cabecalhoH - 14f);
+            Preencher(new Rect(cabecalho.x, cabecalho.yMax - 2f, cabecalho.width, 2f), EscuroLataoLoja);
 
-            float textX = header.x + 6f;
-            Texture2D bust = SpeakerPortraits.Get(SpeakerPortraits.IdFor(shop.DisplayName), false);
-            if (bust != null)
+            float textoX = cabecalho.x + 6f;
+            Texture2D busto = SpeakerPortraits.Obter(SpeakerPortraits.IdDe(loja.NomeExibido), false);
+            if (busto != null)
             {
-                float size = header.height - 12f;
-                var portrait = new Rect(header.x + 2f, header.y + 2f, size, size);
-                Panel(portrait, ShopInk, ShopBrass, ShopBrassDark);
-                GUI.DrawTexture(new Rect(portrait.x + 3f, portrait.y + 3f, size - 6f, size - 6f), bust, ScaleMode.ScaleToFit);
-                textX = portrait.xMax + 14f;
+                float tamanho = cabecalho.height - 12f;
+                var retrato = new Rect(cabecalho.x + 2f, cabecalho.y + 2f, tamanho, tamanho);
+                Painel(retrato, TintaLoja, LataoLoja, EscuroLataoLoja);
+                TelaCanvas.Textura(new Rect(retrato.x + 3f, retrato.y + 3f, tamanho - 6f, tamanho - 6f), busto, ScaleMode.ScaleToFit);
+                textoX = retrato.xMax + 14f;
             }
 
-            GUI.Label(new Rect(textX, header.y + 4f, 400f, 30f), "Oficina do Crisol", _shopTitle);
-            GUI.Label(new Rect(textX, header.y + 34f, 400f, 22f), "Ourives · peças e lembranças", _shopSub);
+            TelaCanvas.Texto(new Rect(textoX, cabecalho.y + 4f, 400f, 30f), "Oficina do Crisol", _tituloLoja);
+            TelaCanvas.Texto(new Rect(textoX, cabecalho.y + 34f, 400f, 22f), "Ourives · peças e lembranças", _subtituloLoja);
 
-            float walletX = header.xMax - 6f;
-            walletX = Coin(walletX, header.y + 18f, _gemIcon, GemPurse.Gems, ShopGemTint);
-            Coin(walletX - 18f, header.y + 18f, _shardIcon, ScrapWallet.Shards, ShopShardTint);
+            float carteiraX = cabecalho.xMax - 6f;
+            carteiraX = Moeda(carteiraX, cabecalho.y + 18f, _iconeGema, GemPurse.Gemas, TomGemaLoja);
+            Moeda(carteiraX - 18f, cabecalho.y + 18f, _iconeFragmento, ScrapWallet.QuantidadeFragmentos, TomFragmentoLoja);
 
             // -- A lista a esquerda, o detalhe a direita.
-            float bodyY = header.yMax + 10f;
-            float listW = Mathf.Round(width * 0.52f);
-            var list = new Rect(x + 14f, bodyY, listW, height - (bodyY - y) - footerH - 6f);
-            var detail = new Rect(list.xMax + 10f, bodyY, width - listW - 38f, list.height);
+            float corpoY = cabecalho.yMax + 10f;
+            float listaW = Mathf.Round(largura * 0.52f);
+            var lista = new Rect(x + 14f, corpoY, listaW, altura - (corpoY - y) - rodapeH - 6f);
+            var detalhe = new Rect(lista.xMax + 10f, corpoY, largura - listaW - 38f, lista.height);
 
-            Fill(list, ShopInk);
-            for (int i = 0; i < shop.Items.Count; i++)
+            Preencher(lista, TintaLoja);
+            for (int i = 0; i < loja.Itens.Count; i++)
             {
-                ShopItem item = shop.Items[i];
-                bool selected = i == shop.Selected;
-                bool soldOut = Shop.SoldOut(item);
-                int price = Shop.Price(item);
-                bool affordable = Shop.Funds(item.Currency) >= price;
-                bool dim = soldOut || !affordable;
+                ShopItem item = loja.Itens[i];
+                bool selecionado = i == loja.Selecionado;
+                bool foraVendido = Shop.Esgotado(item);
+                int preco = Shop.Preco(item);
+                bool acessivel = Shop.Saldo(item.MoedaTipo) >= preco;
+                bool apagado = foraVendido || !acessivel;
 
-                var row = new Rect(list.x + 6f, list.y + 6f + i * rowHeight, list.width - 12f, rowHeight - 6f);
+                var linha = new Rect(lista.x + 6f, lista.y + 6f + i * alturaLinha, lista.width - 12f, alturaLinha - 6f);
 
                 // O mouse: passar por cima marca a fileira, clicar compra.
-                if (ShopMouse(row, out bool clicked))
+                if (MouseNaLoja(linha, out bool clicado))
                 {
-                    if (clicked) shop.ClickBuy(i);
-                    else shop.Hover(i);
-                    selected = i == shop.Selected;
+                    if (clicado) loja.ClicarComprar(i);
+                    else loja.PassarMouse(i);
+                    selecionado = i == loja.Selecionado;
                 }
 
-                if (selected)
+                if (selecionado)
                 {
-                    Fill(row, ShopBrass);
-                    Fill(new Rect(row.x + 2f, row.y + 2f, row.width - 4f, row.height - 4f), ShopSelected);
+                    Preencher(linha, LataoLoja);
+                    Preencher(new Rect(linha.x + 2f, linha.y + 2f, linha.width - 4f, linha.height - 4f), SelecionadoLoja);
                     // A setinha de escolha, pulsando de leve.
-                    float nudge = Mathf.Round(Mathf.PingPong(Time.unscaledTime * 6f, 3f));
-                    Fill(new Rect(row.x - 2f + nudge, row.center.y - 4f, 4f, 8f), ShopBrassLight);
-                    Fill(new Rect(row.x + 2f + nudge, row.center.y - 2f, 2f, 4f), ShopBrassLight);
+                    float empurraozinho = Mathf.Round(Mathf.PingPong(Time.unscaledTime * 6f, 3f));
+                    Preencher(new Rect(linha.x - 2f + empurraozinho, linha.center.y - 4f, 4f, 8f), LuzLataoLoja);
+                    Preencher(new Rect(linha.x + 2f + empurraozinho, linha.center.y - 2f, 2f, 4f), LuzLataoLoja);
                 }
                 else if (i % 2 == 1)
                 {
-                    Fill(row, new Color(1f, 1f, 1f, 0.025f));
+                    Preencher(linha, new Color(1f, 1f, 1f, 0.025f));
                 }
 
                 // A casinha do icone.
-                var slot = new Rect(row.x + 12f, row.y + 3f, row.height - 6f, row.height - 6f);
-                Fill(slot, selected ? ShopBrass : ShopBrassDark);
-                Fill(new Rect(slot.x + 2f, slot.y + 2f, slot.width - 4f, slot.height - 4f), ShopWood);
-                Texture2D icon = ShopIcons.Get(item.Id);
-                if (icon != null)
+                var espacoItem = new Rect(linha.x + 12f, linha.y + 3f, linha.height - 6f, linha.height - 6f);
+                Preencher(espacoItem, selecionado ? LataoLoja : EscuroLataoLoja);
+                Preencher(new Rect(espacoItem.x + 2f, espacoItem.y + 2f, espacoItem.width - 4f, espacoItem.height - 4f), MadeiraLoja);
+                Texture2D icone = ShopIcons.Obter(item.Id);
+                if (icone != null)
                 {
-                    GUI.color = dim && !selected ? new Color(1f, 1f, 1f, 0.45f) : Color.white;
-                    GUI.DrawTexture(new Rect(slot.center.x - 12f, slot.center.y - 12f, 24f, 24f), icon);
+                    GUI.color = apagado && !selecionado ? new Color(1f, 1f, 1f, 0.45f) : Color.white;
+                    TelaCanvas.Textura(new Rect(espacoItem.center.x - 12f, espacoItem.center.y - 12f, 24f, 24f), icone);
                     GUI.color = Color.white;
                 }
 
-                _shopItem.normal.textColor = selected ? ShopBrassLight : dim ? ShopMuted : ShopText;
-                GUI.Label(new Rect(slot.xMax + 10f, row.y, row.width - slot.width - 120f, row.height), item.Name, _shopItem);
+                _itemLoja.normal.textColor = selecionado ? LuzLataoLoja : apagado ? MudoLoja : TextoLoja;
+                TelaCanvas.Texto(new Rect(espacoItem.xMax + 10f, linha.y, linha.width - espacoItem.width - 120f, linha.height), item.Nome, _itemLoja);
 
                 // O preco, com o icone da moeda; ou o selo de vendido.
-                if (soldOut)
+                if (foraVendido)
                 {
-                    string stamp = item.MaxCount == 1 ? "COMPRADO" : "ESGOTADO";
-                    Vector2 size = _shopStamp.CalcSize(new GUIContent(stamp));
-                    var tag = new Rect(row.xMax - size.x - 20f, row.center.y - 11f, size.x + 12f, 22f);
-                    Fill(tag, ShopMuted);
-                    Fill(new Rect(tag.x + 1f, tag.y + 1f, tag.width - 2f, tag.height - 2f), ShopInk);
-                    GUI.Label(tag, stamp, _shopStamp);
+                    string carimbo = item.QuantidadeMax == 1 ? "COMPRADO" : "ESGOTADO";
+                    Vector2 tamanho = _carimboLoja.CalcSize(new GUIContent(carimbo));
+                    var etiqueta = new Rect(linha.xMax - tamanho.x - 20f, linha.center.y - 11f, tamanho.x + 12f, 22f);
+                    Preencher(etiqueta, MudoLoja);
+                    Preencher(new Rect(etiqueta.x + 1f, etiqueta.y + 1f, etiqueta.width - 2f, etiqueta.height - 2f), TintaLoja);
+                    TelaCanvas.Texto(etiqueta, carimbo, _carimboLoja);
                 }
                 else
                 {
-                    Price(row.xMax - 10f, row.center.y, item.Currency, price, affordable);
+                    Preco(linha.xMax - 10f, linha.center.y, item.MoedaTipo, preco, acessivel);
                 }
             }
 
             // -- O detalhe do marcado: icone grande, nome, descricao, preco.
-            Panel(detail, ShopInk, ShopBrassDark, ShopBrassDark);
-            if (shop.Items.Count > 0)
+            Painel(detalhe, TintaLoja, EscuroLataoLoja, EscuroLataoLoja);
+            if (loja.Itens.Count > 0)
             {
-                ShopItem item = shop.Items[shop.Selected];
-                var big = new Rect(detail.center.x - 36f, detail.y + 16f, 72f, 72f);
-                Panel(big, ShopWood, ShopBrass, ShopBrassDark);
-                Texture2D icon = ShopIcons.Get(item.Id);
-                if (icon != null) GUI.DrawTexture(new Rect(big.x + 12f, big.y + 12f, 48f, 48f), icon);
+                ShopItem item = loja.Itens[loja.Selecionado];
+                var grande = new Rect(detalhe.center.x - 36f, detalhe.y + 16f, 72f, 72f);
+                Painel(grande, MadeiraLoja, LataoLoja, EscuroLataoLoja);
+                Texture2D icone = ShopIcons.Obter(item.Id);
+                if (icone != null) TelaCanvas.Textura(new Rect(grande.x + 12f, grande.y + 12f, 48f, 48f), icone);
 
-                GUI.Label(new Rect(detail.x + 12f, big.yMax + 8f, detail.width - 24f, 28f), item.Name, _shopDetailName);
-                Fill(new Rect(detail.center.x - 30f, big.yMax + 38f, 60f, 2f), ShopBrassDark);
-                GUI.Label(new Rect(detail.x + 16f, big.yMax + 46f, detail.width - 32f, 80f), item.Description, _shopDesc);
+                TelaCanvas.Texto(new Rect(detalhe.x + 12f, grande.yMax + 8f, detalhe.width - 24f, 28f), item.Nome, _nomeDetalheLoja);
+                Preencher(new Rect(detalhe.center.x - 30f, grande.yMax + 38f, 60f, 2f), EscuroLataoLoja);
+                TelaCanvas.Texto(new Rect(detalhe.x + 16f, grande.yMax + 46f, detalhe.width - 32f, 80f), item.DescricaoTexto, _descricaoLoja);
 
-                if (!string.IsNullOrEmpty(shop.LastMessage))
-                    GUI.Label(new Rect(detail.x + 12f, detail.yMax - 34f, detail.width - 24f, 26f), shop.LastMessage, _shopReply);
+                if (!string.IsNullOrEmpty(loja.UltimoMensagem))
+                    TelaCanvas.Texto(new Rect(detalhe.x + 12f, detalhe.yMax - 34f, detalhe.width - 24f, 26f), loja.UltimoMensagem, _respostaLoja);
             }
 
             // -- Rodape: as teclas como teclinhas. "comprar" e "sair" tambem
             // se clicam com o mouse.
-            float keyY = y + height - footerH + 6f;
-            float keyX = x + 20f;
-            keyX = KeyHint(keyX, keyY, "W/S", "escolher");
-            float buyX = keyX + 22f;
-            keyX = KeyHint(buyX, keyY, "Espaço", "comprar");
-            if (ShopMouse(new Rect(buyX, keyY, keyX - buyX, 32f), out bool buyClick) && buyClick) shop.ClickBuy(shop.Selected);
-            float quitX = keyX + 22f;
-            float quitEnd = KeyHint(quitX, keyY, "E", "sair");
-            if (ShopMouse(new Rect(quitX, keyY, quitEnd - quitX, 32f), out bool quitClick) && quitClick) shop.ClickClose();
-            GUI.Label(new Rect(quitEnd + 22f, keyY + 4f, 260f, 24f), "ou clique no item", _shopSub);
+            float chaveY = y + altura - rodapeH + 6f;
+            float chaveX = x + 20f;
+            chaveX = DicaDeTecla(chaveX, chaveY, "W/S", "escolher");
+            float comprarX = chaveX + 22f;
+            chaveX = DicaDeTecla(comprarX, chaveY, "Espaço", "comprar");
+            if (MouseNaLoja(new Rect(comprarX, chaveY, chaveX - comprarX, 32f), out bool cliqueComprar) && cliqueComprar) loja.ClicarComprar(loja.Selecionado);
+            float sairX = chaveX + 22f;
+            float fimSair = DicaDeTecla(sairX, chaveY, "E", "sair");
+            if (MouseNaLoja(new Rect(sairX, chaveY, fimSair - sairX, 32f), out bool cliqueSair) && cliqueSair) loja.ClicarFechar();
+            TelaCanvas.Texto(new Rect(fimSair + 22f, chaveY + 4f, 260f, 24f), "ou clique no item", _subtituloLoja);
 
-            GUI.contentColor = previous;
+            GUI.contentColor = valorAnterior;
         }
 
         // ------------------------------------------------------------------
         // Pecas da loja
         // ------------------------------------------------------------------
 
-        private static readonly Color ShopWood = new Color(0.13f, 0.09f, 0.08f, 0.98f);
-        private static readonly Color ShopInk = new Color(0.07f, 0.05f, 0.06f, 1f);
-        private static readonly Color ShopSelected = new Color(0.27f, 0.19f, 0.10f, 1f);
-        private static readonly Color ShopBrass = new Color(0.82f, 0.62f, 0.30f);
-        private static readonly Color ShopBrassLight = new Color(1f, 0.87f, 0.55f);
-        private static readonly Color ShopBrassDark = new Color(0.42f, 0.29f, 0.15f);
-        private static readonly Color ShopText = new Color(0.92f, 0.88f, 0.80f);
-        private static readonly Color ShopMuted = new Color(0.52f, 0.47f, 0.43f);
-        private static readonly Color ShopShardTint = new Color(0.72f, 0.92f, 1f);
-        private static readonly Color ShopGemTint = new Color(1f, 0.6f, 0.6f);
+        private static readonly Color MadeiraLoja = new Color(0.13f, 0.09f, 0.08f, 0.98f);
+        private static readonly Color TintaLoja = new Color(0.07f, 0.05f, 0.06f, 1f);
+        private static readonly Color SelecionadoLoja = new Color(0.27f, 0.19f, 0.10f, 1f);
+        private static readonly Color LataoLoja = new Color(0.82f, 0.62f, 0.30f);
+        private static readonly Color LuzLataoLoja = new Color(1f, 0.87f, 0.55f);
+        private static readonly Color EscuroLataoLoja = new Color(0.42f, 0.29f, 0.15f);
+        private static readonly Color TextoLoja = new Color(0.92f, 0.88f, 0.80f);
+        private static readonly Color MudoLoja = new Color(0.52f, 0.47f, 0.43f);
+        private static readonly Color TomFragmentoLoja = new Color(0.72f, 0.92f, 1f);
+        private static readonly Color TomGemaLoja = new Color(1f, 0.6f, 0.6f);
 
-        private GUIStyle _shopTitle, _shopSub, _shopItem, _shopPrice, _shopStamp, _shopDetailName, _shopDesc, _shopReply, _shopKey, _shopCoin;
+        private GUIStyle _tituloLoja, _subtituloLoja, _itemLoja, _precoLoja, _carimboLoja, _nomeDetalheLoja, _descricaoLoja, _respostaLoja, _chaveLoja, _moedaLoja;
 
-        private void EnsureShopStyles()
+        private void GarantirEstilosDaLoja()
         {
-            if (_shopTitle != null) return;
+            if (_tituloLoja != null) return;
 
-            _shopTitle = new GUIStyle(_label) { fontSize = 24 };
-            _shopTitle.normal.textColor = ShopBrassLight;
-            _shopSub = new GUIStyle(GUI.skin.label) { fontSize = 14, fontStyle = FontStyle.Italic };
-            _shopSub.normal.textColor = ShopMuted;
-            _shopItem = new GUIStyle(_label) { fontSize = 17, alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Clip };
-            _shopPrice = new GUIStyle(_label) { fontSize = 17, alignment = TextAnchor.MiddleRight };
-            _shopStamp = new GUIStyle(_label) { fontSize = 12, alignment = TextAnchor.MiddleCenter };
-            _shopStamp.normal.textColor = ShopMuted;
-            _shopDetailName = new GUIStyle(_label) { fontSize = 19, alignment = TextAnchor.MiddleCenter, wordWrap = false };
-            _shopDetailName.normal.textColor = ShopBrassLight;
-            _shopDesc = new GUIStyle(GUI.skin.label) { fontSize = 15, wordWrap = true, alignment = TextAnchor.UpperCenter };
-            _shopDesc.normal.textColor = ShopText;
-            _shopReply = new GUIStyle(_label) { fontSize = 15, alignment = TextAnchor.MiddleCenter, wordWrap = false };
-            _shopReply.normal.textColor = ShopBrassLight;
-            _shopKey = new GUIStyle(_label) { fontSize = 14, alignment = TextAnchor.MiddleCenter };
-            _shopKey.normal.textColor = ShopInk;
-            _shopCoin = new GUIStyle(_label) { fontSize = 22 };
+            _tituloLoja = new GUIStyle(_rotulo) { fontSize = 24 };
+            _tituloLoja.normal.textColor = LuzLataoLoja;
+            _subtituloLoja = new GUIStyle(GUI.skin.label) { fontSize = 14, fontStyle = FontStyle.Italic };
+            _subtituloLoja.normal.textColor = MudoLoja;
+            _itemLoja = new GUIStyle(_rotulo) { fontSize = 17, alignment = TextAnchor.MiddleLeft, wordWrap = false, clipping = TextClipping.Clip };
+            _precoLoja = new GUIStyle(_rotulo) { fontSize = 17, alignment = TextAnchor.MiddleRight };
+            _carimboLoja = new GUIStyle(_rotulo) { fontSize = 12, alignment = TextAnchor.MiddleCenter };
+            _carimboLoja.normal.textColor = MudoLoja;
+            _nomeDetalheLoja = new GUIStyle(_rotulo) { fontSize = 19, alignment = TextAnchor.MiddleCenter, wordWrap = false };
+            _nomeDetalheLoja.normal.textColor = LuzLataoLoja;
+            _descricaoLoja = new GUIStyle(GUI.skin.label) { fontSize = 15, wordWrap = true, alignment = TextAnchor.UpperCenter };
+            _descricaoLoja.normal.textColor = TextoLoja;
+            _respostaLoja = new GUIStyle(_rotulo) { fontSize = 15, alignment = TextAnchor.MiddleCenter, wordWrap = false };
+            _respostaLoja.normal.textColor = LuzLataoLoja;
+            _chaveLoja = new GUIStyle(_rotulo) { fontSize = 14, alignment = TextAnchor.MiddleCenter };
+            _chaveLoja.normal.textColor = TintaLoja;
+            _moedaLoja = new GUIStyle(_rotulo) { fontSize = 22 };
         }
 
         /// <summary>Uma placa: borda escura por fora, filete de latao, fundo.</summary>
-        private static void Panel(Rect r, Color fill, Color rim, Color shadow)
+        private static void Painel(Rect r, Color preenchimento, Color aro, Color sombraChao)
         {
-            Fill(new Rect(r.x - 3f, r.y - 3f, r.width + 6f, r.height + 6f), ShopInk);
-            Fill(new Rect(r.x - 2f, r.y - 2f, r.width + 4f, r.height + 4f), rim);
-            Fill(new Rect(r.x, r.y + r.height, r.width, 2f), shadow);
-            Fill(r, fill);
+            Preencher(new Rect(r.x - 3f, r.y - 3f, r.width + 6f, r.height + 6f), TintaLoja);
+            Preencher(new Rect(r.x - 2f, r.y - 2f, r.width + 4f, r.height + 4f), aro);
+            Preencher(new Rect(r.x, r.y + r.height, r.width, 2f), sombraChao);
+            Preencher(r, preenchimento);
         }
 
         /// <summary>Os rebites de latao nos cantos da moldura.</summary>
-        private static void Rivets(Rect r)
+        private static void Rebites(Rect r)
         {
             foreach (Vector2 c in new[] { new Vector2(r.x + 6f, r.y + 6f), new Vector2(r.xMax - 10f, r.y + 6f),
                          new Vector2(r.x + 6f, r.yMax - 10f), new Vector2(r.xMax - 10f, r.yMax - 10f) })
             {
-                Fill(new Rect(c.x, c.y, 4f, 4f), ShopBrassDark);
-                Fill(new Rect(c.x, c.y, 2f, 2f), ShopBrassLight);
+                Preencher(new Rect(c.x, c.y, 4f, 4f), EscuroLataoLoja);
+                Preencher(new Rect(c.x, c.y, 2f, 2f), LuzLataoLoja);
             }
         }
 
         /// <summary>Um valor da carteira, alinhado a direita em right. Devolve onde comecou.</summary>
-        private float Coin(float right, float y, Texture2D icon, int value, Color tint)
+        private float Moeda(float direita, float y, Texture2D icone, int valor, Color tom)
         {
-            string text = value.ToString();
-            Vector2 size = _shopCoin.CalcSize(new GUIContent(text));
-            float w = icon != null ? icon.width * IconScale : 0f;
-            float h = icon != null ? icon.height * IconScale : 0f;
-            float left = right - size.x - w - 8f;
+            string texto = valor.ToString();
+            Vector2 tamanho = _moedaLoja.CalcSize(new GUIContent(texto));
+            float w = icone != null ? icone.width * EscalaIcone : 0f;
+            float h = icone != null ? icone.height * EscalaIcone : 0f;
+            float esquerda = direita - tamanho.x - w - 8f;
 
-            if (icon != null) DrawCentered(icon, new Rect(left, y + (size.y - h) * 0.5f, w, h));
-            _shopCoin.normal.textColor = tint;
-            GUI.Label(new Rect(left + w + 6f, y, size.x + 4f, size.y), text, _shopCoin);
-            return left;
+            if (icone != null) DesenharCentralizado(icone, new Rect(esquerda, y + (tamanho.y - h) * 0.5f, w, h));
+            _moedaLoja.normal.textColor = tom;
+            TelaCanvas.Texto(new Rect(esquerda + w + 6f, y, tamanho.x + 4f, tamanho.y), texto, _moedaLoja);
+            return esquerda;
         }
 
         /// <summary>
@@ -621,118 +621,118 @@ namespace EchoesOfCravejada
         /// embaixo do outro, seja em fragmento (o cristal torto, com a linha
         /// de baixo vazia) ou em gema.
         /// </summary>
-        private void Price(float right, float centerY, Currency currency, int price, bool affordable)
+        private void Preco(float direita, float centroY, Currency moeda, int preco, bool acessivel)
         {
-            Texture2D icon = currency == Currency.Gems ? _gemIcon : _shardIcon;
-            const float box = 20f;
-            const float column = 52f;
+            Texture2D icone = moeda == Currency.Gemas ? _iconeGema : _iconeFragmento;
+            const float caixa = 20f;
+            const float coluna = 52f;
 
-            _shopPrice.normal.textColor = affordable ? ShopText : new Color(0.85f, 0.42f, 0.38f);
-            GUI.Label(new Rect(right - box - 6f - column, centerY - 15f, column, 30f), price.ToString(), _shopPrice);
+            _precoLoja.normal.textColor = acessivel ? TextoLoja : new Color(0.85f, 0.42f, 0.38f);
+            TelaCanvas.Texto(new Rect(direita - caixa - 6f - coluna, centroY - 15f, coluna, 30f), preco.ToString(), _precoLoja);
 
-            if (icon != null)
+            if (icone != null)
             {
-                GUI.color = affordable ? Color.white : new Color(1f, 1f, 1f, 0.5f);
-                DrawCentered(icon, new Rect(right - box, centerY - box * 0.5f, box, box));
+                GUI.color = acessivel ? Color.white : new Color(1f, 1f, 1f, 0.5f);
+                DesenharCentralizado(icone, new Rect(direita - caixa, centroY - caixa * 0.5f, caixa, caixa));
                 GUI.color = Color.white;
             }
         }
 
-        private Vector2 _lastMouse = new Vector2(-1f, -1f);
+        private Vector2 _ultimoMouse = new Vector2(-1f, -1f);
 
         /// <summary>
         /// O mouse em cima de uma area da loja. So conta como "passou por
         /// cima" quando ele de fato se mexe (senao o mouse parado brigaria com
         /// W/S); o clique do botao esquerdo vale sempre.
         /// </summary>
-        private bool ShopMouse(Rect area, out bool clicked)
+        private bool MouseNaLoja(Rect area, out bool clicado)
         {
             Event e = Event.current;
-            clicked = false;
+            clicado = false;
             if (!area.Contains(e.mousePosition)) return false;
 
             if (e.type == EventType.MouseDown && e.button == 0)
             {
-                clicked = true;
+                clicado = true;
                 e.Use();
                 return true;
             }
 
-            if (e.type == EventType.Repaint && (e.mousePosition - _lastMouse).sqrMagnitude > 0.5f)
+            if (e.type == EventType.Repaint && (e.mousePosition - _ultimoMouse).sqrMagnitude > 0.5f)
             {
-                _lastMouse = e.mousePosition;
+                _ultimoMouse = e.mousePosition;
                 return true;
             }
 
             return false;
         }
 
-        private readonly Dictionary<Texture2D, Rect> _visible = new Dictionary<Texture2D, Rect>();
+        private readonly Dictionary<Texture2D, Rect> _visivel = new Dictionary<Texture2D, Rect>();
 
         /// <summary>
         /// Desenha um icone de pixel com a parte desenhada (sem a borda
         /// transparente) no meio da caixa, em escala inteira.
         /// </summary>
-        private void DrawCentered(Texture2D icon, Rect box)
+        private void DesenharCentralizado(Texture2D icone, Rect caixa)
         {
-            if (!_visible.TryGetValue(icon, out Rect used))
+            if (!_visivel.TryGetValue(icone, out Rect usado))
             {
-                used = new Rect(0f, 0f, icon.width, icon.height);
-                if (icon.isReadable)
+                usado = new Rect(0f, 0f, icone.width, icone.height);
+                if (icone.isReadable)
                 {
-                    int x0 = icon.width, y0 = icon.height, x1 = -1, y1 = -1;
-                    Color32[] pixels = icon.GetPixels32();
-                    for (int y = 0; y < icon.height; y++)
+                    int x0 = icone.width, y0 = icone.height, x1 = -1, y1 = -1;
+                    Color32[] pixels = icone.GetPixels32();
+                    for (int y = 0; y < icone.height; y++)
                     {
-                        for (int x = 0; x < icon.width; x++)
+                        for (int x = 0; x < icone.width; x++)
                         {
-                            if (pixels[x + y * icon.width].a == 0) continue;
+                            if (pixels[x + y * icone.width].a == 0) continue;
                             x0 = Mathf.Min(x0, x); x1 = Mathf.Max(x1, x);
                             y0 = Mathf.Min(y0, y); y1 = Mathf.Max(y1, y);
                         }
                     }
 
-                    if (x1 >= 0) used = new Rect(x0, y0, x1 - x0 + 1, y1 - y0 + 1);
+                    if (x1 >= 0) usado = new Rect(x0, y0, x1 - x0 + 1, y1 - y0 + 1);
                 }
 
-                _visible[icon] = used;
+                _visivel[icone] = usado;
             }
 
-            float scale = Mathf.Max(1f, Mathf.Floor(Mathf.Min(box.width / used.width, box.height / used.height)));
-            float w = icon.width * scale;
-            float h = icon.height * scale;
+            float escalaAtual = Mathf.Max(1f, Mathf.Floor(Mathf.Min(caixa.width / usado.width, caixa.height / usado.height)));
+            float w = icone.width * escalaAtual;
+            float h = icone.height * escalaAtual;
 
             // A parte desenhada no centro da caixa (y da textura cresce pra cima).
-            float vx = box.center.x - (used.x + used.width * 0.5f) * scale;
-            float vy = box.center.y - (icon.height - used.y - used.height * 0.5f) * scale;
-            GUI.DrawTexture(new Rect(Mathf.Round(vx), Mathf.Round(vy), w, h), icon);
+            float vx = caixa.center.x - (usado.x + usado.width * 0.5f) * escalaAtual;
+            float vy = caixa.center.y - (icone.height - usado.y - usado.height * 0.5f) * escalaAtual;
+            TelaCanvas.Textura(new Rect(Mathf.Round(vx), Mathf.Round(vy), w, h), icone);
         }
 
         /// <summary>Uma teclinha de latao com o que ela faz ao lado. Devolve onde terminou.</summary>
-        private float KeyHint(float x, float y, string key, string action)
+        private float DicaDeTecla(float x, float y, string chave, string acao)
         {
-            Vector2 keySize = _shopKey.CalcSize(new GUIContent(key));
-            var cap = new Rect(x, y + 4f, Mathf.Max(keySize.x + 14f, 26f), 24f);
-            Fill(new Rect(cap.x, cap.y + 2f, cap.width, cap.height), ShopBrassDark);
-            Fill(new Rect(cap.x, cap.y, cap.width, cap.height - 2f), ShopBrass);
-            Fill(new Rect(cap.x + 2f, cap.y + 2f, cap.width - 4f, 2f), ShopBrassLight);
-            GUI.Label(new Rect(cap.x, cap.y - 1f, cap.width, cap.height - 2f), key, _shopKey);
+            Vector2 tamanhoChave = _chaveLoja.CalcSize(new GUIContent(chave));
+            var tampa = new Rect(x, y + 4f, Mathf.Max(tamanhoChave.x + 14f, 26f), 24f);
+            Preencher(new Rect(tampa.x, tampa.y + 2f, tampa.width, tampa.height), EscuroLataoLoja);
+            Preencher(new Rect(tampa.x, tampa.y, tampa.width, tampa.height - 2f), LataoLoja);
+            Preencher(new Rect(tampa.x + 2f, tampa.y + 2f, tampa.width - 4f, 2f), LuzLataoLoja);
+            TelaCanvas.Texto(new Rect(tampa.x, tampa.y - 1f, tampa.width, tampa.height - 2f), chave, _chaveLoja);
 
-            Vector2 size = _shopSub.CalcSize(new GUIContent(action));
-            GUI.Label(new Rect(cap.xMax + 8f, y + 6f, size.x + 4f, 22f), action, _shopSub);
-            return cap.xMax + 8f + size.x;
+            Vector2 tamanho = _subtituloLoja.CalcSize(new GUIContent(acao));
+            TelaCanvas.Texto(new Rect(tampa.xMax + 8f, y + 6f, tamanho.x + 4f, 22f), acao, _subtituloLoja);
+            return tampa.xMax + 8f + tamanho.x;
         }
 
-        private void BossBar(string title, float fraction, Color color)
+        private void BarraDoChefe(string titulo, float fracao, Color cor)
         {
-            float width = Screen.width * 0.5f;
-            float x = (Screen.width - width) * 0.5f;
+            float largura = Screen.width * 0.5f;
+            float x = (Screen.width - largura) * 0.5f;
             float y = Screen.height - 46f;
 
-            GUI.Label(new Rect(x, y - 26f, 520f, 28f), title, _label);
-            Fill(new Rect(x - 2f, y - 2f, width + 4f, 16f), Color.black);
-            Fill(new Rect(x, y, width, 12f), HeartEmpty);
-            Fill(new Rect(x, y, width * fraction, 12f), color);
+            TelaCanvas.Texto(new Rect(x, y - 26f, 520f, 28f), titulo, _rotulo);
+            Preencher(new Rect(x - 2f, y - 2f, largura + 4f, 16f), Color.black);
+            Preencher(new Rect(x, y, largura, 12f), VaziaCoracao);
+            Preencher(new Rect(x, y, largura * fracao, 12f), cor);
         }
 
         // ------------------------------------------------------------------
@@ -740,29 +740,29 @@ namespace EchoesOfCravejada
         // ------------------------------------------------------------------
 
         /// <summary>A caixa de sempre: borda dourada por fora, fundo escuro por dentro.</summary>
-        private static void DrawBox(Rect inner)
+        private static void DesenharCaixa(Rect interno)
         {
-            Fill(new Rect(inner.x - BoxBorder, inner.y - BoxBorder,
-                inner.width + BoxBorder * 2f, inner.height + BoxBorder * 2f), HeartFull);
-            Fill(inner, BoxFill);
+            Preencher(new Rect(interno.x - BordaCaixa, interno.y - BordaCaixa,
+                interno.width + BordaCaixa * 2f, interno.height + BordaCaixa * 2f), CheioCoracao);
+            Preencher(interno, PreenchimentoCaixa);
         }
 
         /// <summary>Os avisos do quadro, um embaixo do outro, cada um na sua caixa, a partir do alto.</summary>
-        private void DrawNotices()
+        private void DesenharAvisos()
         {
             float y = Screen.height * 0.12f;
 
-            foreach (string text in _notices)
+            foreach (string texto in _avisos)
             {
-                Vector2 size = _line.CalcSize(new GUIContent(text));
-                float width = Mathf.Min(size.x + 40f, Screen.width - 40f);
-                const float height = 40f;
+                Vector2 tamanho = _linha.CalcSize(new GUIContent(texto));
+                float largura = Mathf.Min(tamanho.x + 40f, Screen.width - 40f);
+                const float altura = 40f;
 
-                var box = new Rect((Screen.width - width) * 0.5f, y, width, height);
-                DrawBox(box);
-                GUI.Label(box, text, _line);
+                var caixa = new Rect((Screen.width - largura) * 0.5f, y, largura, altura);
+                DesenharCaixa(caixa);
+                TelaCanvas.Texto(caixa, texto, _linha);
 
-                y += height + BoxBorder * 2f + 8f;
+                y += altura + BordaCaixa * 2f + 8f;
             }
         }
 
@@ -770,26 +770,26 @@ namespace EchoesOfCravejada
         /// Um pedido de botao, numa caixa embaixo do meio da tela. Com
         /// progresso (segurar pra raspar), ganha a barra embaixo do texto.
         /// </summary>
-        private void DrawPrompt(string text, float progress = -1f)
+        private void DesenharIndicacao(string texto, float progresso = -1f)
         {
             // Numa cena o jogador nao tem o controle: nao ha botao a pedir.
-            if (Cinematic.Active) return;
+            if (Cinematic.Ativo) return;
 
-            Vector2 size = _line.CalcSize(new GUIContent(text));
-            bool bar = progress >= 0f;
+            Vector2 tamanho = _linha.CalcSize(new GUIContent(texto));
+            bool barra = progresso >= 0f;
 
-            float width = Mathf.Max(size.x + 40f, bar ? 280f : 0f);
-            float height = bar ? 58f : 40f;
-            var box = new Rect((Screen.width - width) * 0.5f, Screen.height * PromptY, width, height);
+            float largura = Mathf.Max(tamanho.x + 40f, barra ? 280f : 0f);
+            float altura = barra ? 58f : 40f;
+            var caixa = new Rect((Screen.width - largura) * 0.5f, Screen.height * IndicacaoY, largura, altura);
 
-            DrawBox(box);
-            GUI.Label(new Rect(box.x, box.y, box.width, 40f), text, _line);
+            DesenharCaixa(caixa);
+            TelaCanvas.Texto(new Rect(caixa.x, caixa.y, caixa.width, 40f), texto, _linha);
 
-            if (!bar) return;
+            if (!barra) return;
 
-            var track = new Rect(box.x + 20f, box.y + 38f, box.width - 40f, 10f);
-            Fill(track, HeartEmpty);
-            Fill(new Rect(track.x, track.y, track.width * Mathf.Clamp01(progress), track.height), HeartFull);
+            var faixa = new Rect(caixa.x + 20f, caixa.y + 38f, caixa.width - 40f, 10f);
+            Preencher(faixa, VaziaCoracao);
+            Preencher(new Rect(faixa.x, faixa.y, faixa.width * Mathf.Clamp01(progresso), faixa.height), CheioCoracao);
         }
 
         // ------------------------------------------------------------------
@@ -800,36 +800,36 @@ namespace EchoesOfCravejada
         /// A caixa de fala de um NPC, com o busto de quem fala a esquerda, ou
         /// o pedido de botao de que da pra conversar.
         /// </summary>
-        private void DrawDialogue()
+        private void DesenharDialogo()
         {
             // A fala de cena (um chefe falando) tem a vez.
-            if (ScriptedDialogue.Active)
+            if (ScriptedDialogue.Ativo)
             {
-                DrawSpeech(ScriptedDialogue.Speaker, ScriptedDialogue.PortraitId, ScriptedDialogue.CurrentLine, null);
+                DesenharFala(ScriptedDialogue.Falante, ScriptedDialogue.IdRetrato, ScriptedDialogue.LinhaAtual, null);
                 return;
             }
 
-            Npc talking = Npc.Talking;
+            Npc conversando = Npc.Conversando;
 
-            if (talking == null)
+            if (conversando == null)
             {
-                _speakerShown = null;
-                Npc nearby = Npc.Nearby;
-                if (nearby != null && !Cinematic.Active) DrawPrompt("E: " + nearby.Prompt + " " + nearby.DisplayName);
+                _mostradoFalante = null;
+                Npc proximoArea = Npc.Proximo;
+                if (proximoArea != null && !Cinematic.Ativo) DesenharIndicacao("E: " + proximoArea.Indicacao + " " + proximoArea.NomeExibido);
                 return;
             }
 
-            string line = talking.CurrentLine;
-            if (line == null) return;
+            string linha2 = conversando.LinhaAtual;
+            if (linha2 == null) return;
 
-            DrawSpeech(talking.DisplayName, talking.PortraitId, line, talking.Document);
+            DesenharFala(conversando.NomeExibido, conversando.IdRetrato, linha2, conversando.Documento);
         }
 
         // Quem esta na caixa agora, e desde quando (pra o busto entrar deslizando).
-        private string _speakerShown;
-        private float _speakerSince;
-        private GUIStyle _speakerName;
-        private static readonly Color SpeechFill = new Color(0.025f, 0.03f, 0.045f, 0.86f);
+        private string _mostradoFalante;
+        private float _falanteDesde;
+        private GUIStyle _nomeFalante;
+        private static readonly Color PreenchimentoFala = new Color(0.025f, 0.03f, 0.045f, 0.86f);
 
         /// <summary>
         /// A caixa de fala, como numa novela visual: o busto grande de quem fala
@@ -838,101 +838,101 @@ namespace EchoesOfCravejada
         /// fala; o nome em cima, a linha embaixo e a setinha de continuar no
         /// canto. Se ha o que ler, o desenho aparece grande em cima.
         /// </summary>
-        private void DrawSpeech(string speaker, string portraitId, string line, Sprite document)
+        private void DesenharFala(string falante, string idRetrato, string linha2, Sprite documento)
         {
-            if (line == null) return;
+            if (linha2 == null) return;
 
             // A grade de pixel da interface (320x180 ampliada).
             float u = Mathf.Max(1f, Mathf.Floor(Screen.height / 180f));
-            Color accent = SpeakerPortraits.Accent(portraitId);
+            Color destaque = SpeakerPortraits.CorDeDestaque(idRetrato);
 
-            string key = portraitId + "|" + speaker;
-            if (key != _speakerShown)
+            string chave = idRetrato + "|" + falante;
+            if (chave != _mostradoFalante)
             {
-                _speakerShown = key;
-                _speakerSince = Time.unscaledTime;
+                _mostradoFalante = chave;
+                _falanteDesde = Time.unscaledTime;
             }
 
-            float age = Time.unscaledTime - _speakerSince;
+            float idade = Time.unscaledTime - _falanteDesde;
 
             // O busto: inteiro, em passos inteiros, uns 70% da altura da tela.
-            bool blink = Mathf.Repeat(Time.unscaledTime + 0.7f, 3.8f) < 0.12f;
-            Texture2D bust = portraitId != null ? SpeakerPortraits.Get(portraitId, blink) : null;
-            float scale = bust != null ? Mathf.Max(1f, Mathf.Floor(Screen.height * 0.72f / bust.height)) : 0f;
-            float bustW = bust != null ? bust.width * scale : 0f;
-            float bustH = bust != null ? bust.height * scale : 0f;
+            bool piscar = Mathf.Repeat(Time.unscaledTime + 0.7f, 3.8f) < 0.12f;
+            Texture2D busto = idRetrato != null ? SpeakerPortraits.Obter(idRetrato, piscar) : null;
+            float escalaAtual = busto != null ? Mathf.Max(1f, Mathf.Floor(Screen.height * 0.72f / busto.height)) : 0f;
+            float bustoW = busto != null ? busto.width * escalaAtual : 0f;
+            float bustoH = busto != null ? busto.height * escalaAtual : 0f;
 
-            float boxH = Mathf.Round(Screen.height * 0.27f / u) * u;
-            float boxY = Screen.height - boxH - 3f * u;
-            float boxX = Mathf.Round(bustW * 0.62f / u) * u + 6f * u;
-            float boxW = Mathf.Min(Screen.width - boxX - 6f * u, Mathf.Round(Screen.width * 0.66f / u) * u);
-            if (bust == null) boxX = Mathf.Round((Screen.width - boxW) * 0.5f / u) * u;
+            float caixaH = Mathf.Round(Screen.height * 0.27f / u) * u;
+            float caixaY = Screen.height - caixaH - 3f * u;
+            float caixaX = Mathf.Round(bustoW * 0.62f / u) * u + 6f * u;
+            float caixaW = Mathf.Min(Screen.width - caixaX - 6f * u, Mathf.Round(Screen.width * 0.66f / u) * u);
+            if (busto == null) caixaX = Mathf.Round((Screen.width - caixaW) * 0.5f / u) * u;
 
             // O que se le aparece grande, no meio da tela, em cima da caixa.
-            if (document != null) DrawDocument(document, new Rect(40f, 24f, Screen.width - 80f, boxY - 24f - 20f));
+            if (documento != null) DesenharDocumento(documento, new Rect(40f, 24f, Screen.width - 80f, caixaY - 24f - 20f));
 
             // A caixa: o fundo, a luz fininha em cima e as cantoneiras.
-            var box = new Rect(boxX, boxY, boxW, boxH);
-            Fill(box, SpeechFill);
-            Fill(new Rect(box.x, box.y, box.width, u), new Color(accent.r, accent.g, accent.b, 0.12f));
-            Corners(box, u, 7f * u, new Color(accent.r, accent.g, accent.b, 0.9f));
+            var caixa = new Rect(caixaX, caixaY, caixaW, caixaH);
+            Preencher(caixa, PreenchimentoFala);
+            Preencher(new Rect(caixa.x, caixa.y, caixa.width, u), new Color(destaque.r, destaque.g, destaque.b, 0.12f));
+            Cantos(caixa, u, 7f * u, new Color(destaque.r, destaque.g, destaque.b, 0.9f));
 
             // O busto por cima da borda esquerda, entrando de lado.
-            float textX = box.x + 8f * u;
-            if (bust != null)
+            float textoX = caixa.x + 8f * u;
+            if (busto != null)
             {
-                float enter = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(age / 0.22f));
-                float bx = Mathf.Round((box.x - bustW * 0.62f - (1f - enter) * 16f * u) / scale) * scale;
-                float by = Screen.height - bustH;
+                float entrar = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(idade / 0.22f));
+                float bx = Mathf.Round((caixa.x - bustoW * 0.62f - (1f - entrar) * 16f * u) / escalaAtual) * escalaAtual;
+                float by = Screen.height - bustoH;
 
-                Color previous = GUI.color;
-                GUI.color = new Color(1f, 1f, 1f, enter);
-                GUI.DrawTexture(new Rect(bx, by, bustW, bustH), bust);
-                GUI.color = previous;
+                Color valorAnterior = GUI.color;
+                GUI.color = new Color(1f, 1f, 1f, entrar);
+                TelaCanvas.Textura(new Rect(bx, by, bustoW, bustoH), busto);
+                GUI.color = valorAnterior;
 
-                textX = box.x + bustW * 0.38f + 6f * u;
+                textoX = caixa.x + bustoW * 0.38f + 6f * u;
             }
 
-            float textW = box.xMax - 12f * u - textX;
+            float textoW = caixa.xMax - 12f * u - textoX;
 
-            int nameSize = Mathf.RoundToInt(5.4f * u);
-            if (_speakerName == null || _speakerName.fontSize != nameSize)
+            int tamanhoNome = Mathf.RoundToInt(5.4f * u);
+            if (_nomeFalante == null || _nomeFalante.fontSize != tamanhoNome)
             {
-                _speakerName = new GUIStyle(GUI.skin.label) { fontSize = nameSize, fontStyle = FontStyle.Bold, wordWrap = false };
-                _speech.fontSize = Mathf.RoundToInt(5f * u);
+                _nomeFalante = new GUIStyle(GUI.skin.label) { fontSize = tamanhoNome, fontStyle = FontStyle.Bold, wordWrap = false };
+                _fala.fontSize = Mathf.RoundToInt(5f * u);
             }
 
-            if (!string.IsNullOrEmpty(speaker))
+            if (!string.IsNullOrEmpty(falante))
             {
-                Color previous = GUI.contentColor;
-                GUI.contentColor = accent;
-                GUI.Label(new Rect(textX, box.y + 5f * u, textW, 9f * u), speaker, _speakerName);
-                GUI.contentColor = previous;
+                Color valorAnterior = GUI.contentColor;
+                GUI.contentColor = destaque;
+                TelaCanvas.Texto(new Rect(textoX, caixa.y + 5f * u, textoW, 9f * u), falante, _nomeFalante);
+                GUI.contentColor = valorAnterior;
             }
 
-            GUI.Label(new Rect(textX, box.y + 16f * u, textW, box.height - 22f * u), line, _speech);
+            TelaCanvas.Texto(new Rect(textoX, caixa.y + 16f * u, textoW, caixa.height - 22f * u), linha2, _fala);
 
             // A setinha de continuar, quicando no canto.
-            float bob = Mathf.Repeat(Time.unscaledTime, 0.9f) < 0.45f ? 0f : u;
-            float ax = box.xMax - 10f * u;
-            float ay = box.yMax - 8f * u + bob;
-            Fill(new Rect(ax, ay, 5f * u, u), accent);
-            Fill(new Rect(ax + u, ay + u, 3f * u, u), accent);
-            Fill(new Rect(ax + 2f * u, ay + 2f * u, u, u), accent);
+            float balanco = Mathf.Repeat(Time.unscaledTime, 0.9f) < 0.45f ? 0f : u;
+            float ax = caixa.xMax - 10f * u;
+            float ay = caixa.yMax - 8f * u + balanco;
+            Preencher(new Rect(ax, ay, 5f * u, u), destaque);
+            Preencher(new Rect(ax + u, ay + u, 3f * u, u), destaque);
+            Preencher(new Rect(ax + 2f * u, ay + 2f * u, u, u), destaque);
         }
 
         /// <summary>As quatro cantoneiras em L, finas, nos cantos da caixa.</summary>
-        private static void Corners(Rect box, float thick, float length, Color color)
+        private static void Cantos(Rect caixa, float grosso, float comprimento, Color cor)
         {
-            float l = box.x - thick, r = box.xMax, t = box.y - thick, b = box.yMax;
-            Fill(new Rect(l, t, length, thick), color);
-            Fill(new Rect(l, t, thick, length), color);
-            Fill(new Rect(r - length + thick, t, length, thick), color);
-            Fill(new Rect(r, t, thick, length), color);
-            Fill(new Rect(l, b, length, thick), color);
-            Fill(new Rect(l, b - length + thick, thick, length), color);
-            Fill(new Rect(r - length + thick, b, length, thick), color);
-            Fill(new Rect(r, b - length + thick, thick, length), color);
+            float l = caixa.x - grosso, r = caixa.xMax, t = caixa.y - grosso, b = caixa.yMax;
+            Preencher(new Rect(l, t, comprimento, grosso), cor);
+            Preencher(new Rect(l, t, grosso, comprimento), cor);
+            Preencher(new Rect(r - comprimento + grosso, t, comprimento, grosso), cor);
+            Preencher(new Rect(r, t, grosso, comprimento), cor);
+            Preencher(new Rect(l, b, comprimento, grosso), cor);
+            Preencher(new Rect(l, b - comprimento + grosso, grosso, comprimento), cor);
+            Preencher(new Rect(r - comprimento + grosso, b, comprimento, grosso), cor);
+            Preencher(new Rect(r, b - comprimento + grosso, grosso, comprimento), cor);
         }
 
         /// <summary>
@@ -940,37 +940,37 @@ namespace EchoesOfCravejada
         /// atras e mostra a arte o maior possivel dentro da area, em passos
         /// inteiros quando cabe pelo menos o dobro, pra o pixel art nao borrar.
         /// </summary>
-        private static void DrawDocument(Sprite sprite, Rect area)
+        private static void DesenharDocumento(Sprite sprite, Rect area)
         {
             if (sprite.texture == null || area.width <= 0f || area.height <= 0f) return;
 
-            Fill(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.6f));
+            Preencher(new Rect(0f, 0f, Screen.width, Screen.height), new Color(0f, 0f, 0f, 0.6f));
 
             Rect pixels = sprite.rect;
-            float fit = Mathf.Min(area.width / pixels.width, area.height / pixels.height);
-            float scale = fit >= 2f ? Mathf.Floor(fit) : fit;
+            float ajuste = Mathf.Min(area.width / pixels.width, area.height / pixels.height);
+            float escalaAtual = ajuste >= 2f ? Mathf.Floor(ajuste) : ajuste;
 
-            float drawWidth = pixels.width * scale;
-            float drawHeight = pixels.height * scale;
-            var target = new Rect(
-                area.x + (area.width - drawWidth) * 0.5f,
-                area.y + (area.height - drawHeight) * 0.5f,
-                drawWidth, drawHeight);
+            float larguraDesenho = pixels.width * escalaAtual;
+            float alturaDesenho = pixels.height * escalaAtual;
+            var alvo = new Rect(
+                area.x + (area.width - larguraDesenho) * 0.5f,
+                area.y + (area.height - alturaDesenho) * 0.5f,
+                larguraDesenho, alturaDesenho);
 
-            Texture texture = sprite.texture;
+            Texture textura = sprite.texture;
             var uv = new Rect(
-                pixels.x / texture.width, pixels.y / texture.height,
-                pixels.width / texture.width, pixels.height / texture.height);
+                pixels.x / textura.width, pixels.y / textura.height,
+                pixels.width / textura.width, pixels.height / textura.height);
 
-            GUI.DrawTextureWithTexCoords(target, texture, uv);
+            TelaCanvas.TexturaUV(alvo, textura, uv);
         }
 
-        private static void Fill(Rect rect, Color color)
+        private static void Preencher(Rect retangulo, Color cor)
         {
-            Color previous = GUI.color;
-            GUI.color = color;
-            GUI.DrawTexture(rect, Texture2D.whiteTexture);
-            GUI.color = previous;
+            Color valorAnterior = GUI.color;
+            GUI.color = cor;
+            TelaCanvas.Textura(retangulo, Texture2D.whiteTexture);
+            GUI.color = valorAnterior;
         }
     }
 }

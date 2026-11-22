@@ -11,35 +11,35 @@ namespace EchoesOfCravejada
     {
         [SerializeField] private string id;
 
-        [Tooltip("O aviso na tela ao guardar.")]
-        [SerializeField] private string message;
+        [UnityEngine.Serialization.FormerlySerializedAs("message")] [Tooltip("O aviso na tela ao guardar.")]
+        [SerializeField] private string mensagem;
 
-        [Tooltip("O comeco de id do conjunto, pra contar quantas ja foram achadas.")]
-        [SerializeField] private string group;
+        [UnityEngine.Serialization.FormerlySerializedAs("group")] [Tooltip("O comeco de id do conjunto, pra contar quantas ja foram achadas.")]
+        [SerializeField] private string grupo;
 
-        [SerializeField] private int groupSize;
+        [UnityEngine.Serialization.FormerlySerializedAs("groupSize")] [SerializeField] private int tamanhoGrupo;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void ConfigureCollectible(string newId, string newMessage, string newGroup, int newGroupSize)
+        public void ConfigurarColecionavel(string novoId, string novoMensagem, string novoGrupo, int novoTamanhoGrupo)
         {
-            id = newId;
-            message = newMessage;
-            group = newGroup;
-            groupSize = newGroupSize;
+            id = novoId;
+            mensagem = novoMensagem;
+            grupo = novoGrupo;
+            tamanhoGrupo = novoTamanhoGrupo;
         }
 
         private void Start()
         {
             // Ja levada numa visita anterior.
-            if (KeyItems.WasFound(id)) gameObject.SetActive(false);
+            if (KeyItems.FoiEncontrado(id)) gameObject.SetActive(false);
         }
 
-        protected override void OnTalkFinished(ScrapController scrap)
+        protected override void AoTerminarConversa(ScrapController sucata)
         {
-            if (KeyItems.WasFound(id)) return;
+            if (KeyItems.FoiEncontrado(id)) return;
 
-            KeyItems.Add(id);
-            Sfx.KeyItem.Play();
+            KeyItems.Adicionar(id);
+            Sfx.ItemChave.Tocar();
 
             // Contada: sem aviso, so o som.
 

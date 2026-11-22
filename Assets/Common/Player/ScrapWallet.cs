@@ -8,27 +8,28 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class ScrapWallet
     {
-        public static int Shards { get; private set; }
+        [SaveProgress("Shards")]
+        public static int QuantidadeFragmentos { get; private set; }
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            Shards = 0;
+            QuantidadeFragmentos = 0;
         }
 
-        public static void Add(int amount)
+        public static void Adicionar(int quantia)
         {
-            Shards = Mathf.Max(0, Shards + amount);
+            QuantidadeFragmentos = Mathf.Max(0, QuantidadeFragmentos + quantia);
         }
 
         /// <summary>Esvazia a carteira e devolve o que havia. E o que acontece na morte.</summary>
-        public static int TakeAll()
+        public static int PegarTudo()
         {
-            int all = Shards;
-            Shards = 0;
-            return all;
+            int todos = QuantidadeFragmentos;
+            QuantidadeFragmentos = 0;
+            return todos;
         }
     }
 }

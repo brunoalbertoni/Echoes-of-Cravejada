@@ -14,46 +14,46 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Collider2D))]
     public class PurifyTrigger : MonoBehaviour
     {
-        [SerializeField] private AreaPurifier purifier;
+        [UnityEngine.Serialization.FormerlySerializedAs("purifier")] [SerializeField] private AreaPurifier purificador;
 
-        private bool _running;
+        private bool _correndo;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(AreaPurifier newPurifier)
+        public void Configurar(AreaPurifier novoPurificador)
         {
-            purifier = newPurifier;
+            purificador = novoPurificador;
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D outro)
         {
-            if (_running || purifier == null || !BoilerMaster.Defeated || AreaPurifier.IsPurified) return;
+            if (_correndo || purificador == null || !BoilerMaster.Derrotado || AreaPurifier.EstaPurificado) return;
 
-            var controller = other.GetComponentInParent<ScrapController>();
-            if (controller == null) return;
+            var controlador = outro.GetComponentInParent<ScrapController>();
+            if (controlador == null) return;
 
-            StartCoroutine(Purify(controller));
+            StartCoroutine(Purificar(controlador));
         }
 
-        private IEnumerator Purify(ScrapController controller)
+        private IEnumerator Purificar(ScrapController controlador)
         {
-            _running = true;
-            Cinematic.Begin();
+            _correndo = true;
+            Cinematic.Iniciar();
 
-            var body = controller.GetComponent<Rigidbody2D>();
-            if (body != null) body.linearVelocity = new Vector2(0f, Mathf.Min(0f, body.linearVelocity.y));
+            var corpo = controlador.GetComponent<Rigidbody2D>();
+            if (corpo != null) corpo.linearVelocity = new Vector2(0f, Mathf.Min(0f, corpo.linearVelocity.y));
 
-            purifier.Purify();
-            ScrapCameraFollow.Shake(0.15f, 0.6f);
+            purificador.Purificar();
+            ScrapCameraFollow.Tremer(0.15f, 0.6f);
 
-            for (float t = 0f; t < purifier.Duration + 0.3f; t += Time.deltaTime)
+            for (float t = 0f; t < purificador.Duracao + 0.3f; t += Time.deltaTime)
             {
-                controller.ControlLocked = true;
+                controlador.ControleTravado = true;
                 yield return null;
             }
 
-            controller.ControlLocked = false;
-            Cinematic.End();
-            _running = false;
+            controlador.ControleTravado = false;
+            Cinematic.Encerrar();
+            _correndo = false;
         }
     }
 }

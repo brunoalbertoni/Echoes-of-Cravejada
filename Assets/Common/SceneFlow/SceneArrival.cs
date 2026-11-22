@@ -14,101 +14,101 @@ namespace EchoesOfCravejada
     /// </summary>
     public class SceneArrival : MonoBehaviour
     {
-        [Tooltip("Tempo maximo esperando o chao aparecer antes de soltar assim mesmo.")]
-        [SerializeField] private float maxWait = 5f;
+        [UnityEngine.Serialization.FormerlySerializedAs("maxWait")] [Tooltip("Tempo maximo esperando o chao aparecer antes de soltar assim mesmo.")]
+        [SerializeField] private float esperaMax = 5f;
 
         private void Start()
         {
-            string id = SceneTravel.PendingSpawnId;
-            SceneTravel.PendingSpawnId = null;
+            string id = SceneTravel.IdNascimentoPendente;
+            SceneTravel.IdNascimentoPendente = null;
 
-            Vector3 position = transform.position;
+            Vector3 posicao = transform.position;
 
             if (!string.IsNullOrEmpty(id))
             {
-                bool found = false;
+                bool encontrado = false;
 
-                foreach (SpawnPoint point in FindObjectsByType<SpawnPoint>(FindObjectsSortMode.None))
+                foreach (SpawnPoint ponto in FindObjectsByType<SpawnPoint>(FindObjectsSortMode.None))
                 {
-                    if (point.Id != id) continue;
+                    if (ponto.Id != id) continue;
 
-                    position = point.transform.position;
-                    found = true;
+                    posicao = ponto.transform.position;
+                    encontrado = true;
                     break;
                 }
 
-                if (!found) Debug.LogWarning("[SceneArrival] Nao ha SpawnPoint com o id " + id + " nesta cena.", this);
+                if (!encontrado) Debug.LogWarning("[SceneArrival] Nao ha SpawnPoint com o id " + id + " nesta cena.", this);
             }
 
             // Veio de um save: aparece de pe na bancada em que salvou, e ela e o checkpoint.
-            if (SaveSystem.TakePendingBench(out Vector3 bench))
+            if (SaveSystem.PegarBancadaPendente(out Vector3 bancada2))
             {
-                position = bench;
-                var health = GetComponent<ScrapHealth>();
-                if (health != null) health.RestAt(bench);
+                posicao = bancada2;
+                var vida = GetComponent<ScrapHealth>();
+                if (vida != null) vida.DescansarEm(bancada2);
             }
 
-            StartCoroutine(Settle(position));
+            StartCoroutine(Assentar(posicao));
         }
 
         /// <summary>Poe o Scrap no lugar e so devolve a fisica quando houver chao embaixo dele.</summary>
-        private IEnumerator Settle(Vector3 position)
+        private IEnumerator Assentar(Vector3 posicao)
         {
-            var body = GetComponent<Rigidbody2D>();
-            var controller = GetComponent<ScrapController>();
-            var respawn = GetComponent<ScrapRespawn>();
+            var corpo = GetComponent<Rigidbody2D>();
+            var controlador = GetComponent<ScrapController>();
+            var renascimento = GetComponent<ScrapRespawn>();
 
-            if (controller != null) controller.ControlLocked = true;
-            if (body != null) body.simulated = false;
+            if (controlador != null) controlador.ControleTravado = true;
+            if (corpo != null) corpo.simulated = false;
 
-            Place(position, body, respawn);
+            Posicionar(posicao, corpo, renascimento);
 
-            int ground = LayerMask.GetMask("Ground");
-            float waited = 0f;
+            int solo = LayerMask.GetMask("Ground");
+            float esperou = 0f;
 
             // Sem a layer (cena montada na mao), nao ha o que esperar.
-            while (ground != 0 && waited < maxWait)
+            while (solo != 0 && esperou < esperaMax)
             {
-                Vector2 above = (Vector2)position + Vector2.up * 0.5f;
-                if (Physics2D.Raycast(above, Vector2.down, 4f, ground).collider != null) break;
+                Vector2 acima = (Vector2)posicao + Vector2.up * 0.5f;
+                if (Physics2D.Raycast(acima, Vector2.down, 4f, solo).collider != null) break;
 
-                waited += Time.unscaledDeltaTime;
+                esperou += Time.unscaledDeltaTime;
                 yield return null;
 
                 // Enquanto espera, garante que ninguem o tirou do lugar.
-                Place(position, body, respawn);
+                Posicionar(posicao, corpo, renascimento);
             }
 
-            if (waited >= maxWait)
+            if (esperou >= esperaMax)
             {
                 Debug.LogWarning("[SceneArrival] O chao nao apareceu embaixo do ponto de chegada.", this);
             }
 
-            if (body != null)
+            if (corpo != null)
             {
-                body.simulated = true;
-                body.linearVelocity = Vector2.zero;
+                corpo.simulated = true;
+                corpo.linearVelocity = Vector2.zero;
             }
 
-            if (controller != null) controller.ControlLocked = false;
+            if (controlador != null) controlador.ControleTravado = false;
         }
 
-        private void Place(Vector3 position, Rigidbody2D body, ScrapRespawn respawn)
+        private void Posicionar(Vector3 posicao, Rigidbody2D corpo, ScrapRespawn renascimento)
         {
-            transform.position = position;
+            transform.position = posicao;
 
-            if (body != null)
+            if (corpo != null)
             {
-                body.position = position;
-                body.linearVelocity = Vector2.zero;
+                corpo.position = posicao;
+                corpo.linearVelocity = Vector2.zero;
             }
 
-            if (respawn != null) respawn.SetSafePosition(position);
+            if (renascimento != null) renascimento.DefinirPosicaoSegura(posicao);
 
             // Senao a camera faz a viagem inteira desde o ponto inicial da cena.
-            Camera main = Camera.main;
-            var follow = main != null ? main.GetComponent<ScrapCameraFollow>() : null;
-            if (follow != null) follow.SnapToTarget();
+            Camera principal = Camera.main;
+            var seguir = principal != null ? principal.GetComponent<ScrapCameraFollow>() : null;
+            if (seguir != null) seguir.IrDiretoAoAlvo();
         }
     }
 }

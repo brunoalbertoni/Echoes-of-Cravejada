@@ -11,7 +11,7 @@ namespace EchoesOfCravejada
     {
         private static readonly Dictionary<string, Texture2D> Cache = new Dictionary<string, Texture2D>();
 
-        private static readonly Dictionary<char, Color32> Palette = new Dictionary<char, Color32>
+        private static readonly Dictionary<char, Color32> Paleta = new Dictionary<char, Color32>
         {
             { 'k', new Color32(28, 20, 22, 255) },
             { 'S', new Color32(222, 226, 232, 255) },
@@ -25,10 +25,10 @@ namespace EchoesOfCravejada
             { 'C', new Color32(190, 240, 255, 255) },
         };
 
-        private static readonly Dictionary<string, string[]> Maps = new Dictionary<string, string[]>
+        private static readonly Dictionary<string, string[]> Mapas = new Dictionary<string, string[]>
         {
             {
-                Shop.Chassis, new[]
+                Shop.Chassi, new[]
                 {
                     "kkkkkkkkkkkk",
                     "kSSSSSSSSSSk",
@@ -45,7 +45,7 @@ namespace EchoesOfCravejada
                 }
             },
             {
-                Shop.Pistons, new[]
+                Shop.Pistoes, new[]
                 {
                     "..kk....kk..",
                     "..kk....kk..",
@@ -62,7 +62,7 @@ namespace EchoesOfCravejada
                 }
             },
             {
-                Shop.LinedBag, new[]
+                Shop.BolsaForrado, new[]
                 {
                     "....kkkk....",
                     "...kbkkbk...",
@@ -79,7 +79,7 @@ namespace EchoesOfCravejada
                 }
             },
             {
-                Shop.GoldSetting, new[]
+                Shop.EngasteOuro, new[]
                 {
                     "....kkkk....",
                     "...kcCCck...",
@@ -96,7 +96,7 @@ namespace EchoesOfCravejada
                 }
             },
             {
-                Shop.Harvest, new[]
+                Shop.Colheita, new[]
                 {
                     "..........kk",
                     ".........kSk",
@@ -113,7 +113,7 @@ namespace EchoesOfCravejada
                 }
             },
             {
-                Shop.Memory, new[]
+                Shop.Memoria, new[]
                 {
                     "............",
                     "............",
@@ -132,13 +132,13 @@ namespace EchoesOfCravejada
         };
 
         /// <summary>O icone do item, ou null se ele nao tiver um.</summary>
-        public static Texture2D Get(string id)
+        public static Texture2D Obter(string id)
         {
             if (id == null) return null;
-            if (Cache.TryGetValue(id, out Texture2D cached)) return cached;
-            if (!Maps.TryGetValue(id, out string[] rows)) return Cache[id] = null;
+            if (Cache.TryGetValue(id, out Texture2D guardado)) return guardado;
+            if (!Mapas.TryGetValue(id, out string[] linhas)) return Cache[id] = null;
 
-            var texture = new Texture2D(12, 12, TextureFormat.RGBA32, false)
+            var textura = new Texture2D(12, 12, TextureFormat.RGBA32, false)
             {
                 filterMode = FilterMode.Point,
                 wrapMode = TextureWrapMode.Clamp,
@@ -147,13 +147,13 @@ namespace EchoesOfCravejada
             for (int y = 0; y < 12; y++)
                 for (int x = 0; x < 12; x++)
                 {
-                    char c = x < rows[y].Length ? rows[y][x] : '.';
+                    char c = x < linhas[y].Length ? linhas[y][x] : '.';
                     // As linhas vem de cima pra baixo; a textura, de baixo pra cima.
-                    texture.SetPixel(x, 11 - y, Palette.TryGetValue(c, out Color32 color) ? (Color)color : Color.clear);
+                    textura.SetPixel(x, 11 - y, Paleta.TryGetValue(c, out Color32 cor) ? (Color)cor : Color.clear);
                 }
 
-            texture.Apply();
-            return Cache[id] = texture;
+            textura.Apply();
+            return Cache[id] = textura;
         }
     }
 }

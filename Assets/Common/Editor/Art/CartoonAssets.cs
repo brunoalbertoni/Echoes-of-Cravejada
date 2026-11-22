@@ -78,23 +78,23 @@ namespace EchoesOfCravejada.EditorTools
                     PurificationCartoonArt.Emitter e = source.Emitters[k];
                     emitters[k] = new CartoonEmitter
                     {
-                        kind = (CartoonEmitter.Kind)(int)e.Kind,
+                        tipo = (CartoonEmitter.Kind)(int)e.Kind,
                         area = new RectInt(e.X, e.Y, e.W, e.H),
-                        startAt = e.StartAt,
+                        inicioEm = e.StartAt,
                     };
                 }
 
                 shots[i] = new CartoonShot
                 {
-                    before = Load(PathOf(set, i, "before")),
-                    after = Load(PathOf(set, i, "after")),
-                    order = Load(PathOf(set, i, "order")),
-                    loop = loop,
-                    emitters = emitters,
-                    duration = source.Duration,
-                    pan = new Vector2(source.PanX, source.PanY),
-                    zoomFrom = source.ZoomFrom,
-                    zoomTo = source.ZoomTo,
+                    antes = Load(PathOf(set, i, "before")),
+                    depois = Load(PathOf(set, i, "after")),
+                    ordem = Load(PathOf(set, i, "order")),
+                    repeticao = loop,
+                    emissores = emitters,
+                    duracao = source.Duration,
+                    panorama = new Vector2(source.PanX, source.PanY),
+                    zoomDe = source.ZoomFrom,
+                    zoomPara = source.ZoomTo,
                 };
             }
 

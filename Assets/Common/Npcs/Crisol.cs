@@ -19,197 +19,197 @@ namespace EchoesOfCravejada
     /// </summary>
     public class Crisol : Npc
     {
-        [Tooltip("A historia que ele vende como 'Memoria'. Vazio: nao ha memoria pra vender neste distrito.")]
+        [UnityEngine.Serialization.FormerlySerializedAs("memoryLines")] [Tooltip("A historia que ele vende como 'Memoria'. Vazio: nao ha memoria pra vender neste distrito.")]
         [TextArea(2, 4)]
-        [SerializeField] private string[] memoryLines;
+        [SerializeField] private string[] linhasMemoria;
 
-        [Tooltip("Se a primeira conversa entrega o rubi bruto. So no distrito em que ele aparece pela primeira vez.")]
-        [SerializeField] private bool givesRuby = true;
+        [UnityEngine.Serialization.FormerlySerializedAs("givesRuby")] [Tooltip("Se a primeira conversa entrega o rubi bruto. So no distrito em que ele aparece pela primeira vez.")]
+        [SerializeField] private bool rubiEntrega = true;
 
-        [Tooltip("O que ele diz das outras vezes, depois da primeira conversa. Vazio: repete a primeira.")]
+        [UnityEngine.Serialization.FormerlySerializedAs("repeatLines")] [Tooltip("O que ele diz das outras vezes, depois da primeira conversa. Vazio: repete a primeira.")]
         [TextArea(2, 4)]
-        [SerializeField] private string[] repeatLines;
+        [SerializeField] private string[] linhasRepetir;
 
         // A primeira conversa de cada distrito e a apresentacao; as outras sao curtas.
-        private string MetFlag => "Crisol_Met_" + gameObject.scene.name;
+        private string MarcaConhecido => "Crisol_Met_" + gameObject.scene.name;
 
-        private ScrapController _customer;
-        private readonly List<ShopItem> _items = new List<ShopItem>();
+        private ScrapController _cliente;
+        private readonly List<ShopItem> _itens = new List<ShopItem>();
 
         // O E que termina a conversa abre a loja; no mesmo quadro ele nao pode fechar.
-        private int _openedFrame = -1;
+        private int _quadroAbertos = -1;
 
         /// <summary>O Crisol com a loja aberta, se houver. O HUD usa pra desenhar o painel.</summary>
-        public static Crisol ShopOpen { get; private set; }
+        public static Crisol AbertoLoja { get; private set; }
 
         /// <summary>O que esta a venda aqui, na ordem do painel.</summary>
-        public IReadOnlyList<ShopItem> Items => _items;
+        public IReadOnlyList<ShopItem> Itens => _itens;
 
         /// <summary>O item marcado no painel.</summary>
-        public int Selected { get; private set; }
+        public int Selecionado { get; private set; }
 
         /// <summary>O que ele disse da ultima tentativa de compra, pra mostrar no painel.</summary>
-        public string LastMessage { get; private set; } = "";
+        public string UltimoMensagem { get; private set; } = "";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlayShop()
+        private static void ReiniciarLojaAoJogar()
         {
-            ShopOpen = null;
+            AbertoLoja = null;
         }
 
         /// <summary>Usado pelos geradores de fase: a memoria que ele vende neste distrito.</summary>
-        public void ConfigureMemory(string[] lines)
+        public void ConfigurarMemoria(string[] linhas2)
         {
-            memoryLines = lines;
+            linhasMemoria = linhas2;
         }
 
         /// <summary>Usado pelos geradores de fase: se ele entrega o rubi neste distrito.</summary>
-        public void ConfigureGivesRuby(bool gives)
+        public void ConfigurarEntregaRubi(bool entrega)
         {
-            givesRuby = gives;
+            rubiEntrega = entrega;
         }
 
         /// <summary>Usado pelos geradores de fase: o que ele diz depois da primeira conversa.</summary>
-        public void ConfigureRepeat(string[] lines)
+        public void ConfigurarRepeticao(string[] linhas2)
         {
-            repeatLines = lines;
+            linhasRepetir = linhas2;
         }
 
-        protected override string[] PickLines()
+        protected override string[] EscolherFalas()
         {
             // A primeira vez neste distrito, a apresentacao inteira.
-            if (!KeyItems.HasFlag(MetFlag)) return FirstLines;
+            if (!KeyItems.TemMarca(MarcaConhecido)) return PrimeiroLinhas;
 
             // Depois: o que mudou com a purificacao, ou a frase curta de sempre.
-            string[] chosen = base.PickLines();
-            bool hasRepeat = repeatLines != null && repeatLines.Length > 0;
-            return chosen == FirstLines && hasRepeat ? repeatLines : chosen;
+            string[] escolhido = base.EscolherFalas();
+            bool temRepetir = linhasRepetir != null && linhasRepetir.Length > 0;
+            return escolhido == PrimeiroLinhas && temRepetir ? linhasRepetir : escolhido;
         }
 
-        protected override void OnTalkFinished(ScrapController scrap)
+        protected override void AoTerminarConversa(ScrapController sucata)
         {
-            KeyItems.SetFlag(MetFlag);
-            if (givesRuby) ScrapGems.GiveRuby();
-            Open(scrap);
+            KeyItems.DefinirMarca(MarcaConhecido);
+            if (rubiEntrega) ScrapGems.DarRubi();
+            Abrir(sucata);
         }
 
-        private void Open(ScrapController scrap)
+        private void Abrir(ScrapController sucata)
         {
-            _items.Clear();
-            foreach (ShopItem item in Shop.Catalog)
+            _itens.Clear();
+            foreach (ShopItem item in Shop.Catalogo)
             {
-                bool hasMemory = memoryLines != null && memoryLines.Length > 0;
-                if (item.IsMemory && !hasMemory) continue;
+                bool temMemoria = linhasMemoria != null && linhasMemoria.Length > 0;
+                if (item.EstaMemoria && !temMemoria) continue;
 
-                _items.Add(item);
+                _itens.Add(item);
             }
 
-            _customer = scrap;
-            _customer.ControlLocked = true;
-            Selected = Mathf.Clamp(Selected, 0, Mathf.Max(0, _items.Count - 1));
-            LastMessage = "";
-            ShopOpen = this;
-            _openedFrame = Time.frameCount;
+            _cliente = sucata;
+            _cliente.ControleTravado = true;
+            Selecionado = Mathf.Clamp(Selecionado, 0, Mathf.Max(0, _itens.Count - 1));
+            UltimoMensagem = "";
+            AbertoLoja = this;
+            _quadroAbertos = Time.frameCount;
         }
 
         private void LateUpdate()
         {
-            if (ShopOpen != this || Time.frameCount == _openedFrame) return;
+            if (AbertoLoja != this || Time.frameCount == _quadroAbertos) return;
 
-            Keyboard keyboard = Keyboard.current;
-            Gamepad pad = Gamepad.current;
+            Keyboard teclado = Keyboard.current;
+            Gamepad controle = Gamepad.current;
 
-            bool up = (keyboard != null && (keyboard.upArrowKey.wasPressedThisFrame || keyboard.wKey.wasPressedThisFrame))
-                || (pad != null && pad.dpad.up.wasPressedThisFrame);
-            bool down = (keyboard != null && (keyboard.downArrowKey.wasPressedThisFrame || keyboard.sKey.wasPressedThisFrame))
-                || (pad != null && pad.dpad.down.wasPressedThisFrame);
-            bool buy = (keyboard != null && (keyboard.spaceKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame))
-                || (pad != null && pad.buttonSouth.wasPressedThisFrame);
-            bool close = (keyboard != null && (keyboard.escapeKey.wasPressedThisFrame || keyboard.eKey.wasPressedThisFrame || keyboard.kKey.wasPressedThisFrame))
-                || (pad != null && (pad.buttonEast.wasPressedThisFrame || pad.buttonNorth.wasPressedThisFrame));
+            bool up = (teclado != null && (teclado.upArrowKey.wasPressedThisFrame || teclado.wKey.wasPressedThisFrame))
+                || (controle != null && controle.dpad.up.wasPressedThisFrame);
+            bool baixo2 = (teclado != null && (teclado.downArrowKey.wasPressedThisFrame || teclado.sKey.wasPressedThisFrame))
+                || (controle != null && controle.dpad.down.wasPressedThisFrame);
+            bool comprar = (teclado != null && (teclado.spaceKey.wasPressedThisFrame || teclado.enterKey.wasPressedThisFrame))
+                || (controle != null && controle.buttonSouth.wasPressedThisFrame);
+            bool fechar = (teclado != null && (teclado.escapeKey.wasPressedThisFrame || teclado.eKey.wasPressedThisFrame || teclado.kKey.wasPressedThisFrame))
+                || (controle != null && (controle.buttonEast.wasPressedThisFrame || controle.buttonNorth.wasPressedThisFrame));
 
             // O numero do item escolhe e compra de uma vez.
-            if (keyboard != null)
+            if (teclado != null)
             {
-                for (int i = 0; i < _items.Count && i < 9; i++)
+                for (int i = 0; i < _itens.Count && i < 9; i++)
                 {
-                    if (!keyboard[Key.Digit1 + i].wasPressedThisFrame && !keyboard[Key.Numpad1 + i].wasPressedThisFrame) continue;
+                    if (!teclado[Key.Digit1 + i].wasPressedThisFrame && !teclado[Key.Numpad1 + i].wasPressedThisFrame) continue;
 
-                    Selected = i;
-                    buy = true;
+                    Selecionado = i;
+                    comprar = true;
                 }
             }
 
-            if (_items.Count > 0)
+            if (_itens.Count > 0)
             {
-                if (up) Selected = (Selected + _items.Count - 1) % _items.Count;
-                if (down) Selected = (Selected + 1) % _items.Count;
-                if ((up || down) && !buy) Sfx.ShopMove.Play();
+                if (up) Selecionado = (Selecionado + _itens.Count - 1) % _itens.Count;
+                if (baixo2) Selecionado = (Selecionado + 1) % _itens.Count;
+                if ((up || baixo2) && !comprar) Sfx.MoverLoja.Tocar();
             }
 
-            if (buy) Buy();
-            else if (close)
+            if (comprar) Comprar();
+            else if (fechar)
             {
-                Sfx.DialogueClose.Play();
-                Close();
+                Sfx.FecharDialogo.Tocar();
+                Fechar();
             }
         }
 
         /// <summary>O mouse passou por cima de uma fileira: ela fica marcada.</summary>
-        public void Hover(int index)
+        public void PassarMouse(int indice)
         {
-            if (ShopOpen != this || index < 0 || index >= _items.Count || index == Selected) return;
-            Selected = index;
-            Sfx.ShopMove.Play();
+            if (AbertoLoja != this || indice < 0 || indice >= _itens.Count || indice == Selecionado) return;
+            Selecionado = indice;
+            Sfx.MoverLoja.Tocar();
         }
 
         /// <summary>Clique numa fileira: marca e compra, como o numero do item.</summary>
-        public void ClickBuy(int index)
+        public void ClicarComprar(int indice)
         {
-            if (ShopOpen != this || index < 0 || index >= _items.Count) return;
-            Selected = index;
-            Buy();
+            if (AbertoLoja != this || indice < 0 || indice >= _itens.Count) return;
+            Selecionado = indice;
+            Comprar();
         }
 
         /// <summary>Clique em "sair" ou fora da loja.</summary>
-        public void ClickClose()
+        public void ClicarFechar()
         {
-            if (ShopOpen != this) return;
-            Sfx.DialogueClose.Play();
-            Close();
+            if (AbertoLoja != this) return;
+            Sfx.FecharDialogo.Tocar();
+            Fechar();
         }
 
-        private void Buy()
+        private void Comprar()
         {
-            if (_items.Count == 0) return;
+            if (_itens.Count == 0) return;
 
-            ShopItem item = _items[Selected];
-            var health = _customer != null ? _customer.GetComponent<ScrapHealth>() : null;
+            ShopItem item = _itens[Selecionado];
+            var vida = _cliente != null ? _cliente.GetComponent<ScrapHealth>() : null;
 
-            LastMessage = Shop.TryBuy(item, health, out bool bought);
-            (bought ? Sfx.ShopBuy : Sfx.ShopDeny).Play();
+            UltimoMensagem = Shop.TentarComprar(item, vida, out bool comprados);
+            (comprados ? Sfx.ComprarLoja : Sfx.NegarLoja).Tocar();
 
-            if (bought && item.IsMemory)
+            if (comprados && item.EstaMemoria)
             {
                 // Fecha a loja e conta. Ao fim da historia, a loja reabre.
-                ScrapController customer = _customer;
-                Close();
-                if (customer != null) customer.ControlLocked = true;
-                StartTalk(memoryLines);
+                ScrapController cliente = _cliente;
+                Fechar();
+                if (cliente != null) cliente.ControleTravado = true;
+                IniciarConversa(linhasMemoria);
             }
         }
 
-        private void Close()
+        private void Fechar()
         {
-            if (_customer != null) _customer.ControlLocked = false;
+            if (_cliente != null) _cliente.ControleTravado = false;
 
-            _customer = null;
-            ShopOpen = null;
+            _cliente = null;
+            AbertoLoja = null;
         }
 
         private void OnDestroy()
         {
-            if (ShopOpen == this) ShopOpen = null;
+            if (AbertoLoja == this) AbertoLoja = null;
         }
     }
 }

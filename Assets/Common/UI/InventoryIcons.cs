@@ -11,15 +11,15 @@ namespace EchoesOfCravejada
     {
         public struct Entry
         {
-            public Texture2D Icon;
-            public int Count;
-            public string Name;
-            public string Use;
+            public Texture2D Icone2;
+            public int Quantidade;
+            public string Nome;
+            public string Uso;
         }
 
         // O id (ou comeco de id) no KeyItems e o icone de cada um.
         // Nome e uso aparecem ao passar o mouse na casinha.
-        private static readonly (string Id, string Icon, bool Prefix, string Name, string Use)[] Items =
+        private static readonly (string Id, string Icon, bool Prefix, string Name, string Use)[] Itens =
         {
             ("Tool_Graver", "graver", false, "Buril", "Entregar ao Rebite"),
             ("Tool_Loupe", "loupe", false, "Lupa", "Entregar ao Rebite"),
@@ -32,38 +32,38 @@ namespace EchoesOfCravejada
         };
 
         private static readonly Dictionary<string, Texture2D> Cache = new Dictionary<string, Texture2D>();
-        private static readonly List<Entry> Held = new List<Entry>();
+        private static readonly List<Entry> Segurado = new List<Entry>();
 
-        private static Texture2D Load(string name)
+        private static Texture2D Carregar(string nome)
         {
-            if (!Cache.TryGetValue(name, out Texture2D icon))
+            if (!Cache.TryGetValue(nome, out Texture2D icone))
             {
-                icon = Resources.Load<Texture2D>("HudIcons/item_" + name);
-                Cache[name] = icon;
+                icone = Resources.Load<Texture2D>("HudIcons/item_" + nome);
+                Cache[nome] = icone;
             }
 
-            return icon;
+            return icone;
         }
 
         /// <summary>O que ele tem na mao agora, na ordem do jogo.</summary>
-        public static List<Entry> Current()
+        public static List<Entry> ItensAtuais()
         {
-            Held.Clear();
-            foreach ((string id, string icon, bool prefix, string name, string use) in Items)
+            Segurado.Clear();
+            foreach ((string id, string icone, bool prefixo, string nome, string uso) in Itens)
             {
-                int count = prefix ? KeyItems.CountHeld(id) : KeyItems.Has(id) ? 1 : 0;
-                if (count > 0) Add(icon, prefix ? count : 0, name, use);
+                int quantidade = prefixo ? KeyItems.ContarGuardados(id) : KeyItems.Tem(id) ? 1 : 0;
+                if (quantidade > 0) Adicionar(icone, prefixo ? quantidade : 0, nome, uso);
             }
 
             // As gemas brutas ainda nao cravadas na bancada.
-            if (ScrapGems.HasRuby && !ScrapGems.RubySocketed) Add("ruby", 0, "Rubi bruto", "Cravar na Bancada");
-            return Held;
+            if (ScrapGems.TemRubi && !ScrapGems.EncaixadoRubi) Adicionar("ruby", 0, "Rubi bruto", "Cravar na Bancada");
+            return Segurado;
         }
 
-        private static void Add(string icon, int count, string name, string use)
+        private static void Adicionar(string icone, int quantidade, string nome, string uso)
         {
-            Texture2D texture = Load(icon);
-            if (texture != null) Held.Add(new Entry { Icon = texture, Count = count, Name = name, Use = use });
+            Texture2D textura = Carregar(icone);
+            if (textura != null) Segurado.Add(new Entry { Icone2 = textura, Quantidade = quantidade, Nome = nome, Uso = uso });
         }
     }
 }

@@ -7,180 +7,180 @@ namespace EchoesOfCravejada
     /// Toca as musicas da trilha com duas fontes, pra uma entrar enquanto a
     /// outra sai: troca de musica e a volta do loop sao sempre em fade.
     ///
-    /// Quem usa pede a musica que quer agora (<see cref="Want"/>) todo quadro;
+    /// Quem usa pede a musica que quer agora (<see cref="Pedir"/>) todo quadro;
     /// pedir a mesma de novo nao reinicia.
     /// </summary>
     public sealed class MusicPlayer
     {
         private sealed class Voice
         {
-            public AudioSource Source;
-            public MusicTrack Track;
-            public float Level;
-            public float Target;
-            public float Speed;
-            public float Since;
+            public AudioSource Fonte;
+            public MusicTrack FaixaMusica;
+            public float Nivel;
+            public float Alvo;
+            public float Velocidade;
+            public float Desde;
         }
 
-        private static readonly Dictionary<string, AudioClip> Clips = new Dictionary<string, AudioClip>();
+        private static readonly Dictionary<string, AudioClip> Clipes = new Dictionary<string, AudioClip>();
 
-        private readonly Voice[] _voices = new Voice[2];
-        private Voice _current;
+        private readonly Voice[] _vozes = new Voice[2];
+        private Voice _atual;
 
         /// <summary>A musica tocando agora (a que entrou por ultimo), ou null.</summary>
-        public MusicTrack Current => _current != null ? _current.Track : null;
+        public MusicTrack Atual => _atual != null ? _atual.FaixaMusica : null;
 
         /// <summary>A ultima musica de tocar uma vez so que chegou ao fim (e nao foi pedida outra depois).</summary>
-        private MusicTrack _finished;
+        private MusicTrack _terminado;
 
         /// <summary>Se esta musica (de tocar uma vez so) ja tocou ate o fim.</summary>
-        public bool HasFinished(MusicTrack track) => track != null && _finished == track;
+        public bool JaTerminou(MusicTrack faixa) => faixa != null && _terminado == faixa;
 
         /// <summary>Multiplica o volume de tudo (o volume geral e o da cena).</summary>
         public float Volume { get; set; } = 1f;
 
-        public MusicPlayer(GameObject host)
+        public MusicPlayer(GameObject hospedeiro)
         {
-            for (int i = 0; i < _voices.Length; i++)
+            for (int i = 0; i < _vozes.Length; i++)
             {
-                var source = host.AddComponent<AudioSource>();
-                source.playOnAwake = false;
-                source.loop = false;
-                source.spatialBlend = 0f;
-                source.priority = 0;
-                source.volume = 0f;
-                _voices[i] = new Voice { Source = source };
+                var fonte = hospedeiro.AddComponent<AudioSource>();
+                fonte.playOnAwake = false;
+                fonte.loop = false;
+                fonte.spatialBlend = 0f;
+                fonte.priority = 0;
+                fonte.volume = 0f;
+                _vozes[i] = new Voice { Fonte = fonte };
             }
         }
 
         /// <summary>Carrega uma musica pelo nome (cache). Null se o arquivo nao existe.</summary>
-        public static AudioClip Load(string clip)
+        public static AudioClip Carregar(string clipe)
         {
-            if (string.IsNullOrEmpty(clip)) return null;
-            if (Clips.TryGetValue(clip, out AudioClip cached) && cached != null) return cached;
+            if (string.IsNullOrEmpty(clipe)) return null;
+            if (Clipes.TryGetValue(clipe, out AudioClip guardado) && guardado != null) return guardado;
 
-            AudioClip loaded = Resources.Load<AudioClip>("Soundtrack/Music/" + clip);
-            if (loaded == null) Debug.LogWarning("[Som] Musica nao encontrada: Resources/Soundtrack/Music/" + clip);
-            Clips[clip] = loaded;
-            return loaded;
+            AudioClip carregado = Resources.Load<AudioClip>("Soundtrack/Music/" + clipe);
+            if (carregado == null) Debug.LogWarning("[Som] Musica nao encontrada: Resources/Soundtrack/Music/" + clipe);
+            Clipes[clipe] = carregado;
+            return carregado;
         }
 
         /// <summary>
         /// A musica que deve tocar agora. Null: silencio (a atual sai em fade).
-        /// Com <paramref name="restart"/>, recomeca mesmo se ja for ela.
+        /// Com <paramref name="reiniciar"/>, recomeca mesmo se ja for ela.
         /// </summary>
-        public void Want(MusicTrack track, float fade = SoundtrackCatalog.CrossfadeTime, bool restart = false)
+        public void Pedir(MusicTrack faixa, float esmaecimento = SoundtrackCatalog.TempoTransicao, bool reiniciar = false)
         {
-            if (!restart && _current != null && _current.Track == track) return;
+            if (!reiniciar && _atual != null && _atual.FaixaMusica == faixa) return;
             // A que ja tocou ate o fim nao volta sozinha.
-            if (!restart && track != null && track == _finished) return;
-            if (track == null && _current == null) return;
+            if (!reiniciar && faixa != null && faixa == _terminado) return;
+            if (faixa == null && _atual == null) return;
 
-            if (_current != null) FadeOut(_current, fade);
-            _current = null;
-            _finished = null;
+            if (_atual != null) DesaparecerAosPoucos(_atual, esmaecimento);
+            _atual = null;
+            _terminado = null;
 
-            if (track == null) return;
+            if (faixa == null) return;
 
-            AudioClip clip = Load(track.Clip);
-            if (clip == null)
+            AudioClip clipe = Carregar(faixa.Clipe);
+            if (clipe == null)
             {
                 // Sem o arquivo, finge que tocou: quem pediu nao fica esperando pra sempre.
-                if (!track.Loop) _finished = track;
+                if (!faixa.Repeticao) _terminado = faixa;
                 return;
             }
 
-            Voice voice = FreeVoice();
-            Begin(voice, track, clip, track.Start, fade);
-            _current = voice;
+            Voice voz = VozLivre();
+            Iniciar(voz, faixa, clipe, faixa.Inicio, esmaecimento);
+            _atual = voz;
         }
 
         /// <summary>Tira tudo, em fade.</summary>
-        public void Stop(float fade)
+        public void Parar(float esmaecimento)
         {
-            foreach (Voice voice in _voices) FadeOut(voice, fade);
-            _current = null;
+            foreach (Voice voz in _vozes) DesaparecerAosPoucos(voz, esmaecimento);
+            _atual = null;
         }
 
-        public void Update(float deltaTime)
+        public void AtualizarMusica(float tempoDelta)
         {
-            foreach (Voice voice in _voices)
+            foreach (Voice voz in _vozes)
             {
-                if (voice.Track == null) continue;
+                if (voz.FaixaMusica == null) continue;
 
-                voice.Level = Mathf.MoveTowards(voice.Level, voice.Target, voice.Speed * deltaTime);
-                voice.Source.volume = voice.Level * voice.Track.Volume * Volume;
+                voz.Nivel = Mathf.MoveTowards(voz.Nivel, voz.Alvo, voz.Velocidade * tempoDelta);
+                voz.Fonte.volume = voz.Nivel * voz.FaixaMusica.Volume * Volume * GameAudio.NivelMusica;
 
-                if (voice.Target <= 0f && voice.Level <= 0f)
+                if (voz.Alvo <= 0f && voz.Nivel <= 0f)
                 {
-                    voice.Source.Stop();
-                    voice.Track = null;
+                    voz.Fonte.Stop();
+                    voz.FaixaMusica = null;
                     continue;
                 }
 
-                if (voice != _current) continue;
+                if (voz != _atual) continue;
 
-                AudioClip clip = voice.Source.clip;
-                if (clip == null) continue;
+                AudioClip clipe = voz.Fonte.clip;
+                if (clipe == null) continue;
 
                 // Logo depois do Play a fonte pode ainda nao ter comecado (streaming): espera um pouco antes de julgar.
-                bool settled = Time.unscaledTime - voice.Since > 1f;
+                bool assentado = Time.unscaledTime - voz.Desde > 1f;
 
-                if (voice.Track.Loop)
+                if (voz.FaixaMusica.Repeticao)
                 {
                     // Chegando no ponto de volta: a outra fonte entra no comeco do loop.
-                    float end = voice.Track.LoopEnd > 0f ? Mathf.Min(voice.Track.LoopEnd, clip.length) : clip.length;
-                    if (voice.Source.time >= end - SoundtrackCatalog.LoopFadeTime || (settled && !voice.Source.isPlaying))
+                    float fim = voz.FaixaMusica.FimRepeticao > 0f ? Mathf.Min(voz.FaixaMusica.FimRepeticao, clipe.length) : clipe.length;
+                    if (voz.Fonte.time >= fim - SoundtrackCatalog.TempoEsmaecerRepeticao || (assentado && !voz.Fonte.isPlaying))
                     {
-                        Voice next = Other(voice);
-                        FadeOut(voice, SoundtrackCatalog.LoopFadeTime);
-                        Begin(next, voice.Track, clip, voice.Track.LoopFrom, SoundtrackCatalog.LoopFadeTime);
-                        _current = next;
+                        Voice proximo = OutraVoz(voz);
+                        DesaparecerAosPoucos(voz, SoundtrackCatalog.TempoEsmaecerRepeticao);
+                        Iniciar(proximo, voz.FaixaMusica, clipe, voz.FaixaMusica.RepeticaoDe, SoundtrackCatalog.TempoEsmaecerRepeticao);
+                        _atual = proximo;
                     }
                 }
-                else if (settled && !voice.Source.isPlaying)
+                else if (assentado && !voz.Fonte.isPlaying)
                 {
-                    _finished = voice.Track;
-                    voice.Track = null;
-                    _current = null;
+                    _terminado = voz.FaixaMusica;
+                    voz.FaixaMusica = null;
+                    _atual = null;
                 }
             }
         }
 
-        private void Begin(Voice voice, MusicTrack track, AudioClip clip, float at, float fade)
+        private void Iniciar(Voice voz, MusicTrack faixa, AudioClip clipe, float at, float esmaecimento)
         {
-            voice.Source.Stop();
-            voice.Source.clip = clip;
-            voice.Source.volume = 0f;
-            voice.Source.Play();
-            voice.Source.time = Mathf.Clamp(at, 0f, Mathf.Max(0f, clip.length - 1f));
-            voice.Since = Time.unscaledTime;
-            voice.Track = track;
-            voice.Level = 0f;
-            voice.Target = 1f;
-            voice.Speed = 1f / Mathf.Max(0.05f, fade);
-            voice.Source.volume = 0f;
+            voz.Fonte.Stop();
+            voz.Fonte.clip = clipe;
+            voz.Fonte.volume = 0f;
+            voz.Fonte.Play();
+            voz.Fonte.time = Mathf.Clamp(at, 0f, Mathf.Max(0f, clipe.length - 1f));
+            voz.Desde = Time.unscaledTime;
+            voz.FaixaMusica = faixa;
+            voz.Nivel = 0f;
+            voz.Alvo = 1f;
+            voz.Velocidade = 1f / Mathf.Max(0.05f, esmaecimento);
+            voz.Fonte.volume = 0f;
         }
 
-        private static void FadeOut(Voice voice, float fade)
+        private static void DesaparecerAosPoucos(Voice voz, float esmaecimento)
         {
-            if (voice == null || voice.Track == null) return;
+            if (voz == null || voz.FaixaMusica == null) return;
 
-            voice.Target = 0f;
-            voice.Speed = Mathf.Max(voice.Level, 0.01f) / Mathf.Max(0.05f, fade);
+            voz.Alvo = 0f;
+            voz.Velocidade = Mathf.Max(voz.Nivel, 0.01f) / Mathf.Max(0.05f, esmaecimento);
         }
 
-        private Voice FreeVoice()
+        private Voice VozLivre()
         {
             // A que estiver mais baixa: a outra pode estar saindo em fade.
-            return _voices[0].Track == null ? _voices[0]
-                : _voices[1].Track == null ? _voices[1]
-                : _voices[0].Level <= _voices[1].Level ? _voices[0] : _voices[1];
+            return _vozes[0].FaixaMusica == null ? _vozes[0]
+                : _vozes[1].FaixaMusica == null ? _vozes[1]
+                : _vozes[0].Nivel <= _vozes[1].Nivel ? _vozes[0] : _vozes[1];
         }
 
-        private Voice Other(Voice voice)
+        private Voice OutraVoz(Voice voz)
         {
-            return voice == _voices[0] ? _voices[1] : _voices[0];
+            return voz == _vozes[0] ? _vozes[1] : _vozes[0];
         }
     }
 }

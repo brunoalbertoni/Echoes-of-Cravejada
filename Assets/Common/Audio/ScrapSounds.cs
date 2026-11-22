@@ -15,164 +15,164 @@ namespace EchoesOfCravejada
     public class ScrapSounds : MonoBehaviour
     {
         // Os quadros da passada em que um pe assenta no chao (ver HeroArt).
-        private const int StepFrameA = ScrapAnimator.Walk;
-        private const int StepFrameB = ScrapAnimator.Walk + 4;
+        private const int AQuadroPasso = ScrapAnimator.QuadroAndar;
+        private const int BQuadroPasso = ScrapAnimator.QuadroAndar + 4;
 
         /// <summary>Queda mais lenta que isto (tiles/s) nem faz barulho de aterrissar.</summary>
-        private const float SoftLanding = 2f;
+        private const float PousoMacio = 2f;
 
         /// <summary>A partir daqui e queda de verdade: um pulo comum chega a uns 18.</summary>
-        private const float Landing = 5f;
+        private const float Pouso = 5f;
 
         /// <summary>A partir daqui, queda de muito alto (umas 6 tiles ou mais).</summary>
-        private const float HeavyLanding = 24f;
+        private const float PousoPesado = 24f;
 
-        private ScrapController _controller;
-        private ScrapAnimator _animator;
-        private Rigidbody2D _body;
+        private ScrapController _controlador;
+        private ScrapAnimator _animador;
+        private Rigidbody2D _corpo;
 
-        private int _lastFrame = -1;
-        private bool _wasGrounded = true;
-        private bool _wasOnWall;
-        private float _fallSpeed;
-        private float _bornAt;
+        private int _ultimoQuadro = -1;
+        private bool _estavaNoChao = true;
+        private bool _estavaLigadoParede;
+        private float _velocidadeQueda;
+        private float _nascidoEm;
 
-        private AudioSource _scrape;
-        private float _scrapeLevel;
-        private Object _holdOwner;
-        private float _holdProgress;
-        private bool _advancing;
+        private AudioSource _raspagem;
+        private float _nivelRaspagem;
+        private Object _donoSegurar;
+        private float _progressoSegurar;
+        private bool _avancando;
 
         private void Awake()
         {
-            _controller = GetComponent<ScrapController>();
-            _animator = GetComponent<ScrapAnimator>();
-            _body = GetComponent<Rigidbody2D>();
-            _bornAt = Time.time;
+            _controlador = GetComponent<ScrapController>();
+            _animador = GetComponent<ScrapAnimator>();
+            _corpo = GetComponent<Rigidbody2D>();
+            _nascidoEm = Time.time;
 
-            _scrape = gameObject.AddComponent<AudioSource>();
-            _scrape.clip = SfxPlayer.Load(Sfx.ScrapeLoop.Clip);
-            _scrape.loop = true;
-            _scrape.playOnAwake = false;
-            _scrape.spatialBlend = 0f;
-            _scrape.volume = 0f;
+            _raspagem = gameObject.AddComponent<AudioSource>();
+            _raspagem.clip = SfxPlayer.Carregar(Sfx.RepeticaoRaspagem.Clipe);
+            _raspagem.loop = true;
+            _raspagem.playOnAwake = false;
+            _raspagem.spatialBlend = 0f;
+            _raspagem.volume = 0f;
 
-            ScrapHealth.Died += OnDied;
+            ScrapHealth.Morreu += AoMorrer;
         }
 
         private void OnDestroy()
         {
-            ScrapHealth.Died -= OnDied;
+            ScrapHealth.Morreu -= AoMorrer;
         }
 
         // Renascer na bancada nao e cair nela.
-        private void OnDied()
+        private void AoMorrer()
         {
-            _bornAt = Time.time;
-            _fallSpeed = 0f;
+            _nascidoEm = Time.time;
+            _velocidadeQueda = 0f;
         }
 
         private void Update()
         {
-            UpdateScrape();
+            AtualizarRaspagem();
         }
 
         // Depois do ScrapAnimator escolher o quadro.
         private void LateUpdate()
         {
-            if (_controller == null) return;
+            if (_controlador == null) return;
 
-            UpdateSteps();
-            UpdateLanding();
-            UpdateWall();
+            AtualizarPassos();
+            AtualizarPouso();
+            AtualizarParede();
         }
 
-        private void UpdateSteps()
+        private void AtualizarPassos()
         {
-            int frame = _animator != null ? _animator.Frame : -1;
-            if (frame == _lastFrame) return;
-            _lastFrame = frame;
+            int quadro = _animador != null ? _animador.Quadro : -1;
+            if (quadro == _ultimoQuadro) return;
+            _ultimoQuadro = quadro;
 
-            if (!_controller.IsGrounded || (frame != StepFrameA && frame != StepFrameB)) return;
+            if (!_controlador.EstaNoChao || (quadro != AQuadroPasso && quadro != BQuadroPasso)) return;
 
             // Com a safira cravada ele pisa leve. No mercurio, o passo chapinha.
-            float volume = Mathf.Lerp(0.6f, 1f, _controller.NormalizedSpeed) * (ScrapGems.SapphireSocketed ? 0.6f : 1f);
-            (_controller.IsOnMercury ? Sfx.MercuryStep : Sfx.Step).Play(volume: volume);
+            float volume = Mathf.Lerp(0.6f, 1f, _controlador.VelocidadeNormalizada) * (ScrapGems.EncaixadoSafira ? 0.6f : 1f);
+            (_controlador.EstaLigadoMercurio ? Sfx.PassoMercurio : Sfx.Passo2).Tocar(volume: volume);
         }
 
-        private void UpdateLanding()
+        private void AtualizarPouso()
         {
-            bool grounded = _controller.IsGrounded;
+            bool noChao = _controlador.EstaNoChao;
 
-            if (!grounded && _body != null) _fallSpeed = Mathf.Min(_fallSpeed, _body.linearVelocity.y);
+            if (!noChao && _corpo != null) _velocidadeQueda = Mathf.Min(_velocidadeQueda, _corpo.linearVelocity.y);
 
             // Logo que a cena abre ele assenta no chao: isso nao e queda.
-            if (grounded && !_wasGrounded && Time.time - _bornAt > 0.4f)
+            if (noChao && !_estavaNoChao && Time.time - _nascidoEm > 0.4f)
             {
-                float speed = -_fallSpeed;
-                float quiet = ScrapGems.SapphireSocketed ? 0.6f : 1f;
+                float velocidade = -_velocidadeQueda;
+                float quieto = ScrapGems.EncaixadoSafira ? 0.6f : 1f;
 
-                if (speed >= HeavyLanding) Sfx.LandHeavy.Play(volume: quiet);
-                else if (speed >= Landing) Sfx.Land.Play(volume: Mathf.Lerp(0.55f, 1f, Mathf.InverseLerp(Landing, 18f, speed)) * quiet);
-                else if (speed >= SoftLanding) Sfx.Step.Play(volume: 0.8f * quiet);
+                if (velocidade >= PousoPesado) Sfx.PesadoPousar.Tocar(volume: quieto);
+                else if (velocidade >= Pouso) Sfx.Pousar.Tocar(volume: Mathf.Lerp(0.55f, 1f, Mathf.InverseLerp(Pouso, 18f, velocidade)) * quieto);
+                else if (velocidade >= PousoMacio) Sfx.Passo2.Tocar(volume: 0.8f * quieto);
             }
 
-            if (grounded) _fallSpeed = 0f;
-            _wasGrounded = grounded;
+            if (noChao) _velocidadeQueda = 0f;
+            _estavaNoChao = noChao;
         }
 
-        private void UpdateWall()
+        private void AtualizarParede()
         {
-            bool onWall = _controller.IsWallSliding;
-            if (onWall && !_wasOnWall) Sfx.WallGrab.Play();
-            _wasOnWall = onWall;
+            bool ligadoParede = _controlador.EstaDeslizandoParede;
+            if (ligadoParede && !_estavaLigadoParede) Sfx.AgarradaParede.Tocar();
+            _estavaLigadoParede = ligadoParede;
         }
 
         /// <summary>
         /// A lixa: toca enquanto a barra de raspar de alguma coisa esta
         /// enchendo, e da o brilho de polido quando ela enche.
         /// </summary>
-        private void UpdateScrape()
+        private void AtualizarRaspagem()
         {
-            Object owner = null;
-            float progress = 0f;
+            Object dono = null;
+            float progresso = 0f;
 
-            if (HoldAction.Owner != null)
+            if (HoldAction.Dono != null)
             {
                 // A escolha do final se segura, mas nao se raspa.
-                owner = HoldAction.Owner;
-                progress = HoldAction.Progress;
+                dono = HoldAction.Dono;
+                progresso = HoldAction.Progresso2;
             }
 
-            bool advancing = owner != null && owner == _holdOwner && progress > _holdProgress + 0.0001f;
+            bool avancando = dono != null && dono == _donoSegurar && progresso > _progressoSegurar + 0.0001f;
 
             // Terminou: estava raspando quase no fim e a barra encheu (ou o alvo saiu, que e o que fazem ao terminar).
-            bool finished = _advancing && _holdProgress >= 0.95f && (owner != _holdOwner || progress >= 0.999f);
-            if (finished)
+            bool terminado = _avancando && _progressoSegurar >= 0.95f && (dono != _donoSegurar || progresso >= 0.999f);
+            if (terminado)
             {
-                Sfx.ScrapeDone.Play();
-                advancing = false;
+                Sfx.ProntoRaspagem.Tocar();
+                avancando = false;
             }
 
-            _advancing = advancing;
-            _holdOwner = owner;
-            _holdProgress = progress;
+            _avancando = avancando;
+            _donoSegurar = dono;
+            _progressoSegurar = progresso;
 
-            float target = advancing ? Sfx.Volume * Sfx.ScrapeLoop.Volume : 0f;
-            _scrapeLevel = Mathf.MoveTowards(_scrapeLevel, target, Time.unscaledDeltaTime * (advancing ? 3f : 5f));
+            float alvo = avancando ? Sfx.Volume * Sfx.RepeticaoRaspagem.Volume : 0f;
+            _nivelRaspagem = Mathf.MoveTowards(_nivelRaspagem, alvo, Time.unscaledDeltaTime * (avancando ? 3f : 5f));
 
-            if (_scrape.clip == null) return;
-            _scrape.volume = _scrapeLevel;
+            if (_raspagem.clip == null) return;
+            _raspagem.volume = _nivelRaspagem;
 
-            if (_scrapeLevel > 0.001f && !_scrape.isPlaying)
+            if (_nivelRaspagem > 0.001f && !_raspagem.isPlaying)
             {
-                _scrape.pitch = Random.Range(0.95f, 1.05f);
-                _scrape.time = Random.Range(0f, _scrape.clip.length * 0.9f);
-                _scrape.Play();
+                _raspagem.pitch = Random.Range(0.95f, 1.05f);
+                _raspagem.time = Random.Range(0f, _raspagem.clip.length * 0.9f);
+                _raspagem.Play();
             }
-            else if (_scrapeLevel <= 0.001f && _scrape.isPlaying)
+            else if (_nivelRaspagem <= 0.001f && _raspagem.isPlaying)
             {
-                _scrape.Stop();
+                _raspagem.Stop();
             }
         }
     }

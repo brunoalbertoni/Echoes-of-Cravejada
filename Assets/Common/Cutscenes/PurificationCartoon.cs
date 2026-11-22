@@ -9,13 +9,13 @@ namespace EchoesOfCravejada
     [Serializable]
     public class CartoonEmitter
     {
-        public enum Kind { Flakes, Sparks, Steam, Glint }
+        public enum Kind { Flocos, Faiscas, Vapor, Brilho }
 
-        public Kind kind;
-        public RectInt area;
+        [UnityEngine.Serialization.FormerlySerializedAs("kind")] public Kind tipo;
+        [UnityEngine.Serialization.FormerlySerializedAs("area")] public RectInt area;
 
-        [Tooltip("Em que ponto da transformacao (0 a 1) ela comeca.")]
-        public float startAt;
+        [UnityEngine.Serialization.FormerlySerializedAs("startAt")] [Tooltip("Em que ponto da transformacao (0 a 1) ela comeca.")]
+        public float inicioEm;
     }
 
     /// <summary>
@@ -26,21 +26,21 @@ namespace EchoesOfCravejada
     [Serializable]
     public class CartoonShot
     {
-        public Texture2D before;
-        public Texture2D after;
-        public Texture2D order;
+        [UnityEngine.Serialization.FormerlySerializedAs("before")] public Texture2D antes;
+        [UnityEngine.Serialization.FormerlySerializedAs("after")] public Texture2D depois;
+        [UnityEngine.Serialization.FormerlySerializedAs("order")] public Texture2D ordem;
 
-        [Tooltip("Quadros repetidos depois da transformacao (a capa na pose final). Vazio: nenhum.")]
-        public Texture2D[] loop;
+        [UnityEngine.Serialization.FormerlySerializedAs("loop")] [Tooltip("Quadros repetidos depois da transformacao (a capa na pose final). Vazio: nenhum.")]
+        public Texture2D[] repeticao;
 
-        public CartoonEmitter[] emitters;
-        public float duration = 3f;
+        [UnityEngine.Serialization.FormerlySerializedAs("emitters")] public CartoonEmitter[] emissores;
+        [UnityEngine.Serialization.FormerlySerializedAs("duration")] public float duracao = 3f;
 
-        [Tooltip("Quanto a camera desliza ao longo do quadro, em pixels do quadro (y pra baixo).")]
-        public Vector2 pan;
+        [UnityEngine.Serialization.FormerlySerializedAs("pan")] [Tooltip("Quanto a camera desliza ao longo do quadro, em pixels do quadro (y pra baixo).")]
+        public Vector2 panorama;
 
-        public float zoomFrom = 1f;
-        public float zoomTo = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("zoomFrom")] public float zoomDe = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("zoomTo")] public float zoomPara = 1f;
     }
 
     /// <summary>
@@ -60,92 +60,92 @@ namespace EchoesOfCravejada
     /// </summary>
     public class PurificationCartoon : MonoBehaviour
     {
-        public const int Width = 320;
-        public const int Height = 180;
+        public const int Largura = 320;
+        public const int Altura = 180;
 
         /// <summary>Altura de cada faixa preta, em fracao da altura do quadro.</summary>
-        private const float BarFraction = 0.068f;
+        private const float FracaoBarra = 0.068f;
 
         /// <summary>Parte do quadro em que a transformacao acontece; o resto segura o resultado.</summary>
-        private const float RevealShare = 0.75f;
+        private const float ParcelaRevelar = 0.75f;
 
-        private const float EdgeBand = 14f;
-        private const float SkipAfter = 1f;
-        private const float FinalFlashStart = 0.6f;
-        private const float FinalFlashRise = 0.35f;
-        private const float FadeOutTime = 0.45f;
-        private const int CutFrames = 3;
-        private const int MaxParticles = 500;
+        private const float FaixaBeirada = 14f;
+        private const float PularDepois = 1f;
+        private const float InicioClaraoFinal = 0.6f;
+        private const float SubidaClaraoFinal = 0.35f;
+        private const float TempoForaEsmaecer = 0.45f;
+        private const int QuadrosCorte = 3;
+        private const int ParticulasMax = 500;
 
-        private static readonly Color32 EdgeColor = new Color32(255, 240, 190, 255);
-        private static readonly Color32 CutColor = new Color32(255, 247, 224, 255);
+        private static readonly Color32 CorBeirada = new Color32(255, 240, 190, 255);
+        private static readonly Color32 CorCorte = new Color32(255, 247, 224, 255);
 
-        [SerializeField] private CartoonShot[] shots;
+        [UnityEngine.Serialization.FormerlySerializedAs("shots")] [SerializeField] private CartoonShot[] planos;
 
         /// <summary>Se alguma cutscene desenhada esta na tela.</summary>
-        public static bool IsPlaying { get; private set; }
+        public static bool EstaTocando { get; private set; }
 
         private struct Particle
         {
-            public Vector2 Position;
-            public Vector2 Velocity;
-            public float Age;
-            public float Life;
-            public Color32 Color;
-            public float Size;
-            public float Grow;
-            public float Gravity;
-            public bool Fade;
+            public Vector2 Posicao;
+            public Vector2 VelocidadeVetorial;
+            public float Idade;
+            public float DuracaoVida;
+            public Color32 Cor;
+            public float Tamanho;
+            public float Crescer;
+            public float Gravidade;
+            public bool Esmaecimento;
         }
 
         private struct ShotPixels
         {
-            public Color32[] Before;
-            public Color32[] After;
-            public byte[] Order;
-            public Color32[][] Loop;
+            public Color32[] Antes;
+            public Color32[] Depois;
+            public byte[] Ordem;
+            public Color32[][] Repeticao;
         }
 
         private ShotPixels[] _pixels;
-        private Color32[] _buffer;
-        private Texture2D _screen;
-        private readonly Particle[] _particles = new Particle[MaxParticles];
-        private int _particleCount;
-        private System.Random _random = new System.Random(7);
+        private Color32[] _reserva;
+        private Texture2D _tela;
+        private readonly Particle[] _particulas2 = new Particle[ParticulasMax];
+        private int _quantidadeParticula;
+        private System.Random _aleatorio = new System.Random(7);
 
-        private bool _showPanel;
-        private float _white;
-        private int _cut;
+        private bool _painelMostrar;
+        private float _branco;
+        private int _corte;
         private Rect _uv = new Rect(0f, 0f, 1f, 1f);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics()
+        private static void ReiniciarEstaticos()
         {
-            IsPlaying = false;
+            EstaTocando = false;
         }
 
         /// <summary>Usado pelo gerador da Phase 1.</summary>
-        public void Configure(CartoonShot[] newShots)
+        public void Configurar(CartoonShot[] novoPlanos)
         {
-            shots = newShots;
+            planos = novoPlanos;
         }
 
         /// <summary>Se todos os quadros estao presentes, legiveis e no tamanho certo.</summary>
-        public bool IsReady
+        public bool EstaProntoUso
         {
             get
             {
-                if (shots == null || shots.Length == 0) return false;
+                if (planos == null || planos.Length == 0) return false;
 
-                foreach (CartoonShot shot in shots)
+                foreach (CartoonShot plano in planos)
                 {
-                    if (shot == null || shot.duration <= 0f) return false;
-                    if (!Usable(shot.before) || !Usable(shot.after) || !Usable(shot.order)) return false;
+                    if (plano == null || plano.duracao <= 0f) return false;
+                    if (!EUsavel(plano.antes) || !EUsavel(plano.depois) || !EUsavel(plano.ordem)) return false;
 
-                    if (shot.loop == null) continue;
-                    foreach (Texture2D frame in shot.loop)
+                    if (plano.repeticao == null) continue;
+                    foreach (Texture2D quadro in plano.repeticao)
                     {
-                        if (!Usable(frame)) return false;
+                        if (!EUsavel(quadro)) return false;
                     }
                 }
 
@@ -153,178 +153,178 @@ namespace EchoesOfCravejada
             }
         }
 
-        private static bool Usable(Texture2D texture)
+        private static bool EUsavel(Texture2D textura)
         {
-            return texture != null && texture.isReadable && texture.width == Width && texture.height == Height;
+            return textura != null && textura.isReadable && textura.width == Largura && textura.height == Altura;
         }
 
         /// <summary>
         /// Passa a cutscene inteira. onPolish e chamado uma vez, no pico do
         /// clarao final, com a tela toda branca.
         /// </summary>
-        public IEnumerator Play(Action onPolish)
+        public IEnumerator Tocar(Action ligadoPolimento)
         {
-            bool polished = false;
+            bool polido = false;
 
             void PolishOnce()
             {
-                if (polished) return;
-                polished = true;
-                onPolish?.Invoke();
+                if (polido) return;
+                polido = true;
+                ligadoPolimento?.Invoke();
             }
 
-            if (!IsReady)
+            if (!EstaProntoUso)
             {
                 PolishOnce();
                 yield break;
             }
 
-            Prepare();
-            IsPlaying = true;
-            _showPanel = true;
-            _white = 1f;
-            _cut = 0;
+            Preparar();
+            EstaTocando = true;
+            _painelMostrar = true;
+            _branco = 1f;
+            _corte = 0;
 
-            int index = 0;
+            int indice = 0;
             float t = 0f;
-            float elapsed = 0f;
-            bool skipped = false;
-            bool flashed = false;
-            int last = shots.Length - 1;
-            ShotSound(shots[0], true);
+            float decorrido = 0f;
+            bool pulado = false;
+            bool clareado = false;
+            int ultimo = planos.Length - 1;
+            SomDoPlano(planos[0], true);
 
-            while (index < shots.Length)
+            while (indice < planos.Length)
             {
-                CartoonShot shot = shots[index];
+                CartoonShot plano = planos[indice];
 
-                if (!skipped && elapsed > SkipAfter && SkipPressed())
+                if (!pulado && decorrido > PularDepois && PularPressionado())
                 {
-                    skipped = true;
-                    index = last;
-                    shot = shots[last];
-                    t = Mathf.Max(0f, shot.duration - 0.8f);
-                    _particleCount = 0;
-                    _cut = CutFrames;
-                    Sfx.CartoonShot.Play();
+                    pulado = true;
+                    indice = ultimo;
+                    plano = planos[ultimo];
+                    t = Mathf.Max(0f, plano.duracao - 0.8f);
+                    _quantidadeParticula = 0;
+                    _corte = QuadrosCorte;
+                    Sfx.PlanoDesenho.Tocar();
                 }
 
                 // O clarao do inicio desbota rapido; o do fim sobe ate o branco.
-                _white = Mathf.MoveTowards(_white, 0f, Time.deltaTime * 5f);
+                _branco = Mathf.MoveTowards(_branco, 0f, Time.deltaTime * 5f);
 
-                if (index == last)
+                if (indice == ultimo)
                 {
-                    float rise = (t - (shot.duration - FinalFlashStart)) / FinalFlashRise;
-                    if (rise > 0f) _white = Mathf.Max(_white, Mathf.Clamp01(rise));
+                    float subida = (t - (plano.duracao - InicioClaraoFinal)) / SubidaClaraoFinal;
+                    if (subida > 0f) _branco = Mathf.Max(_branco, Mathf.Clamp01(subida));
 
                     // O clarao: o som sobe junto com o branco.
-                    if (rise > 0f && !flashed)
+                    if (subida > 0f && !clareado)
                     {
-                        flashed = true;
-                        Sfx.CartoonFlash.Play();
+                        clareado = true;
+                        Sfx.ClaraoDesenho.Tocar();
                     }
-                    if (rise >= 1f) PolishOnce();
+                    if (subida >= 1f) PolishOnce();
                 }
 
-                Compose(index, shot, t);
+                Compor(indice, plano, t);
 
                 yield return null;
 
-                if (_cut > 0) _cut--;
+                if (_corte > 0) _corte--;
 
                 t += Time.deltaTime;
-                elapsed += Time.deltaTime;
+                decorrido += Time.deltaTime;
 
-                if (t >= shot.duration)
+                if (t >= plano.duracao)
                 {
-                    index++;
+                    indice++;
                     t = 0f;
-                    _particleCount = 0;
-                    if (index < shots.Length)
+                    _quantidadeParticula = 0;
+                    if (indice < planos.Length)
                     {
-                        _cut = CutFrames;
-                        if (!skipped) ShotSound(shots[index], false);
+                        _corte = QuadrosCorte;
+                        if (!pulado) SomDoPlano(planos[indice], false);
                     }
                 }
             }
 
             // A tela esta branca: troca o Scrap, tira o quadro e desbota sobre o jogo.
             PolishOnce();
-            _white = 1f;
-            _showPanel = false;
+            _branco = 1f;
+            _painelMostrar = false;
 
-            for (float f = 0f; f < FadeOutTime; f += Time.deltaTime)
+            for (float f = 0f; f < TempoForaEsmaecer; f += Time.deltaTime)
             {
-                _white = 1f - f / FadeOutTime;
+                _branco = 1f - f / TempoForaEsmaecer;
                 yield return null;
             }
 
-            Stop();
+            Parar();
         }
 
         /// <summary>
         /// O som de um quadro: a troca (menos no primeiro) e a luz passando,
         /// esticada pra durar o tanto que a transformacao dura.
         /// </summary>
-        private static void ShotSound(CartoonShot shot, bool first)
+        private static void SomDoPlano(CartoonShot plano, bool primeiro)
         {
-            if (shot == null) return;
+            if (plano == null) return;
 
-            if (!first) Sfx.CartoonShot.Play();
+            if (!primeiro) Sfx.PlanoDesenho.Tocar();
 
-            const float clip = 2.2f;
-            float reveal = Mathf.Max(0.5f, shot.duration * RevealShare);
-            Sfx.CartoonReveal.Play(pitch: Mathf.Clamp(clip / reveal, 0.7f, 1.3f), delay: first ? 0.15f : 0.05f);
+            const float clipe = 2.2f;
+            float revelar = Mathf.Max(0.5f, plano.duracao * ParcelaRevelar);
+            Sfx.RevelarDesenho.Tocar(tom2: Mathf.Clamp(clipe / revelar, 0.7f, 1.3f), atraso: primeiro ? 0.15f : 0.05f);
         }
 
-        private void Stop()
+        private void Parar()
         {
-            _white = 0f;
-            _showPanel = false;
-            IsPlaying = false;
+            _branco = 0f;
+            _painelMostrar = false;
+            EstaTocando = false;
         }
 
         private void OnDisable()
         {
-            Stop();
+            Parar();
         }
 
         private void OnDestroy()
         {
-            IsPlaying = false;
-            if (_screen != null) Destroy(_screen);
+            EstaTocando = false;
+            if (_tela != null) Destroy(_tela);
         }
 
         /// <summary>Le os pixels de todos os quadros uma vez.</summary>
-        private void Prepare()
+        private void Preparar()
         {
             if (_pixels != null) return;
 
-            _pixels = new ShotPixels[shots.Length];
-            for (int i = 0; i < shots.Length; i++)
+            _pixels = new ShotPixels[planos.Length];
+            for (int i = 0; i < planos.Length; i++)
             {
-                CartoonShot shot = shots[i];
-                Color32[] order = shot.order.GetPixels32();
-                var orderBytes = new byte[order.Length];
-                for (int k = 0; k < order.Length; k++) orderBytes[k] = order[k].r;
+                CartoonShot plano = planos[i];
+                Color32[] ordem = plano.ordem.GetPixels32();
+                var bytesOrdem = new byte[ordem.Length];
+                for (int k = 0; k < ordem.Length; k++) bytesOrdem[k] = ordem[k].r;
 
-                Color32[][] loop = null;
-                if (shot.loop != null && shot.loop.Length > 0)
+                Color32[][] repeticao = null;
+                if (plano.repeticao != null && plano.repeticao.Length > 0)
                 {
-                    loop = new Color32[shot.loop.Length][];
-                    for (int k = 0; k < shot.loop.Length; k++) loop[k] = shot.loop[k].GetPixels32();
+                    repeticao = new Color32[plano.repeticao.Length][];
+                    for (int k = 0; k < plano.repeticao.Length; k++) repeticao[k] = plano.repeticao[k].GetPixels32();
                 }
 
                 _pixels[i] = new ShotPixels
                 {
-                    Before = shot.before.GetPixels32(),
-                    After = shot.after.GetPixels32(),
-                    Order = orderBytes,
-                    Loop = loop,
+                    Antes = plano.antes.GetPixels32(),
+                    Depois = plano.depois.GetPixels32(),
+                    Ordem = bytesOrdem,
+                    Repeticao = repeticao,
                 };
             }
 
-            _buffer = new Color32[Width * Height];
-            _screen = new Texture2D(Width, Height, TextureFormat.RGBA32, false)
+            _reserva = new Color32[Largura * Altura];
+            _tela = new Texture2D(Largura, Altura, TextureFormat.RGBA32, false)
             {
                 filterMode = FilterMode.Point,
                 wrapMode = TextureWrapMode.Clamp,
@@ -335,339 +335,339 @@ namespace EchoesOfCravejada
         // Montagem de cada quadro
         // ------------------------------------------------------------------
 
-        private void Compose(int index, CartoonShot shot, float t)
+        private void Compor(int indice, CartoonShot plano, float t)
         {
-            ShotPixels pixels = _pixels[index];
-            float progress = Mathf.Clamp01(t / (shot.duration * RevealShare));
-            float threshold = progress * 270f;
+            ShotPixels pixels = _pixels[indice];
+            float progresso = Mathf.Clamp01(t / (plano.duracao * ParcelaRevelar));
+            float limiar = progresso * 270f;
 
-            if (progress >= 1f && pixels.Loop != null)
+            if (progresso >= 1f && pixels.Repeticao != null)
             {
-                Color32[] frame = pixels.Loop[(int)(t * 6f) % pixels.Loop.Length];
-                Array.Copy(frame, _buffer, _buffer.Length);
+                Color32[] quadro = pixels.Repeticao[(int)(t * 6f) % pixels.Repeticao.Length];
+                Array.Copy(quadro, _reserva, _reserva.Length);
             }
-            else if (progress >= 1f)
+            else if (progresso >= 1f)
             {
-                Array.Copy(pixels.After, _buffer, _buffer.Length);
+                Array.Copy(pixels.Depois, _reserva, _reserva.Length);
             }
             else
             {
-                Reveal(pixels, threshold);
+                Revelar(pixels, limiar);
             }
 
-            Emit(pixels, shot, progress, threshold, t);
-            StepParticles(Time.deltaTime);
-            DrawParticles();
+            Emitir(pixels, plano, progresso, limiar, t);
+            AvancarParticulas(Time.deltaTime);
+            DesenharParticulas();
 
-            _screen.SetPixels32(_buffer);
-            _screen.Apply(false);
+            _tela.SetPixels32(_reserva);
+            _tela.Apply(false);
 
             // Camera dentro do quadro: aproxima/afasta e desliza.
-            float k = Mathf.Clamp01(t / shot.duration);
-            float zoom = Mathf.Max(1f, Mathf.Lerp(shot.zoomFrom, shot.zoomTo, Smooth(k)));
+            float k = Mathf.Clamp01(t / plano.duracao);
+            float zoom = Mathf.Max(1f, Mathf.Lerp(plano.zoomDe, plano.zoomPara, SuavizarValor(k)));
             float w = 1f / zoom, h = 1f / zoom;
-            float cx = 0.5f + shot.pan.x * k / Width;
-            float cy = 0.5f - shot.pan.y * k / Height;
+            float cx = 0.5f + plano.panorama.x * k / Largura;
+            float cy = 0.5f - plano.panorama.y * k / Altura;
             _uv = new Rect(Mathf.Clamp(cx - w / 2f, 0f, 1f - w), Mathf.Clamp(cy - h / 2f, 0f, 1f - h), w, h);
         }
 
-        private void Reveal(ShotPixels pixels, float threshold)
+        private void Revelar(ShotPixels pixels, float limiar)
         {
-            Color32[] before = pixels.Before, after = pixels.After;
-            byte[] order = pixels.Order;
-            float edgeStart = threshold - EdgeBand;
+            Color32[] antes = pixels.Antes, depois = pixels.Depois;
+            byte[] ordem = pixels.Ordem;
+            float inicioBeirada = limiar - FaixaBeirada;
 
-            for (int i = 0; i < _buffer.Length; i++)
+            for (int i = 0; i < _reserva.Length; i++)
             {
-                byte o = order[i];
-                if (o == 255 || o >= threshold)
+                byte o = ordem[i];
+                if (o == 255 || o >= limiar)
                 {
-                    _buffer[i] = before[i];
+                    _reserva[i] = antes[i];
                 }
-                else if (o < edgeStart)
+                else if (o < inicioBeirada)
                 {
-                    _buffer[i] = after[i];
+                    _reserva[i] = depois[i];
                 }
                 else
                 {
-                    Color32 a = after[i];
-                    _buffer[i] = new Color32(
-                        (byte)(a.r * 0.4f + EdgeColor.r * 0.6f),
-                        (byte)(a.g * 0.4f + EdgeColor.g * 0.6f),
-                        (byte)(a.b * 0.4f + EdgeColor.b * 0.6f),
+                    Color32 a = depois[i];
+                    _reserva[i] = new Color32(
+                        (byte)(a.r * 0.4f + CorBeirada.r * 0.6f),
+                        (byte)(a.g * 0.4f + CorBeirada.g * 0.6f),
+                        (byte)(a.b * 0.4f + CorBeirada.b * 0.6f),
                         255);
                 }
             }
         }
 
-        private static float Smooth(float k) => k * k * (3f - 2f * k);
+        private static float SuavizarValor(float k) => k * k * (3f - 2f * k);
 
         // ------------------------------------------------------------------
         // Particulas
         // ------------------------------------------------------------------
 
-        private void Emit(ShotPixels pixels, CartoonShot shot, float progress, float threshold, float t)
+        private void Emitir(ShotPixels pixels, CartoonShot plano, float progresso, float limiar, float t)
         {
-            if (shot.emitters == null) return;
+            if (plano.emissores == null) return;
 
             float dt = Time.deltaTime;
 
-            foreach (CartoonEmitter emitter in shot.emitters)
+            foreach (CartoonEmitter emissor in plano.emissores)
             {
-                if (emitter == null || progress < emitter.startAt) continue;
-                RectInt area = emitter.area;
+                if (emissor == null || progresso < emissor.inicioEm) continue;
+                RectInt area = emissor.area;
 
-                switch (emitter.kind)
+                switch (emissor.tipo)
                 {
-                    case CartoonEmitter.Kind.Flakes:
-                    case CartoonEmitter.Kind.Sparks:
+                    case CartoonEmitter.Kind.Flocos:
+                    case CartoonEmitter.Kind.Faiscas:
                     {
                         // So enquanto a transformacao corre: as particulas nascem na borda dela.
-                        if (progress >= 1f) break;
+                        if (progresso >= 1f) break;
 
-                        bool flakes = emitter.kind == CartoonEmitter.Kind.Flakes;
-                        int tries = Mathf.CeilToInt((flakes ? 1600f : 900f) * dt);
+                        bool flocos = emissor.tipo == CartoonEmitter.Kind.Flocos;
+                        int tentativas = Mathf.CeilToInt((flocos ? 1600f : 900f) * dt);
 
-                        for (int n = 0; n < tries; n++)
+                        for (int n = 0; n < tentativas; n++)
                         {
-                            int x = area.x + _random.Next(0, Mathf.Max(1, area.width));
-                            int y = area.y + _random.Next(0, Mathf.Max(1, area.height));
-                            int i = Index(x, y);
+                            int x = area.x + _aleatorio.Next(0, Mathf.Max(1, area.width));
+                            int y = area.y + _aleatorio.Next(0, Mathf.Max(1, area.height));
+                            int i = Indice(x, y);
                             if (i < 0) continue;
 
-                            byte o = pixels.Order[i];
-                            if (o == 255 || o >= threshold || o < threshold - EdgeBand * 1.6f) continue;
+                            byte o = pixels.Ordem[i];
+                            if (o == 255 || o >= limiar || o < limiar - FaixaBeirada * 1.6f) continue;
 
-                            if (flakes) SpawnFlake(x, y, pixels.Before[i]);
-                            else if (_random.NextDouble() < 0.35) SpawnSpark(x, y);
+                            if (flocos) CriarLasca(x, y, pixels.Antes[i]);
+                            else if (_aleatorio.NextDouble() < 0.35) CriarFaisca(x, y);
                         }
 
                         break;
                     }
 
-                    case CartoonEmitter.Kind.Steam:
+                    case CartoonEmitter.Kind.Vapor:
                     {
-                        int count = Mathf.CeilToInt(70f * dt);
-                        for (int n = 0; n < count; n++) SpawnSteam(area);
+                        int quantidade = Mathf.CeilToInt(70f * dt);
+                        for (int n = 0; n < quantidade; n++) CriarVapor(area);
                         break;
                     }
 
-                    case CartoonEmitter.Kind.Glint:
+                    case CartoonEmitter.Kind.Brilho:
                     {
-                        float since = t - emitter.startAt * shot.duration * RevealShare;
-                        DrawGlint(area, since / 0.4f);
+                        float desde = t - emissor.inicioEm * plano.duracao * ParcelaRevelar;
+                        DesenharBrilho(area, desde / 0.4f);
                         break;
                     }
                 }
             }
         }
 
-        private void SpawnFlake(int x, int y, Color32 color)
+        private void CriarLasca(int x, int y, Color32 cor)
         {
-            Add(new Particle
+            Adicionar(new Particle
             {
-                Position = new Vector2(x, y),
-                Velocity = new Vector2(Range(-22f, 22f), Range(-34f, -6f)),
-                Life = Range(0.6f, 1.2f),
-                Color = color,
-                Size = _random.NextDouble() < 0.3 ? 2f : 1f,
-                Gravity = 110f,
+                Posicao = new Vector2(x, y),
+                VelocidadeVetorial = new Vector2(SortearIntervalo(-22f, 22f), SortearIntervalo(-34f, -6f)),
+                DuracaoVida = SortearIntervalo(0.6f, 1.2f),
+                Cor = cor,
+                Tamanho = _aleatorio.NextDouble() < 0.3 ? 2f : 1f,
+                Gravidade = 110f,
             });
         }
 
-        private void SpawnSpark(int x, int y)
+        private void CriarFaisca(int x, int y)
         {
-            bool cyan = _random.NextDouble() < 0.5;
-            Add(new Particle
+            bool ciano = _aleatorio.NextDouble() < 0.5;
+            Adicionar(new Particle
             {
-                Position = new Vector2(x, y),
-                Velocity = new Vector2(Range(-10f, 10f), Range(-42f, -18f)),
-                Life = Range(0.35f, 0.8f),
-                Color = cyan ? new Color32(170, 240, 255, 255) : new Color32(255, 250, 220, 255),
-                Size = 1f,
-                Gravity = -10f,
-                Fade = true,
+                Posicao = new Vector2(x, y),
+                VelocidadeVetorial = new Vector2(SortearIntervalo(-10f, 10f), SortearIntervalo(-42f, -18f)),
+                DuracaoVida = SortearIntervalo(0.35f, 0.8f),
+                Cor = ciano ? new Color32(170, 240, 255, 255) : new Color32(255, 250, 220, 255),
+                Tamanho = 1f,
+                Gravidade = -10f,
+                Esmaecimento = true,
             });
         }
 
-        private void SpawnSteam(RectInt area)
+        private void CriarVapor(RectInt area)
         {
-            Add(new Particle
+            Adicionar(new Particle
             {
-                Position = new Vector2(area.x + Range(0f, area.width), area.y + Range(0f, area.height)),
-                Velocity = new Vector2(Range(-10f, 10f), Range(-95f, -60f)),
-                Life = Range(0.5f, 0.9f),
-                Color = new Color32(220, 234, 238, 255),
-                Size = Range(2f, 4f),
-                Grow = 7f,
-                Gravity = 30f,
-                Fade = true,
+                Posicao = new Vector2(area.x + SortearIntervalo(0f, area.width), area.y + SortearIntervalo(0f, area.height)),
+                VelocidadeVetorial = new Vector2(SortearIntervalo(-10f, 10f), SortearIntervalo(-95f, -60f)),
+                DuracaoVida = SortearIntervalo(0.5f, 0.9f),
+                Cor = new Color32(220, 234, 238, 255),
+                Tamanho = SortearIntervalo(2f, 4f),
+                Crescer = 7f,
+                Gravidade = 30f,
+                Esmaecimento = true,
             });
         }
 
-        private void Add(Particle particle)
+        private void Adicionar(Particle particula2)
         {
-            if (_particleCount >= MaxParticles) return;
-            _particles[_particleCount++] = particle;
+            if (_quantidadeParticula >= ParticulasMax) return;
+            _particulas2[_quantidadeParticula++] = particula2;
         }
 
-        private void StepParticles(float dt)
+        private void AvancarParticulas(float dt)
         {
-            for (int i = _particleCount - 1; i >= 0; i--)
+            for (int i = _quantidadeParticula - 1; i >= 0; i--)
             {
-                Particle p = _particles[i];
-                p.Age += dt;
+                Particle p = _particulas2[i];
+                p.Idade += dt;
 
-                if (p.Age >= p.Life)
+                if (p.Idade >= p.DuracaoVida)
                 {
-                    _particles[i] = _particles[--_particleCount];
+                    _particulas2[i] = _particulas2[--_quantidadeParticula];
                     continue;
                 }
 
-                p.Velocity.y += p.Gravity * dt;
-                p.Position += p.Velocity * dt;
-                p.Size += p.Grow * dt;
-                _particles[i] = p;
+                p.VelocidadeVetorial.y += p.Gravidade * dt;
+                p.Posicao += p.VelocidadeVetorial * dt;
+                p.Tamanho += p.Crescer * dt;
+                _particulas2[i] = p;
             }
         }
 
-        private void DrawParticles()
+        private void DesenharParticulas()
         {
-            for (int i = 0; i < _particleCount; i++)
+            for (int i = 0; i < _quantidadeParticula; i++)
             {
-                Particle p = _particles[i];
-                float alpha = p.Fade ? 1f - p.Age / p.Life : 1f;
-                int size = Mathf.Max(1, Mathf.RoundToInt(p.Size));
-                int x0 = Mathf.RoundToInt(p.Position.x - size / 2f), y0 = Mathf.RoundToInt(p.Position.y - size / 2f);
+                Particle p = _particulas2[i];
+                float alfa = p.Esmaecimento ? 1f - p.Idade / p.DuracaoVida : 1f;
+                int tamanho = Mathf.Max(1, Mathf.RoundToInt(p.Tamanho));
+                int x0 = Mathf.RoundToInt(p.Posicao.x - tamanho / 2f), y0 = Mathf.RoundToInt(p.Posicao.y - tamanho / 2f);
 
-                for (int y = y0; y < y0 + size; y++)
+                for (int y = y0; y < y0 + tamanho; y++)
                 {
-                    for (int x = x0; x < x0 + size; x++)
+                    for (int x = x0; x < x0 + tamanho; x++)
                     {
                         // O vapor e redondo; o resto, quadradinho.
-                        if (size > 3)
+                        if (tamanho > 3)
                         {
-                            float dx = x + 0.5f - p.Position.x, dy = y + 0.5f - p.Position.y;
-                            if (dx * dx + dy * dy > size * size * 0.25f) continue;
+                            float dx = x + 0.5f - p.Posicao.x, dy = y + 0.5f - p.Posicao.y;
+                            if (dx * dx + dy * dy > tamanho * tamanho * 0.25f) continue;
                         }
 
-                        Blend(x, y, p.Color, alpha);
+                        Misturar(x, y, p.Cor, alfa);
                     }
                 }
             }
         }
 
         /// <summary>O brilho que corre pelo fio: um risco claro com uma estrelinha na ponta, da base ate a ponta.</summary>
-        private void DrawGlint(RectInt area, float k)
+        private void DesenharBrilho(RectInt area, float k)
         {
             if (k < 0f || k > 1.3f) return;
             k = Mathf.Clamp01(k);
 
-            var from = new Vector2(area.x, area.y + area.height);
+            var de = new Vector2(area.x, area.y + area.height);
             var to = new Vector2(area.x + area.width, area.y);
-            Vector2 head = Vector2.Lerp(from, to, k);
-            Vector2 dir = (to - from).normalized;
-            var white = new Color32(255, 255, 255, 255);
+            Vector2 cabeca = Vector2.Lerp(de, to, k);
+            Vector2 dir = (to - de).normalized;
+            var branco = new Color32(255, 255, 255, 255);
 
             for (int s = 0; s < 18; s++)
             {
-                Vector2 q = head - dir * s;
+                Vector2 q = cabeca - dir * s;
                 float a = 1f - s / 18f;
-                Blend(Mathf.RoundToInt(q.x), Mathf.RoundToInt(q.y), white, a);
-                Blend(Mathf.RoundToInt(q.x), Mathf.RoundToInt(q.y) + 1, white, a * 0.6f);
+                Misturar(Mathf.RoundToInt(q.x), Mathf.RoundToInt(q.y), branco, a);
+                Misturar(Mathf.RoundToInt(q.x), Mathf.RoundToInt(q.y) + 1, branco, a * 0.6f);
             }
 
-            int hx = Mathf.RoundToInt(head.x), hy = Mathf.RoundToInt(head.y);
+            int hx = Mathf.RoundToInt(cabeca.x), hy = Mathf.RoundToInt(cabeca.y);
             for (int r = -4; r <= 4; r++)
             {
                 float a = 1f - Mathf.Abs(r) / 5f;
-                Blend(hx + r, hy, white, a);
-                Blend(hx, hy + r, white, a);
+                Misturar(hx + r, hy, branco, a);
+                Misturar(hx, hy + r, branco, a);
             }
         }
 
         /// <summary>Indice no buffer (que e de baixo pra cima, como as texturas) de um pixel do quadro (y pra baixo).</summary>
-        private static int Index(int x, int y)
+        private static int Indice(int x, int y)
         {
-            if (x < 0 || y < 0 || x >= Width || y >= Height) return -1;
-            return x + (Height - 1 - y) * Width;
+            if (x < 0 || y < 0 || x >= Largura || y >= Altura) return -1;
+            return x + (Altura - 1 - y) * Largura;
         }
 
-        private void Blend(int x, int y, Color32 color, float alpha)
+        private void Misturar(int x, int y, Color32 cor, float alfa)
         {
-            int i = Index(x, y);
-            if (i < 0 || alpha <= 0f) return;
+            int i = Indice(x, y);
+            if (i < 0 || alfa <= 0f) return;
 
-            Color32 under = _buffer[i];
-            _buffer[i] = new Color32(
-                (byte)(under.r + (color.r - under.r) * alpha),
-                (byte)(under.g + (color.g - under.g) * alpha),
-                (byte)(under.b + (color.b - under.b) * alpha),
+            Color32 abaixo = _reserva[i];
+            _reserva[i] = new Color32(
+                (byte)(abaixo.r + (cor.r - abaixo.r) * alfa),
+                (byte)(abaixo.g + (cor.g - abaixo.g) * alfa),
+                (byte)(abaixo.b + (cor.b - abaixo.b) * alfa),
                 255);
         }
 
-        private float Range(float min, float max) => min + (float)_random.NextDouble() * (max - min);
+        private float SortearIntervalo(float min, float max) => min + (float)_aleatorio.NextDouble() * (max - min);
 
         // ------------------------------------------------------------------
         // Tela e controle
         // ------------------------------------------------------------------
 
-        private static bool SkipPressed()
+        private static bool PularPressionado()
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.spaceKey.wasPressedThisFrame || keyboard.jKey.wasPressedThisFrame
-                                     || keyboard.xKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame))
+            Keyboard teclado = Keyboard.current;
+            if (teclado != null && (teclado.spaceKey.wasPressedThisFrame || teclado.jKey.wasPressedThisFrame
+                                     || teclado.xKey.wasPressedThisFrame || teclado.enterKey.wasPressedThisFrame))
             {
                 return true;
             }
 
-            Gamepad pad = Gamepad.current;
-            return pad != null && (pad.buttonSouth.wasPressedThisFrame || pad.buttonWest.wasPressedThisFrame);
+            Gamepad controle = Gamepad.current;
+            return controle != null && (controle.buttonSouth.wasPressedThisFrame || controle.buttonWest.wasPressedThisFrame);
         }
 
         private void OnGUI()
         {
-            if (!IsPlaying) return;
+            if (!EstaTocando) return;
             if (Event.current.type != EventType.Repaint) return;
 
             // Por cima do HUD e de tudo.
             GUI.depth = -1000;
-            Color previous = GUI.color;
-            var full = new Rect(0f, 0f, Screen.width, Screen.height);
+            Color valorAnterior = GUI.color;
+            var cheio = new Rect(0f, 0f, Screen.width, Screen.height);
 
-            if (_showPanel)
+            if (_painelMostrar)
             {
-                Fill(full, Color.black);
+                Preencher(cheio, Color.black);
 
                 // O maior 16:9 que cabe, centralizado; o resto fica preto.
-                float scale = Mathf.Min(Screen.width / (float)Width, Screen.height / (float)Height);
-                float w = Width * scale, h = Height * scale;
-                var panel = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
+                float escalaAtual = Mathf.Min(Screen.width / (float)Largura, Screen.height / (float)Altura);
+                float w = Largura * escalaAtual, h = Altura * escalaAtual;
+                var painel = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
 
-                if (_cut > 0)
+                if (_corte > 0)
                 {
-                    Fill(panel, CutColor);
+                    Preencher(painel, CorCorte);
                 }
-                else if (_screen != null)
+                else if (_tela != null)
                 {
                     GUI.color = Color.white;
-                    GUI.DrawTextureWithTexCoords(panel, _screen, _uv, false);
+                    TelaCanvas.TexturaUV(painel, _tela, _uv, false);
                 }
 
-                float bar = h * BarFraction;
-                Fill(new Rect(panel.x, panel.y, w, bar), Color.black);
-                Fill(new Rect(panel.x, panel.yMax - bar, w, bar), Color.black);
+                float barra = h * FracaoBarra;
+                Preencher(new Rect(painel.x, painel.y, w, barra), Color.black);
+                Preencher(new Rect(painel.x, painel.yMax - barra, w, barra), Color.black);
             }
 
-            if (_white > 0f) Fill(full, new Color(1f, 0.98f, 0.92f, _white));
+            if (_branco > 0f) Preencher(cheio, new Color(1f, 0.98f, 0.92f, _branco));
 
-            GUI.color = previous;
+            GUI.color = valorAnterior;
         }
 
-        private static void Fill(Rect rect, Color color)
+        private static void Preencher(Rect retangulo, Color cor)
         {
-            GUI.color = color;
-            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = cor;
+            TelaCanvas.Textura(retangulo, Texture2D.whiteTexture);
         }
     }
 }

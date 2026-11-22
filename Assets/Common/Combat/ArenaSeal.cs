@@ -14,69 +14,65 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Collider2D))]
     public class ArenaSeal : MonoBehaviour
     {
-        [Tooltip("Segundos pra grade descer ou subir.")]
-        [SerializeField] private float slideTime = 0.25f;
+        [UnityEngine.Serialization.FormerlySerializedAs("slideTime")] [Tooltip("Segundos pra grade descer ou subir.")]
+        [SerializeField] private float tempoDeslize = 0.25f;
 
-        [Tooltip("O chefe desta arena. Vazio: fecha com qualquer chefe em luta (cenas de um chefe so).")]
-        [SerializeField] private MonoBehaviour boss;
+        [UnityEngine.Serialization.FormerlySerializedAs("boss")] [Tooltip("O chefe desta arena. Vazio: fecha com qualquer chefe em luta (cenas de um chefe so).")]
+        [SerializeField] private MonoBehaviour chefe;
 
-        private Collider2D _wall;
-        private SpriteRenderer _bars;
-        private Color _color;
-        private float _shut;
-        private bool _wasFighting;
+        private Collider2D _parede;
+        private SpriteRenderer _barras;
+        private Color _cor;
+        private float _fechada;
+        private bool _estavaLutando;
 
         private void Awake()
         {
-            _wall = GetComponent<Collider2D>();
-            _bars = GetComponentInChildren<SpriteRenderer>();
-            if (_bars != null) _color = _bars.color;
+            _parede = GetComponent<Collider2D>();
+            _barras = GetComponentInChildren<SpriteRenderer>();
+            if (_barras != null) _cor = _barras.color;
 
-            Apply(0f);
+            Aplicar(0f);
         }
 
         /// <summary>Usado pelos geradores de fase, onde ha mais de um chefe na cena: a grade so ouve este.</summary>
-        public void Watch(MonoBehaviour newBoss)
+        public void Observar(MonoBehaviour novoChefe)
         {
-            boss = newBoss;
+            chefe = novoChefe;
         }
 
         /// <summary>Se algum chefe esta em luta agora.</summary>
-        private static bool AnyBossFighting =>
-            RustyScrapper.Fighting != null || BoilerMaster.Fighting != null
-            || TheResonant.Fighting != null || GeodeDrill.Fighting != null
-            || MercuryAlchemist.Fighting != null || SilverKing.Fighting != null;
+        private static bool LutandoChefeAlgum =>
+            BossRoster.Atual != null;
 
         /// <summary>Se o chefe desta arena esta em luta.</summary>
-        private bool OwnBossFighting =>
-            boss == RustyScrapper.Fighting || boss == BoilerMaster.Fighting
-            || boss == TheResonant.Fighting || boss == GeodeDrill.Fighting
-            || boss == MercuryAlchemist.Fighting || boss == SilverKing.Fighting;
+        private bool LutandoChefeProprio =>
+            BossRoster.EstaLutando(chefe);
 
         private void Update()
         {
-            bool fighting = boss != null ? OwnBossFighting : AnyBossFighting;
+            bool lutando = chefe != null ? LutandoChefeProprio : LutandoChefeAlgum;
 
-            if (fighting != _wasFighting)
+            if (lutando != _estavaLutando)
             {
-                _wasFighting = fighting;
-                (fighting ? Sfx.ArenaSealDown : Sfx.ArenaSealUp).Play(transform.position);
+                _estavaLutando = lutando;
+                (lutando ? Sfx.BaixoSeloArena : Sfx.CimaSeloArena).Tocar(transform.position);
             }
 
-            float target = fighting ? 1f : 0f;
-            _shut = Mathf.MoveTowards(_shut, target, Time.deltaTime / Mathf.Max(0.01f, slideTime));
-            Apply(_shut);
+            float alvo = lutando ? 1f : 0f;
+            _fechada = Mathf.MoveTowards(_fechada, alvo, Time.deltaTime / Mathf.Max(0.01f, tempoDeslize));
+            Aplicar(_fechada);
 
             // Fecha na hora em que a luta comeca, mesmo com a grade ainda descendo.
-            _wall.enabled = fighting;
+            _parede.enabled = lutando;
         }
 
-        private void Apply(float shut)
+        private void Aplicar(float fechada)
         {
-            if (_bars == null) return;
+            if (_barras == null) return;
 
-            _bars.enabled = shut > 0.01f;
-            _bars.color = new Color(_color.r, _color.g, _color.b, _color.a * shut);
+            _barras.enabled = fechada > 0.01f;
+            _barras.color = new Color(_cor.r, _cor.g, _cor.b, _cor.a * fechada);
         }
     }
 }

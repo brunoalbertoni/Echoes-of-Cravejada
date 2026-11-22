@@ -12,24 +12,25 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class GemPurse
     {
-        public static int Gems { get; private set; }
+        [SaveProgress("Gems")]
+        public static int Gemas { get; private set; }
 
         /// <summary>Quando a ultima foi recebida. O HUD usa pra destacar o contador.</summary>
-        public static float LastGainTime { get; private set; } = -100f;
+        public static float UltimoTempoGanho { get; private set; } = -100f;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            Gems = 0;
-            LastGainTime = -100f;
+            Gemas = 0;
+            UltimoTempoGanho = -100f;
         }
 
-        public static void Add(int amount)
+        public static void Adicionar(int quantia)
         {
-            Gems = Mathf.Max(0, Gems + amount);
-            if (amount > 0) LastGainTime = Time.time;
+            Gemas = Mathf.Max(0, Gemas + quantia);
+            if (quantia > 0) UltimoTempoGanho = Time.time;
         }
     }
 }

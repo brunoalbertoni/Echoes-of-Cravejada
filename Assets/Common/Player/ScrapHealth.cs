@@ -15,140 +15,141 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Rigidbody2D))]
     public class ScrapHealth : MonoBehaviour
     {
-        [SerializeField] private int maxHealth = 5;
+        [UnityEngine.Serialization.FormerlySerializedAs("maxHealth")] [SerializeField] private int vidaMax = 5;
 
-        [Tooltip("Segundos sem poder apanhar de novo depois de um golpe.")]
-        [SerializeField] private float invulnerabilityTime = 1.0f;
+        [UnityEngine.Serialization.FormerlySerializedAs("invulnerabilityTime")] [Tooltip("Segundos sem poder apanhar de novo depois de um golpe.")]
+        [SerializeField] private float tempoInvulnerabilidade = 1.0f;
 
-        [Tooltip("Empurrao ao apanhar: pra tras e um pouco pra cima.")]
-        [SerializeField] private Vector2 knockback = new Vector2(6f, 7f);
+        [UnityEngine.Serialization.FormerlySerializedAs("knockback")] [Tooltip("Empurrao ao apanhar: pra tras e um pouco pra cima.")]
+        [SerializeField] private Vector2 recuoGolpe = new Vector2(6f, 7f);
 
-        [Tooltip("O sprite da old scrap deixada no lugar da morte.")]
-        [SerializeField] private Sprite oldScrapSprite;
+        [UnityEngine.Serialization.FormerlySerializedAs("oldScrapSprite")] [Tooltip("O sprite da old scrap deixada no lugar da morte.")]
+        [SerializeField] private Sprite spriteSucataAntigo;
 
-        private ScrapController _controller;
-        private ScrapRespawn _respawn;
-        private Rigidbody2D _body;
+        private ScrapController _controlador;
+        private ScrapRespawn _renascimento;
+        private Rigidbody2D _corpo;
         private SpriteRenderer _sprite;
 
-        private int _health;
-        private float _invulnerableUntil;
-        private Vector3 _startPosition;
+        private int _vida;
+        private float _invulneravelAte;
+        private Vector3 _posicaoInicio;
 
         // A bancada vale pra cena em que ela esta. Trocar de cena esquece.
-        private static bool _hasCheckpoint;
-        private static Vector3 _checkpoint;
-        private static OldScrap _oldScrap;
+        private static bool _temPontoSalvo;
+        private static Vector3 _pontoSalvo;
+        private static OldScrap _sucataAntigo;
 
-        public int Health => _health;
-        public int MaxHealth => maxHealth;
+        public int Vida => _vida;
+        public int VidaMax => vidaMax;
 
         /// <summary>
         /// Avisa que o Scrap morreu. Os inimigos e o boss escutam pra renascer
         /// e encher a vida: morrer devolve o mundo ao que era.
         /// </summary>
-        public static event System.Action Died;
+        public static event System.Action Morreu;
 
         /// <summary>Quando ele apanhou pela ultima vez. A alavanca usa pra saber se foi interrompida.</summary>
-        public float LastHitTime { get; private set; } = -100f;
+        public float UltimoTempoGolpe { get; private set; } = -100f;
 
         /// <summary>Quando ele morreu pela ultima vez. A bancada usa pra nao tocar o "salvo" quando ele renasce nela.</summary>
-        public static float LastDeathTime { get; private set; } = -100f;
+        public static float UltimoTempoMorte { get; private set; } = -100f;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            LastDeathTime = -100f;
-            _hasCheckpoint = false;
-            _oldScrap = null;
-            _bonusHealth = 0;
-            Died = null;
+            UltimoTempoMorte = -100f;
+            _temPontoSalvo = false;
+            _sucataAntigo = null;
+            _vidaBonus = 0;
+            Morreu = null;
         }
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(Sprite newOldScrapSprite)
+        public void Configurar(Sprite novoSpriteSucataAntigo)
         {
-            oldScrapSprite = newOldScrapSprite;
+            spriteSucataAntigo = novoSpriteSucataAntigo;
         }
 
         private void Awake()
         {
-            _controller = GetComponent<ScrapController>();
-            _respawn = GetComponent<ScrapRespawn>();
-            _body = GetComponent<Rigidbody2D>();
+            _controlador = GetComponent<ScrapController>();
+            _renascimento = GetComponent<ScrapRespawn>();
+            _corpo = GetComponent<Rigidbody2D>();
             _sprite = GetComponent<SpriteRenderer>();
 
-            maxHealth += _bonusHealth;
-            _health = maxHealth;
-            _startPosition = transform.position;
+            vidaMax += _vidaBonus;
+            _vida = vidaMax;
+            _posicaoInicio = transform.position;
 
             // Cena nova, bancada nova.
-            _hasCheckpoint = false;
+            _temPontoSalvo = false;
         }
 
         // O chassi reforcado vale pra sessao toda, em qualquer cena.
-        private static int _bonusHealth;
+        [SaveProgress("_bonusHealth")]
+        private static int _vidaBonus;
 
         /// <summary>Crisol reforca o chassi: um ponto de vida a mais, pra sempre.</summary>
-        public void UpgradeChassis()
+        public void MelhorarChassi()
         {
-            _bonusHealth++;
-            maxHealth++;
-            _health = maxHealth;
+            _vidaBonus++;
+            vidaMax++;
+            _vida = vidaMax;
         }
 
         /// <summary>A Workbench chama isto: salva o lugar e enche a vida.</summary>
-        public void RestAt(Vector3 position)
+        public void DescansarEm(Vector3 posicao)
         {
-            _hasCheckpoint = true;
-            _checkpoint = position;
-            _health = maxHealth;
+            _temPontoSalvo = true;
+            _pontoSalvo = posicao;
+            _vida = vidaMax;
         }
 
         /// <summary>
-        /// Tira vida. Com <paramref name="returnToSafeGround"/> ele tambem e
+        /// Tira vida. Com <paramref name="retornoParaSeguroSolo"/> ele tambem e
         /// jogado de volta pro ultimo chao seguro — e o caso dos espinhos e do
         /// acido, de onde nao da pra sair andando.
         /// </summary>
-        public void TakeDamage(int amount, Vector2 from, bool returnToSafeGround = false)
+        public void LevarDano(int quantia, Vector2 de, bool retornoParaSeguroSolo = false)
         {
-            if (Time.time < _invulnerableUntil || _health <= 0) return;
+            if (Time.time < _invulneravelAte || _vida <= 0) return;
 
 
             // LINHA NOVA: se estiver no Dash, ignora o dano totalmente
             var dash = GetComponent<ScrapDash>();
-            if (dash != null && dash.IsDashing) return;
+            if (dash != null && dash.EstaDashando) return;
 
             // Durante uma cutscene ninguem apanha: o que ainda estava voando
             // quando ela comecou (sucata, onda de choque) passa reto.
-            if (Cinematic.Active) return;
+            if (Cinematic.Ativo) return;
 
-            _health -= amount;
-            LastHitTime = Time.time;
-            _invulnerableUntil = Time.time + invulnerabilityTime;
+            _vida -= quantia;
+            UltimoTempoGolpe = Time.time;
+            _invulneravelAte = Time.time + tempoInvulnerabilidade;
 
-            if (_health <= 0)
+            if (_vida <= 0)
             {
-                Die();
+                Morrer();
                 return;
             }
 
-            Sfx.Hurt.Play();
+            Sfx.Ferido.Tocar();
 
-            if (returnToSafeGround && _respawn != null)
+            if (retornoParaSeguroSolo && _renascimento != null)
             {
-                _respawn.Respawn(true);
+                _renascimento.Renascer(true);
             }
             else
             {
-                float away = transform.position.x >= from.x ? 1f : -1f;
-                _controller.Knockback(new Vector2(away * knockback.x, knockback.y), 0.25f);
+                float longe2 = transform.position.x >= de.x ? 1f : -1f;
+                _controlador.Empurrar(new Vector2(longe2 * recuoGolpe.x, recuoGolpe.y), 0.25f);
             }
 
             StopAllCoroutines();
-            StartCoroutine(Blink());
+            StartCoroutine(Piscar());
         }
 
         /// <summary>
@@ -156,79 +157,79 @@ namespace EchoesOfCravejada
         /// mundo congela atras da tela de morte. O renascimento so vem quando o
         /// jogador escolhe voltar pra bancada (ver ReturnToBench).
         /// </summary>
-        private void Die()
+        private void Morrer()
         {
-            LastDeathTime = Time.time;
-            Sfx.Death.Play();
+            UltimoTempoMorte = Time.time;
+            Sfx.QuadroMorte.Tocar();
 
-            Vector3 deathPlace = _respawn != null ? (Vector3)_respawn.SafePosition : transform.position;
+            Vector3 lugarMorte = _renascimento != null ? (Vector3)_renascimento.PosicaoSeguro : transform.position;
 
             // O que ja estava no chao de uma morte anterior se perde.
-            if (_oldScrap != null) Destroy(_oldScrap.gameObject);
-            _oldScrap = null;
+            if (_sucataAntigo != null) Destroy(_sucataAntigo.gameObject);
+            _sucataAntigo = null;
 
-            int shards = ScrapWallet.TakeAll();
-            int kept = 0;
+            int fragmentos = ScrapWallet.PegarTudo();
+            int mantido = 0;
 
             // Com a Bolsa forrada, da loja, metade fica com ele.
-            if (Shop.KeepsHalfOnDeath)
+            if (Shop.MantemMetadeLigadoMorte)
             {
-                kept = shards / 2;
-                ScrapWallet.Add(kept);
-                shards -= kept;
+                mantido = fragmentos / 2;
+                ScrapWallet.Adicionar(mantido);
+                fragmentos -= mantido;
             }
 
-            if (shards > 0) _oldScrap = OldScrap.Drop(deathPlace, shards, oldScrapSprite);
+            if (fragmentos > 0) _sucataAntigo = OldScrap.Soltar(lugarMorte, fragmentos, spriteSucataAntigo);
 
             // Caido: parado, sem controle, apagado.
             StopAllCoroutines();
-            _controller.ControlLocked = true;
-            _body.linearVelocity = Vector2.zero;
-            _body.simulated = false;
+            _controlador.ControleTravado = true;
+            _corpo.linearVelocity = Vector2.zero;
+            _corpo.simulated = false;
             if (_sprite != null)
             {
                 _sprite.enabled = true;
                 _sprite.color = new Color(0.32f, 0.28f, 0.28f);
             }
 
-            DeathScreen.Show(ReturnToBench);
+            DeathScreen.Mostrar(VoltarParaBancada);
         }
 
         /// <summary>O jogador escolheu voltar: o Scrap renasce na ultima bancada, com a vida cheia.</summary>
-        private void ReturnToBench()
+        private void VoltarParaBancada()
         {
-            Sfx.Respawn.Play();
+            Sfx.Renascimento.Tocar();
 
             if (_sprite != null) _sprite.color = Color.white;
-            _body.simulated = true;
+            _corpo.simulated = true;
 
-            Vector3 target = _hasCheckpoint ? _checkpoint : _startPosition;
+            Vector3 alvo = _temPontoSalvo ? _pontoSalvo : _posicaoInicio;
 
-            _body.position = target;
-            transform.position = target;
-            _body.linearVelocity = Vector2.zero;
-            _controller.ControlLocked = false;
+            _corpo.position = alvo;
+            transform.position = alvo;
+            _corpo.linearVelocity = Vector2.zero;
+            _controlador.ControleTravado = false;
 
-            if (_respawn != null) _respawn.SetSafePosition(target);
+            if (_renascimento != null) _renascimento.DefinirPosicaoSegura(alvo);
 
-            _health = maxHealth;
-            _invulnerableUntil = Time.time + invulnerabilityTime;
+            _vida = vidaMax;
+            _invulneravelAte = Time.time + tempoInvulnerabilidade;
 
-            Camera main = Camera.main;
-            var follow = main != null ? main.GetComponent<ScrapCameraFollow>() : null;
-            if (follow != null) follow.SnapToTarget();
+            Camera principal = Camera.main;
+            var seguir = principal != null ? principal.GetComponent<ScrapCameraFollow>() : null;
+            if (seguir != null) seguir.IrDiretoAoAlvo();
 
             StopAllCoroutines();
-            StartCoroutine(Blink());
+            StartCoroutine(Piscar());
 
-            Died?.Invoke();
+            Morreu?.Invoke();
         }
 
-        private IEnumerator Blink()
+        private IEnumerator Piscar()
         {
             if (_sprite == null) yield break;
 
-            while (Time.time < _invulnerableUntil)
+            while (Time.time < _invulneravelAte)
             {
                 _sprite.enabled = !_sprite.enabled;
                 yield return new WaitForSeconds(0.07f);

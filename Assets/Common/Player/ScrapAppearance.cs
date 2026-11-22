@@ -15,64 +15,65 @@ namespace EchoesOfCravejada
     /// </summary>
     public class ScrapAppearance : MonoBehaviour
     {
-        [SerializeField] private Sprite scrapSprite;
-        [SerializeField] private Sprite polishedSprite;
+        [UnityEngine.Serialization.FormerlySerializedAs("scrapSprite")] [SerializeField] private Sprite spriteSucata;
+        [UnityEngine.Serialization.FormerlySerializedAs("polishedSprite")] [SerializeField] private Sprite spritePolido;
 
-        [Tooltip("Se nesta cena ele ja chega polido. Vale pras fases depois do District 1, pra dar Play direto nelas.")]
-        [SerializeField] private bool polishedFromStart;
+        [UnityEngine.Serialization.FormerlySerializedAs("polishedFromStart")] [Tooltip("Se nesta cena ele ja chega polido. Vale pras fases depois do District 1, pra dar Play direto nelas.")]
+        [SerializeField] private bool polidoDeInicio;
 
-        private static bool _polished;
+        [SaveProgress("_polished")]
+        private static bool _polido;
 
-        private SpriteRenderer _renderer;
+        private SpriteRenderer _renderizador;
 
-        public static bool IsPolished => _polished;
+        public static bool EstaPolido => _polido;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _polished = false;
+            _polido = false;
         }
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(Sprite scrap, Sprite polished)
+        public void Configurar(Sprite sucata, Sprite polido)
         {
-            scrapSprite = scrap;
-            polishedSprite = polished;
+            spriteSucata = sucata;
+            spritePolido = polido;
         }
 
         /// <summary>Usado pelos geradores das fases depois do District 1.</summary>
-        public void SetPolishedFromStart(bool polished)
+        public void DefinirPolidoDesdeInicio(bool polido)
         {
-            polishedFromStart = polished;
+            polidoDeInicio = polido;
         }
 
         private void Awake()
         {
             // Sem cerimonia: aqui ele nao esta mudando, so ja chegou assim.
-            if (polishedFromStart) _polished = true;
+            if (polidoDeInicio) _polido = true;
 
-            _renderer = GetComponentInChildren<SpriteRenderer>();
-            Apply();
+            _renderizador = GetComponentInChildren<SpriteRenderer>();
+            Aplicar();
         }
 
         /// <summary>O primeiro polimento. Devolve falso se ele ja estava polido.</summary>
-        public bool Polish()
+        public bool Polir()
         {
-            if (_polished) return false;
+            if (_polido) return false;
 
-            _polished = true;
-            Apply();
+            _polido = true;
+            Aplicar();
             return true;
         }
 
-        private void Apply()
+        private void Aplicar()
         {
-            if (_renderer == null) return;
+            if (_renderizador == null) return;
 
-            Sprite sprite = _polished ? polishedSprite : scrapSprite;
-            if (sprite != null) _renderer.sprite = sprite;
+            Sprite sprite = _polido ? spritePolido : spriteSucata;
+            if (sprite != null) FrameAnimator.Exibir(_renderizador, sprite);
         }
     }
 }

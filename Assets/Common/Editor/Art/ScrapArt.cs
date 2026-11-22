@@ -6,9 +6,8 @@ namespace EchoesOfCravejada.EditorTools
     /// A arte provisoria das mecanicas do Scrap, desenhada por codigo: o risco
     /// do cinzel, o Opaque Shard, a old scrap, a alavanca e o portao.
     ///
-    /// Nenhum dos packs tem essas pecas. Sao placeholders de 16 px por tile,
-    /// pra as mecanicas poderem ser testadas; troque os PNGs em
-    /// Assets/Generated/Brass quando houver arte de verdade.
+    /// Nenhum dos packs tem essas pecas. A arte tem 16 px por tile e a versao
+    /// oficial fica nos PNGs de Assets/Generated/Brass.
     ///
     /// Nao depende de UnityEngine, como o BrassArt.
     /// </summary>

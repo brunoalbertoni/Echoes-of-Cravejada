@@ -7,11 +7,11 @@ namespace EchoesOfCravejada
     [Serializable]
     public class LineSet
     {
-        [TextArea(2, 4)] public string[] Lines;
+        [UnityEngine.Serialization.FormerlySerializedAs("Lines")] [TextArea(2, 4)] public string[] Linhas;
 
-        public LineSet(string[] lines)
+        public LineSet(string[] linhas2)
         {
-            Lines = lines;
+            Linhas = linhas2;
         }
     }
 
@@ -31,91 +31,91 @@ namespace EchoesOfCravejada
     /// </summary>
     public class ItemQuestNpc : Npc
     {
-        [Tooltip("O comeco do id das coisas pedidas, no KeyItems.")]
-        [SerializeField] private string itemPrefix = "Tool_";
+        [UnityEngine.Serialization.FormerlySerializedAs("itemPrefix")] [Tooltip("O comeco do id das coisas pedidas, no KeyItems.")]
+        [SerializeField] private string prefixoItem = "Tool_";
 
-        [SerializeField] private int itemCount = 3;
+        [UnityEngine.Serialization.FormerlySerializedAs("itemCount")] [SerializeField] private int quantidadeItem = 3;
 
-        [Tooltip("Quantas gemas ele paga quando recebe tudo.")]
-        [SerializeField] private int gemReward = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("gemReward")] [Tooltip("Quantas gemas ele paga quando recebe tudo.")]
+        [SerializeField] private int recompensaGema = 1;
 
-        [Tooltip("O aviso na tela ao pagar.")]
-        [SerializeField] private string rewardNotice = "Gema lapidada recebida";
+        [UnityEngine.Serialization.FormerlySerializedAs("rewardNotice")] [Tooltip("O aviso na tela ao pagar.")]
+        [SerializeField] private string avisoRecompensa = "Gema lapidada recebida";
 
-        [TextArea(2, 4)] [SerializeField] private string purifiedGreeting;
+        [UnityEngine.Serialization.FormerlySerializedAs("purifiedGreeting")] [TextArea(2, 4)] [SerializeField] private string saudacaoPurificado;
 
-        [Tooltip("Depois do pedido, por quantas ele ja tem na mao: 0, 1, 2... A ultima vale pro resto.")]
-        [SerializeField] private LineSet[] progressLines;
+        [UnityEngine.Serialization.FormerlySerializedAs("progressLines")] [Tooltip("Depois do pedido, por quantas ele ja tem na mao: 0, 1, 2... A ultima vale pro resto.")]
+        [SerializeField] private LineSet[] linhasProgresso;
 
-        [TextArea(2, 4)] [SerializeField] private string[] completeLines;
-        [TextArea(2, 4)] [SerializeField] private string[] doneLines;
+        [UnityEngine.Serialization.FormerlySerializedAs("completeLines")] [TextArea(2, 4)] [SerializeField] private string[] linhasCompleto;
+        [UnityEngine.Serialization.FormerlySerializedAs("doneLines")] [TextArea(2, 4)] [SerializeField] private string[] linhasPronto;
 
-        private string AskedFlag => "Quest_" + itemPrefix + "Asked";
-        private string DeliveredFlag => "Quest_" + itemPrefix + "Delivered";
+        private string MarcaPerguntado => "Quest_" + prefixoItem + "Asked";
+        private string MarcaEntregues => "Quest_" + prefixoItem + "Delivered";
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void ConfigureQuest(string newItemPrefix, int newItemCount, int newGemReward, string newRewardNotice,
-            string greeting, LineSet[] progress, string[] complete, string[] done)
+        public void ConfigurarMissao(string novoPrefixoItem, int novoQuantidadeItem, int novoRecompensaGema, string novoAvisoRecompensa,
+            string saudacao, LineSet[] progresso, string[] completo, string[] pronto)
         {
-            itemPrefix = newItemPrefix;
-            itemCount = newItemCount;
-            gemReward = newGemReward;
-            rewardNotice = newRewardNotice;
-            purifiedGreeting = greeting;
-            progressLines = progress;
-            completeLines = complete;
-            doneLines = done;
+            prefixoItem = novoPrefixoItem;
+            quantidadeItem = novoQuantidadeItem;
+            recompensaGema = novoRecompensaGema;
+            avisoRecompensa = novoAvisoRecompensa;
+            saudacaoPurificado = saudacao;
+            linhasProgresso = progresso;
+            linhasCompleto = completo;
+            linhasPronto = pronto;
         }
 
-        protected override string[] PickLines()
+        protected override string[] EscolherFalas()
         {
-            bool delivered = KeyItems.HasFlag(DeliveredFlag);
+            bool entregues = KeyItems.TemMarca(MarcaEntregues);
 
             // Antes de ouvir o pedido, a conversa de sempre (que termina nele).
-            if (!KeyItems.HasFlag(AskedFlag) && !delivered) return base.PickLines();
+            if (!KeyItems.TemMarca(MarcaPerguntado) && !entregues) return base.EscolherFalas();
 
-            int held = KeyItems.CountHeld(itemPrefix);
-            string[] chosen;
+            int segurado = KeyItems.ContarGuardados(prefixoItem);
+            string[] escolhido;
 
-            if (delivered) chosen = doneLines;
-            else if (held >= itemCount) chosen = completeLines;
-            else chosen = Progress(held);
+            if (entregues) escolhido = linhasPronto;
+            else if (segurado >= quantidadeItem) escolhido = linhasCompleto;
+            else escolhido = Progresso(segurado);
 
-            return WithGreeting(chosen);
+            return ComSaudacao(escolhido);
         }
 
-        protected override void OnTalkFinished(ScrapController scrap)
+        protected override void AoTerminarConversa(ScrapController sucata)
         {
             // A primeira conversa so faz o pedido: quem ja chega com tudo ouve
             // a entrega na proxima, em vez de ganhar a gema calado.
             // Sem nada a pedir (itemCount 0): a primeira conversa ja e a entrega.
-            bool askedBefore = KeyItems.HasFlag(AskedFlag) || itemCount <= 0;
-            KeyItems.SetFlag(AskedFlag);
-            if (!askedBefore) return;
+            bool perguntadoAntes = KeyItems.TemMarca(MarcaPerguntado) || quantidadeItem <= 0;
+            KeyItems.DefinirMarca(MarcaPerguntado);
+            if (!perguntadoAntes) return;
 
-            if (KeyItems.HasFlag(DeliveredFlag) || KeyItems.CountHeld(itemPrefix) < itemCount) return;
+            if (KeyItems.TemMarca(MarcaEntregues) || KeyItems.ContarGuardados(prefixoItem) < quantidadeItem) return;
 
-            KeyItems.DeliverAll(itemPrefix);
-            KeyItems.SetFlag(DeliveredFlag);
+            KeyItems.EntregarTudo(prefixoItem);
+            KeyItems.DefinirMarca(MarcaEntregues);
 
-            GemPurse.Add(gemReward);
-            Sfx.Gem.Play();
+            GemPurse.Adicionar(recompensaGema);
+            Sfx.Gema.Tocar();
         }
 
-        private string[] Progress(int held)
+        private string[] Progresso(int segurado)
         {
-            if (progressLines == null || progressLines.Length == 0) return completeLines;
-            return progressLines[Mathf.Clamp(held, 0, progressLines.Length - 1)].Lines;
+            if (linhasProgresso == null || linhasProgresso.Length == 0) return linhasCompleto;
+            return linhasProgresso[Mathf.Clamp(segurado, 0, linhasProgresso.Length - 1)].Linhas;
         }
 
-        private string[] WithGreeting(string[] chosen)
+        private string[] ComSaudacao(string[] escolhido)
         {
-            if (!AreaPurifier.IsPurified || string.IsNullOrEmpty(purifiedGreeting) || chosen == null) return chosen;
+            if (!AreaPurifier.EstaPurificado || string.IsNullOrEmpty(saudacaoPurificado) || escolhido == null) return escolhido;
 
-            var lines = new string[chosen.Length + 1];
-            lines[0] = purifiedGreeting;
-            chosen.CopyTo(lines, 1);
-            return lines;
+            var linhas2 = new string[escolhido.Length + 1];
+            linhas2[0] = saudacaoPurificado;
+            escolhido.CopyTo(linhas2, 1);
+            return linhas2;
         }
     }
 }

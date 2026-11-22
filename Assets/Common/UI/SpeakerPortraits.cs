@@ -11,9 +11,9 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class SpeakerPortraits
     {
-        public const string Generic = "generic";
+        public const string Generico = "generic";
 
-        private static readonly Dictionary<string, string> ByName = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> PorNome = new Dictionary<string, string>
         {
             { "refugo", "refugo" },
             { "rebite", "rebite" },
@@ -29,56 +29,56 @@ namespace EchoesOfCravejada
             { "o rei de prata", "king" },
         };
 
-        private static readonly Dictionary<string, Color> Accents = new Dictionary<string, Color>
+        private static readonly Dictionary<string, Color> Destaques = new Dictionary<string, Color>
         {
-            { "refugo", Hex(0xffcf80) },
-            { "rebite", Hex(0xffb27a) },
-            { "ferrolho", Hex(0xffc870) },
-            { "pequena", Hex(0x7ae6ff) },
-            { "plumber", Hex(0xe8c070) },
-            { "solda", Hex(0xff8a6a) },
-            { "crisol", Hex(0xbfeaff) },
-            { "miner", Hex(0xffe0a0) },
-            { "miner_f", Hex(0xc8ffe0) },
-            { "assistant", Hex(0x9ff0d8) },
-            { "king", Hex(0xe8f2ff) },
-            { "king_corrupt", Hex(0x78ffaa) },
+            { "refugo", CorHexadecimal(0xffcf80) },
+            { "rebite", CorHexadecimal(0xffb27a) },
+            { "ferrolho", CorHexadecimal(0xffc870) },
+            { "pequena", CorHexadecimal(0x7ae6ff) },
+            { "plumber", CorHexadecimal(0xe8c070) },
+            { "solda", CorHexadecimal(0xff8a6a) },
+            { "crisol", CorHexadecimal(0xbfeaff) },
+            { "miner", CorHexadecimal(0xffe0a0) },
+            { "miner_f", CorHexadecimal(0xc8ffe0) },
+            { "assistant", CorHexadecimal(0x9ff0d8) },
+            { "king", CorHexadecimal(0xe8f2ff) },
+            { "king_corrupt", CorHexadecimal(0x78ffaa) },
         };
 
-        private static readonly Color DefaultAccent = new Color(0.95f, 0.80f, 0.45f);
+        private static readonly Color DestaquePadrao = new Color(0.95f, 0.80f, 0.45f);
 
         private static readonly Dictionary<string, Texture2D> Cache = new Dictionary<string, Texture2D>();
 
         /// <summary>O id do retrato pelo nome de quem fala (sem retrato proprio: o generico).</summary>
-        public static string IdFor(string speaker)
+        public static string IdDe(string falante)
         {
-            if (string.IsNullOrEmpty(speaker)) return Generic;
-            return ByName.TryGetValue(speaker.Trim().ToLowerInvariant(), out string id) ? id : Generic;
+            if (string.IsNullOrEmpty(falante)) return Generico;
+            return PorNome.TryGetValue(falante.Trim().ToLowerInvariant(), out string id) ? id : Generico;
         }
 
         /// <summary>O quadro do retrato (aberto ou piscando), ou null se o PNG nao existe.</summary>
-        public static Texture2D Get(string id, bool blink)
+        public static Texture2D Obter(string id, bool piscar)
         {
             if (string.IsNullOrEmpty(id)) return null;
 
-            string key = blink ? id + "_blink" : id;
-            if (Cache.TryGetValue(key, out Texture2D texture) && texture != null) return texture;
+            string chave = piscar ? id + "_blink" : id;
+            if (Cache.TryGetValue(chave, out Texture2D textura) && textura != null) return textura;
 
-            texture = Resources.Load<Texture2D>("Portraits/" + key);
-            if (texture == null && blink) texture = Get(id, false);
-            if (texture == null && id != Generic) texture = Get(Generic, blink);
+            textura = Resources.Load<Texture2D>("Portraits/" + chave);
+            if (textura == null && piscar) textura = Obter(id, false);
+            if (textura == null && id != Generico) textura = Obter(Generico, piscar);
 
-            Cache[key] = texture;
-            return texture;
+            Cache[chave] = textura;
+            return textura;
         }
 
         /// <summary>A cor do nome e das cantoneiras da caixa pra quem fala.</summary>
-        public static Color Accent(string id)
+        public static Color CorDeDestaque(string id)
         {
-            return id != null && Accents.TryGetValue(id, out Color color) ? color : DefaultAccent;
+            return id != null && Destaques.TryGetValue(id, out Color cor) ? cor : DestaquePadrao;
         }
 
-        private static Color Hex(int rgb)
+        private static Color CorHexadecimal(int rgb)
         {
             return new Color(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f);
         }

@@ -9,32 +9,32 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class HudNotice
     {
-        public static string Text { get; private set; }
+        public static string Texto2 { get; private set; }
 
-        private static float _until = -100f;
+        private static float _ate = -100f;
 
         /// <summary>Se ha um aviso na tela agora.</summary>
-        public static bool Showing => Text != null && Time.time < _until;
+        public static bool Mostrando => Texto2 != null && Time.time < _ate;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            Text = null;
-            _until = -100f;
+            Texto2 = null;
+            _ate = -100f;
         }
 
-        public static void Show(string text, float seconds = 5f)
+        public static void Mostrar(string texto, float segundos = 5f)
         {
             // Tilinta so com aviso novo de verdade: nao com o mesmo repetido a
             // cada quadro (o "segure E" do elevador), nem junto com o som da
             // coisa que acabou de ser pega.
-            bool fresh = !Showing || Text != text;
-            if (fresh && seconds >= 1f && !SfxPlayer.InterfaceSoundedWithin(0.2f)) Sfx.Notice.Play();
+            bool novo = !Mostrando || Texto2 != texto;
+            if (novo && segundos >= 1f && !SfxPlayer.InterfaceSoouHa(0.2f)) Sfx.Aviso.Tocar();
 
-            Text = text;
-            _until = Time.time + seconds;
+            Texto2 = texto;
+            _ate = Time.time + segundos;
         }
     }
 }

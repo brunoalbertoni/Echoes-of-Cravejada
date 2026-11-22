@@ -8,50 +8,50 @@ namespace EchoesOfCravejada
     /// </summary>
     public class ShockWave : MonoBehaviour
     {
-        private float _speed;
+        private float _velocidade;
         private float _minX;
         private float _maxX;
 
-        public static void Launch(Vector3 from, float speed, float minX, float maxX, Sprite sprite)
+        public static void Lancar(Vector3 de, float velocidade, float minX, float maxX, Sprite sprite)
         {
-            var wave = new GameObject("ShockWave");
-            wave.transform.position = from;
+            var onda = Prefabs.Criar("ShockWave");
+            onda.transform.position = de;
 
-            var renderer = wave.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            renderer.flipX = speed < 0f;
-            renderer.sortingLayerName = "Actors";
-            renderer.sortingOrder = 2;
+            var renderizador = Prefabs.Componente<SpriteRenderer>(onda);
+            renderizador.sprite = sprite;
+            renderizador.flipX = velocidade < 0f;
+            renderizador.sortingLayerName = "Actors";
+            renderizador.sortingOrder = 2;
 
-            var trigger = wave.AddComponent<BoxCollider2D>();
-            trigger.isTrigger = true;
-            trigger.size = new Vector2(0.9f, 0.6f);
-            trigger.offset = new Vector2(0f, 0.3f);
+            var gatilho = Prefabs.Componente<BoxCollider2D>(onda);
+            gatilho.isTrigger = true;
+            gatilho.size = new Vector2(0.9f, 0.6f);
+            gatilho.offset = new Vector2(0f, 0.3f);
 
-            var body = wave.AddComponent<Rigidbody2D>();
-            body.bodyType = RigidbodyType2D.Kinematic;
+            var corpo = Prefabs.Componente<Rigidbody2D>(onda);
+            corpo.bodyType = RigidbodyType2D.Kinematic;
 
             // As duas ondas da pancada saem no mesmo quadro: o cue nao dobra.
-            Sfx.ShockWave.Play(from);
+            Sfx.OndaChoque.Tocar(de);
 
-            var script = wave.AddComponent<ShockWave>();
-            script._speed = speed;
-            script._minX = minX;
-            script._maxX = maxX;
+            var roteiro = onda.AddComponent<ShockWave>();
+            roteiro._velocidade = velocidade;
+            roteiro._minX = minX;
+            roteiro._maxX = maxX;
         }
 
         private void Update()
         {
-            transform.position += Vector3.right * (_speed * Time.deltaTime);
+            transform.position += Vector3.right * (_velocidade * Time.deltaTime);
 
             float x = transform.position.x;
             if (x < _minX || x > _maxX) Destroy(gameObject);
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D outro)
         {
-            var health = other.GetComponentInParent<ScrapHealth>();
-            if (health != null) health.TakeDamage(1, transform.position);
+            var vida = outro.GetComponentInParent<ScrapHealth>();
+            if (vida != null) vida.LevarDano(1, transform.position);
         }
     }
 }

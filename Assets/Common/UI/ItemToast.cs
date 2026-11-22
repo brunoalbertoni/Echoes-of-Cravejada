@@ -8,7 +8,7 @@ namespace EchoesOfCravejada
     /// dele, solta um anel de brilho, fica um instante cintilando
     /// (acompanhando o Scrap, que continua andando) e some subindo.
     ///
-    /// O rubi cravado na bancada tem o seu proprio (<see cref="Socket"/>): o
+    /// O rubi cravado na bancada tem o seu proprio (<see cref="Encaixar"/>): o
     /// rubi aparece em cima, desce pra dentro do peito e o corpo acende em
     /// vermelho, com o estouro de faiscas.
     ///
@@ -16,310 +16,310 @@ namespace EchoesOfCravejada
     /// </summary>
     public class ItemToast : MonoBehaviour
     {
-        private const float Above = 2.1f;
-        private const float Size = 0.85f;
+        private const float Acima = 2.1f;
+        private const float Tamanho = 0.85f;
 
-        private static Sprite _ring;
-        private static Sprite _spark;
-        private static Sprite _ruby;
-        private static Sprite _shard;
+        private static Sprite _anel;
+        private static Sprite _faisca;
+        private static Sprite _rubi;
+        private static Sprite _fragmento;
 
-        private Transform _target;
+        private Transform _alvo;
         private SpriteRenderer _item;
         private SpriteRenderer _halo;
-        private SpriteRenderer _label;
-        private SpriteRenderer[] _sparks;
-        private SpriteRenderer[] _body;
-        private Color[] _bodyColors;
-        private Color _glow;
-        private float _baseScale;
-        private float _age;
-        private float _delay;
-        private bool _socket;
-        private bool _burst;
+        private SpriteRenderer _rotulo;
+        private SpriteRenderer[] _faiscas;
+        private SpriteRenderer[] _corpo;
+        private Color[] _coresCorpo;
+        private Color _brilho;
+        private float _escalaBase;
+        private float _idade;
+        private float _atraso;
+        private bool _encaixe;
+        private bool _rajada;
 
         /// <summary>O item ganho salta em cima do Scrap. glow: a cor do brilho.</summary>
-        public static void Show(Sprite sprite, Color glow)
+        public static void Mostrar(Sprite sprite, Color brilho)
         {
-            Spawn(sprite, glow, false, 0f);
+            Criar(sprite, brilho, false, 0f);
         }
 
         /// <summary>O mesmo, com "+N" ao lado do desenho (o cofre de fragmentos).</summary>
-        public static void Show(Sprite sprite, Color glow, int amount)
+        public static void Mostrar(Sprite sprite, Color brilho, int quantia)
         {
-            var toast = Spawn(sprite, glow, false, 0f);
-            if (toast != null && amount > 0) toast.AddCount(amount);
+            var aviso = Criar(sprite, brilho, false, 0f);
+            if (aviso != null && quantia > 0) aviso.SomarQuantidade(quantia);
         }
 
         /// <summary>O icone de fragmento do HUD.</summary>
-        public static Sprite ShardSprite()
+        public static Sprite SpriteDoFragmento()
         {
-            if (_shard != null) return _shard;
-            var texture = Resources.Load<Texture2D>("HudIcons/shard");
-            if (texture == null) return null;
-            _shard = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 32f);
-            return _shard;
+            if (_fragmento != null) return _fragmento;
+            var textura = Resources.Load<Texture2D>("HudIcons/shard");
+            if (textura == null) return null;
+            _fragmento = Sprite.Create(textura, new Rect(0, 0, textura.width, textura.height), new Vector2(0.5f, 0.5f), 32f);
+            return _fragmento;
         }
 
         /// <summary>O mesmo, desenhando um icone do HUD (o rubi bruto).</summary>
-        public static void ShowRuby()
+        public static void MostrarRubi()
         {
-            Spawn(RubySprite(), new Color(1f, 0.45f, 0.4f), false, 0f);
+            Criar(SpriteDoRubi(), new Color(1f, 0.45f, 0.4f), false, 0f);
         }
 
         /// <summary>
         /// O rubi sendo cravado: espera a gravura da bancada sair do meio da
         /// tela (e nao entra na foto) e entao desce pro peito do Scrap.
         /// </summary>
-        public static void Socket(float delay)
+        public static void Encaixar(float atraso)
         {
-            Spawn(RubySprite(), new Color(1f, 0.3f, 0.28f), true, delay);
+            Criar(SpriteDoRubi(), new Color(1f, 0.3f, 0.28f), true, atraso);
         }
 
-        private static ItemToast Spawn(Sprite sprite, Color glow, bool socket, float delay)
+        private static ItemToast Criar(Sprite sprite, Color brilho, bool encaixe, float atraso)
         {
             if (sprite == null) return null;
 
-            ScrapController scrap = FindAnyObjectByType<ScrapController>();
-            if (scrap == null) return null;
+            ScrapController sucata = ScrapRef.Controlador;
+            if (sucata == null) return null;
 
-            var root = new GameObject(socket ? "RubySocketFx" : "ItemToast");
-            var toast = root.AddComponent<ItemToast>();
-            toast.Setup(scrap.transform, sprite, glow, socket, delay);
-            return toast;
+            var raiz = new GameObject(encaixe ? "RubySocketFx" : "ItemToast");
+            var aviso = raiz.AddComponent<ItemToast>();
+            aviso.Montar(sucata.transform, sprite, brilho, encaixe, atraso);
+            return aviso;
         }
 
         /// <summary>
         /// Poe o "+N" em pixel a esquerda do desenho. Fica filho do item, entao
         /// salta, cresce e some junto com ele.
         /// </summary>
-        private void AddCount(int amount)
+        private void SomarQuantidade(int quantia)
         {
-            Sprite count = CountSprite("+" + amount);
-            var child = new GameObject("Count");
-            child.transform.SetParent(_item.transform, false);
-            _label = child.AddComponent<SpriteRenderer>();
-            _label.sprite = count;
-            _label.sortingLayerName = "Actors";
-            _label.sortingOrder = 32;
+            Sprite quantidade = SpriteDaQuantidade("+" + quantia);
+            var filho = new GameObject("Count");
+            filho.transform.SetParent(_item.transform, false);
+            _rotulo = filho.AddComponent<SpriteRenderer>();
+            _rotulo.sprite = quantidade;
+            _rotulo.sortingLayerName = "Actors";
+            _rotulo.sortingOrder = 32;
 
-            const float gap = 2f / 32f;
+            const float espaco = 2f / 32f;
             float itemW = _item.sprite.rect.width / _item.sprite.pixelsPerUnit;
-            float labelW = count.rect.width / 32f;
-            child.transform.localPosition = new Vector3(-(itemW + labelW) * 0.5f - gap, 0f, 0f);
+            float rotuloW = quantidade.rect.width / 32f;
+            filho.transform.localPosition = new Vector3(-(itemW + rotuloW) * 0.5f - espaco, 0f, 0f);
             // O conjunto todo fica centrado sobre a cabeca.
-            _item.transform.localPosition = new Vector3((labelW + gap) * 0.5f * _baseScale, 0f, 0f);
+            _item.transform.localPosition = new Vector3((rotuloW + espaco) * 0.5f * _escalaBase, 0f, 0f);
         }
 
         // Algarismos 3x5, uma linha por string, de cima pra baixo.
-        private static readonly string[] Glyphs =
+        private static readonly string[] Glifos =
         {
             "111101101101111", "010110010010111", "111001111100111", "111001111001111", "101101111001001",
             "111100111001111", "111100111101111", "111001001001001", "111101111101111", "111101111001111",
         };
-        private const string Plus = "000010111010000";
+        private const string Mais = "000010111010000";
 
         /// <summary>O texto em pixel, claro com contorno escuro, no padrao do HUD.</summary>
-        private static Sprite CountSprite(string text)
+        private static Sprite SpriteDaQuantidade(string texto)
         {
-            int w = text.Length * 4 - 1 + 2, h = 5 + 2;
-            var texture = new Texture2D(w, h, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
-            var fill = new bool[w, h];
-            for (int c = 0; c < text.Length; c++)
+            int w = texto.Length * 4 - 1 + 2, h = 5 + 2;
+            var textura = new Texture2D(w, h, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Clamp };
+            var preenchimento = new bool[w, h];
+            for (int c = 0; c < texto.Length; c++)
             {
-                string g = text[c] == '+' ? Plus : Glyphs[text[c] - '0'];
+                string g = texto[c] == '+' ? Mais : Glifos[texto[c] - '0'];
                 for (int gy = 0; gy < 5; gy++)
                     for (int gx = 0; gx < 3; gx++)
-                        if (g[gy * 3 + gx] == '1') fill[1 + c * 4 + gx, h - 2 - gy] = true;
+                        if (g[gy * 3 + gx] == '1') preenchimento[1 + c * 4 + gx, h - 2 - gy] = true;
             }
 
-            var ink = new Color(1f, 0.93f, 0.7f);
-            var edge = new Color(0.12f, 0.08f, 0.06f, 1f);
+            var tinta = new Color(1f, 0.93f, 0.7f);
+            var beirada = new Color(0.12f, 0.08f, 0.06f, 1f);
             for (int y = 0; y < h; y++)
                 for (int x = 0; x < w; x++)
                 {
-                    bool near = false;
-                    for (int dy = -1; dy <= 1 && !near; dy++)
-                        for (int dx = -1; dx <= 1 && !near; dx++)
+                    bool perto = false;
+                    for (int dy = -1; dy <= 1 && !perto; dy++)
+                        for (int dx = -1; dx <= 1 && !perto; dx++)
                         {
                             int nx = x + dx, ny = y + dy;
-                            near = nx >= 0 && ny >= 0 && nx < w && ny < h && fill[nx, ny];
+                            perto = nx >= 0 && ny >= 0 && nx < w && ny < h && preenchimento[nx, ny];
                         }
-                    texture.SetPixel(x, y, fill[x, y] ? ink : near ? edge : Color.clear);
+                    textura.SetPixel(x, y, preenchimento[x, y] ? tinta : perto ? beirada : Color.clear);
                 }
 
-            texture.Apply();
-            return Sprite.Create(texture, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 32f);
+            textura.Apply();
+            return Sprite.Create(textura, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 32f);
         }
 
-        private void Setup(Transform target, Sprite sprite, Color glow, bool socket, float delay)
+        private void Montar(Transform alvo, Sprite sprite, Color brilho, bool encaixe, float atraso)
         {
-            _target = target;
-            _glow = glow;
-            _socket = socket;
-            _delay = delay;
-            transform.position = target.position + Vector3.up * Above;
+            _alvo = alvo;
+            _brilho = brilho;
+            _encaixe = encaixe;
+            _atraso = atraso;
+            transform.position = alvo.position + Vector3.up * Acima;
 
-            _halo = Layer("Halo", Ring(), 30);
+            _halo = Camada("Halo", Anel(), 30);
             _halo.color = Color.clear;
 
-            _item = Layer("Item", sprite, 32);
+            _item = Camada("Item", sprite, 32);
             // Cresce em passos inteiros de pixel, pra nao entortar o desenho.
             float pixels = Mathf.Max(1f, Mathf.Max(sprite.rect.width, sprite.rect.height));
-            _baseScale = Mathf.Max(1f, Mathf.Floor(Size * 32f / pixels)) * sprite.pixelsPerUnit / 32f;
+            _escalaBase = Mathf.Max(1f, Mathf.Floor(Tamanho * 32f / pixels)) * sprite.pixelsPerUnit / 32f;
             _item.transform.localScale = Vector3.zero;
 
-            _sparks = new SpriteRenderer[socket ? 10 : 4];
-            for (int i = 0; i < _sparks.Length; i++)
+            _faiscas = new SpriteRenderer[encaixe ? 10 : 4];
+            for (int i = 0; i < _faiscas.Length; i++)
             {
-                _sparks[i] = Layer("Spark" + i, Spark(), 33);
-                _sparks[i].color = Color.clear;
+                _faiscas[i] = Camada("Spark" + i, Faisca(), 33);
+                _faiscas[i].color = Color.clear;
             }
 
-            if (socket)
+            if (encaixe)
             {
-                _body = target.GetComponentsInChildren<SpriteRenderer>();
-                _bodyColors = new Color[_body.Length];
-                for (int i = 0; i < _body.Length; i++) _bodyColors[i] = _body[i].color;
+                _corpo = alvo.GetComponentsInChildren<SpriteRenderer>();
+                _coresCorpo = new Color[_corpo.Length];
+                for (int i = 0; i < _corpo.Length; i++) _coresCorpo[i] = _corpo[i].color;
             }
         }
 
-        private SpriteRenderer Layer(string name, Sprite sprite, int order)
+        private SpriteRenderer Camada(string nome, Sprite sprite, int ordem)
         {
-            var child = new GameObject(name);
-            child.transform.SetParent(transform, false);
-            var renderer = child.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            renderer.sortingLayerName = "Actors";
-            renderer.sortingOrder = order;
-            return renderer;
+            var filho = new GameObject(nome);
+            filho.transform.SetParent(transform, false);
+            var renderizador = filho.AddComponent<SpriteRenderer>();
+            renderizador.sprite = sprite;
+            renderizador.sortingLayerName = "Actors";
+            renderizador.sortingOrder = ordem;
+            return renderizador;
         }
 
         private void LateUpdate()
         {
-            if (_target == null)
+            if (_alvo == null)
             {
                 Destroy(gameObject);
                 return;
             }
 
             // Com conversa ou loja na tela, espera: o efeito e pra ser visto.
-            if (Npc.Talking != null || Crisol.ShopOpen != null || ScriptedDialogue.Active) return;
+            if (Npc.Conversando != null || Crisol.AbertoLoja != null || ScriptedDialogue.Ativo) return;
 
-            if (_delay > 0f)
+            if (_atraso > 0f)
             {
-                _delay -= Time.deltaTime;
-                if (_delay > 0f) return;
+                _atraso -= Time.deltaTime;
+                if (_atraso > 0f) return;
             }
 
-            _age += Time.deltaTime;
-            if (_socket) SocketStep();
-            else ToastStep();
+            _idade += Time.deltaTime;
+            if (_encaixe) PassoDoEncaixe();
+            else PassoDoAviso();
         }
 
         // ------------------------------------------------------------------
         // O item ganho: salta, brilha, cintila e some subindo.
         // ------------------------------------------------------------------
 
-        private void ToastStep()
+        private void PassoDoAviso()
         {
-            const float pop = 0.32f, leave = 1.55f, gone = 1.95f;
+            const float estalo = 0.32f, sair = 1.55f, sumido = 1.95f;
 
-            float rise = EaseOut(Mathf.Clamp01(_age / pop));
-            float y = Mathf.Lerp(0.7f, Above, rise);
-            float scale = _age < pop ? Back(_age / pop) : 1f;
+            float subida = SuavizarSaida(Mathf.Clamp01(_idade / estalo));
+            float y = Mathf.Lerp(0.7f, Acima, subida);
+            float escalaAtual = _idade < estalo ? VoltarSuave(_idade / estalo) : 1f;
 
-            float fade = 1f;
-            if (_age > leave)
+            float esmaecimento = 1f;
+            if (_idade > sair)
             {
-                float t = Mathf.Clamp01((_age - leave) / (gone - leave));
+                float t = Mathf.Clamp01((_idade - sair) / (sumido - sair));
                 y += t * 0.5f;
-                scale *= 1f - t * 0.6f;
-                fade = 1f - t;
+                escalaAtual *= 1f - t * 0.6f;
+                esmaecimento = 1f - t;
             }
 
             // Bobeia meio pixel pra cima e pra baixo, em degrau de pixel.
-            if (_age > pop && _age < leave) y += Mathf.Round(Mathf.Sin((_age - pop) * 5f) * 1.5f) / 32f;
+            if (_idade > estalo && _idade < sair) y += Mathf.Round(Mathf.Sin((_idade - estalo) * 5f) * 1.5f) / 32f;
 
-            transform.position = _target.position + Vector3.up * y;
-            _item.transform.localScale = Vector3.one * _baseScale * scale;
-            _item.color = new Color(1f, 1f, 1f, fade);
-            if (_label != null) _label.color = new Color(1f, 1f, 1f, fade);
+            transform.position = _alvo.position + Vector3.up * y;
+            _item.transform.localScale = Vector3.one * _escalaBase * escalaAtual;
+            _item.color = new Color(1f, 1f, 1f, esmaecimento);
+            if (_rotulo != null) _rotulo.color = new Color(1f, 1f, 1f, esmaecimento);
 
-            Halo(_age - pop * 0.7f, 0.45f, 0.6f, 1.7f);
-            Twinkle(fade, 0.55f);
+            Aureola(_idade - estalo * 0.7f, 0.45f, 0.6f, 1.7f);
+            Reluzir(esmaecimento, 0.55f);
 
-            if (_age >= gone) Destroy(gameObject);
+            if (_idade >= sumido) Destroy(gameObject);
         }
 
         // ------------------------------------------------------------------
         // O rubi cravado: aparece, desce pro peito, o corpo acende.
         // ------------------------------------------------------------------
 
-        private void SocketStep()
+        private void PassoDoEncaixe()
         {
-            const float pop = 0.3f, hold = 0.75f, sink = 1.05f, flashEnd = 1.5f, gone = 1.7f;
+            const float estalo = 0.3f, segurar = 0.75f, afundar = 1.05f, fimClarao = 1.5f, sumido = 1.7f;
 
             float y;
-            float scale;
-            float alpha = 1f;
+            float escalaAtual;
+            float alfa = 1f;
 
-            if (_age < pop)
+            if (_idade < estalo)
             {
-                y = Mathf.Lerp(Above + 0.5f, Above, EaseOut(_age / pop));
-                scale = Back(_age / pop);
+                y = Mathf.Lerp(Acima + 0.5f, Acima, SuavizarSaida(_idade / estalo));
+                escalaAtual = VoltarSuave(_idade / estalo);
             }
-            else if (_age < hold)
+            else if (_idade < segurar)
             {
-                y = Above + Mathf.Round(Mathf.Sin((_age - pop) * 6f) * 1.5f) / 32f;
-                scale = 1f;
+                y = Acima + Mathf.Round(Mathf.Sin((_idade - estalo) * 6f) * 1.5f) / 32f;
+                escalaAtual = 1f;
             }
-            else if (_age < sink)
+            else if (_idade < afundar)
             {
-                float t = (_age - hold) / (sink - hold);
-                y = Mathf.Lerp(Above, 0.75f, t * t);
-                scale = 1f - t * 0.7f;
+                float t = (_idade - segurar) / (afundar - segurar);
+                y = Mathf.Lerp(Acima, 0.75f, t * t);
+                escalaAtual = 1f - t * 0.7f;
             }
             else
             {
                 y = 0.75f;
-                scale = 0f;
-                alpha = 0f;
+                escalaAtual = 0f;
+                alfa = 0f;
             }
 
-            transform.position = _target.position + Vector3.up * y;
-            _item.transform.localScale = Vector3.one * _baseScale * scale;
-            _item.color = new Color(1f, 1f, 1f, alpha);
+            transform.position = _alvo.position + Vector3.up * y;
+            _item.transform.localScale = Vector3.one * _escalaBase * escalaAtual;
+            _item.color = new Color(1f, 1f, 1f, alfa);
 
-            if (_age >= sink && !_burst)
+            if (_idade >= afundar && !_rajada)
             {
-                _burst = true;
-                Sfx.Gem.Play();
-                ScrapCameraFollow.Shake(0.05f, 0.12f);
+                _rajada = true;
+                Sfx.Gema.Tocar();
+                ScrapCameraFollow.Tremer(0.05f, 0.12f);
             }
 
             // O estouro: o anel grande, as faiscas pra fora e o corpo em vermelho.
-            Halo(_age - sink, 0.5f, 0.4f, 3.2f);
-            if (_age >= sink) Burst(_age - sink, 0.6f);
+            Aureola(_idade - afundar, 0.5f, 0.4f, 3.2f);
+            if (_idade >= afundar) Estourar(_idade - afundar, 0.6f);
 
-            float flash = _age >= sink ? 1f - Mathf.Clamp01((_age - sink) / (flashEnd - sink)) : 0f;
-            for (int i = 0; i < _body.Length; i++)
+            float clarao = _idade >= afundar ? 1f - Mathf.Clamp01((_idade - afundar) / (fimClarao - afundar)) : 0f;
+            for (int i = 0; i < _corpo.Length; i++)
             {
-                if (_body[i] == null) continue;
-                _body[i].color = Color.Lerp(_bodyColors[i], new Color(1f, 0.35f, 0.32f, _bodyColors[i].a), flash * 0.85f);
+                if (_corpo[i] == null) continue;
+                _corpo[i].color = Color.Lerp(_coresCorpo[i], new Color(1f, 0.35f, 0.32f, _coresCorpo[i].a), clarao * 0.85f);
             }
 
-            if (_age >= gone)
+            if (_idade >= sumido)
             {
-                for (int i = 0; i < _body.Length; i++) if (_body[i] != null) _body[i].color = _bodyColors[i];
+                for (int i = 0; i < _corpo.Length; i++) if (_corpo[i] != null) _corpo[i].color = _coresCorpo[i];
                 Destroy(gameObject);
             }
         }
 
         private void OnDestroy()
         {
-            if (_body == null) return;
-            for (int i = 0; i < _body.Length; i++) if (_body[i] != null) _body[i].color = _bodyColors[i];
+            if (_corpo == null) return;
+            for (int i = 0; i < _corpo.Length; i++) if (_corpo[i] != null) _corpo[i].color = _coresCorpo[i];
         }
 
         // ------------------------------------------------------------------
@@ -327,51 +327,51 @@ namespace EchoesOfCravejada
         // ------------------------------------------------------------------
 
         /// <summary>O anel que abre uma vez em volta do item e some.</summary>
-        private void Halo(float t, float length, float from, float to)
+        private void Aureola(float t, float comprimento, float de, float to)
         {
-            if (t < 0f || t > length)
+            if (t < 0f || t > comprimento)
             {
                 _halo.color = Color.clear;
                 return;
             }
 
-            float k = t / length;
-            _halo.transform.localScale = Vector3.one * Mathf.Lerp(from, to, EaseOut(k));
-            _halo.color = new Color(_glow.r, _glow.g, _glow.b, 1f - k);
+            float k = t / comprimento;
+            _halo.transform.localScale = Vector3.one * Mathf.Lerp(de, to, SuavizarSaida(k));
+            _halo.color = new Color(_brilho.r, _brilho.g, _brilho.b, 1f - k);
         }
 
         /// <summary>As cruzinhas que piscam em volta do item, cada uma na sua vez.</summary>
-        private void Twinkle(float fade, float radius)
+        private void Reluzir(float esmaecimento, float raioArea)
         {
-            for (int i = 0; i < _sparks.Length; i++)
+            for (int i = 0; i < _faiscas.Length; i++)
             {
-                float phase = _age * 2.2f + i * 0.25f;
-                float on = Mathf.Repeat(phase, 1f);
+                float fase = _idade * 2.2f + i * 0.25f;
+                float on = Mathf.Repeat(fase, 1f);
                 float a = on < 0.35f ? Mathf.Sin(on / 0.35f * Mathf.PI) : 0f;
-                float angle = i * Mathf.PI * 0.5f + 0.6f + Mathf.Floor(phase) * 1.3f;
-                Vector3 offset = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * radius;
-                _sparks[i].transform.localPosition = Snap(offset);
-                _sparks[i].color = Color.Lerp(Color.white, _glow, 0.4f) * new Color(1f, 1f, 1f, a * fade * (_age > 0.2f ? 1f : 0f));
+                float angulo = i * Mathf.PI * 0.5f + 0.6f + Mathf.Floor(fase) * 1.3f;
+                Vector3 deslocamento = new Vector3(Mathf.Cos(angulo), Mathf.Sin(angulo), 0f) * raioArea;
+                _faiscas[i].transform.localPosition = AlinharAoPixel(deslocamento);
+                _faiscas[i].color = Color.Lerp(Color.white, _brilho, 0.4f) * new Color(1f, 1f, 1f, a * esmaecimento * (_idade > 0.2f ? 1f : 0f));
             }
         }
 
         /// <summary>As faiscas voando pra fora do peito.</summary>
-        private void Burst(float t, float length)
+        private void Estourar(float t, float comprimento)
         {
-            float k = Mathf.Clamp01(t / length);
-            for (int i = 0; i < _sparks.Length; i++)
+            float k = Mathf.Clamp01(t / comprimento);
+            for (int i = 0; i < _faiscas.Length; i++)
             {
-                float angle = i * Mathf.PI * 2f / _sparks.Length + 0.3f;
-                float reach = Mathf.Lerp(0.2f, 1.3f + (i % 3) * 0.2f, EaseOut(k));
-                _sparks[i].transform.localPosition = Snap(new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * reach);
-                _sparks[i].color = Color.Lerp(new Color(1f, 0.9f, 0.8f), _glow, k) * new Color(1f, 1f, 1f, 1f - k);
+                float angulo = i * Mathf.PI * 2f / _faiscas.Length + 0.3f;
+                float alcanceGolpe = Mathf.Lerp(0.2f, 1.3f + (i % 3) * 0.2f, SuavizarSaida(k));
+                _faiscas[i].transform.localPosition = AlinharAoPixel(new Vector3(Mathf.Cos(angulo), Mathf.Sin(angulo), 0f) * alcanceGolpe);
+                _faiscas[i].color = Color.Lerp(new Color(1f, 0.9f, 0.8f), _brilho, k) * new Color(1f, 1f, 1f, 1f - k);
             }
         }
 
-        private static Vector3 Snap(Vector3 v) => new Vector3(Mathf.Round(v.x * 32f) / 32f, Mathf.Round(v.y * 32f) / 32f, 0f);
-        private static float EaseOut(float t) => 1f - (1f - t) * (1f - t);
+        private static Vector3 AlinharAoPixel(Vector3 v) => new Vector3(Mathf.Round(v.x * 32f) / 32f, Mathf.Round(v.y * 32f) / 32f, 0f);
+        private static float SuavizarSaida(float t) => 1f - (1f - t) * (1f - t);
 
-        private static float Back(float t)
+        private static float VoltarSuave(float t)
         {
             t = Mathf.Clamp01(t);
             const float s = 1.9f;
@@ -383,55 +383,55 @@ namespace EchoesOfCravejada
         // As texturas do brilho, desenhadas uma vez em codigo
         // ------------------------------------------------------------------
 
-        private static Sprite Ring()
+        private static Sprite Anel()
         {
-            if (_ring != null) return _ring;
+            if (_anel != null) return _anel;
 
-            const int size = 32;
-            var texture = NewTexture(size);
-            for (int y = 0; y < size; y++)
-                for (int x = 0; x < size; x++)
+            const int tamanho = 32;
+            var textura = NovaTextura(tamanho);
+            for (int y = 0; y < tamanho; y++)
+                for (int x = 0; x < tamanho; x++)
                 {
-                    float dx = x + 0.5f - size * 0.5f, dy = y + 0.5f - size * 0.5f;
+                    float dx = x + 0.5f - tamanho * 0.5f, dy = y + 0.5f - tamanho * 0.5f;
                     float d = Mathf.Sqrt(dx * dx + dy * dy);
-                    texture.SetPixel(x, y, d > 13f && d < 15f ? Color.white : Color.clear);
+                    textura.SetPixel(x, y, d > 13f && d < 15f ? Color.white : Color.clear);
                 }
 
-            texture.Apply();
-            _ring = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 32f);
-            return _ring;
+            textura.Apply();
+            _anel = Sprite.Create(textura, new Rect(0, 0, tamanho, tamanho), new Vector2(0.5f, 0.5f), 32f);
+            return _anel;
         }
 
-        private static Sprite Spark()
+        private static Sprite Faisca()
         {
-            if (_spark != null) return _spark;
+            if (_faisca != null) return _faisca;
 
-            var texture = NewTexture(5);
+            var textura = NovaTextura(5);
             for (int y = 0; y < 5; y++)
                 for (int x = 0; x < 5; x++)
-                    texture.SetPixel(x, y, (x == 2 || y == 2) ? Color.white : Color.clear);
-            texture.SetPixel(0, 2, new Color(1f, 1f, 1f, 0.5f));
-            texture.SetPixel(4, 2, new Color(1f, 1f, 1f, 0.5f));
-            texture.SetPixel(2, 0, new Color(1f, 1f, 1f, 0.5f));
-            texture.SetPixel(2, 4, new Color(1f, 1f, 1f, 0.5f));
-            texture.Apply();
-            _spark = Sprite.Create(texture, new Rect(0, 0, 5, 5), new Vector2(0.5f, 0.5f), 32f);
-            return _spark;
+                    textura.SetPixel(x, y, (x == 2 || y == 2) ? Color.white : Color.clear);
+            textura.SetPixel(0, 2, new Color(1f, 1f, 1f, 0.5f));
+            textura.SetPixel(4, 2, new Color(1f, 1f, 1f, 0.5f));
+            textura.SetPixel(2, 0, new Color(1f, 1f, 1f, 0.5f));
+            textura.SetPixel(2, 4, new Color(1f, 1f, 1f, 0.5f));
+            textura.Apply();
+            _faisca = Sprite.Create(textura, new Rect(0, 0, 5, 5), new Vector2(0.5f, 0.5f), 32f);
+            return _faisca;
         }
 
-        private static Sprite RubySprite()
+        private static Sprite SpriteDoRubi()
         {
-            if (_ruby != null) return _ruby;
+            if (_rubi != null) return _rubi;
 
-            var texture = Resources.Load<Texture2D>("HudIcons/gem");
-            if (texture == null) return null;
-            _ruby = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 32f);
-            return _ruby;
+            var textura = Resources.Load<Texture2D>("HudIcons/gem");
+            if (textura == null) return null;
+            _rubi = Sprite.Create(textura, new Rect(0, 0, textura.width, textura.height), new Vector2(0.5f, 0.5f), 32f);
+            return _rubi;
         }
 
-        private static Texture2D NewTexture(int size)
+        private static Texture2D NovaTextura(int tamanho)
         {
-            return new Texture2D(size, size, TextureFormat.RGBA32, false)
+            return new Texture2D(tamanho, tamanho, TextureFormat.RGBA32, false)
             {
                 filterMode = FilterMode.Point,
                 wrapMode = TextureWrapMode.Clamp,

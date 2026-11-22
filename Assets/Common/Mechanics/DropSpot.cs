@@ -9,38 +9,38 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class DropSpot
     {
-        private const float Step = 0.25f;
-        private const float Reach = 10f;
-        private static readonly Collider2D[] Hits = new Collider2D[16];
+        private const float Passo2 = 0.25f;
+        private const float Alcance = 10f;
+        private static readonly Collider2D[] Golpes = new Collider2D[16];
 
-        public static Vector3 Free(Vector3 position, float radius = 0.6f)
+        public static Vector3 PontoLivre(Vector3 posicao, float raioArea = 0.6f)
         {
-            if (IsFree(position, radius)) return position;
+            if (EstaLivre(posicao, raioArea)) return posicao;
 
-            for (float d = Step; d <= Reach; d += Step)
+            for (float d = Passo2; d <= Alcance; d += Passo2)
             {
-                Vector3 left = position + Vector3.left * d;
-                if (IsFree(left, radius)) return left;
-                Vector3 right = position + Vector3.right * d;
-                if (IsFree(right, radius)) return right;
-                Vector3 up = position + Vector3.up * d;
-                if (IsFree(up, radius)) return up;
+                Vector3 esquerda = posicao + Vector3.left * d;
+                if (EstaLivre(esquerda, raioArea)) return esquerda;
+                Vector3 direita = posicao + Vector3.right * d;
+                if (EstaLivre(direita, raioArea)) return direita;
+                Vector3 up = posicao + Vector3.up * d;
+                if (EstaLivre(up, raioArea)) return up;
             }
 
-            return position;
+            return posicao;
         }
 
-        private static bool IsFree(Vector3 position, float radius)
+        private static bool EstaLivre(Vector3 posicao, float raioArea)
         {
-            int count = Physics2D.OverlapCircleNonAlloc(position, radius, Hits);
-            for (int i = 0; i < count; i++)
+            int quantidade = Physics2D.OverlapCircleNonAlloc(posicao, raioArea, Golpes);
+            for (int i = 0; i < quantidade; i++)
             {
-                Collider2D hit = Hits[i];
-                if (hit == null || hit.isTrigger) continue;
+                Collider2D golpe = Golpes[i];
+                if (golpe == null || golpe.isTrigger) continue;
                 // Quem se mexe (o Scrap, inimigos, o chefe) nao e parede.
-                Rigidbody2D body = hit.attachedRigidbody;
-                if (body != null && body.bodyType == RigidbodyType2D.Dynamic) continue;
-                if (hit.GetComponentInParent<ScrapController>() != null) continue;
+                Rigidbody2D corpo = golpe.attachedRigidbody;
+                if (corpo != null && corpo.bodyType == RigidbodyType2D.Dynamic) continue;
+                if (golpe.GetComponentInParent<ScrapController>() != null) continue;
                 return false;
             }
 

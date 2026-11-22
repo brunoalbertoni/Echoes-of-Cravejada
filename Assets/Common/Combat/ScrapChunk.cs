@@ -8,59 +8,59 @@ namespace EchoesOfCravejada
     /// </summary>
     public class ScrapChunk : MonoBehaviour
     {
-        private Vector2 _velocity;
-        private float _gravity;
-        private float _floorY;
-        private float _age;
+        private Vector2 _velocidadeVetor;
+        private float _gravidade;
+        private float _chaoY;
+        private float _idade;
 
-        public static void Throw(Vector3 from, Vector2 velocity, float gravity, float floorY, Sprite sprite)
+        public static void Arremessar(Vector3 de, Vector2 velocidadeVetorial, float gravidade, float chaoY, Sprite sprite)
         {
-            var chunk = new GameObject("ScrapChunk");
-            chunk.transform.position = from;
+            var pedaco = Prefabs.Criar("ScrapChunk");
+            pedaco.transform.position = de;
 
-            var renderer = chunk.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            renderer.sortingLayerName = "Actors";
-            renderer.sortingOrder = 2;
+            var renderizador = Prefabs.Componente<SpriteRenderer>(pedaco);
+            renderizador.sprite = sprite;
+            renderizador.sortingLayerName = "Actors";
+            renderizador.sortingOrder = 2;
 
-            var trigger = chunk.AddComponent<CircleCollider2D>();
-            trigger.isTrigger = true;
-            trigger.radius = 0.3f;
+            var gatilho = Prefabs.Componente<CircleCollider2D>(pedaco);
+            gatilho.isTrigger = true;
+            gatilho.radius = 0.3f;
 
-            var body = chunk.AddComponent<Rigidbody2D>();
-            body.bodyType = RigidbodyType2D.Kinematic;
+            var corpo = Prefabs.Componente<Rigidbody2D>(pedaco);
+            corpo.bodyType = RigidbodyType2D.Kinematic;
 
-            var script = chunk.AddComponent<ScrapChunk>();
-            script._velocity = velocity;
-            script._gravity = gravity;
-            script._floorY = floorY;
+            var roteiro = pedaco.AddComponent<ScrapChunk>();
+            roteiro._velocidadeVetor = velocidadeVetorial;
+            roteiro._gravidade = gravidade;
+            roteiro._chaoY = chaoY;
         }
 
         private void Update()
         {
-            _age += Time.deltaTime;
-            _velocity.y -= _gravity * Time.deltaTime;
+            _idade += Time.deltaTime;
+            _velocidadeVetor.y -= _gravidade * Time.deltaTime;
 
-            transform.position += (Vector3)(_velocity * Time.deltaTime);
+            transform.position += (Vector3)(_velocidadeVetor * Time.deltaTime);
             transform.Rotate(0f, 0f, 360f * Time.deltaTime);
 
-            if (transform.position.y <= _floorY)
+            if (transform.position.y <= _chaoY)
             {
-                Sfx.ChunkLand.Play(transform.position);
+                Sfx.PousarPedaco.Tocar(transform.position);
                 Destroy(gameObject);
             }
-            else if (_age > 5f)
+            else if (_idade > 5f)
             {
                 Destroy(gameObject);
             }
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D outro)
         {
-            var health = other.GetComponentInParent<ScrapHealth>();
-            if (health == null) return;
+            var vida = outro.GetComponentInParent<ScrapHealth>();
+            if (vida == null) return;
 
-            health.TakeDamage(1, transform.position);
+            vida.LevarDano(1, transform.position);
             Destroy(gameObject);
         }
     }

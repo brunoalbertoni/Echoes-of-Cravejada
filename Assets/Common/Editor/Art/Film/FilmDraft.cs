@@ -20,9 +20,9 @@ namespace EchoesOfCravejada.EditorTools
         {
             var shot = new FilmShot
             {
-                name = name,
-                duration = duration,
-                background = 0xFF000000u | (uint)background.R << 16 | (uint)background.G << 8 | background.B,
+                nome = name,
+                duracao = duration,
+                fundo = 0xFF000000u | (uint)background.R << 16 | (uint)background.G << 8 | background.B,
             };
             Shots.Add(shot);
             return new ShotDraft(this, shot);
@@ -59,7 +59,7 @@ namespace EchoesOfCravejada.EditorTools
             get
             {
                 float total = 0f;
-                foreach (FilmShot s in Shots) total += s.duration;
+                foreach (FilmShot s in Shots) total += s.duracao;
                 return total;
             }
         }
@@ -85,16 +85,16 @@ namespace EchoesOfCravejada.EditorTools
         }
 
         public FilmShot Shot => _shot;
-        public float Duration => _shot.duration;
+        public float Duration => _shot.duracao;
 
         private void Sync()
         {
-            _shot.layers = _layers.ToArray();
+            _shot.camadas = _layers.ToArray();
             _shot.camera = _cams.Count > 0 ? _cams.ToArray() : new[] { new FilmCam(0f, 160f, 90f) };
-            _shot.shakes = _shakes.ToArray();
-            _shot.flashes = _flashes.ToArray();
-            _shot.sprays = _sprays.ToArray();
-            _shot.cues = _cues.ToArray();
+            _shot.tremores = _shakes.ToArray();
+            _shot.claroes = _flashes.ToArray();
+            _shot.jatos = _sprays.ToArray();
+            _shot.deixas = _cues.ToArray();
         }
 
         /// <summary>Uma camada parada (um quadro) com o pivo em (x, y) do palco.</summary>
@@ -117,9 +117,9 @@ namespace EchoesOfCravejada.EditorTools
 
             var layer = new FilmLayer
             {
-                name = name, firstFrame = first, frameCount = frames.Length, fps = fps, animStart = start, loop = loop,
-                parallax = parallax, pivotX = pivotX, pivotY = pivotY, additive = additive,
-                keys = new[] { new FilmKey(0f, x, y) },
+                nome = name, primeiroQuadro = first, quantidadeQuadro = frames.Length, qps = fps, inicioAnim = start, repeticao = loop,
+                paralaxe = parallax, pivoX = pivotX, pivoY = pivotY, aditivo = additive,
+                chaves = new[] { new FilmKey(0f, x, y) },
             };
             _layers.Add(layer);
             Sync();
@@ -131,9 +131,9 @@ namespace EchoesOfCravejada.EditorTools
         {
             var layer = new FilmLayer
             {
-                name = name, firstFrame = source.firstFrame, frameCount = source.frameCount, fps = source.fps,
-                animStart = source.animStart, loop = source.loop, parallax = parallax, pivotX = source.pivotX,
-                pivotY = source.pivotY, additive = additive, keys = new[] { new FilmKey(0f, x, y) },
+                nome = name, primeiroQuadro = source.primeiroQuadro, quantidadeQuadro = source.quantidadeQuadro, qps = source.qps,
+                inicioAnim = source.inicioAnim, repeticao = source.repeticao, paralaxe = parallax, pivoX = source.pivoX,
+                pivoY = source.pivoY, aditivo = additive, chaves = new[] { new FilmKey(0f, x, y) },
             };
             _layers.Add(layer);
             Sync();
@@ -166,9 +166,9 @@ namespace EchoesOfCravejada.EditorTools
         {
             var spray = new FilmSpray
             {
-                shape = shape, x = x, y = y, w = w, h = h, from = from, to = to, rate = rate, life = life, seed = seed,
-                color = (uint)color.A << 24 | (uint)color.R << 16 | (uint)color.G << 8 | color.B,
-                color2 = (uint)color2.A << 24 | (uint)color2.R << 16 | (uint)color2.G << 8 | color2.B,
+                forma = shape, x = x, y = y, w = w, h = h, from = from, to = to, rate = rate, duracaoVida = life, semente = seed,
+                cor = (uint)color.A << 24 | (uint)color.R << 16 | (uint)color.G << 8 | color.B,
+                cor2 = (uint)color2.A << 24 | (uint)color2.R << 16 | (uint)color2.G << 8 | color2.B,
             };
             _sprays.Add(spray);
             Sync();
@@ -184,14 +184,14 @@ namespace EchoesOfCravejada.EditorTools
 
         public ShotDraft Fades(float fadeIn, float fadeOut)
         {
-            _shot.fadeIn = fadeIn;
-            _shot.fadeOut = fadeOut;
+            _shot.esmaecerDentro = fadeIn;
+            _shot.foraEsmaecer = fadeOut;
             return this;
         }
 
         public ShotDraft Vignette(float amount)
         {
-            _shot.vignette = amount;
+            _shot.vinheta = amount;
             return this;
         }
     }
@@ -201,7 +201,7 @@ namespace EchoesOfCravejada.EditorTools
         /// <summary>Troca as chaves da camada (a primeira vale ate o primeiro instante).</summary>
         public static FilmLayer Keys(this FilmLayer layer, params FilmKey[] keys)
         {
-            layer.keys = keys;
+            layer.chaves = keys;
             return layer;
         }
     }
@@ -214,22 +214,22 @@ namespace EchoesOfCravejada.EditorTools
             s.vy = vy;
             s.spreadX = spreadX;
             s.spreadY = spreadY;
-            s.gravity = gravity;
+            s.gravidade = gravity;
             return s;
         }
 
         public static FilmSpray Look(this FilmSpray s, int size, float grow = 0f, bool additive = false, float parallax = 1f)
         {
-            s.size = size;
-            s.grow = grow;
-            s.additive = additive;
-            s.parallax = parallax;
+            s.tamanho = size;
+            s.crescer = grow;
+            s.aditivo = additive;
+            s.paralaxe = parallax;
             return s;
         }
 
         public static FilmSpray Burst(this FilmSpray s, float power)
         {
-            s.burst = power;
+            s.rajada = power;
             return s;
         }
     }

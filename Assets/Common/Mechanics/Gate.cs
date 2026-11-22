@@ -12,74 +12,75 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Collider2D))]
     public class Gate : MonoBehaviour
     {
-        [Tooltip("Quantos tiles ele anda ao abrir.")]
-        [SerializeField] private float rise = 6f;
+        [UnityEngine.Serialization.FormerlySerializedAs("rise")] [Tooltip("Quantos tiles ele anda ao abrir.")]
+        [SerializeField] private float subida = 6f;
 
-        [Tooltip("Pra que lado ele abre. Pra cima e o normal; uma escotilha no chao abre de lado.")]
-        [SerializeField] private Vector2 direction = Vector2.up;
+        [UnityEngine.Serialization.FormerlySerializedAs("direction")] [Tooltip("Pra que lado ele abre. Pra cima e o normal; uma escotilha no chao abre de lado.")]
+        [SerializeField] private Vector2 direcao = Vector2.up;
 
-        [SerializeField] private float openTime = 1.2f;
+        [UnityEngine.Serialization.FormerlySerializedAs("openTime")] [SerializeField] private float tempoAberto = 1.2f;
 
-        private bool _open;
-        private string _key;
+        private bool _aberto;
+        private string _chave;
 
         /// <summary>Os portoes ja abertos (cena + posicao). Vai no save.</summary>
-        public static readonly HashSet<string> Opened = new HashSet<string>();
+        [SaveProgress("Opened")]
+        public static readonly HashSet<string> Abertos = new HashSet<string>();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay() => Opened.Clear();
+        private static void ReiniciarAoJogar() => Abertos.Clear();
 
         private void Awake()
         {
             Vector3 p = transform.position;
-            _key = $"{SceneManager.GetActiveScene().name}/{Mathf.RoundToInt(p.x * 4)}_{Mathf.RoundToInt(p.y * 4)}";
+            _chave = $"{SceneManager.GetActiveScene().name}/{Mathf.RoundToInt(p.x * 4)}_{Mathf.RoundToInt(p.y * 4)}";
         }
 
         private void Start()
         {
             // Aberto num save anterior: ja comeca no teto, calado.
-            if (_open || !Opened.Contains(_key)) return;
-            _open = true;
-            transform.position += (Vector3)(direction.normalized * rise);
+            if (_aberto || !Abertos.Contains(_chave)) return;
+            _aberto = true;
+            transform.position += (Vector3)(direcao.normalized * subida);
             GetComponent<Collider2D>().enabled = false;
         }
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(float newRise)
+        public void Configurar(float novoSubida)
         {
-            rise = newRise;
+            subida = novoSubida;
         }
 
         /// <summary>Usado pelos geradores de fase, pra portoes que nao abrem pra cima.</summary>
-        public void Configure(float newRise, Vector2 newDirection)
+        public void Configurar(float novoSubida, Vector2 novoDirecao)
         {
-            rise = newRise;
-            direction = newDirection;
+            subida = novoSubida;
+            direcao = novoDirecao;
         }
 
-        public void Open()
+        public void Abrir()
         {
-            if (_open) return;
-            _open = true;
-            if (_key != null) Opened.Add(_key);
+            if (_aberto) return;
+            _aberto = true;
+            if (_chave != null) Abertos.Add(_chave);
 
             // Grade de ferro correndo na pedra: quem esta perto escuta.
-            NoiseSystem.Emit(transform.position, 8f, 0.6f);
+            NoiseSystem.Emitir(transform.position, 8f, 0.6f);
 
             // Os que ja abrem quando a cena carrega (chefe derrotado, porta ja destrancada) abrem calados.
-            if (Time.timeSinceLevelLoad > 0.5f) Sfx.GateOpen.Play(transform.position);
+            if (Time.timeSinceLevelLoad > 0.5f) Sfx.AbertoPortao.Tocar(transform.position);
 
-            StartCoroutine(Lift());
+            StartCoroutine(Erguer());
         }
 
-        private IEnumerator Lift()
+        private IEnumerator Erguer()
         {
-            Vector3 from = transform.position;
-            Vector3 to = from + (Vector3)(direction.normalized * rise);
+            Vector3 de = transform.position;
+            Vector3 to = de + (Vector3)(direcao.normalized * subida);
 
-            for (float t = 0f; t < openTime; t += Time.deltaTime)
+            for (float t = 0f; t < tempoAberto; t += Time.deltaTime)
             {
-                transform.position = Vector3.Lerp(from, to, t / openTime);
+                transform.position = Vector3.Lerp(de, to, t / tempoAberto);
                 yield return null;
             }
 

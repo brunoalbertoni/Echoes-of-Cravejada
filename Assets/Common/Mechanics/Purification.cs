@@ -9,7 +9,7 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class Purification
     {
-        public static readonly string[] Districts =
+        public static readonly string[] Distritos =
         {
             "Phase01_ScrapYard",
             "Phase02_BrassPipelines",
@@ -17,16 +17,16 @@ namespace EchoesOfCravejada
             "Phase04_AlchemicalAteliers",
         };
 
-        public static int Percent
+        public static int Porcentagem
         {
             get
             {
-                int done = 0;
-                foreach (string district in Districts) if (AreaPurifier.WasPurified(district)) done++;
-                return done * 100 / Districts.Length;
+                int pronto = 0;
+                foreach (string distrito in Distritos) if (AreaPurifier.FoiPurificado(distrito)) pronto++;
+                return pronto * 100 / Distritos.Length;
             }
         }
 
-        public static bool Complete => Percent >= 100;
+        public static bool Completo => Porcentagem >= 100;
     }
 }

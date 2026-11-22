@@ -9,98 +9,98 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Collider2D))]
     public class ShardPickup : MonoBehaviour
     {
-        [SerializeField] private int value = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("value")] [SerializeField] private int valor = 1;
 
-        private Vector2 _velocity;
-        private float _restY;
-        private bool _resting;
-        private float _age;
+        private Vector2 _velocidadeVetor;
+        private float _descansoY;
+        private bool _descansando;
+        private float _idade;
 
         /// <summary>Cria um shard solto, saltando pra um lado.</summary>
-        public static void Spawn(Vector3 position, Sprite sprite, int value, int index)
+        public static void Criar(Vector3 posicao, Sprite sprite, int valor, int indice)
         {
-            var shard = new GameObject("OpaqueShard");
-            shard.transform.position = position + Vector3.up * 0.3f;
+            var fragmento = Prefabs.Criar("OpaqueShard");
+            fragmento.transform.position = posicao + Vector3.up * 0.3f;
 
-            var renderer = shard.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            renderer.sortingLayerName = "Actors";
-            renderer.sortingOrder = -1;
+            var renderizador = Prefabs.Componente<SpriteRenderer>(fragmento);
+            renderizador.sprite = sprite;
+            renderizador.sortingLayerName = "Actors";
+            renderizador.sortingOrder = -1;
 
-            var trigger = shard.AddComponent<CircleCollider2D>();
-            trigger.isTrigger = true;
-            trigger.radius = 0.45f;
+            var gatilho = Prefabs.Componente<CircleCollider2D>(fragmento);
+            gatilho.isTrigger = true;
+            gatilho.radius = 0.45f;
 
-            var pickup = shard.AddComponent<ShardPickup>();
-            pickup.value = value;
+            var coletavel = fragmento.AddComponent<ShardPickup>();
+            coletavel.valor = valor;
 
             // Espalha em leque, alternando os lados.
-            float side = index % 2 == 0 ? 1f : -1f;
-            pickup._velocity = new Vector2(side * (1f + index * 0.5f), 5.5f);
-            pickup._restY = position.y + 0.3f;
+            float lado = indice % 2 == 0 ? 1f : -1f;
+            coletavel._velocidadeVetor = new Vector2(lado * (1f + indice * 0.5f), 5.5f);
+            coletavel._descansoY = posicao.y + 0.3f;
         }
 
         private void Update()
         {
-            _age += Time.deltaTime;
+            _idade += Time.deltaTime;
 
-            if (_resting)
+            if (_descansando)
             {
-                transform.position += Vector3.up * (Mathf.Sin(_age * 4f) * 0.1f * Time.deltaTime);
+                transform.position += Vector3.up * (Mathf.Sin(_idade * 4f) * 0.1f * Time.deltaTime);
                 return;
             }
 
-            _velocity.y -= 22f * Time.deltaTime;
-            transform.position += (Vector3)(_velocity * Time.deltaTime);
+            _velocidadeVetor.y -= 22f * Time.deltaTime;
+            transform.position += (Vector3)(_velocidadeVetor * Time.deltaTime);
 
             // Assenta na altura de onde saiu: e la que esta o chao.
-            if (_velocity.y < 0f && transform.position.y <= _restY)
+            if (_velocidadeVetor.y < 0f && transform.position.y <= _descansoY)
             {
-                Vector3 position = transform.position;
-                position.y = _restY;
-                transform.position = position;
-                _resting = true;
+                Vector3 posicao = transform.position;
+                posicao.y = _descansoY;
+                transform.position = posicao;
+                _descansando = true;
             }
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D outro)
         {
-            Collect(other);
+            Coletar(outro);
         }
 
-        private void OnTriggerStay2D(Collider2D other)
+        private void OnTriggerStay2D(Collider2D outro)
         {
-            Collect(other);
+            Coletar(outro);
         }
 
-        private void Collect(Collider2D other)
+        private void Coletar(Collider2D outro)
         {
             // Um instante de carencia, senao ele some antes de aparecer.
-            if (_age < 0.25f) return;
-            if (other.GetComponentInParent<ScrapController>() == null) return;
+            if (_idade < 0.25f) return;
+            if (outro.GetComponentInParent<ScrapController>() == null) return;
 
-            ScrapWallet.Add(value);
-            PlayTink();
+            ScrapWallet.Adicionar(valor);
+            TocarTilintar();
             Destroy(gameObject);
         }
 
         // Varios pegos em seguida sobem de tom, nota a nota (escala maior).
-        private static readonly int[] ChainSteps = { 0, 2, 4, 5, 7, 9, 11, 12 };
-        private static float _lastTink = -100f;
-        private static int _chain;
+        private static readonly int[] PassosCorrente = { 0, 2, 4, 5, 7, 9, 11, 12 };
+        private static float _ultimoTilintar = -100f;
+        private static int _corrente;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _lastTink = -100f;
-            _chain = 0;
+            _ultimoTilintar = -100f;
+            _corrente = 0;
         }
 
-        private static void PlayTink()
+        private static void TocarTilintar()
         {
-            _chain = Time.time - _lastTink < 0.45f ? Mathf.Min(_chain + 1, ChainSteps.Length - 1) : 0;
-            _lastTink = Time.time;
-            Sfx.Shard.Play(pitch: Mathf.Pow(2f, ChainSteps[_chain] / 12f));
+            _corrente = Time.time - _ultimoTilintar < 0.45f ? Mathf.Min(_corrente + 1, PassosCorrente.Length - 1) : 0;
+            _ultimoTilintar = Time.time;
+            Sfx.Fragmento.Tocar(tom2: Mathf.Pow(2f, PassosCorrente[_corrente] / 12f));
         }
     }
 }

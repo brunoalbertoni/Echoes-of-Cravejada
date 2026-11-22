@@ -20,152 +20,153 @@ namespace EchoesOfCravejada
     {
         public enum Kind
         {
-            Sapphire,
-            ResonanceStrike,
-            Chassis,
-            Gem,
-            ShardCache,
+            Safira,
+            GolpeRessonancia,
+            Chassi,
+            Gema,
+            CacheFragmento,
         }
 
-        [SerializeField] private Kind kind;
+        [UnityEngine.Serialization.FormerlySerializedAs("kind")] [SerializeField] private Kind tipo;
 
-        [Tooltip("So pro cofre: quantos fragmentos ele guarda.")]
-        [SerializeField] private int amount = 1;
+        [UnityEngine.Serialization.FormerlySerializedAs("amount")] [Tooltip("So pro cofre: quantos fragmentos ele guarda.")]
+        [SerializeField] private int quantia = 1;
 
         [Tooltip("So pras que ja vem na cena: o nome com que ela lembra que foi pega.")]
         [SerializeField] private string id;
 
-        private static readonly HashSet<string> Taken = new HashSet<string>();
+        [SaveProgress("Taken")]
+        private static readonly HashSet<string> Pegos = new HashSet<string>();
 
-        private const float DropArmDelay = 1.2f;
+        private const float AtrasoArmarQueda = 1.2f;
 
-        private float _age;
-        private float _armDelay;
-        private Vector3 _origin;
+        private float _idade;
+        private float _atrasoArmar;
+        private Vector3 _pontoOrigem;
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            Taken.Clear();
+            Pegos.Clear();
         }
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(Kind newKind, string newId, int newAmount = 1)
+        public void Configurar(Kind novoTipo, string novoId, int novoQuantia = 1)
         {
-            kind = newKind;
-            id = newId;
-            amount = newAmount;
+            tipo = novoTipo;
+            id = novoId;
+            quantia = novoQuantia;
         }
 
         /// <summary>Se a recompensa com esse id ja foi pega.</summary>
-        public static bool WasTaken(string rewardId) => !string.IsNullOrEmpty(rewardId) && Taken.Contains(rewardId);
+        public static bool FoiPego(string idRecompensa) => !string.IsNullOrEmpty(idRecompensa) && Pegos.Contains(idRecompensa);
 
         /// <summary>Solta uma recompensa com id: depois de pega, nao volta mais.</summary>
-        public static void Drop(Vector3 position, Sprite sprite, Kind kind, Color tint, string rewardId)
+        public static void Soltar(Vector3 posicao, Sprite sprite, Kind tipo, Color tom, string idRecompensa)
         {
-            if (WasTaken(rewardId)) return;
-            Drop(position, sprite, kind, tint).id = rewardId;
+            if (FoiPego(idRecompensa)) return;
+            Soltar(posicao, sprite, tipo, tom).id = idRecompensa;
         }
 
-        public static RewardPickup Drop(Vector3 position, Sprite sprite, Kind kind, Color tint)
+        public static RewardPickup Soltar(Vector3 posicao, Sprite sprite, Kind tipo, Color tom)
         {
-            var pickup = new GameObject("Reward_" + kind);
-            pickup.transform.position = DropSpot.Free(position + Vector3.up * 0.8f);
+            var coletavel = Prefabs.Criar("Reward", "Reward_" + tipo);
+            coletavel.transform.position = DropSpot.PontoLivre(posicao + Vector3.up * 0.8f);
 
-            var renderer = pickup.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            renderer.color = tint;
-            renderer.sortingLayerName = "Actors";
-            renderer.sortingOrder = -1;
+            var renderizador = Prefabs.Componente<SpriteRenderer>(coletavel);
+            renderizador.sprite = sprite;
+            renderizador.color = tom;
+            renderizador.sortingLayerName = "Actors";
+            renderizador.sortingOrder = -1;
 
-            var trigger = pickup.AddComponent<CircleCollider2D>();
-            trigger.isTrigger = true;
-            trigger.radius = 0.7f;
+            var gatilho = Prefabs.Componente<CircleCollider2D>(coletavel);
+            gatilho.isTrigger = true;
+            gatilho.radius = 0.7f;
 
-            var reward = pickup.AddComponent<RewardPickup>();
-            reward.kind = kind;
+            var recompensa = coletavel.AddComponent<RewardPickup>();
+            recompensa.tipo = tipo;
             // Solta de um chefe: aparece e fica um instante no ar antes de
             // poder ser pega, pra nao entrar sozinha no Scrap que esta ao lado.
-            reward._armDelay = DropArmDelay;
-            return reward;
+            recompensa._atrasoArmar = AtrasoArmarQueda;
+            return recompensa;
         }
 
         private void Awake()
         {
-            _origin = transform.position;
+            _pontoOrigem = transform.position;
         }
 
         private void Start()
         {
-            if (!string.IsNullOrEmpty(id) && Taken.Contains(id)) Destroy(gameObject);
+            if (!string.IsNullOrEmpty(id) && Pegos.Contains(id)) Destroy(gameObject);
         }
 
         private void Update()
         {
-            _age += Time.deltaTime;
-            transform.position = _origin + Vector3.up * (Mathf.Sin(_age * 3f) * 0.15f);
+            _idade += Time.deltaTime;
+            transform.position = _pontoOrigem + Vector3.up * (Mathf.Sin(_idade * 3f) * 0.15f);
         }
 
-        private void OnTriggerEnter2D(Collider2D other) => Collect(other);
+        private void OnTriggerEnter2D(Collider2D outro) => Coletar(outro);
 
         // Quem ja estava em cima quando ela armou pega sem precisar sair e voltar.
-        private void OnTriggerStay2D(Collider2D other) => Collect(other);
+        private void OnTriggerStay2D(Collider2D outro) => Coletar(outro);
 
-        private void Collect(Collider2D other)
+        private void Coletar(Collider2D outro)
         {
-            if (_age < _armDelay) return;
+            if (_idade < _atrasoArmar) return;
 
-            var controller = other.GetComponentInParent<ScrapController>();
-            if (controller == null) return;
+            var controlador = outro.GetComponentInParent<ScrapController>();
+            if (controlador == null) return;
 
-            switch (kind)
+            switch (tipo)
             {
-                case Kind.Sapphire:
-                    ScrapGems.GiveSapphire();
+                case Kind.Safira:
+                    ScrapGems.DarSafira();
                     break;
 
-                case Kind.ResonanceStrike:
+                case Kind.GolpeRessonancia:
                     // O som e o do card de habilidade, que abre em seguida.
-                    ScrapChisel.UnlockResonanceStrike();
+                    ScrapChisel.DesbloquearGolpeRessonante();
                     break;
 
-                case Kind.Chassis:
-                    var health = controller.GetComponent<ScrapHealth>();
-                    if (health != null) health.UpgradeChassis();
-                    ChassisTime = Time.time;
-                    Sfx.Chassis.Play();
-                    var art = GetComponentInChildren<SpriteRenderer>();
-                    if (art != null) ItemToast.Show(art.sprite, new Color(1f, 0.75f, 0.5f));
+                case Kind.Chassi:
+                    var vida = controlador.GetComponent<ScrapHealth>();
+                    if (vida != null) vida.MelhorarChassi();
+                    TempoChassi = Time.time;
+                    Sfx.Chassi.Tocar();
+                    var arte = GetComponentInChildren<SpriteRenderer>();
+                    if (arte != null) ItemToast.Mostrar(arte.sprite, new Color(1f, 0.75f, 0.5f));
                     break;
 
-                case Kind.Gem:
-                    GemPurse.Add(1);
-                    Sfx.Gem.Play();
+                case Kind.Gema:
+                    GemPurse.Adicionar(1);
+                    Sfx.Gema.Tocar();
                     break;
 
-                case Kind.ShardCache:
-                    ScrapWallet.Add(amount);
-                    Sfx.ShardsRecovered.Play();
-                    ItemToast.Show(ItemToast.ShardSprite(), new Color(0.6f, 0.9f, 1f), amount);
+                case Kind.CacheFragmento:
+                    ScrapWallet.Adicionar(quantia);
+                    Sfx.RecuperadosFragmentos.Tocar();
+                    ItemToast.Mostrar(ItemToast.SpriteDoFragmento(), new Color(0.6f, 0.9f, 1f), quantia);
                     break;
             }
 
-            if (!string.IsNullOrEmpty(id)) Taken.Add(id);
+            if (!string.IsNullOrEmpty(id)) Pegos.Add(id);
 
             // Pegar algo assim tilinta: acende em volta.
-            NoiseSystem.Emit(transform.position, 8f, 0.2f);
+            NoiseSystem.Emitir(transform.position, 8f, 0.2f);
             Destroy(gameObject);
         }
 
         /// <summary>Quando um reforco escondido foi pego. O HUD usa pra mostrar o aviso.</summary>
-        public static float ChassisTime { get; private set; } = -100f;
+        public static float TempoChassi { get; private set; } = -100f;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetTime()
+        private static void ReiniciarTempo()
         {
-            ChassisTime = -100f;
+            TempoChassi = -100f;
         }
     }
 }

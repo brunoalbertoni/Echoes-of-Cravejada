@@ -7,29 +7,29 @@ namespace EchoesOfCravejada
     public enum Currency
     {
         /// <summary>Os fragmentos opacos (Opaque Shards): caem dos corrompidos, se perdem na morte.</summary>
-        Shards,
+        QuantidadeFragmentos,
 
         /// <summary>As gemas lapidadas: raras, ganhas explorando e ajudando, nunca se perdem.</summary>
-        Gems,
+        Gemas,
     }
 
     /// <summary>Um item da loja do Crisol.</summary>
     public sealed class ShopItem
     {
         public string Id;
-        public string Name;
-        public string Description;
-        public Currency Currency;
+        public string Nome;
+        public string DescricaoTexto;
+        public Currency MoedaTipo;
 
         /// <summary>O preco da primeira compra, e quanto ele sobe a cada uma.</summary>
-        public int BasePrice;
-        public int PriceStep;
+        public int PrecoBase;
+        public int PassoPreco;
 
         /// <summary>Quantas vezes se compra. Zero: sem limite.</summary>
-        public int MaxCount = 1;
+        public int QuantidadeMax = 1;
 
         /// <summary>Se e uma historia que o Crisol conta (so aparece se ele tiver uma pra contar).</summary>
-        public bool IsMemory;
+        public bool EstaMemoria;
     }
 
     /// <summary>
@@ -43,77 +43,78 @@ namespace EchoesOfCravejada
     /// </summary>
     public static class Shop
     {
-        public const string Chassis = "chassis";
-        public const string Pistons = "pistons";
-        public const string LinedBag = "lined_bag";
-        public const string GoldSetting = "gold_setting";
-        public const string Harvest = "harvest_chisel";
-        public const string Memory = "memory_crown";
+        public const string Chassi = "chassis";
+        public const string Pistoes = "pistons";
+        public const string BolsaForrado = "lined_bag";
+        public const string EngasteOuro = "gold_setting";
+        public const string Colheita = "harvest_chisel";
+        public const string Memoria = "memory_crown";
 
-        public static readonly ShopItem[] Catalog =
+        public static readonly ShopItem[] Catalogo =
         {
             new ShopItem
             {
-                Id = Chassis, Name = "Reforço de chassi", Currency = Currency.Shards,
-                Description = "+1 de vida máxima. Cada reforço seguinte custa mais.",
-                BasePrice = 25, PriceStep = 25, MaxCount = 4,
+                Id = Chassi, Nome = "Reforço de chassi", MoedaTipo = Currency.QuantidadeFragmentos,
+                DescricaoTexto = "+1 de vida máxima. Cada reforço seguinte custa mais.",
+                PrecoBase = 25, PassoPreco = 25, QuantidadeMax = 4,
             },
             new ShopItem
             {
-                Id = Pistons, Name = "Pistões regulados", Currency = Currency.Shards,
-                Description = "A Sobrecarga de Velocidade esfria quase pela metade do tempo.",
-                BasePrice = 60,
+                Id = Pistoes, Nome = "Pistões regulados", MoedaTipo = Currency.QuantidadeFragmentos,
+                DescricaoTexto = "A Sobrecarga de Velocidade esfria quase pela metade do tempo.",
+                PrecoBase = 60,
             },
             new ShopItem
             {
-                Id = LinedBag, Name = "Bolsa forrada", Currency = Currency.Shards,
-                Description = "Ao quebrar, metade dos fragmentos fica com você.",
-                BasePrice = 80,
+                Id = BolsaForrado, Nome = "Bolsa forrada", MoedaTipo = Currency.QuantidadeFragmentos,
+                DescricaoTexto = "Ao quebrar, metade dos fragmentos fica com você.",
+                PrecoBase = 80,
             },
             new ShopItem
             {
-                Id = GoldSetting, Name = "Engaste de ouro", Currency = Currency.Gems,
-                Description = "Um engaste no cabo do cinzel: +1 de dano em cada golpe.",
-                BasePrice = 2,
+                Id = EngasteOuro, Nome = "Engaste de ouro", MoedaTipo = Currency.Gemas,
+                DescricaoTexto = "Um engaste no cabo do cinzel: +1 de dano em cada golpe.",
+                PrecoBase = 2,
             },
             new ShopItem
             {
-                Id = Harvest, Name = "Cinzel de colheita", Currency = Currency.Gems,
-                Description = "Os corrompidos soltam metade a mais de fragmentos.",
-                BasePrice = 1,
+                Id = Colheita, Nome = "Cinzel de colheita", MoedaTipo = Currency.Gemas,
+                DescricaoTexto = "Os corrompidos soltam metade a mais de fragmentos.",
+                PrecoBase = 1,
             },
             new ShopItem
             {
-                Id = Memory, Name = "Memória: a Coroa de Facetas", Currency = Currency.Gems,
-                Description = "Crisol conta como lapidou a coroa do Rei de Prata.",
-                BasePrice = 1, IsMemory = true,
+                Id = Memoria, Nome = "Memória: a Coroa de Facetas", MoedaTipo = Currency.Gemas,
+                DescricaoTexto = "Crisol conta como lapidou a coroa do Rei de Prata.",
+                PrecoBase = 1, EstaMemoria = true,
             },
         };
 
-        private static readonly Dictionary<string, int> Bought = new Dictionary<string, int>();
+        [SaveProgress("Bought")]
+        private static readonly Dictionary<string, int> Comprados = new Dictionary<string, int>();
 
         // O projeto entra em Play sem recarregar o dominio, entao estatico nao
         // zera sozinho entre uma sessao e outra.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            Bought.Clear();
+            Comprados.Clear();
         }
 
-        public static int Count(string id) => Bought.TryGetValue(id, out int count) ? count : 0;
+        public static int Contar(string id) => Comprados.TryGetValue(id, out int quantidade) ? quantidade : 0;
 
-        public static bool Has(string id) => Count(id) > 0;
+        public static bool Tem(string id) => Contar(id) > 0;
 
-        public static int Price(ShopItem item) => item.BasePrice + item.PriceStep * Count(item.Id);
+        public static int Preco(ShopItem item) => item.PrecoBase + item.PassoPreco * Contar(item.Id);
 
-        public static bool SoldOut(ShopItem item) => item.MaxCount > 0 && Count(item.Id) >= item.MaxCount;
+        public static bool Esgotado(ShopItem item) => item.QuantidadeMax > 0 && Contar(item.Id) >= item.QuantidadeMax;
 
-        public static int Funds(Currency currency) => currency == Currency.Shards ? ScrapWallet.Shards : GemPurse.Gems;
+        public static int Saldo(Currency moeda) => moeda == Currency.QuantidadeFragmentos ? ScrapWallet.QuantidadeFragmentos : GemPurse.Gemas;
 
-        public static string CurrencyName(Currency currency, int amount)
+        public static string NomeDaMoeda(Currency moeda, int quantia)
         {
-            if (currency == Currency.Gems) return amount == 1 ? "gema" : "gemas";
-            return amount == 1 ? "fragmento" : "fragmentos";
+            if (moeda == Currency.Gemas) return quantia == 1 ? "gema" : "gemas";
+            return quantia == 1 ? "fragmento" : "fragmentos";
         }
 
         /// <summary>
@@ -121,29 +122,29 @@ namespace EchoesOfCravejada
         /// so se a compra aconteceu. O efeito imediato (o reforco de chassi) ja
         /// vem aplicado; os outros valem a partir de agora pelas propriedades.
         /// </summary>
-        public static string TryBuy(ShopItem item, ScrapHealth customer, out bool bought)
+        public static string TentarComprar(ShopItem item, ScrapHealth cliente, out bool comprados)
         {
-            bought = false;
+            comprados = false;
 
-            if (SoldOut(item)) return "Isso você já comprou. Não tenho outro.";
+            if (Esgotado(item)) return "Isso você já comprou. Não tenho outro.";
 
-            int price = Price(item);
-            if (Funds(item.Currency) < price)
+            int preco = Preco(item);
+            if (Saldo(item.MoedaTipo) < preco)
             {
-                return item.Currency == Currency.Gems
+                return item.MoedaTipo == Currency.Gemas
                     ? "Gemas de menos. Não lapido fiado."
                     : "Fragmentos de menos. Volte quando tiver com que pagar.";
             }
 
-            if (item.Currency == Currency.Shards) ScrapWallet.Add(-price);
-            else GemPurse.Add(-price);
+            if (item.MoedaTipo == Currency.QuantidadeFragmentos) ScrapWallet.Adicionar(-preco);
+            else GemPurse.Adicionar(-preco);
 
-            Bought[item.Id] = Count(item.Id) + 1;
-            bought = true;
+            Comprados[item.Id] = Contar(item.Id) + 1;
+            comprados = true;
 
-            if (item.Id == Chassis && customer != null) customer.UpgradeChassis();
+            if (item.Id == Chassi && cliente != null) cliente.MelhorarChassi();
 
-            return item.IsMemory ? "Sente-se. Isto vai demorar." : "Pronto. Que eu não me arrependa disso.";
+            return item.EstaMemoria ? "Sente-se. Isto vai demorar." : "Pronto. Que eu não me arrependa disso.";
         }
 
         // ------------------------------------------------------------------
@@ -151,15 +152,15 @@ namespace EchoesOfCravejada
         // ------------------------------------------------------------------
 
         /// <summary>Por quanto se multiplica a recarga do Steam Dash.</summary>
-        public static float DashCooldownScale => Has(Pistons) ? 0.55f : 1f;
+        public static float EscalaRecargaDash => Tem(Pistoes) ? 0.55f : 1f;
 
         /// <summary>O dano a mais do cinzel por causa da loja.</summary>
-        public static int BonusDamage => Has(GoldSetting) ? 1 : 0;
+        public static int DanoBonus => Tem(EngasteOuro) ? 1 : 0;
 
         /// <summary>Por quanto se multiplica o que os corrompidos soltam.</summary>
-        public static float ShardDropScale => Has(Harvest) ? 1.5f : 1f;
+        public static float EscalaQuedaFragmento => Tem(Colheita) ? 1.5f : 1f;
 
         /// <summary>Se, ao quebrar, metade dos fragmentos fica com o Scrap.</summary>
-        public static bool KeepsHalfOnDeath => Has(LinedBag);
+        public static bool MantemMetadeLigadoMorte => Tem(BolsaForrado);
     }
 }

@@ -23,307 +23,307 @@ namespace EchoesOfCravejada
     /// </summary>
     public class FilmCutscene : MonoBehaviour
     {
-        private const int Width = FilmCompositor.Width;
-        private const int Height = FilmCompositor.Height;
-        private const float BarFraction = 0.068f;
-        private const float SkipAfter = 1f;
-        private const float WhiteRise = 0.5f;
-        private const float WhiteFade = 0.5f;
-        private const float BlackHold = 2.2f;
+        private const int Largura = FilmCompositor.Largura;
+        private const int Altura = FilmCompositor.Altura;
+        private const float FracaoBarra = 0.068f;
+        private const float PularDepois = 1f;
+        private const float SubidaBranco = 0.5f;
+        private const float EsmaecerBranco = 0.5f;
+        private const float SegurarPreto = 2.2f;
 
-        [SerializeField] private FilmShot[] shots;
-        [SerializeField] private Texture2D[] frames;
-        [SerializeField] private bool endWhite = true;
+        [UnityEngine.Serialization.FormerlySerializedAs("shots")] [SerializeField] private FilmShot[] planos;
+        [UnityEngine.Serialization.FormerlySerializedAs("frames")] [SerializeField] private Texture2D[] quadros;
+        [UnityEngine.Serialization.FormerlySerializedAs("endWhite")] [SerializeField] private bool brancoFim = true;
 
-        private List<FilmFrame> _frames;
-        private uint[] _buffer;
-        private Color32[] _colors;
-        private Texture2D _screen;
-        private bool _showPanel;
-        private float _white;
-        private float _black;
+        private List<FilmFrame> _quadros;
+        private uint[] _reserva;
+        private Color32[] _cores;
+        private Texture2D _tela;
+        private bool _painelMostrar;
+        private float _branco;
+        private float _preto;
 
         /// <summary>Se algum filme esta na tela.</summary>
-        public static bool IsPlaying { get; private set; }
+        public static bool EstaTocando { get; private set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics()
+        private static void ReiniciarEstaticos()
         {
-            IsPlaying = false;
+            EstaTocando = false;
         }
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void Configure(FilmShot[] newShots, Texture2D[] newFrames, bool newEndWhite)
+        public void Configurar(FilmShot[] novoPlanos, Texture2D[] novoQuadros, bool novoBrancoFim)
         {
-            shots = newShots;
-            frames = newFrames;
-            endWhite = newEndWhite;
+            planos = novoPlanos;
+            quadros = novoQuadros;
+            brancoFim = novoBrancoFim;
         }
 
-        public bool IsReady
+        public bool EstaProntoUso
         {
             get
             {
-                if (shots == null || shots.Length == 0 || frames == null || frames.Length == 0) return false;
-                foreach (Texture2D frame in frames)
+                if (planos == null || planos.Length == 0 || quadros == null || quadros.Length == 0) return false;
+                foreach (Texture2D quadro in quadros)
                 {
-                    if (frame == null || !frame.isReadable) return false;
+                    if (quadro == null || !quadro.isReadable) return false;
                 }
 
                 return true;
             }
         }
 
-        public IEnumerator Play(Action onPeak)
+        public IEnumerator Tocar(Action ligadoPico)
         {
-            bool peaked = false;
+            bool atingiuPico = false;
 
             void PeakOnce()
             {
-                if (peaked) return;
-                peaked = true;
-                onPeak?.Invoke();
+                if (atingiuPico) return;
+                atingiuPico = true;
+                ligadoPico?.Invoke();
             }
 
-            if (!IsReady)
+            if (!EstaProntoUso)
             {
                 PeakOnce();
                 yield break;
             }
 
-            Prepare();
-            IsPlaying = true;
-            _showPanel = true;
-            _white = 0f;
-            _black = 0f;
+            Preparar();
+            EstaTocando = true;
+            _painelMostrar = true;
+            _branco = 0f;
+            _preto = 0f;
 
-            int last = shots.Length - 1;
-            int index = 0;
+            int ultimo = planos.Length - 1;
+            int indice = 0;
             float t = 0f;
-            float elapsed = 0f;
-            float lastT = -1f;
-            bool skipped = false;
+            float decorrido = 0f;
+            float ultimoT = -1f;
+            bool pulado = false;
 
-            while (index < shots.Length)
+            while (indice < planos.Length)
             {
-                FilmShot shot = shots[index];
+                FilmShot plano = planos[indice];
 
-                if (!skipped && elapsed > SkipAfter && SkipPressed())
+                if (!pulado && decorrido > PularDepois && PularPressionado())
                 {
-                    skipped = true;
-                    index = last;
-                    shot = shots[last];
-                    t = Mathf.Max(0f, shot.duration - (endWhite ? WhiteRise + 0.2f : 1f));
-                    lastT = t;
+                    pulado = true;
+                    indice = ultimo;
+                    plano = planos[ultimo];
+                    t = Mathf.Max(0f, plano.duracao - (brancoFim ? SubidaBranco + 0.2f : 1f));
+                    ultimoT = t;
                 }
 
-                if (!skipped) Cues(shot, lastT, t);
-                lastT = t;
+                if (!pulado) TocarDeixas(plano, ultimoT, t);
+                ultimoT = t;
 
-                if (endWhite && index == last)
+                if (brancoFim && indice == ultimo)
                 {
-                    float rise = (t - (shot.duration - WhiteRise)) / WhiteRise;
-                    _white = Mathf.Clamp01(rise);
-                    if (rise > 0f && rise - Time.deltaTime / WhiteRise <= 0f) Sfx.CartoonFlash.Play();
+                    float subida = (t - (plano.duracao - SubidaBranco)) / SubidaBranco;
+                    _branco = Mathf.Clamp01(subida);
+                    if (subida > 0f && subida - Time.deltaTime / SubidaBranco <= 0f) Sfx.ClaraoDesenho.Tocar();
                 }
 
-                FilmCompositor.Render(shot, _frames, t, _buffer);
-                Upload();
+                FilmCompositor.Renderizar(plano, _quadros, t, _reserva);
+                EnviarTextura();
 
                 yield return null;
 
                 t += Time.deltaTime;
-                elapsed += Time.deltaTime;
+                decorrido += Time.deltaTime;
 
-                if (t >= shot.duration)
+                if (t >= plano.duracao)
                 {
-                    index++;
+                    indice++;
                     t = 0f;
-                    lastT = -1f;
+                    ultimoT = -1f;
                 }
             }
 
-            if (endWhite)
+            if (brancoFim)
             {
-                _white = 1f;
+                _branco = 1f;
                 PeakOnce();
-                _showPanel = false;
-                for (float f = 0f; f < WhiteFade; f += Time.deltaTime)
+                _painelMostrar = false;
+                for (float f = 0f; f < EsmaecerBranco; f += Time.deltaTime)
                 {
-                    _white = 1f - f / WhiteFade;
+                    _branco = 1f - f / EsmaecerBranco;
                     yield return null;
                 }
             }
             else
             {
-                _black = 1f;
-                _showPanel = false;
+                _preto = 1f;
+                _painelMostrar = false;
                 PeakOnce();
-                StartCoroutine(ReleaseBlack());
+                StartCoroutine(LiberarTelaPreta());
                 yield break;
             }
 
-            Stop();
+            Parar();
         }
 
-        private IEnumerator ReleaseBlack()
+        private IEnumerator LiberarTelaPreta()
         {
-            for (float f = 0f; f < BlackHold; f += Time.deltaTime)
+            for (float f = 0f; f < SegurarPreto; f += Time.deltaTime)
             {
-                _black = 1f - f / BlackHold;
+                _preto = 1f - f / SegurarPreto;
                 yield return null;
             }
 
-            Stop();
+            Parar();
         }
 
-        private static readonly Dictionary<string, SfxCue> Sounds = new Dictionary<string, SfxCue>();
+        private static readonly Dictionary<string, SfxCue> Sons = new Dictionary<string, SfxCue>();
 
-        private static void Cues(FilmShot shot, float from, float to)
+        private static void TocarDeixas(FilmShot plano, float de, float to)
         {
-            if (shot.cues == null) return;
+            if (plano.deixas == null) return;
 
-            foreach (FilmCue cue in shot.cues)
+            foreach (FilmCue deixa in plano.deixas)
             {
-                if (cue == null || string.IsNullOrEmpty(cue.sound)) continue;
-                if (cue.t <= from || cue.t > to) continue;
-                if (from < 0f && cue.t < 0f) continue;
+                if (deixa == null || string.IsNullOrEmpty(deixa.som)) continue;
+                if (deixa.t <= de || deixa.t > to) continue;
+                if (de < 0f && deixa.t < 0f) continue;
 
-                SfxCue sound = Find(cue.sound);
-                sound?.Play(null, cue.volume, cue.pitch);
+                SfxCue som = Encontrar(deixa.som);
+                som?.Tocar(null, deixa.volume, deixa.tom2);
             }
         }
 
-        private static SfxCue Find(string name)
+        private static SfxCue Encontrar(string nome)
         {
-            if (Sounds.TryGetValue(name, out SfxCue cached)) return cached;
-            FieldInfo field = typeof(Sfx).GetField(name, BindingFlags.Public | BindingFlags.Static);
-            SfxCue cue = field != null ? field.GetValue(null) as SfxCue : null;
-            if (cue == null) Debug.LogWarning($"[Film] Som '{name}' nao existe em Sfx.");
-            Sounds[name] = cue;
-            return cue;
+            if (Sons.TryGetValue(nome, out SfxCue guardado)) return guardado;
+            FieldInfo campo = typeof(Sfx).GetField(nome, BindingFlags.Public | BindingFlags.Static);
+            SfxCue deixa = campo != null ? campo.GetValue(null) as SfxCue : null;
+            if (deixa == null) Debug.LogWarning($"[Film] Som '{nome}' nao existe em Sfx.");
+            Sons[nome] = deixa;
+            return deixa;
         }
 
-        private void Prepare()
+        private void Preparar()
         {
-            if (_frames != null) return;
+            if (_quadros != null) return;
 
-            _frames = new List<FilmFrame>(frames.Length);
-            foreach (Texture2D texture in frames)
+            _quadros = new List<FilmFrame>(quadros.Length);
+            foreach (Texture2D textura in quadros)
             {
-                Color32[] colors = texture.GetPixels32();
-                int w = texture.width, h = texture.height;
+                Color32[] cores = textura.GetPixels32();
+                int w = textura.width, h = textura.height;
                 var pixels = new uint[w * h];
                 for (int y = 0; y < h; y++)
                 {
-                    int src = (h - 1 - y) * w;
-                    int dst = y * w;
+                    int origem = (h - 1 - y) * w;
+                    int destino = y * w;
                     for (int x = 0; x < w; x++)
                     {
-                        Color32 c = colors[src + x];
-                        pixels[dst + x] = (uint)c.a << 24 | (uint)c.r << 16 | (uint)c.g << 8 | c.b;
+                        Color32 c = cores[origem + x];
+                        pixels[destino + x] = (uint)c.a << 24 | (uint)c.r << 16 | (uint)c.g << 8 | c.b;
                     }
                 }
 
-                _frames.Add(new FilmFrame(w, h, pixels));
+                _quadros.Add(new FilmFrame(w, h, pixels));
             }
 
-            _buffer = new uint[Width * Height];
-            _colors = new Color32[Width * Height];
-            _screen = new Texture2D(Width, Height, TextureFormat.RGBA32, false)
+            _reserva = new uint[Largura * Altura];
+            _cores = new Color32[Largura * Altura];
+            _tela = new Texture2D(Largura, Altura, TextureFormat.RGBA32, false)
             {
                 filterMode = FilterMode.Point,
                 wrapMode = TextureWrapMode.Clamp,
             };
         }
 
-        private void Upload()
+        private void EnviarTextura()
         {
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < Altura; y++)
             {
-                int src = y * Width;
-                int dst = (Height - 1 - y) * Width;
-                for (int x = 0; x < Width; x++)
+                int origem = y * Largura;
+                int destino = (Altura - 1 - y) * Largura;
+                for (int x = 0; x < Largura; x++)
                 {
-                    uint p = _buffer[src + x];
-                    _colors[dst + x] = new Color32((byte)(p >> 16), (byte)(p >> 8), (byte)p, 255);
+                    uint p = _reserva[origem + x];
+                    _cores[destino + x] = new Color32((byte)(p >> 16), (byte)(p >> 8), (byte)p, 255);
                 }
             }
 
-            _screen.SetPixels32(_colors);
-            _screen.Apply(false);
+            _tela.SetPixels32(_cores);
+            _tela.Apply(false);
         }
 
-        private void Stop()
+        private void Parar()
         {
-            _white = 0f;
-            _black = 0f;
-            _showPanel = false;
-            IsPlaying = false;
+            _branco = 0f;
+            _preto = 0f;
+            _painelMostrar = false;
+            EstaTocando = false;
         }
 
         private void OnDisable()
         {
-            Stop();
+            Parar();
         }
 
         private void OnDestroy()
         {
-            IsPlaying = false;
-            if (_screen != null) Destroy(_screen);
+            EstaTocando = false;
+            if (_tela != null) Destroy(_tela);
         }
 
-        private static bool SkipPressed()
+        private static bool PularPressionado()
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && (keyboard.spaceKey.wasPressedThisFrame || keyboard.jKey.wasPressedThisFrame
-                                     || keyboard.xKey.wasPressedThisFrame || keyboard.enterKey.wasPressedThisFrame))
+            Keyboard teclado = Keyboard.current;
+            if (teclado != null && (teclado.spaceKey.wasPressedThisFrame || teclado.jKey.wasPressedThisFrame
+                                     || teclado.xKey.wasPressedThisFrame || teclado.enterKey.wasPressedThisFrame))
             {
                 return true;
             }
 
-            Gamepad pad = Gamepad.current;
-            return pad != null && (pad.buttonSouth.wasPressedThisFrame || pad.buttonWest.wasPressedThisFrame);
+            Gamepad controle = Gamepad.current;
+            return controle != null && (controle.buttonSouth.wasPressedThisFrame || controle.buttonWest.wasPressedThisFrame);
         }
 
         private void OnGUI()
         {
-            if (!IsPlaying) return;
+            if (!EstaTocando) return;
             if (Event.current.type != EventType.Repaint) return;
 
             GUI.depth = -1000;
-            Color previous = GUI.color;
-            var full = new Rect(0f, 0f, Screen.width, Screen.height);
+            Color valorAnterior = GUI.color;
+            var cheio = new Rect(0f, 0f, Screen.width, Screen.height);
 
-            if (_showPanel)
+            if (_painelMostrar)
             {
-                Fill(full, Color.black);
+                Preencher(cheio, Color.black);
 
-                float scale = Mathf.Min(Screen.width / (float)Width, Screen.height / (float)Height);
-                float w = Width * scale, h = Height * scale;
-                var panel = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
+                float escalaAtual = Mathf.Min(Screen.width / (float)Largura, Screen.height / (float)Altura);
+                float w = Largura * escalaAtual, h = Altura * escalaAtual;
+                var painel = new Rect((Screen.width - w) / 2f, (Screen.height - h) / 2f, w, h);
 
-                if (_screen != null)
+                if (_tela != null)
                 {
                     GUI.color = Color.white;
-                    GUI.DrawTexture(panel, _screen);
+                    TelaCanvas.Textura(painel, _tela);
                 }
 
-                float bar = h * BarFraction;
-                Fill(new Rect(panel.x, panel.y, w, bar), Color.black);
-                Fill(new Rect(panel.x, panel.yMax - bar, w, bar), Color.black);
+                float barra = h * FracaoBarra;
+                Preencher(new Rect(painel.x, painel.y, w, barra), Color.black);
+                Preencher(new Rect(painel.x, painel.yMax - barra, w, barra), Color.black);
             }
 
-            if (_black > 0f) Fill(full, new Color(0f, 0f, 0f, _black));
-            if (_white > 0f) Fill(full, new Color(1f, 0.98f, 0.92f, _white));
+            if (_preto > 0f) Preencher(cheio, new Color(0f, 0f, 0f, _preto));
+            if (_branco > 0f) Preencher(cheio, new Color(1f, 0.98f, 0.92f, _branco));
 
-            GUI.color = previous;
+            GUI.color = valorAnterior;
         }
 
-        private static void Fill(Rect rect, Color color)
+        private static void Preencher(Rect retangulo, Color cor)
         {
-            GUI.color = color;
-            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = cor;
+            TelaCanvas.Textura(retangulo, Texture2D.whiteTexture);
         }
     }
 }

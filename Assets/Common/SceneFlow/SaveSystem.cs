@@ -15,50 +15,36 @@ namespace EchoesOfCravejada
     /// chefes derrotados, areas purificadas, itens, compras...). Carregar
     /// devolve tudo isso e poe o Scrap de pe na bancada, acesa.
     ///
-    /// O progresso mora em campos estaticos espalhados pelo jogo (os que
-    /// zeram ao dar Play). A lista <see cref="Members"/> diz quais contam;
-    /// eles sao lidos e escritos por reflexao. Campo novo de progresso:
-    /// acrescentar aqui.
+    /// O progresso mora em campos estaticos marcados com [SaveProgress]. Eles
+    /// sao achados e gravados por reflexao, com a chave Classe.campo: renomear
+    /// um deles invalida esse dado nos saves antigos.
     /// </summary>
     public static class SaveSystem
     {
-        private const int Version = 1;
+        private const int Versao = 1;
 
-        /// <summary>O que conta como progresso: (classe, campo ou propriedade estatica).</summary>
-        private static readonly (Type Type, string Member)[] Members =
+        private const BindingFlags Estaticos = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
+        private static (Type Type, string Member)[] _membros;
+
+        /// <summary>O que conta como progresso: todo campo estatico marcado com [SaveProgress].</summary>
+        private static (Type Type, string Member)[] Membros => _membros ?? (_membros = Descobrir());
+
+        private static (Type, string)[] Descobrir()
         {
-            (typeof(ScrapWallet), "Shards"),
-            (typeof(GemPurse), "Gems"),
-            (typeof(ScrapController), "_pressureJump"),
-            (typeof(ScrapDash), "_unlocked"),
-            (typeof(ScrapChisel), "_resonance"),
-            (typeof(ScrapAppearance), "_polished"),
-            (typeof(ScrapHealth), "_bonusHealth"),
-            (typeof(ScrapGems), "HasRuby"),
-            (typeof(ScrapGems), "RubySocketed"),
-            (typeof(ScrapGems), "HasSapphire"),
-            (typeof(ScrapGems), "SapphireSocketed"),
-            (typeof(KeyItems), "Held"),
-            (typeof(KeyItems), "Delivered"),
-            (typeof(KeyItems), "Flags"),
-            (typeof(AreaPurifier), "Purified"),
-            (typeof(RewardPickup), "Taken"),
-            (typeof(Shop), "Bought"),
-            (typeof(CrystalBarrier), "Broken"),
-            (typeof(KeyGate), "Opened"),
-            (typeof(Gate), "Opened"),
-            (typeof(WakeUpCutscene), "_played"),
-            (typeof(BoilerMaster), "_defeated"),
-            (typeof(TheResonant), "_defeated"),
-            (typeof(GeodeDrill), "_defeated"),
-            (typeof(MercuryAlchemist), "_defeated"),
-            (typeof(SilverKing), "_defeated"),
-            (typeof(SilverKing), "_introHeard"),
-            (typeof(SilverKing), "_transformationSeen"),
-            (typeof(SaveEngraving), "Count"),
-        };
+            var encontrado = new List<(Type, string)>();
 
-        private const BindingFlags Statics = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+            foreach (Type tipoDado in typeof(SaveSystem).Assembly.GetTypes())
+            {
+                foreach (MemberInfo membro in tipoDado.GetMembers(Estaticos | BindingFlags.DeclaredOnly))
+                {
+                    if (membro.IsDefined(typeof(SaveProgressAttribute), false)) encontrado.Add((tipoDado, membro.Name));
+                }
+            }
+
+            encontrado.Sort((a, b) => string.CompareOrdinal(Chave(a.Item1, a.Item2), Chave(b.Item1, b.Item2)));
+            return encontrado.ToArray();
+        }
 
         [Serializable]
         private class Entry
@@ -81,31 +67,31 @@ namespace EchoesOfCravejada
             public List<Entry> entries = new List<Entry>();
         }
 
-        private static string FilePath => Path.Combine(Application.persistentDataPath, "save.json");
+        private static string CaminhoArquivo => Path.Combine(Application.persistentDataPath, "save.json");
 
         /// <summary>Onde o Scrap deve aparecer ao abrir a cena carregada (a bancada). Vale uma vez.</summary>
-        private static Vector3? _pendingBench;
+        private static Vector3? _bancadaPendente;
 
         /// <summary>A bancada do save carregado: ela abre acesa.</summary>
-        public static Vector3? LoadedBench { get; private set; }
+        public static Vector3? BancadaCarregado { get; private set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetOnPlay()
+        private static void ReiniciarAoJogar()
         {
-            _pendingBench = null;
-            LoadedBench = null;
+            _bancadaPendente = null;
+            BancadaCarregado = null;
         }
 
         /// <summary>Se existe um save pra continuar.</summary>
-        public static bool HasSave => File.Exists(FilePath);
+        public static bool TemSalvar => File.Exists(CaminhoArquivo);
 
         /// <summary>A cena do save, ou null.</summary>
-        public static string SavedScene
+        public static string CenaSalvo
         {
             get
             {
-                Data data = Read();
-                return data != null ? data.scene : null;
+                Data dados = Ler();
+                return dados != null ? dados.scene : null;
             }
         }
 
@@ -113,52 +99,52 @@ namespace EchoesOfCravejada
         // Gravar
         // ------------------------------------------------------------------
 
-        /// <summary>Grava o jogo, com o Scrap renascendo em <paramref name="bench"/> na cena atual.</summary>
-        public static void Save(Vector3 bench)
+        /// <summary>Grava o jogo, com o Scrap renascendo em <paramref name="bancada2"/> na cena atual.</summary>
+        public static void Salvar(Vector3 bancada2)
         {
-            var data = new Data
+            var dados = new Data
             {
-                version = Version,
+                version = Versao,
                 scene = SceneManager.GetActiveScene().name,
-                benchX = bench.x,
-                benchY = bench.y,
+                benchX = bancada2.x,
+                benchY = bancada2.y,
                 savedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm"),
             };
 
-            foreach ((Type type, string member) in Members)
+            foreach ((Type tipoDado, string membro) in Membros)
             {
-                var entry = new Entry { key = Key(type, member) };
-                object value = Get(type, member);
+                var entrada = new Entry { key = Chave(tipoDado, membro) };
+                object valor = Obter(tipoDado, membro);
 
-                switch (value)
+                switch (valor)
                 {
-                    case bool flag: entry.flag = flag; break;
-                    case int number: entry.number = number; break;
-                    case HashSet<string> set: entry.names.AddRange(set); break;
-                    case Dictionary<string, int> map:
-                        foreach (KeyValuePair<string, int> pair in map)
+                    case bool marca: entrada.flag = marca; break;
+                    case int numero: entrada.number = numero; break;
+                    case HashSet<string> conjunto: entrada.names.AddRange(conjunto); break;
+                    case Dictionary<string, int> mapa:
+                        foreach (KeyValuePair<string, int> par in mapa)
                         {
-                            entry.names.Add(pair.Key);
-                            entry.counts.Add(pair.Value);
+                            entrada.names.Add(par.Key);
+                            entrada.counts.Add(par.Value);
                         }
                         break;
                     default: continue;
                 }
 
-                data.entries.Add(entry);
+                dados.entries.Add(entrada);
             }
 
             try
             {
                 // Grava num arquivo ao lado e troca: um jogo fechado no meio nao corrompe o save.
-                string temp = FilePath + ".tmp";
-                File.WriteAllText(temp, JsonUtility.ToJson(data, true));
-                if (File.Exists(FilePath)) File.Delete(FilePath);
-                File.Move(temp, FilePath);
+                string temporario = CaminhoArquivo + ".tmp";
+                File.WriteAllText(temporario, JsonUtility.ToJson(dados, true));
+                if (File.Exists(CaminhoArquivo)) File.Delete(CaminhoArquivo);
+                File.Move(temporario, CaminhoArquivo);
             }
-            catch (Exception error)
+            catch (Exception erro)
             {
-                Debug.LogError("[Save] Nao deu pra gravar: " + error.Message);
+                Debug.LogError("[Save] Nao deu pra gravar: " + erro.Message);
             }
         }
 
@@ -167,22 +153,22 @@ namespace EchoesOfCravejada
         // ------------------------------------------------------------------
 
         /// <summary>Zera todo o progresso (o comeco de um jogo novo). Nao apaga o arquivo.</summary>
-        public static void ResetProgress()
+        public static void ReiniciarProgresso()
         {
-            foreach ((Type type, string member) in Members)
+            foreach ((Type tipoDado, string membro) in Membros)
             {
-                object value = Get(type, member);
-                switch (value)
+                object valor = Obter(tipoDado, membro);
+                switch (valor)
                 {
-                    case bool _: Set(type, member, false); break;
-                    case int _: Set(type, member, 0); break;
-                    case HashSet<string> set: set.Clear(); break;
-                    case Dictionary<string, int> map: map.Clear(); break;
+                    case bool _: Definir(tipoDado, membro, false); break;
+                    case int _: Definir(tipoDado, membro, 0); break;
+                    case HashSet<string> conjunto: conjunto.Clear(); break;
+                    case Dictionary<string, int> mapa: mapa.Clear(); break;
                 }
             }
 
-            _pendingBench = null;
-            LoadedBench = null;
+            _bancadaPendente = null;
+            BancadaCarregado = null;
         }
 
         /// <summary>
@@ -190,61 +176,61 @@ namespace EchoesOfCravejada
         /// houver save). Quem chama troca pra essa cena; la, o Scrap aparece na
         /// bancada.
         /// </summary>
-        public static string Load()
+        public static string Carregar()
         {
-            Data data = Read();
-            if (data == null) return null;
+            Data dados = Ler();
+            if (dados == null) return null;
 
-            ResetProgress();
+            ReiniciarProgresso();
 
-            foreach (Entry entry in data.entries)
+            foreach (Entry entrada in dados.entries)
             {
-                (Type type, string member) = Find(entry.key);
-                if (type == null) continue;
+                (Type tipoDado, string membro) = Encontrar(entrada.key);
+                if (tipoDado == null) continue;
 
-                object value = Get(type, member);
-                switch (value)
+                object valor = Obter(tipoDado, membro);
+                switch (valor)
                 {
-                    case bool _: Set(type, member, entry.flag); break;
-                    case int _: Set(type, member, entry.number); break;
-                    case HashSet<string> set:
-                        foreach (string name in entry.names) set.Add(name);
+                    case bool _: Definir(tipoDado, membro, entrada.flag); break;
+                    case int _: Definir(tipoDado, membro, entrada.number); break;
+                    case HashSet<string> conjunto:
+                        foreach (string nome in entrada.names) conjunto.Add(nome);
                         break;
-                    case Dictionary<string, int> map:
-                        for (int i = 0; i < entry.names.Count && i < entry.counts.Count; i++) map[entry.names[i]] = entry.counts[i];
+                    case Dictionary<string, int> mapa:
+                        for (int i = 0; i < entrada.names.Count && i < entrada.counts.Count; i++) mapa[entrada.names[i]] = entrada.counts[i];
                         break;
                 }
             }
 
-            var bench = new Vector3(data.benchX, data.benchY, 0f);
-            _pendingBench = bench;
-            LoadedBench = bench;
-            return data.scene;
+            var bancada2 = new Vector3(dados.benchX, dados.benchY, 0f);
+            _bancadaPendente = bancada2;
+            BancadaCarregado = bancada2;
+            return dados.scene;
         }
 
         /// <summary>Se a cena que vai abrir veio de um save (sem consumir o recado).</summary>
-        public static bool HasPendingBench => _pendingBench.HasValue;
+        public static bool TemBancadaPendente => _bancadaPendente.HasValue;
 
         /// <summary>A SceneArrival pergunta: se o Scrap veio de um save, onde ele aparece.</summary>
-        public static bool TakePendingBench(out Vector3 bench)
+        public static bool PegarBancadaPendente(out Vector3 bancada2)
         {
-            bench = _pendingBench ?? Vector3.zero;
-            bool has = _pendingBench.HasValue;
-            _pendingBench = null;
-            return has;
+            bancada2 = _bancadaPendente ?? Vector3.zero;
+            bool tem = _bancadaPendente.HasValue;
+            _bancadaPendente = null;
+            return tem;
         }
 
-        private static Data Read()
+        private static Data Ler()
         {
             try
             {
-                if (!File.Exists(FilePath)) return null;
-                var data = JsonUtility.FromJson<Data>(File.ReadAllText(FilePath));
-                return data != null && !string.IsNullOrEmpty(data.scene) ? data : null;
+                if (!File.Exists(CaminhoArquivo)) return null;
+                var dados = JsonUtility.FromJson<Data>(File.ReadAllText(CaminhoArquivo));
+                return dados != null && !string.IsNullOrEmpty(dados.scene) ? dados : null;
             }
-            catch (Exception error)
+            catch (Exception erro)
             {
-                Debug.LogError("[Save] Save ilegivel: " + error.Message);
+                Debug.LogError("[Save] Save ilegivel: " + erro.Message);
                 return null;
             }
         }
@@ -253,42 +239,47 @@ namespace EchoesOfCravejada
         // Reflexao
         // ------------------------------------------------------------------
 
-        private static string Key(Type type, string member) => type.Name + "." + member;
-
-        private static (Type, string) Find(string key)
+        private static string Chave(Type tipoDado, string membro)
         {
-            foreach ((Type type, string member) in Members)
+            MemberInfo info = tipoDado.GetMember(membro, Estaticos)[0];
+            var marca = info.GetCustomAttribute<SaveProgressAttribute>();
+            return tipoDado.Name + "." + (marca != null ? marca.ChaveDoSave : membro);
+        }
+
+        private static (Type, string) Encontrar(string chave)
+        {
+            foreach ((Type tipoDado, string membro) in Membros)
             {
-                if (Key(type, member) == key) return (type, member);
+                if (Chave(tipoDado, membro) == chave) return (tipoDado, membro);
             }
 
             return (null, null);
         }
 
-        private static object Get(Type type, string member)
+        private static object Obter(Type tipoDado, string membro)
         {
-            FieldInfo field = type.GetField(member, Statics);
-            if (field != null) return field.GetValue(null);
+            FieldInfo campo = tipoDado.GetField(membro, Estaticos);
+            if (campo != null) return campo.GetValue(null);
 
-            PropertyInfo property = type.GetProperty(member, Statics);
-            if (property != null) return property.GetValue(null);
+            PropertyInfo propriedade = tipoDado.GetProperty(membro, Estaticos);
+            if (propriedade != null) return propriedade.GetValue(null);
 
-            Debug.LogWarning($"[Save] {type.Name}.{member} nao existe mais: tirar da lista do SaveSystem.");
+            Debug.LogWarning($"[Save] {tipoDado.Name}.{membro} nao existe mais: tirar da lista do SaveSystem.");
             return null;
         }
 
-        private static void Set(Type type, string member, object value)
+        private static void Definir(Type tipoDado, string membro, object valor)
         {
-            FieldInfo field = type.GetField(member, Statics);
-            if (field != null && !field.IsInitOnly)
+            FieldInfo campo = tipoDado.GetField(membro, Estaticos);
+            if (campo != null && !campo.IsInitOnly)
             {
-                field.SetValue(null, value);
+                campo.SetValue(null, valor);
                 return;
             }
 
-            PropertyInfo property = type.GetProperty(member, Statics);
-            MethodInfo setter = property?.GetSetMethod(true);
-            setter?.Invoke(null, new[] { value });
+            PropertyInfo propriedade = tipoDado.GetProperty(membro, Estaticos);
+            MethodInfo definidor = propriedade?.GetSetMethod(true);
+            definidor?.Invoke(null, new[] { valor });
         }
     }
 }

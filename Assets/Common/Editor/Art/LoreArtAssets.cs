@@ -43,7 +43,7 @@ namespace EchoesOfCravejada.EditorTools
             renderer.sortingLayerName = sortingLayer;
             renderer.sortingOrder = piece.OnWall ? 6 : 22;
 
-            readable.ConfigureDocument(
+            readable.ConfigurarDocumento(
                 Phase02Assets.LoadSprite(LoreArt.ViewSprite(piece.Lore)),
                 piece.PurifiedView != null ? Phase02Assets.LoadSprite(LoreArt.ViewSprite(piece.Lore, true)) : null);
         }

@@ -14,77 +14,77 @@ namespace EchoesOfCravejada
     [RequireComponent(typeof(Rigidbody2D))]
     public class ScrapRespawn : MonoBehaviour
     {
-        [Tooltip("Quanto tempo no chao ate o lugar contar como seguro.")]
-        [SerializeField] private float settleTime = 0.2f;
+        [UnityEngine.Serialization.FormerlySerializedAs("settleTime")] [Tooltip("Quanto tempo no chao ate o lugar contar como seguro.")]
+        [SerializeField] private float tempoAssentar = 0.2f;
 
-        [Tooltip("Depois de voltar, por quanto tempo ele nao pode ser jogado de novo.")]
-        [SerializeField] private float immunityTime = 0.6f;
+        [UnityEngine.Serialization.FormerlySerializedAs("immunityTime")] [Tooltip("Depois de voltar, por quanto tempo ele nao pode ser jogado de novo.")]
+        [SerializeField] private float tempoImunidade = 0.6f;
 
-        private ScrapController _controller;
-        private Rigidbody2D _body;
+        private ScrapController _controlador;
+        private Rigidbody2D _corpo;
         private SpriteRenderer _sprite;
 
-        private Vector2 _safePosition;
-        private float _groundedFor;
-        private float _immuneUntil;
+        private Vector2 _posicaoSeguro;
+        private float _noChaoPor;
+        private float _imuneAte;
 
         /// <summary>O ultimo chao seguro. E tambem onde a old scrap fica quando ele morre.</summary>
-        public Vector2 SafePosition => _safePosition;
+        public Vector2 PosicaoSeguro => _posicaoSeguro;
 
         private void Awake()
         {
-            _controller = GetComponent<ScrapController>();
-            _body = GetComponent<Rigidbody2D>();
+            _controlador = GetComponent<ScrapController>();
+            _corpo = GetComponent<Rigidbody2D>();
             _sprite = GetComponent<SpriteRenderer>();
-            _safePosition = transform.position;
+            _posicaoSeguro = transform.position;
         }
 
         private void Update()
         {
-            _groundedFor = _controller.IsGrounded ? _groundedFor + Time.deltaTime : 0f;
+            _noChaoPor = _controlador.EstaNoChao ? _noChaoPor + Time.deltaTime : 0f;
 
-            if (_groundedFor >= settleTime && Time.time >= _immuneUntil)
+            if (_noChaoPor >= tempoAssentar && Time.time >= _imuneAte)
             {
-                _safePosition = _body.position;
+                _posicaoSeguro = _corpo.position;
             }
         }
 
         /// <summary>Chamado por quem move o Scrap de uma vez, pra o lugar novo virar o seguro.</summary>
-        public void SetSafePosition(Vector2 position)
+        public void DefinirPosicaoSegura(Vector2 posicao)
         {
-            _safePosition = position;
-            _groundedFor = 0f;
+            _posicaoSeguro = posicao;
+            _noChaoPor = 0f;
         }
 
         /// <summary>
         /// Joga o Scrap de volta pro ultimo chao seguro. Com
-        /// <paramref name="silent"/> ele nao pisca: quem chamou ja cuida disso.
+        /// <paramref name="silencioso"/> ele nao pisca: quem chamou ja cuida disso.
         /// </summary>
-        public void Respawn(bool silent = false)
+        public void Renascer(bool silencioso = false)
         {
-            if (Time.time < _immuneUntil) return;
-            _immuneUntil = Time.time + immunityTime;
+            if (Time.time < _imuneAte) return;
+            _imuneAte = Time.time + tempoImunidade;
 
             // Um tiquinho acima, pra ele assentar em vez de nascer cravado no chao.
-            Vector2 target = _safePosition + Vector2.up * 0.05f;
+            Vector2 alvo = _posicaoSeguro + Vector2.up * 0.05f;
 
-            _body.position = target;
-            transform.position = target;
-            _body.linearVelocity = Vector2.zero;
-            _groundedFor = 0f;
+            _corpo.position = alvo;
+            transform.position = alvo;
+            _corpo.linearVelocity = Vector2.zero;
+            _noChaoPor = 0f;
 
-            if (!silent && _sprite != null)
+            if (!silencioso && _sprite != null)
             {
                 StopAllCoroutines();
-                StartCoroutine(Blink());
+                StartCoroutine(Piscar());
             }
         }
 
-        private IEnumerator Blink()
+        private IEnumerator Piscar()
         {
-            float end = Time.time + immunityTime;
+            float fim = Time.time + tempoImunidade;
 
-            while (Time.time < end)
+            while (Time.time < fim)
             {
                 _sprite.enabled = !_sprite.enabled;
                 yield return new WaitForSeconds(0.07f);

@@ -18,98 +18,98 @@ namespace EchoesOfCravejada
         public enum Mode
         {
             /// <summary>Coluna em pe: levanta.</summary>
-            Lift,
+            Erguer2,
 
             /// <summary>Jato deitado: carrega numa direcao e segura a altura.</summary>
-            Jet,
+            Jato,
         }
 
-        [SerializeField] private Mode mode = Mode.Lift;
+        [UnityEngine.Serialization.FormerlySerializedAs("mode")] [SerializeField] private Mode modo = Mode.Erguer2;
 
-        [Tooltip("Velocidade que o vapor impoe, em tiles por segundo.")]
-        [SerializeField] private float speed = 9f;
+        [UnityEngine.Serialization.FormerlySerializedAs("speed")] [Tooltip("Velocidade que o vapor impoe, em tiles por segundo.")]
+        [SerializeField] private float velocidade = 9f;
 
-        [Tooltip("Quao rapido ele chega nessa velocidade. Precisa ser maior que a gravidade do Scrap (uns 53 na queda), senao nao segura.")]
-        [SerializeField] private float acceleration = 70f;
+        [UnityEngine.Serialization.FormerlySerializedAs("acceleration")] [Tooltip("Quao rapido ele chega nessa velocidade. Precisa ser maior que a gravidade do Scrap (uns 53 na queda), senao nao segura.")]
+        [SerializeField] private float aceleracao = 70f;
 
-        [Tooltip("So no jato: +1 empurra pra direita, -1 pra esquerda.")]
-        [SerializeField] private float direction = 1f;
+        [UnityEngine.Serialization.FormerlySerializedAs("direction")] [Tooltip("So no jato: +1 empurra pra direita, -1 pra esquerda.")]
+        [SerializeField] private float direcao = 1f;
 
-        [Tooltip("So no jato: velocidade vertical que ele mantem. Um tiquinho pra cima evita que o Scrap escorregue pra fora por baixo.")]
-        [SerializeField] private float hoverSpeed = 0.6f;
+        [UnityEngine.Serialization.FormerlySerializedAs("hoverSpeed")] [Tooltip("So no jato: velocidade vertical que ele mantem. Um tiquinho pra cima evita que o Scrap escorregue pra fora por baixo.")]
+        [SerializeField] private float velocidadeFlutuar = 0.6f;
 
-        [Header("Pulso")]
+        [UnityEngine.Serialization.FormerlySerializedAs("onTime")] [Header("Pulso")]
         [Tooltip("Segundos ligado. So vale se Off Time for maior que zero.")]
-        [SerializeField] private float onTime = 2.5f;
+        [SerializeField] private float ligadoTempo = 2.5f;
 
-        [Tooltip("Segundos desligado. Zero deixa o vapor sempre ligado.")]
-        [SerializeField] private float offTime;
+        [UnityEngine.Serialization.FormerlySerializedAs("offTime")] [Tooltip("Segundos desligado. Zero deixa o vapor sempre ligado.")]
+        [SerializeField] private float desligadoTempo;
 
-        [Tooltip("As particulas do vapor. Param de sair enquanto ele esta desligado.")]
-        [SerializeField] private ParticleSystem[] steam;
+        [UnityEngine.Serialization.FormerlySerializedAs("steam")] [Tooltip("As particulas do vapor. Param de sair enquanto ele esta desligado.")]
+        [SerializeField] private ParticleSystem[] vapor;
 
         // Guardar quem esta dentro (em vez de usar OnTriggerStay2D) garante o
         // empurrao mesmo com o corpo dormindo: um Scrap parado em cima do bocal
         // nao gera mais eventos de Stay.
-        private readonly List<Rigidbody2D> _inside = new List<Rigidbody2D>();
-        [Tooltip("Se comeca desligado, esperando uma valvula.")]
-        [SerializeField] private bool startsOff;
+        private readonly List<Rigidbody2D> _dentro = new List<Rigidbody2D>();
+        [UnityEngine.Serialization.FormerlySerializedAs("startsOff")] [Tooltip("Se comeca desligado, esperando uma valvula.")]
+        [SerializeField] private bool comecaDesligado;
 
         private bool _on = true;
-        private bool _switchedOn = true;
+        private bool _chaveadoLigado = true;
 
         /// <summary>Usado pelos geradores de fase.</summary>
-        public void SetStartsOff(bool off)
+        public void DefinirComecaDesligado(bool desligado)
         {
-            startsOff = off;
+            comecaDesligado = desligado;
         }
 
         private void Awake()
         {
-            _switchedOn = !startsOff;
+            _chaveadoLigado = !comecaDesligado;
         }
 
         /// <summary>Se o vapor esta saindo agora.</summary>
-        public bool IsOn => _on && _switchedOn;
+        public bool EstaLigado => _on && _chaveadoLigado;
 
         /// <summary>
         /// Liga ou desliga o vapor de vez. E o que as valvulas fazem: um vapor
         /// desligado nao empurra e nao aparece, ate alguem girar a valvula dele.
         /// </summary>
-        public void SetSwitchedOn(bool on)
+        public void DefinirLigado(bool on)
         {
-            _switchedOn = on;
-            ApplyEmission();
+            _chaveadoLigado = on;
+            AplicarEmissao();
         }
 
-        private void ApplyEmission()
+        private void AplicarEmissao()
         {
-            if (steam == null) return;
+            if (vapor == null) return;
 
-            foreach (ParticleSystem particles in steam)
+            foreach (ParticleSystem particulas2 in vapor)
             {
-                if (particles == null) continue;
+                if (particulas2 == null) continue;
 
-                ParticleSystem.EmissionModule emission = particles.emission;
-                emission.enabled = IsOn;
+                ParticleSystem.EmissionModule emissao = particulas2.emission;
+                emissao.enabled = EstaLigado;
             }
         }
 
         private void Start()
         {
-            ApplyEmission();
+            AplicarEmissao();
         }
 
         /// <summary>Usado pelos geradores de fase pra configurar tudo de uma vez.</summary>
-        public void Configure(Mode newMode, float newSpeed, float newDirection, float newOnTime,
-            float newOffTime, ParticleSystem[] newSteam)
+        public void Configurar(Mode novoModo, float novoVelocidade, float novoDirecao, float novoLigadoTempo,
+            float novoDesligadoTempo, ParticleSystem[] novoVapor)
         {
-            mode = newMode;
-            speed = newSpeed;
-            direction = newDirection;
-            onTime = newOnTime;
-            offTime = newOffTime;
-            steam = newSteam;
+            modo = novoModo;
+            velocidade = novoVelocidade;
+            direcao = novoDirecao;
+            ligadoTempo = novoLigadoTempo;
+            desligadoTempo = novoDesligadoTempo;
+            vapor = novoVapor;
         }
 
         private void Reset()
@@ -121,73 +121,73 @@ namespace EchoesOfCravejada
         {
             bool on = true;
 
-            if (offTime > 0f)
+            if (desligadoTempo > 0f)
             {
-                float cycle = Mathf.Max(0.1f, onTime) + offTime;
-                on = Mathf.Repeat(Time.time, cycle) < Mathf.Max(0.1f, onTime);
+                float ciclo = Mathf.Max(0.1f, ligadoTempo) + desligadoTempo;
+                on = Mathf.Repeat(Time.time, ciclo) < Mathf.Max(0.1f, ligadoTempo);
             }
 
             if (on == _on) return;
             _on = on;
-            ApplyEmission();
+            AplicarEmissao();
         }
 
         private void FixedUpdate()
         {
-            if (!IsOn) return;
+            if (!EstaLigado) return;
 
-            float step = acceleration * Time.fixedDeltaTime;
+            float passo = aceleracao * Time.fixedDeltaTime;
 
-            for (int i = _inside.Count - 1; i >= 0; i--)
+            for (int i = _dentro.Count - 1; i >= 0; i--)
             {
-                Rigidbody2D body = _inside[i];
-                if (body == null)
+                Rigidbody2D corpo = _dentro[i];
+                if (corpo == null)
                 {
-                    _inside.RemoveAt(i);
+                    _dentro.RemoveAt(i);
                     continue;
                 }
 
-                body.WakeUp();
+                corpo.WakeUp();
 
                 // Dentro do vapor as costas do Scrap esfriam na hora: e o que
                 // deixa encadear um dash atras do outro.
-                var dash = body.GetComponent<ScrapDash>();
-                if (dash != null) dash.Refresh();
+                var dash = corpo.GetComponent<ScrapDash>();
+                if (dash != null) dash.Atualizar();
 
-                Vector2 velocity = body.linearVelocity;
+                Vector2 velocidadeVetorial = corpo.linearVelocity;
 
-                if (mode == Mode.Lift)
+                if (modo == Mode.Erguer2)
                 {
                     // So acelera pra cima: quem ja entra subindo mais rapido
                     // (no auge de um pulo) nao e freado.
-                    if (velocity.y < speed) velocity.y = Mathf.MoveTowards(velocity.y, speed, step);
+                    if (velocidadeVetorial.y < velocidade) velocidadeVetorial.y = Mathf.MoveTowards(velocidadeVetorial.y, velocidade, passo);
                 }
                 else
                 {
-                    velocity.x = Mathf.MoveTowards(velocity.x, Mathf.Sign(direction) * speed, step);
-                    velocity.y = Mathf.MoveTowards(velocity.y, hoverSpeed, step);
+                    velocidadeVetorial.x = Mathf.MoveTowards(velocidadeVetorial.x, Mathf.Sign(direcao) * velocidade, passo);
+                    velocidadeVetorial.y = Mathf.MoveTowards(velocidadeVetorial.y, velocidadeFlutuar, passo);
                 }
 
-                body.linearVelocity = velocity;
+                corpo.linearVelocity = velocidadeVetorial;
             }
         }
 
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter2D(Collider2D outro)
         {
-            Rigidbody2D body = other.attachedRigidbody;
-            if (body == null || body.bodyType != RigidbodyType2D.Dynamic) return;
-            if (!_inside.Contains(body)) _inside.Add(body);
+            Rigidbody2D corpo = outro.attachedRigidbody;
+            if (corpo == null || corpo.bodyType != RigidbodyType2D.Dynamic) return;
+            if (!_dentro.Contains(corpo)) _dentro.Add(corpo);
         }
 
-        private void OnTriggerExit2D(Collider2D other)
+        private void OnTriggerExit2D(Collider2D outro)
         {
-            Rigidbody2D body = other.attachedRigidbody;
-            if (body != null) _inside.Remove(body);
+            Rigidbody2D corpo = outro.attachedRigidbody;
+            if (corpo != null) _dentro.Remove(corpo);
         }
 
         private void OnDisable()
         {
-            _inside.Clear();
+            _dentro.Clear();
         }
     }
 }
