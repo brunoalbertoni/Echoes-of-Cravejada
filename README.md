@@ -48,7 +48,7 @@ A lógica de cada personagem escolhe o quadro, e o `FrameAnimator` o exibe pelo 
 
 O fluxo do jogo passa pelo `GameManager`. Projéteis, efeitos e coletáveis nascem de prefabs, a câmera usa Cinemachine, e a interface usa Canvas, TextMeshPro e LeanTween. Métodos e variáveis do jogo estão em português.
 
-Para refazer uma cena, use o menu **Echoes > Gerar Fase N**. Ele valida o mapa, monta a cena e recria os Animators. O que testar está em [docs/roteiro-de-testes.md](docs/roteiro-de-testes.md).
+Para refazer uma cena, use o menu **Echoes > Gerar Fase N**. Ele valida o mapa, monta a cena e recria os Animators.
 
 Os PNGs em `Assets/Generated` são a versão oficial da arte. Os geradores só desenham uma imagem quando ela não existe.
 
